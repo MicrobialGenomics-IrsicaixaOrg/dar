@@ -1,6 +1,6 @@
 test_that("read phyloseq from rds file", {
-  good_file <- system.file("extdata", "metaHIV_phy.rds", package = "darytomar")
-  bad_file <- system.file("extdata", "invented_file.rds", package = "darytomar")
+  good_file <- system.file("extdata", "metaHIV_phy.rds", package = "dar")
+  bad_file <- system.file("extdata", "invented_file.rds", package = "dar")
 
   expect_s4_class(read_data(good_file), "phyloseq")
   expect_error(read_data(bad_file))
@@ -8,28 +8,28 @@ test_that("read phyloseq from rds file", {
 
 test_that("read phyloseq from multiple files", {
   good_files <- c(
-    system.file("extdata", "metaHIV_counts.txt", package = "darytomar"),
-    system.file("extdata", "metaHIV_metadata.txt", package = "darytomar"),
-    system.file("extdata", "metaHIV_taxas.txt", package = "darytomar")
+    system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+    system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
+    system.file("extdata", "metaHIV_taxas.txt", package = "dar")
   )
   expect_s4_class(read_data(good_files), "phyloseq")
 
   only_two_files <- c(
-    system.file("extdata", "metaHIV_counts.txt", package = "darytomar"),
-    system.file("extdata", "metaHIV_metadata.txt", package = "darytomar")
+    system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+    system.file("extdata", "metaHIV_metadata.txt", package = "dar")
   )
   expect_error(read_data(only_otu_phy))
 
   duplicated_files <- c(
-    system.file("extdata", "metaHIV_counts.txt", package = "darytomar"),
-    system.file("extdata", "metaHIV_metadata.txt", package = "darytomar"),
-    system.file("extdata", "metaHIV_metadata.txt", package = "darytomar")
+    system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+    system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
+    system.file("extdata", "metaHIV_metadata.txt", package = "dar")
   )
   expect_error(read_data(duplicated_files))
 })
 
 test_that("validate phyloseq content", {
-  phy <- read_data(system.file("extdata", "metaHIV_phy.rds", package = "darytomar"))
+  phy <- read_data(system.file("extdata", "metaHIV_phy.rds", package = "dar"))
 
   expect_equal(dim(phy@otu_table), c(451, 156))
   expect_equal(dim(phy@sam_data), c(156, 3))
@@ -38,7 +38,7 @@ test_that("validate phyloseq content", {
 
 test_that("phyloseq validation", {
   phy <-
-    system.file("extdata", "metaHIV_phy.rds", package = "darytomar") %>%
+    system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
     read_phyloseq()
 
   no_tax_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
@@ -57,7 +57,7 @@ test_that("phyloseq validation", {
 })
 
 test_that("validate otu counts", {
-  df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "darytomar"))
+  df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
 
   expect_invisible(validate_otu(df))
   expect_error(validate_otu(dplyr::select(df, -1)))
@@ -75,7 +75,7 @@ test_that("validate otu counts", {
 })
 
 test_that("validate sample data", {
-  df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "darytomar"))
+  df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
 
   expect_s3_class(validate_sample_data(df), c("tbl_df", "tbl", "data.frame"))
   expect_equal(dim(df), c(156, 4))
@@ -89,7 +89,7 @@ test_that("validate sample data", {
 })
 
 test_that("validate taxa table", {
-  df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "darytomar"))
+  df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar"))
 
   expect_s3_class(validate_tax_table(df), c("tbl_df", "tbl", "data.frame"))
   expect_equal(dim(df), c(451, 8))

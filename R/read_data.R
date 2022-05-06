@@ -14,14 +14,14 @@
 #'
 #' @examples
 #' # From a phyloseq object saved with .rds extension.
-#' system.file("extdata", "metaHIV_phy.rds", package = "darytomar") %>%
+#' system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
 #'   read_data()
 #'
 #' # From the three components of a phyloseq object saved as a plain text.
 #' data_path <- c(
-#'   system.file("extdata", "metaHIV_counts.txt", package = "darytomar"),
-#'   system.file("extdata", "metaHIV_metadata.txt", package = "darytomar"),
-#'   system.file("extdata", "metaHIV_taxas.txt", package = "darytomar")
+#'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_taxas.txt", package = "dar")
 #' )
 #'
 #' read_data(data_path)
