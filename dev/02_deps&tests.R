@@ -5,6 +5,7 @@
 ## DEPENDENCIES
 usethis::use_pipe()
 usethis::use_tidy_eval()
+usethis::use_package("phyloseq")
 
 ## TESTS
 usethis::use_test("test-true")

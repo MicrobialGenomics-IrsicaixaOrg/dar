@@ -18,4 +18,8 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     magrittr,
+    phyloseq,
     rlang (>= 0.4.11)
+Depends: 
+    R (>= 2.10)
+LazyData: true
