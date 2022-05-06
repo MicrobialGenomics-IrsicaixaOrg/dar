@@ -18,3 +18,7 @@ usethis::use_lifecycle_badge("Experimental")
 usethis::use_news_md(open = FALSE)
 usethis::use_github_links()
 usethis::use_testthat()
+
+## GitHub Actions
+## Manually edited
+usethis::use_github_action_check_standard()
