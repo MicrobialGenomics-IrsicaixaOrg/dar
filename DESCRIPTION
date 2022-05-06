@@ -17,9 +17,16 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    data.table,
+    dplyr,
+    glue,
     magrittr,
+    methods,
     phyloseq,
-    rlang (>= 0.4.11)
+    purrr,
+    rlang (>= 0.4.11),
+    stringr,
+    tibble
 Depends: 
     R (>= 2.10)
 LazyData: true
