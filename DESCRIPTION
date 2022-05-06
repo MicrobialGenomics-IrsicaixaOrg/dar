@@ -1,11 +1,21 @@
 Package: dar
-Title: What the Package Does (One Line, Title Case)
+Title: Differential Abundance Analysis by Consensus
 Version: 0.0.0.9000
 Authors@R: 
     person("Francesc", "Catala-Moll", , "fcatalamoll@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: A fast, consistent and interactive tool for consensus
+    differential abundance analysis using the most popular tools in the
+    field.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+URL: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar
+BugReports: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues
+Suggests: 
+    roxygen2,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    magrittr,
+    rlang (>= 0.4.11)
