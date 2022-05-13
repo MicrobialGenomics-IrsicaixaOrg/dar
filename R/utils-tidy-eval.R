@@ -101,7 +101,7 @@
 #' @md
 #' @name tidyeval
 #' @keywords internal
-#' @importFrom rlang enquo enquos .data := as_name as_label
-#' @aliases enquo enquos .data := as_name as_label
-#' @export enquo enquos .data := as_name as_label
+#' @importFrom rlang enquo enquos .data := as_name as_label quos quo quo_squash
+#' @aliases enquo enquos .data := as_name as_label quos quo quo_squash
+#' @export enquo enquos .data := as_name as_label quos quo quo_squash
 NULL

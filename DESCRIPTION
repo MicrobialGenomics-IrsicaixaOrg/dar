@@ -30,3 +30,14 @@ Imports:
 Depends: 
     R (>= 2.10)
 LazyData: true
+Collate: 
+    'recipe-class.R'
+    'ancom.R'
+    'dar-package.R'
+    'data.R'
+    'misc.R'
+    'read_data.R'
+    'steps_and_checks.R'
+    'utils-pipe.R'
+    'utils-tidy-eval.R'
+    'utils.R'

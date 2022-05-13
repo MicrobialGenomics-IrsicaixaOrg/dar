@@ -8,6 +8,9 @@
 \alias{:=}
 \alias{as_name}
 \alias{as_label}
+\alias{quos}
+\alias{quo}
+\alias{quo_squash}
 \title{Tidy eval helpers}
 \description{
 This page lists the tidy eval tools reexported in this package from
