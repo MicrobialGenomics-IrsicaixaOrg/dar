@@ -81,6 +81,8 @@ read_data <- function(data_path) {
   phy
 }
 
+#' @rdname read_data
+#' @keywords internal
 validate_otu <- function(otu) {
 
   ids <- otu %>% dplyr::pull(1)
@@ -128,6 +130,8 @@ validate_otu <- function(otu) {
   invisible(TRUE)
 }
 
+#' @rdname read_data
+#' @keywords internal
 validate_sample_data <- function(sample_data) {
 
   ids <- sample_data %>% dplyr::pull(1)
@@ -155,6 +159,8 @@ validate_sample_data <- function(sample_data) {
   sample_data
 }
 
+#' @rdname read_data
+#' @keywords internal
 validate_tax_table <- function(tax_table) {
 
   ids <- tax_table %>% dplyr::pull(1)
@@ -188,6 +194,8 @@ validate_tax_table <- function(tax_table) {
   tax_table
 }
 
+#' @rdname read_data
+#' @keywords internal
 validate_phyloseq <- function(phy, slots = c("sample_data", "tax_table")) {
 
   check_1 <- NULL
@@ -228,6 +236,8 @@ validate_phyloseq <- function(phy, slots = c("sample_data", "tax_table")) {
   phy
 }
 
+#' @rdname read_data
+#' @keywords internal
 read_phyloseq <- function(file_path) {
 
   check_1 <- NULL
@@ -252,6 +262,8 @@ read_phyloseq <- function(file_path) {
   phyloseq::filter_taxa(phy, function(x) sum(x) != 0, TRUE)
 }
 
+#' @rdname read_data
+#' @keywords internal
 read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
   check_1 <- NULL
   if (!file.exists(file_path)) {

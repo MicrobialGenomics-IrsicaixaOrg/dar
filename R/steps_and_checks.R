@@ -7,6 +7,7 @@
 #'   `step_blah` or `check_blah` depending on the context.
 #' @param ... All arguments to the operator that should be returned.
 #' @param .prefix Prefix to the subclass created.
+#'
 #' @keywords internal
 #' @return An updated step or check with the new class.
 #' @export
@@ -30,6 +31,9 @@ check <- function(subclass, ..., .prefix = "check_") {
 #' @return A updated [recipe()] with the new operation in the last slot.
 #' @export
 methods::setGeneric("add_step", function(rec, object) standardGeneric("add_step"))
+
+#' @rdname add_step
+#' @export
 methods::setMethod(
   f = "add_step",
   signature = c("recipe"),
@@ -42,6 +46,9 @@ methods::setMethod(
 #' @rdname add_step
 #' @export
 methods::setGeneric("add_check", function(rec, object) standardGeneric("add_check"))
+
+#' @rdname add_step
+#' @export
 methods::setMethod(
   f = "add_check",
   signature = c("recipe"),

@@ -2,12 +2,18 @@
 % Please edit documentation in R/steps_and_checks.R
 \name{add_step}
 \alias{add_step}
+\alias{add_step,recipe-method}
 \alias{add_check}
+\alias{add_check,recipe-method}
 \title{Add a New Operation to the Current Recipe}
 \usage{
 add_step(rec, object)
 
+\S4method{add_step}{recipe}(rec, object)
+
 add_check(rec, object)
+
+\S4method{add_check}{recipe}(rec, object)
 }
 \arguments{
 \item{rec}{A \code{\link[=recipe]{recipe()}}.}

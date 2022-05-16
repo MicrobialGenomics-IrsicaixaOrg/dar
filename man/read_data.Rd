@@ -2,9 +2,27 @@
 % Please edit documentation in R/read_data.R
 \name{read_data}
 \alias{read_data}
+\alias{validate_otu}
+\alias{validate_sample_data}
+\alias{validate_tax_table}
+\alias{validate_phyloseq}
+\alias{read_phyloseq}
+\alias{read_file}
 \title{Loads Phyloseq data}
 \usage{
 read_data(data_path)
+
+validate_otu(otu)
+
+validate_sample_data(sample_data)
+
+validate_tax_table(tax_table)
+
+validate_phyloseq(phy, slots = c("sample_data", "tax_table"))
+
+read_phyloseq(file_path)
+
+read_file(file_path, ext = c(".txt|.csv|.tsv"))
 }
 \arguments{
 \item{data_path}{List of length 1 or 3, with the paths of the input files.}
@@ -36,3 +54,4 @@ data_path <- c(
 
 read_data(data_path)
 }
+\keyword{internal}

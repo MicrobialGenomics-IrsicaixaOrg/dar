@@ -1,12 +1,26 @@
-methods::setClassUnion("phyloseq_or_null", c("phyloseq", "NULL"))
-methods::setClassUnion("char_or_NULL", c("character", "NULL"))
+# CLASS ---------------------------------------------------------------------------
 
-#' Title
+## class unions ----
+
+#' @rdname recipe-class
+methods::setClassUnion("phyloseq_or_null", c("phyloseq", "NULL"))
+
+#' @rdname recipe-class
+methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
+
+## class def ----
+
+#' recipe-class object
 #'
-#' @slot phyloseq
-#' @slot var_info
-#' @slot tax_info
-#' @slot steps
+#' A recipe is a description of the steps to be applied to a data set in order to prepare
+#' it for data analysis.
+#'
+#' @slot phyloseq Phyloseq-class object
+#' @slot var_info A tibble that contains the current set of terms in the data set. This
+#'   initially defaults to the same data contained in `var_info`.
+#' @slot tax_info A tibble that contains the current set of taxonomic levels that will be
+#'   used in the analysis.
+#' @slot steps List of step-class objects that will be used by DA.
 #'
 #' @name recipe-class
 #' @rdname recipe-class
@@ -15,8 +29,8 @@ methods::setClass(
   Class = "recipe",
   slots = c(
     phyloseq = "phyloseq_or_null",
-    var_info = "char_or_NULL",
-    tax_info = "char_or_NULL",
+    var_info = "tibble_or_NULL",
+    tax_info = "tibble_or_NULL",
     steps = "list"
   ),
   prototype = list(
@@ -27,36 +41,179 @@ methods::setClass(
   )
 )
 
-recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
+## constructor ----
+
+#' Create a recipe for preprocessing data
+#'
+#' A recipe is a description of the steps to be applied to a data set in order to prepare
+#' it for data analysis.
+#'
+#' @param phyloseq Phyloseq-class object.
+#' @param var_info A character string of column names corresponding to variables that will
+#'   be used in any context.
+#' @param tax_info A character string of taxonomic levels that will be used in any
+#'   context.
+#'
+#' @return An object of class `recipe` with sub-objects:
+#'   \item{phyloseq}{object of class `phyloseq` with taxa abundance information.}
+#'   \item{var_info}{A tibble that contains the current set of terms in the data set.
+#'   This initially defaults to the same data contained in `var_info`.}
+#'   \item{tax_info}{A tibble that contains the current set of taxonomic levels that will
+#'   be used in the analysis.}
+#'
+#' @aliases recipe
+#' @export
+recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL) {
+
+  var_info <- tibble::tibble(vars = var_info)
+  tax_info <- tibble::tibble(tax_lev = tax_info)
+
   methods::new(
     Class = "recipe",
     phyloseq = phyloseq,
     var_info = var_info,
     tax_info = tax_info,
-    steps = steps
+    steps = list()
   )
 }
 
+## validity ----
+
 methods::setValidity(
   Class = "recipe",
-  method = function(rec) {
+  method = function(object) {
     TRUE
   }
 )
 
+## printing ----
 
+# methods::setMethod("show", signature = "recipe", definition = function(rec) {})
+
+
+# METHODS ---------------------------------------------------------------------------
+
+## get_var ----
+
+#' Returns var_info from recipe-class object
+#'
+#' @param rec A `recipe` object
+#'
+#' @aliases get_var
+#' @return Tibble containing `var_info`.
+#' @export
 methods::setGeneric("get_var", function(rec) standardGeneric("get_var"))
+
+#' @rdname get_var
+#' @export
 methods::setMethod(
   f = "get_var",
   signature = "recipe",
   definition = function(rec) { rec@var_info }
 )
 
+## get_tax ----
+
+#' Returns tax_info from recipe-class object
+#'
+#' @param rec A `recipe` object
+#'
+#' @aliases get_tax
+#' @return Tibble containing `tax_info`.
+#' @export
 methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
+
+#' @rdname get_tax
+#' @export
 methods::setMethod(
   f = "get_tax",
   signature = "recipe",
   definition = function(rec) { rec@tax_info }
 )
 
+## package deps ----
+
+#' Methods for tracking which additional packages are needed for steps.
+#'
+#' @param rec A recipe or recipe step.
+#'
+#' @return A character vector
+#' @export
+methods::setGeneric("required_pkgs_recipe", function(rec) standardGeneric("required_pkgs_recipe"))
+
+#' @rdname required_pkgs_recipe
+#' @export
+methods::setMethod(
+  f = "required_pkgs_recipe",
+  signature = "recipe",
+  definition = function(rec) {
+    res <- purrr::map(rec@steps, required_pkgs)
+    res <- unique(unlist(res))
+    res <- res[length(res) != 0]
+    res
+  }
+)
+
+## Phyloseq slots as tibble from recipe ----
+
+#' Extracts tax_table from phyloseq inside a recipe
+#'
+#' @param rec A recipe or recipe step.
+#'
+#' @return A tibble
+#' @export
+methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
+
+#' @rdname tax_table
+#' @export
+methods::setMethod(
+  f = "tax_table",
+  signature = "recipe",
+  definition = function(rec) {
+    rec@phyloseq@tax_table %>%
+      to_tibble("taxa_id") %>%
+      dplyr::select(taxa_id, taxa = !!get_tax(rec)[[1]])
+  }
+)
+
+#' Extracts sample_data from phyloseq inside a recipe
+#'
+#' @param rec A recipe or recipe step.
+#'
+#' @return A tibble
+#' @export
+methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
+
+#' @rdname sample_data
+#' @export
+methods::setMethod(
+  f = "sample_data",
+  signature = "recipe",
+  definition = function(rec) {
+    rec@phyloseq %>%
+      phyloseq::sample_data() %>%
+      to_tibble("sample_id") %>%
+      dplyr::select(sample_id, !!get_var(rec)[[1]])
+  }
+)
+
+#' Extracts otu_table from phyloseq inside a recipe
+#'
+#' @param rec A recipe or recipe step.
+#'
+#' @return A tibble
+#' @export
+methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
+
+#' @rdname otu_table
+#' @export
+methods::setMethod(
+  f = "otu_table",
+  signature = "recipe",
+  definition = function(rec) {
+    rec@phyloseq %>%
+      phyloseq::otu_table() %>%
+      to_tibble("taxa_id")
+  }
+)
 

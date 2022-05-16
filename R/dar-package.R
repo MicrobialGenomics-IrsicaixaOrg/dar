@@ -4,4 +4,6 @@
 #'
 #' @keywords internal
 #' @importClassesFrom phyloseq phyloseq
+#' @importClassesFrom tibble tbl_df
+#' @importFrom generics required_pkgs
 "_PACKAGE"
