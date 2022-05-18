@@ -69,7 +69,10 @@ step_metagenomeseq_new <- function(rec, zeroMod, useCSSoffset, control, useMixed
 
 #' @noRd
 #' @keywords internal
-required_pkgs_metagenomeseq <- function(x, ...) { c("bioc::metagenomeSeq") }
+required_pkgs_metagenomeseq <-
+  function(x, ...) {
+    c("bioc::metagenomeSeq", "bioc::limma", "bioc::Biobase")
+  }
 
 #' @rdname step_metagenomeseq
 #' @export

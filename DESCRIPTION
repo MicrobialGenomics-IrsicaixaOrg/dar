@@ -17,8 +17,10 @@ Suggests:
     ANCOM (>= 2.2),
     apeglm,
     ashr,
+    Biobase,
     corncob,
     DESeq2,
+    limma,
     metagenomeSeq,
     roxygen2,
     testthat (>= 3.0.0)
