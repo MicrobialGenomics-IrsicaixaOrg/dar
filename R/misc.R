@@ -54,13 +54,10 @@ step_to_expr <- function(step) {
     step %>%
     purrr::discard(names(.) == "id") %>%
     purrr::map2_chr(names(.), ~ {
-      if (is.character(.x)) {
-        glue::glue("{.y} = '{.x}'")
-      } else if (inherits(.x, "formula")) {
-        paste0(.y, " = ", paste0(.x, collapse = ""))
-      } else {
-        glue::glue("{.y} = {.x}")
-      }
+      if (is.null(.x)) { return(  glue::glue("{.y} = NULL"))}
+      if (is.character(.x)) { return(glue::glue("{.y} = '{.x}'")) }
+      if (inherits(.x, "formula")) { return(paste0(.y, " = ", paste0(.x, collapse = ""))) }
+      glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
 

@@ -19,6 +19,7 @@ Suggests:
     ashr,
     corncob,
     DESeq2,
+    metagenomeSeq,
     roxygen2,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -45,6 +46,7 @@ Collate:
     'dar-package.R'
     'data.R'
     'deseq2.R'
+    'metagenomeseq.R'
     'misc.R'
     'pkg_check.R'
     'read_data.R'

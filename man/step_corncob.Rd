@@ -115,7 +115,8 @@ addresses each of the challenges presented above.
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
 \code{\link{step_ancom}()},
-\code{\link{step_deseq}()}
+\code{\link{step_deseq}()},
+\code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}

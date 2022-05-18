@@ -1,0 +1,140 @@
+#' MetagenomeSeq analysis
+#'
+#' metagenomeSeq is designed to determine features (be it Operational Taxanomic Unit
+#' (OTU), species, etc.) that are differentially abundant between two or more groups of
+#' multiple samples. metagenomeSeq is designed to address the effects of both
+#' normalization and under-sampling of microbial communities on disease association
+#' detection and the testing of feature correlations.
+#'
+#' @param rec A recipe object. The step will be added to the sequence of operations for
+#'   this recipe.
+#' @param id A character string that is unique to this step to identify it.
+#' @param zeroMod The zero model, the model to account for the change in the number of
+#'   OTUs observed as a linear effect of the depth of coverage.
+#' @param useCSSoffset Boolean, whether to include the default scaling parameters in the
+#'   model or not.
+#' @param control The settings for fitZig.
+#' @param useMixedModel Estimate the correlation between duplicate features or replicates
+#'   using duplicateCorrelation.
+#'
+#' @include recipe-class.R
+#' @family Diff taxa steps
+#' @aliases step_metagenomeseq
+#' @return An object of class `recipe`
+#' @export
+methods::setGeneric(
+  name = "step_metagenomeseq",
+  def = function(rec,
+                 zeroMod = NULL,
+                 useCSSoffset = TRUE,
+                 control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
+                 useMixedModel = FALSE,
+                 id = rand_id("metagenomeseq")) {
+    standardGeneric("step_metagenomeseq")
+  }
+)
+
+#' @rdname step_metagenomeseq
+#' @export
+methods::setMethod(
+  f = "step_metagenomeseq",
+  signature = c(rec = "recipe"),
+  definition = function(rec, zeroMod, useCSSoffset, control, useMixedModel, id) {
+    recipes_pkg_check(required_pkgs_metagenomeseq())
+    add_step(
+      rec,
+      step_metagenomeseq_new(
+        zeroMod = zeroMod,
+        useCSSoffset = useCSSoffset,
+        control = control,
+        useMixedModel = useMixedModel,
+        id = id
+      )
+    )
+  }
+)
+
+#' @rdname step_metagenomeseq
+#' @keywords internal
+step_metagenomeseq_new <- function(rec, zeroMod, useCSSoffset, control, useMixedModel, id) {
+  step(
+    subclass = "metagenomeseq",
+    zeroMod = zeroMod,
+    useCSSoffset = useCSSoffset,
+    control = control,
+    useMixedModel = useMixedModel,
+    id = id
+  )
+}
+
+#' @noRd
+#' @keywords internal
+required_pkgs_metagenomeseq <- function(x, ...) { c("bioc::metagenomeSeq") }
+
+#' @rdname step_metagenomeseq
+#' @export
+run_metagenomeseq <- function(rec, zeroMod, useCSSoffset, control, useMixedModel) {
+
+  phy <- get_phy(rec)
+  vars <- get_var(rec)
+  tax_level <- get_tax(rec)
+
+  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+  vars %>%
+    purrr::set_names() %>%
+    purrr::map(function(var) {
+      vct_var <- phyloseq::sample_data(phy)[[var]]
+      model <- stats::model.matrix(~ vct_var)
+      colnames(model) <- levels(factor(vct_var))
+      mr_obj <-
+        phyloseq_to_MRexperiment(phy) %>%
+        metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.)) %>%
+        metagenomeSeq::fitZig(
+          mod = model,
+          control = metagenomeSeq::zigControl(verbose = FALSE)
+        )
+
+      contrasts_df <-
+        get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
+        purrr::map_chr(~ stringr::str_c(.x, collapse = " - "))
+
+      f_fit <-
+        limma::makeContrasts(
+          contrasts = contrasts_df,
+          levels = methods::slot(mr_obj, "fit") %>% purrr::pluck("design")
+        ) %>%
+        limma::contrasts.fit(fit = methods::slot(mr_obj, "fit"), contrasts = .) %>%
+        limma::eBayes()
+
+      contrasts_df %>%
+        purrr::imap_dfr(~ {
+          limma::topTable(f_fit, coef = .y, number = Inf) %>%
+            tibble::as_tibble(rownames = "taxa_id") %>%
+            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+            dplyr::rename(pvalue = P.Value, padj = adj.P.Val) %>%
+            dplyr::mutate(comparison = stringr::str_replace_all(.x, " - ", "_"), var = var)
+        })
+    })
+}
+
+#' Phyloseq to MRexpereiment object
+#'
+#' Wrapper to convert Phyloseq objects to MRexpereiment objects.
+#'
+#' @param phy Phyloseq object
+#'
+#' @noRd
+phyloseq_to_MRexperiment <- function(phy) {
+  counts <- phyloseq::otu_table(phy) %>% data.frame(check.names = FALSE)
+
+  phenoData <-
+    phyloseq::sample_data(phy) %>%
+    Biobase::AnnotatedDataFrame()
+
+  otuData <-
+    phyloseq::tax_table(phy) %>%
+    data.frame() %>%
+    Biobase::AnnotatedDataFrame()
+
+  metagenomeSeq::newMRexperiment(counts, phenoData, otuData)
+}

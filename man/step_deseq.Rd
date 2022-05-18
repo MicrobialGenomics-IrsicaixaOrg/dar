@@ -70,7 +70,8 @@ Shrunken LFC can then be generated using the lfcShrink function.
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
 \code{\link{step_ancom}()},
-\code{\link{step_corncob}()}
+\code{\link{step_corncob}()},
+\code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}

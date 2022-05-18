@@ -75,7 +75,8 @@ as well as model longitudinal data.
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
 \code{\link{step_corncob}()},
-\code{\link{step_deseq}()}
+\code{\link{step_deseq}()},
+\code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}
