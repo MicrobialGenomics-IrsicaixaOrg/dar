@@ -21,9 +21,6 @@
 #'   specifically, neg_lb = TRUE indicates you are using both criteria stated in section
 #'   3.2 of ANCOM-II to detect structural zeros; Otherwise, neg_lb = FALSE will only use
 #'   the equation 1 in section 3.2 of ANCOM-II for declaring structural zeros.
-#' @param struc_zero A matrix consists of 0 and 1s with 1 indicating the taxon is
-#'   identified as a structural zero in the corresponding group. Can be the output value
-#'   from feature_table_pre_process.
 #' @param p_adj_method Character. Specifying the method to adjust p-values for multiple
 #'   comparisons. Default is “BH” (Benjamini-Hochberg procedure).
 #' @param alpha Level of significance. Default is 0.05.
@@ -41,7 +38,6 @@ methods::setGeneric(
                  zero_cut = 1,
                  lib_cut = 0,
                  neg_lb = FALSE,
-                 struc_zero = NULL,
                  p_adj_method = "BH",
                  alpha = 0.05,
                  id = rand_id("ancom")) {
@@ -59,13 +55,11 @@ methods::setMethod(
                         zero_cut,
                         lib_cut,
                         neg_lb,
-                        struc_zero,
                         p_adj_method,
                         alpha,
                         id) {
 
     recipes_pkg_check(required_pkgs_ancom())
-
     add_step(
       rec,
       step_ancom_new(
@@ -73,13 +67,11 @@ methods::setMethod(
         zero_cut = zero_cut,
         lib_cut = lib_cut,
         neg_lb = neg_lb,
-        struc_zero = struc_zero,
         p_adj_method = p_adj_method,
         alpha = alpha,
         id = id
       )
     )
-
   }
 )
 
@@ -90,7 +82,6 @@ step_ancom_new <-
            zero_cut,
            lib_cut,
            neg_lb,
-           struc_zero,
            p_adj_method,
            alpha,
            id) {
@@ -100,7 +91,6 @@ step_ancom_new <-
       zero_cut = zero_cut,
       lib_cut = lib_cut,
       neg_lb = neg_lb,
-      struc_zero = struc_zero,
       p_adj_method = p_adj_method,
       alpha = alpha,
       id = id
@@ -111,25 +101,62 @@ step_ancom_new <-
 #' @keywords internal
 required_pkgs_ancom <- function(x, ...) { c("xec-cm/ANCOM") }
 
-run_ancom <- function(phy,
-                      tax_level,
-                      out_cut,
-                      zero_cut,
-                      lib_cut,
-                      neg_lb,
-                      struc_zero,
-                      p_adj_method,
-                      alpha) {
+#' @rdname step_ancom
+#' @export
+run_ancom <- function(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha) {
+
+  phy <- get_phy(rec)
+  vars <- get_var(rec)
+  tax_level <- get_tax(rec)
 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      get_comparisons(var, phy, as_list = TRUE, n_cut = 1)
+      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
+        purrr::map_dfr(function(comparison) {
+          sample_data <- dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+          otu_table <-
+            otu_table(rec) %>%
+            dplyr::select(taxa_id, dplyr::all_of(sample_data$sample_id)) %>%
+            data.frame(row.names = 1) %>%
+            as.matrix()
 
+          prepro <- ANCOM::feature_table_pre_process(
+            feature_table = otu_table,
+            meta_data = sample_data,
+            sample_var = 'sample_id',
+            lib_cut = lib_cut,
+            out_cut = out_cut,
+            zero_cut = zero_cut
+          )
 
+          ancom_res <- ANCOM::ANCOM(
+            feature_table = prepro$feature_table,
+            meta_data = prepro$meta_data,
+            struc_zero = prepro$structure_zeros,
+            main_var = var,
+            p_adj_method = p_adj_method,
+            alpha = alpha
+          )
 
+          n_taxa <- ifelse(
+            is.null(prepro$struc_zero),
+            nrow(prepro$feature_table),
+            sum(apply(prepro$struc_zero, 1, sum) == 0)
+          )
+
+          ancom_res$out %>%
+            tibble::as_tibble() %>%
+            dplyr::mutate(
+              clr_mean_diff = ancom_res$fig$data$x,
+              structural_zero = ancom_res$fig$data$zero_ind,
+              x_label = min(ancom_res$fig$data$x),
+              y_label = 0.7 * (n_taxa - 1),
+              comparison = stringr::str_c(comparison, collapse = "_"),
+              var = var
+            ) %>%
+            dplyr::left_join(tax_table(rec), by = "taxa_id")
+        })
     })
-
 }
-

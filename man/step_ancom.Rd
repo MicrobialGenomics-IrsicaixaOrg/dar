@@ -4,6 +4,7 @@
 \alias{step_ancom}
 \alias{step_ancom,recipe-method}
 \alias{step_ancom_new}
+\alias{run_ancom}
 \title{ANCOM analysis}
 \usage{
 step_ancom(
@@ -12,7 +13,6 @@ step_ancom(
   zero_cut = 1,
   lib_cut = 0,
   neg_lb = FALSE,
-  struc_zero = NULL,
   p_adj_method = "BH",
   alpha = 0.05,
   id = rand_id("ancom")
@@ -24,22 +24,14 @@ step_ancom(
   zero_cut = 1,
   lib_cut = 0,
   neg_lb = FALSE,
-  struc_zero = NULL,
   p_adj_method = "BH",
   alpha = 0.05,
   id = rand_id("ancom")
 )
 
-step_ancom_new(
-  out_cut,
-  zero_cut,
-  lib_cut,
-  neg_lb,
-  struc_zero,
-  p_adj_method,
-  alpha,
-  id
-)
+step_ancom_new(out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha, id)
+
+run_ancom(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -62,10 +54,6 @@ specifically, neg_lb = TRUE indicates you are using both criteria stated in sect
 3.2 of ANCOM-II to detect structural zeros; Otherwise, neg_lb = FALSE will only use
 the equation 1 in section 3.2 of ANCOM-II for declaring structural zeros.}
 
-\item{struc_zero}{A matrix consists of 0 and 1s with 1 indicating the taxon is
-identified as a structural zero in the corresponding group. Can be the output value
-from feature_table_pre_process.}
-
 \item{p_adj_method}{Character. Specifying the method to adjust p-values for multiple
 comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
@@ -82,6 +70,12 @@ accounts for the underlying structure in the data and can be used for comparing 
 composition of microbiomes in two or more populations. ANCOM makes no distributional
 assumptions and can be implemented in a linear model framework to adjust for covariates
 as well as model longitudinal data.
+}
+\seealso{
+Other Diff taxa steps: 
+\code{\link{step_aldex}()},
+\code{\link{step_corncob}()},
+\code{\link{step_deseq}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}
