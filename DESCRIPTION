@@ -15,6 +15,9 @@ BugReports: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues
 Suggests: 
     ALDEx2,
     ANCOM (>= 2.2),
+    apeglm,
+    ashr,
+    DESeq2,
     roxygen2,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -39,6 +42,7 @@ Collate:
     'ancom.R'
     'dar-package.R'
     'data.R'
+    'deseq2.R'
     'misc.R'
     'pkg_check.R'
     'read_data.R'
