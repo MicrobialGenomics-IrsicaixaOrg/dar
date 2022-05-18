@@ -42,6 +42,7 @@ Collate:
     'read_data.R'
     'steps_and_checks.R'
     'utils-pipe.R'
+    'utils-tidy-eval.R'
     'utils.R'
 Remotes: 
     xec-cm/ANCOM

@@ -38,7 +38,25 @@ methods::setMethod(
   f = "add_step",
   signature = c("recipe"),
   definition = function(rec, object) {
-    rec@steps[[length(rec@steps) + 1]] <- object
+
+    dupl_rec <-
+      rec@steps %>%
+      purrr::map_lgl(function(.x) {
+        .x["id"] <- NULL
+        object["id"] <- NULL
+        testthat::compare(.x, object)$equal
+      }) %>%
+      any()
+
+    if (dupl_rec) {
+      rlang::inform(c(
+        "!" = "This step is already defined with the same parameters and will be skipped: ",
+        glue::glue("{crayon::blue(step_to_expr(object) %>% stringr::str_replace('run', 'step'))}")
+      ))
+    } else {
+      rec@steps[[length(rec@steps) + 1]] <- object
+    }
+
     rec
   }
 )

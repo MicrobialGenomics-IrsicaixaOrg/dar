@@ -27,11 +27,11 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
     phyloseq::sample_data(phy) %>%
     to_tibble("sample_id") %>%
     dplyr::count(!!dplyr::sym(var)) %>%
-    dplyr::filter(n >= .env$n_cut) %>%
+    dplyr::filter(.data$n >= .env$n_cut) %>%
     dplyr::pull(!!dplyr::sym(var)) %>%
     as.character() %>%
     sort() %>%
-    utils::combn(., 2) %>%
+    utils::combn(m = 2) %>%
     t() %>%
     tibble::as_tibble(.name_repair = "minimal") %>%
     stats::setNames(c("x", "y"))
@@ -46,5 +46,28 @@ to_tibble <- function(df, id_name = "otu_id") {
   df %>%
     data.frame() %>%
     tibble::as_tibble(rownames = id_name)
+}
+
+
+step_to_expr <- function(step) {
+  params <-
+    step %>%
+    purrr::discard(names(.) == "id") %>%
+    purrr::map2_chr(names(.), ~ {
+      if (is.character(.x)) {
+        glue::glue("{.y} = '{.x}'")
+      } else if (inherits(.x, "formula")) {
+        paste0(.y, " = ", paste0(.x, collapse = ""))
+      } else {
+        glue::glue("{.y} = {.x}")
+      }
+    }) %>%
+    stringr::str_c(collapse = ", ")
+
+  method <-
+    step["id"] %>%
+    stringr::str_remove_all("_.*")
+
+  glue::glue("rec %>% dar::run_{method}({params})")
 }
 

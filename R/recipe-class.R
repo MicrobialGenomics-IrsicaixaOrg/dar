@@ -131,6 +131,25 @@ methods::setMethod(
   definition = function(rec) { rec@tax_info }
 )
 
+## get_phy ----
+
+#' Returns phyloseq from recipe-class object
+#'
+#' @param rec A `recipe` object
+#'
+#' @aliases get_phy
+#' @return Phyloseq class object
+#' @export
+methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
+
+#' @rdname get_phy
+#' @export
+methods::setMethod(
+  f = "get_phy",
+  signature = "recipe",
+  definition = function(rec) { rec@phyloseq }
+)
+
 ## package deps ----
 
 #' Methods for tracking which additional packages are needed for steps.
@@ -217,3 +236,41 @@ methods::setMethod(
   }
 )
 
+
+
+backe <- function(rec, parallel = TRUE, workers = 8) {
+
+  # if (parallel & check_dep(c("furrr", "future", "progressr"), quiet_stop = FALSE)) {
+  #   future::plan(future::multisession, workers = workers)
+  #   on.exit(future::plan(future::sequential))
+  # }
+
+
+  res <-
+    rec@steps %>%
+    purrr::map_chr(step_to_expr) %>%
+    purrr::map(~ eval(parse(text = .x)))
+
+
+  #   purrr::map( ~ {
+  #     eval(parse(text = .x))
+  #   }, .options = furrr::furrr_options(seed = TRUE), packages = "dar", globals = "rec")
+  #
+  # rec <<- rec
+  # res <-
+  #   rec@steps %>%
+  #   purrr::map_chr(step_to_expr) %>%
+  #   purrr::set_names(rec@steps, ~ .x[["id"]])
+  #
+  #
+  #
+  #
+  #
+  #   c("rec", .) %>%
+  #   stringr::str_c(collapse = " %>% ") %>%
+  #   parse(text = .) %>%
+  #   eval()
+
+
+
+}
