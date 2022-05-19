@@ -63,7 +63,7 @@ step_to_expr <- function(step) {
 
   method <-
     step["id"] %>%
-    stringr::str_remove_all("_.*")
+    stringr::str_remove_all(".{6}$")
 
   glue::glue("rec %>% dar::run_{method}({params})")
 }

@@ -240,6 +240,30 @@ methods::setMethod(
 
 backe <- function(rec, parallel = TRUE, workers = 8) {
 
+  ## Phyloseq preporcessing steps
+  rec <-
+    rec@steps %>%
+    purrr::map(~ {
+      if (stringr::str_detect(.x[["id"]], "subset|filter")) {
+        return(.x)
+      }
+    }) %>%
+    purrr::compact() %>%
+    purrr::map_chr(step_to_expr) %>%
+    purrr::map( ~ eval(parse(text = .x)))
+
+
+
+    purrr::discard(stringr::str_detect(.[["id"]], "subset|filter"))
+
+
+
+    purrr::imap_int(rec@steps, ~ ifelse(stringr::str_detect(.x["id"], "subset|filter"), .y, 0) )
+
+
+
+
+
   # if (parallel & check_dep(c("furrr", "future", "progressr"), quiet_stop = FALSE)) {
   #   future::plan(future::multisession, workers = workers)
   #   on.exit(future::plan(future::sequential))
