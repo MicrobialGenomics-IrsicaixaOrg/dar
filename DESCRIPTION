@@ -21,6 +21,7 @@ Suggests:
     corncob,
     DESeq2,
     limma,
+    Maaslin2,
     metagenomeSeq,
     roxygen2,
     testthat (>= 3.0.0)
@@ -48,6 +49,7 @@ Collate:
     'dar-package.R'
     'data.R'
     'deseq2.R'
+    'maaslin2.R'
     'metagenomeseq.R'
     'misc.R'
     'pkg_check.R'

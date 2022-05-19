@@ -68,6 +68,7 @@ Other Diff taxa steps:
 \code{\link{step_ancom}()},
 \code{\link{step_corncob}()},
 \code{\link{step_deseq}()},
+\code{\link{step_maaslin}()},
 \code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
