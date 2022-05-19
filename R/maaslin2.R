@@ -26,7 +26,7 @@
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
-#' @aliases step_deseq
+#' @aliases step_maaslin
 #' @return An object of class `recipe`
 #' @export
 methods::setGeneric(
@@ -184,13 +184,13 @@ run_maaslin <- function(rec,
           ) %>%
             purrr::pluck("results") %>%
             tibble::as_tibble() %>%
-            dplyr::select(-metadata, -value) %>%
+            dplyr::select(-.data$metadata, -.data$value) %>%
             dplyr::mutate(
-              coef = coef / log10(2),
+              coef = .data$coef / log10(2),
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = !!var
             ) %>%
-            dplyr::rename(taxa_id = feature) %>%
+            dplyr::rename(taxa_id = .data$feature) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id")
         })
     })

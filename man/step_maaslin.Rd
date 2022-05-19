@@ -2,7 +2,6 @@
 % Please edit documentation in R/maaslin2.R
 \name{step_maaslin}
 \alias{step_maaslin}
-\alias{step_deseq}
 \alias{step_maaslin,recipe-method}
 \alias{step_maaslin_new}
 \alias{run_maaslin}
@@ -118,6 +117,7 @@ Other Diff taxa steps:
 \code{\link{step_ancom}()},
 \code{\link{step_corncob}()},
 \code{\link{step_deseq}()},
+\code{\link{step_lefse}()},
 \code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
