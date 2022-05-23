@@ -13,6 +13,8 @@ step_deseq(
   fitType = "parametric",
   betaPrior = FALSE,
   type = "ashr",
+  max_significance = 0.05,
+  log2FC = 1,
   id = rand_id("deseq")
 )
 
@@ -22,12 +24,23 @@ step_deseq(
   fitType = "parametric",
   betaPrior = FALSE,
   type = "ashr",
+  max_significance = 0.05,
+  log2FC = 1,
   id = rand_id("deseq")
 )
 
-step_deseq_new(rec, test, fitType, betaPrior, type, id)
+step_deseq_new(
+  rec,
+  test,
+  fitType,
+  betaPrior,
+  type,
+  max_significance,
+  log2FC,
+  id
+)
 
-run_deseq(rec, test, fitType, betaPrior, type)
+run_deseq(rec, test, fitType, betaPrior, type, max_significance, log2FC)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -49,7 +62,11 @@ afterwards using lfcShrink.}
 \item{type}{"apeglm" is the adaptive Student's t prior shrinkage estimator from the
 'apeglm' package; "ashr" is the adaptive shrinkage estimator from the 'ashr' package,
 using a fitted mixture of normals prior - see the Stephens (2016) reference below for
-citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior;}
+citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.}
+
+\item{max_significance}{The q-value threshold for significance.}
+
+\item{log2FC}{log2FC cutoff.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

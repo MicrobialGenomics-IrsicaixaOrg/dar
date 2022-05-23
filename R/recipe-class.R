@@ -31,13 +31,15 @@ methods::setClass(
     phyloseq = "phyloseq_or_null",
     var_info = "tibble_or_NULL",
     tax_info = "tibble_or_NULL",
-    steps = "list"
+    steps = "list",
+    results = "list"
   ),
   prototype = list(
     phyloseq = NULL,
     var_info = NULL,
     tax_info = NULL,
-    steps = list()
+    steps = list(),
+    results = list()
   )
 )
 
@@ -73,7 +75,8 @@ recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL) {
     phyloseq = phyloseq,
     var_info = var_info,
     tax_info = tax_info,
-    steps = list()
+    steps = list(),
+    results = list()
   )
 }
 
@@ -237,64 +240,67 @@ methods::setMethod(
 )
 
 
+#' @noRd
+#' @keywords internal
+required_pkgs_backe <- function(x, ...) {  c("furrr", "future") }
 
-backe <- function(rec, parallel = TRUE, workers = 8) {
+
+#' Estimate a preprocessing recipe
+#'
+#' For a recipe with at least one preprocessing operation, estimate the required
+#'   parameters from a training set that can be later applied to other data
+#'   sets.
+#'
+#' @param rec
+#' @param parallel
+#' @param workers
+prep <- function(rec, parallel = TRUE, workers = 8) {
 
   ## Phyloseq preporcessing steps
-  rec <-
-    rec@steps %>%
-    purrr::map(~ {
-      if (stringr::str_detect(.x[["id"]], "subset|filter")) {
-        return(.x)
-      }
-    }) %>%
-    purrr::compact() %>%
-    purrr::map_chr(step_to_expr) %>%
-    purrr::map( ~ eval(parse(text = .x)))
-
-
-
-    purrr::discard(stringr::str_detect(.[["id"]], "subset|filter"))
-
-
-
-    purrr::imap_int(rec@steps, ~ ifelse(stringr::str_detect(.x["id"], "subset|filter"), .y, 0) )
-
-
-
-
-
-  # if (parallel & check_dep(c("furrr", "future", "progressr"), quiet_stop = FALSE)) {
-  #   future::plan(future::multisession, workers = workers)
-  #   on.exit(future::plan(future::sequential))
-  # }
-
-
-  res <-
+  to_execute <-
     rec@steps %>%
     purrr::map_chr(step_to_expr) %>%
-    purrr::map(~ eval(parse(text = .x)))
+    purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
 
+  for (.x in to_execute) {
+    rec <- eval(parse(text = .x))
+  }
 
-  #   purrr::map( ~ {
-  #     eval(parse(text = .x))
-  #   }, .options = furrr::furrr_options(seed = TRUE), packages = "dar", globals = "rec")
-  #
-  # rec <<- rec
-  # res <-
-  #   rec@steps %>%
-  #   purrr::map_chr(step_to_expr) %>%
-  #   purrr::set_names(rec@steps, ~ .x[["id"]])
-  #
-  #
-  #
-  #
-  #
-  #   c("rec", .) %>%
-  #   stringr::str_c(collapse = " %>% ") %>%
-  #   parse(text = .) %>%
-  #   eval()
+  ## DA steps
+  names <-
+    purrr::map_chr(rec@steps, ~ .x[["id"]]) %>%
+    purrr::discard(stringr::str_detect(., "subset|filter"))
 
+  if (parallel) {
+    recipes_pkg_check(required_pkgs_backe())
+    future::plan(future::multisession, workers = workers)
+    on.exit(future::plan(future::sequential))
 
+    res <-
+      rec@steps %>%
+      purrr::map_chr(step_to_expr) %>%
+      purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+      furrr::future_map(~ {
+        rec <- rec
+        eval(parse(text = .x))
+      }, .options = furrr::furrr_options(seed = TRUE))
 
+    names(res) <- names
+  }
+
+  if (!parallel) {
+    res <-
+      rec@steps %>%
+      purrr::map(step_to_expr) %>%
+      purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+      purrr::map(~ {
+        rec <- rec
+        eval(parse(text = .x))
+      })
+
+    names(res) <- names
+  }
+
+  rec@results <- res
+  rec
 }

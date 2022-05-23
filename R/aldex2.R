@@ -19,6 +19,7 @@
 #'
 #' @param rec A recipe object. The step will be added to the sequence of operations for
 #'   this recipe.
+#' @param max_significance Benjamini-Hochberg corrected P value of Welch’s t test cutoff.
 #' @param mc.samples The number of Monte Carlo instances to use to estimate the underlying
 #'   distributions; since we are estimating central tendencies, 128 is usually sufficient,
 #'   but larger numbers may be .
@@ -47,6 +48,7 @@
 methods::setGeneric(
   name = "step_aldex",
   def = function(rec,
+                 max_significance = 0.05,
                  mc.samples = 128,
                  denom = "all",
                  id = rand_id("aldex")) {
@@ -59,39 +61,31 @@ methods::setGeneric(
 methods::setMethod(
   f = "step_aldex",
   signature = c(rec = "recipe"),
-  definition = function(rec,
-                        mc.samples,
-                        denom,
-                        id) {
-
+  definition = function(rec, max_significance, mc.samples, denom, id) {
     recipes_pkg_check(required_pkgs_aldex())
-
     add_step(
       rec,
       step_aldex_new(
+        max_significance = max_significance,
         mc.samples = mc.samples,
         denom = denom,
         id = id
       )
     )
-
   }
 )
 
 #' @rdname step_aldex
 #' @keywords internal
-step_aldex_new <-
-  function(out_cut,
-           mc.samples,
-           denom,
-           id) {
-    step(
-      subclass = "aldex",
-      mc.samples = mc.samples,
-      denom = denom,
-      id = id
-    )
-  }
+step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, id) {
+  step(
+    subclass = "aldex",
+    max_significance = max_significance,
+    mc.samples = mc.samples,
+    denom = denom,
+    id = id
+  )
+}
 
 #' @noRd
 #' @keywords internal
@@ -99,7 +93,7 @@ required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 
 #' @rdname step_aldex
 #' @export
-run_aldex <- function(rec, mc.samples, denom) {
+run_aldex <- function(rec, max_significance, mc.samples, denom) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -133,7 +127,8 @@ run_aldex <- function(rec, mc.samples, denom) {
           ) %>%
             dplyr::mutate(comparison = stringr::str_c(comparison, collapse = "-"), var = var) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id")
+            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+            dplyr::filter(.data$we.eBH < max_significance)
         })
     })
 }

@@ -23,6 +23,7 @@
 #' @param fdr_cutoff Integer. Defaults to 0.05. Desired type 1 error rate.
 #' @param fdr Character. Defaults to "fdr". False discovery rate control method, see
 #'   p.adjust for more options.
+#' @param log2FC log2FC cutoff.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -42,8 +43,9 @@ methods::setGeneric(
                  boot = FALSE,
                  B = 1000,
                  filter_discriminant = TRUE,
-                 fdr_cutoff = Inf,
+                 fdr_cutoff = 0.05,
                  fdr = "fdr",
+                 log2FC = 1,
                  id = rand_id("corncob")) {
     standardGeneric("step_corncob")
   }
@@ -66,6 +68,7 @@ methods::setMethod(
                         filter_discriminant,
                         fdr_cutoff,
                         fdr,
+                        log2FC,
                         id) {
 
     recipes_pkg_check(required_pkgs_corncob())
@@ -83,6 +86,7 @@ methods::setMethod(
         filter_discriminant = filter_discriminant,
         fdr_cutoff = fdr_cutoff,
         fdr = fdr,
+        log2FC = log2FC,
         id = id
       ))
   }
@@ -101,6 +105,7 @@ step_corncob_new <- function(phi.formula,
                              filter_discriminant,
                              fdr_cutoff,
                              fdr,
+                             log2FC,
                              id) {
   step(
     subclass = "corncob",
@@ -115,6 +120,7 @@ step_corncob_new <- function(phi.formula,
     filter_discriminant = filter_discriminant,
     fdr_cutoff = fdr_cutoff,
     fdr = fdr,
+    log2FC = log2FC,
     id = id
   )
 }
@@ -126,17 +132,18 @@ required_pkgs_corncob <- function(x, ...) { c("corncob") }
 #' @rdname step_corncob
 #' @export
 run_corncob <- function(rec,
-                         phi.formula,
-                         formula_null,
-                         phi.formula_null,
-                         link,
-                         phi.link,
-                         test,
-                         boot,
-                         B,
-                         filter_discriminant,
-                         fdr_cutoff,
-                         fdr) {
+                        phi.formula,
+                        formula_null,
+                        phi.formula_null,
+                        link,
+                        phi.link,
+                        test,
+                        boot,
+                        B,
+                        filter_discriminant,
+                        fdr_cutoff,
+                        log2FC,
+                        fdr) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -171,7 +178,7 @@ run_corncob <- function(rec,
             boot = boot,
             B = B,
             filter_discriminant = filter_discriminant,
-            fdr_cutoff = fdr_cutoff,
+            fdr_cutoff = Inf,
             fdr = fdr
           )
 
@@ -198,7 +205,10 @@ run_corncob <- function(rec,
               taxa = signif_taxa,
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
-            )
+            ) %>%
+            tidyr::separate(taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
+            dplyr::mutate(taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")) %>%
+            dplyr::filter(.data$padj < fdr_cutoff & abs(log2FC) >= log2FC)
         })
     })
 }

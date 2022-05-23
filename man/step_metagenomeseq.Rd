@@ -13,6 +13,8 @@ step_metagenomeseq(
   useCSSoffset = TRUE,
   control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
   useMixedModel = FALSE,
+  max_significance = 0.05,
+  log2FC = 1,
   id = rand_id("metagenomeseq")
 )
 
@@ -22,12 +24,31 @@ step_metagenomeseq(
   useCSSoffset = TRUE,
   control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
   useMixedModel = FALSE,
+  max_significance = 0.05,
+  log2FC = 1,
   id = rand_id("metagenomeseq")
 )
 
-step_metagenomeseq_new(rec, zeroMod, useCSSoffset, control, useMixedModel, id)
+step_metagenomeseq_new(
+  rec,
+  zeroMod,
+  useCSSoffset,
+  control,
+  useMixedModel,
+  max_significance,
+  log2FC,
+  id
+)
 
-run_metagenomeseq(rec, zeroMod, useCSSoffset, control, useMixedModel)
+run_metagenomeseq(
+  rec,
+  zeroMod,
+  useCSSoffset,
+  control,
+  useMixedModel,
+  max_significance,
+  log2FC
+)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -43,6 +64,10 @@ model or not.}
 
 \item{useMixedModel}{Estimate the correlation between duplicate features or replicates
 using duplicateCorrelation.}
+
+\item{max_significance}{The q-value threshold for significance.}
+
+\item{log2FC}{log2FC cutoff.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

@@ -18,8 +18,9 @@ step_corncob(
   boot = FALSE,
   B = 1000,
   filter_discriminant = TRUE,
-  fdr_cutoff = Inf,
+  fdr_cutoff = 0.05,
   fdr = "fdr",
+  log2FC = 1,
   id = rand_id("corncob")
 )
 
@@ -34,8 +35,9 @@ step_corncob(
   boot = FALSE,
   B = 1000,
   filter_discriminant = TRUE,
-  fdr_cutoff = Inf,
+  fdr_cutoff = 0.05,
   fdr = "fdr",
+  log2FC = 1,
   id = rand_id("corncob")
 )
 
@@ -51,6 +53,7 @@ step_corncob_new(
   filter_discriminant,
   fdr_cutoff,
   fdr,
+  log2FC,
   id
 )
 
@@ -66,6 +69,7 @@ run_corncob(
   B,
   filter_discriminant,
   fdr_cutoff,
+  log2FC,
   fdr
 )
 }
@@ -100,6 +104,8 @@ not be filtered out.}
 
 \item{fdr}{Character. Defaults to "fdr". False discovery rate control method, see
 p.adjust for more options.}
+
+\item{log2FC}{log2FC cutoff.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

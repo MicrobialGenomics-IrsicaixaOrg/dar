@@ -20,6 +20,8 @@ Suggests:
     Biobase,
     corncob,
     DESeq2,
+    furrr,
+    future,
     lefser,
     limma,
     Maaslin2,
@@ -52,12 +54,12 @@ Collate:
     'dar-package.R'
     'data.R'
     'deseq2.R'
+    'filter_taxa.R'
     'lefse.R'
     'maaslin2.R'
     'metagenomeseq.R'
     'misc.R'
     'pkg_check.R'
-    'prune_taxa.R'
     'read_data.R'
     'steps_and_checks.R'
     'subset_taxa.R'

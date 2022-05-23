@@ -8,7 +8,6 @@
 #'
 #' @param rec A recipe object. The step will be added to the sequence of operations for
 #'   this recipe.
-#' @param id A character string that is unique to this step to identify it.
 #' @param zeroMod The zero model, the model to account for the change in the number of
 #'   OTUs observed as a linear effect of the depth of coverage.
 #' @param useCSSoffset Boolean, whether to include the default scaling parameters in the
@@ -16,6 +15,9 @@
 #' @param control The settings for fitZig.
 #' @param useMixedModel Estimate the correlation between duplicate features or replicates
 #'   using duplicateCorrelation.
+#' @param max_significance The q-value threshold for significance.
+#' @param log2FC log2FC cutoff.
+#' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -29,6 +31,8 @@ methods::setGeneric(
                  useCSSoffset = TRUE,
                  control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
                  useMixedModel = FALSE,
+                 max_significance = 0.05,
+                 log2FC = 1,
                  id = rand_id("metagenomeseq")) {
     standardGeneric("step_metagenomeseq")
   }
@@ -39,7 +43,15 @@ methods::setGeneric(
 methods::setMethod(
   f = "step_metagenomeseq",
   signature = c(rec = "recipe"),
-  definition = function(rec, zeroMod, useCSSoffset, control, useMixedModel, id) {
+  definition = function(rec,
+                        zeroMod,
+                        useCSSoffset,
+                        control,
+                        useMixedModel,
+                        max_significance,
+                        log2FC,
+                        id) {
+
     recipes_pkg_check(required_pkgs_metagenomeseq())
     add_step(
       rec,
@@ -48,6 +60,8 @@ methods::setMethod(
         useCSSoffset = useCSSoffset,
         control = control,
         useMixedModel = useMixedModel,
+        max_significance = max_significance,
+        log2FC = log2FC,
         id = id
       )
     )
@@ -56,13 +70,22 @@ methods::setMethod(
 
 #' @rdname step_metagenomeseq
 #' @keywords internal
-step_metagenomeseq_new <- function(rec, zeroMod, useCSSoffset, control, useMixedModel, id) {
+step_metagenomeseq_new <- function(rec,
+                                   zeroMod,
+                                   useCSSoffset,
+                                   control,
+                                   useMixedModel,
+                                   max_significance,
+                                   log2FC,
+                                   id) {
   step(
     subclass = "metagenomeseq",
     zeroMod = zeroMod,
     useCSSoffset = useCSSoffset,
     control = control,
     useMixedModel = useMixedModel,
+    max_significance = max_significance,
+    log2FC = log2FC,
     id = id
   )
 }
@@ -76,7 +99,13 @@ required_pkgs_metagenomeseq <-
 
 #' @rdname step_metagenomeseq
 #' @export
-run_metagenomeseq <- function(rec, zeroMod, useCSSoffset, control, useMixedModel) {
+run_metagenomeseq <- function(rec,
+                              zeroMod,
+                              useCSSoffset,
+                              control,
+                              useMixedModel,
+                              max_significance,
+                              log2FC) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -115,7 +144,8 @@ run_metagenomeseq <- function(rec, zeroMod, useCSSoffset, control, useMixedModel
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::rename(pvalue = P.Value, padj = adj.P.Val) %>%
-            dplyr::mutate(comparison = stringr::str_replace_all(.x, " - ", "_"), var = var)
+            dplyr::mutate(comparison = stringr::str_replace_all(.x, " - ", "_"), var = var) %>%
+            dplyr::filter(abs(.data$logFC) >= log2FC & .data$padj < max_significance)
         })
     })
 }

@@ -24,7 +24,9 @@
 #' @param type "apeglm" is the adaptive Student's t prior shrinkage estimator from the
 #'   'apeglm' package; "ashr" is the adaptive shrinkage estimator from the 'ashr' package,
 #'   using a fitted mixture of normals prior - see the Stephens (2016) reference below for
-#'   citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior;
+#'   citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.
+#' @param max_significance The q-value threshold for significance.
+#' @param log2FC log2FC cutoff.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -39,6 +41,8 @@ methods::setGeneric(
                  fitType = "parametric",
                  betaPrior = FALSE,
                  type = "ashr",
+                 max_significance = 0.05,
+                 log2FC = 1,
                  id = rand_id("deseq")) {
     standardGeneric("step_deseq")
   }
@@ -49,8 +53,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "step_deseq",
   signature = c(rec = "recipe"),
-  definition = function(rec, test, fitType, betaPrior, type, id) {
-
+  definition = function(rec, test, fitType, betaPrior, type, max_significance, log2FC, id) {
     if (type == "ashr") {
       recipes_pkg_check(required_pkgs_deseq()[-3])
     } else {
@@ -64,6 +67,8 @@ methods::setMethod(
         fitType = fitType,
         betaPrior = betaPrior,
         type = type,
+        max_significance = max_significance,
+        log2FC = log2FC,
         id = id
       )
     )
@@ -72,13 +77,16 @@ methods::setMethod(
 
 #' @rdname step_deseq
 #' @keywords internal
-step_deseq_new <- function(rec, test, fitType, betaPrior, type, id) {
+step_deseq_new <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, id) {
+
   step(
     subclass = "deseq",
     test = test,
     fitType = fitType,
     betaPrior = betaPrior,
     type = type,
+    max_significance = max_significance,
+    log2FC = log2FC,
     id = id
   )
 }
@@ -89,7 +97,7 @@ required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ash
 
 #' @rdname step_deseq
 #' @export
-run_deseq <- function(rec, test, fitType, betaPrior, type) {
+run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -133,7 +141,8 @@ run_deseq <- function(rec, test, fitType, betaPrior, type) {
           ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::mutate(comparison = stringr::str_c(x, "_vs_", y), var = !!var)
+            dplyr::mutate(comparison = stringr::str_c(x, "_vs_", y), var = !!var) %>%
+            dplyr::filter(abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance)
         })
     })
 }

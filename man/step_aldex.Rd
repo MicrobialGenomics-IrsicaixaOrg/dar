@@ -7,17 +7,31 @@
 \alias{run_aldex}
 \title{ALDEx2 analysis}
 \usage{
-step_aldex(rec, mc.samples = 128, denom = "all", id = rand_id("aldex"))
+step_aldex(
+  rec,
+  max_significance = 0.05,
+  mc.samples = 128,
+  denom = "all",
+  id = rand_id("aldex")
+)
 
-\S4method{step_aldex}{recipe}(rec, mc.samples = 128, denom = "all", id = rand_id("aldex"))
+\S4method{step_aldex}{recipe}(
+  rec,
+  max_significance = 0.05,
+  mc.samples = 128,
+  denom = "all",
+  id = rand_id("aldex")
+)
 
-step_aldex_new(out_cut, mc.samples, denom, id)
+step_aldex_new(out_cut, max_significance, mc.samples, denom, id)
 
-run_aldex(rec, mc.samples, denom)
+run_aldex(rec, max_significance, mc.samples, denom)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
 this recipe.}
+
+\item{max_significance}{Benjamini-Hochberg corrected P value of Welch’s t test cutoff.}
 
 \item{mc.samples}{The number of Monte Carlo instances to use to estimate the underlying
 distributions; since we are estimating central tendencies, 128 is usually sufficient,

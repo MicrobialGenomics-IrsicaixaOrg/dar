@@ -38,7 +38,7 @@ methods::setGeneric(
                  normalization = "TSS",
                  transform = "LOG",
                  analysis_method = "LM",
-                 max_significance = 0.25,
+                 max_significance = 0.05,
                  random_effects = NULL,
                  correction = "BH",
                  standardize = TRUE,

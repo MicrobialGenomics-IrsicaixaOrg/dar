@@ -156,7 +156,8 @@ run_ancom <- function(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alp
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
             ) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id")
+            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+            dplyr::filter(.data$detected_0.7 == TRUE)
         })
     })
 }
