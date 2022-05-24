@@ -6,6 +6,9 @@
 \usage{
 prep(rec, parallel = TRUE, workers = 8)
 }
+\arguments{
+\item{workers}{}
+}
 \description{
 For a recipe with at least one preprocessing operation, estimate the required
 parameters from a training set that can be later applied to other data

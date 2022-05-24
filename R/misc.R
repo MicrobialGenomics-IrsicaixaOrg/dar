@@ -68,3 +68,94 @@ step_to_expr <- function(step) {
   glue::glue("rec %>% dar::run_{method}({params})")
 }
 
+
+#' Title
+#'
+#' @param rec
+#' @param steps
+#'
+#' @return
+#' @export
+#'
+#' @examples
+find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
+  intersection_df(rec, steps) %>%
+    tibble::as_tibble() %>%
+    tidyr::pivot_longer(cols = -1) %>%
+    dplyr::filter(value == 1) %>%
+    dplyr::group_by(taxa_id) %>%
+    dplyr::summarise(
+      step_ids = purrr::map_chr(name, ~ .x) %>% stringr::str_c(collapse = ", "),
+      sum_methods = sum(value)
+    ) %>%
+    dplyr::right_join(tax_table(rec), ., by = "taxa_id")
+}
+
+#' Title
+#'
+#' @param rec
+#' @param steps
+#' @param ordered_by
+#'
+#' @return
+#' @export
+#'
+#' @examples
+intersection_plt <- function(rec,
+                             steps = steps_ids(rec, "da"),
+                             ordered_by = c("freq", "degree")) {
+  UpSetR::upset(
+    data = intersection_df(rec, steps),
+    nsets = length(rec@results),
+    sets.bar.color = "#56B4E9",
+    order.by = ordered_by
+  )
+}
+
+#' Title
+#'
+#' @param rec
+#' @param type
+#'
+#' @return
+#' @export
+#'
+#' @examples
+steps_ids <- function(rec, type = "all") {
+  if (!type %in% c("all", "da", "prepro")) {
+    rlang::abort(c(x = "asdf"))
+  }
+
+  out <- purrr::map_chr(rec@steps, ~ .x[["id"]])
+  switch(
+    type,
+    "all" = out,
+    "da" = purrr::discard(out, stringr::str_detect(out, "subset|filter")),
+    "prepro" = purrr::keep(out, stringr::str_detect(out, "subset|filter"))
+  )
+}
+
+#' Title
+#'
+#' @param rec
+#' @param steps
+#'
+#' @return
+#' @export
+#'
+#' @examples
+intersection_df <- function(rec, steps = steps_ids(rec, "da")) {
+  names(rec@results) %>%
+    purrr::keep(. %in% steps) %>%
+    purrr::set_names() %>%
+    purrr::map_dfc( ~ {
+      taxa <- rec@results[[.x]][[1]][["taxa_id"]]
+      rownames(rec@phyloseq@otu_table) %>%
+        tibble::tibble(taxa_id = .) %>%
+        dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
+        dplyr::select(!!.x)
+    }) %>%
+    dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
+    as.data.frame()
+}
+

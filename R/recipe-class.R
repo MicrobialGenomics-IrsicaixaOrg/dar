@@ -254,6 +254,8 @@ required_pkgs_backe <- function(x, ...) {  c("furrr", "future") }
 #' @param rec
 #' @param parallel
 #' @param workers
+#'
+#' @export
 prep <- function(rec, parallel = TRUE, workers = 8) {
 
   ## Phyloseq preporcessing steps
@@ -302,5 +304,9 @@ prep <- function(rec, parallel = TRUE, workers = 8) {
   }
 
   rec@results <- res
+
+  ## Otu Overlaps
+  rec@results$intersections <- find_intersections(rec)
+
   rec
 }
