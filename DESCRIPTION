@@ -42,7 +42,8 @@ Imports:
     rlang (>= 0.4.11),
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    UpSetR
 Depends: 
     R (>= 2.10)
 LazyData: true

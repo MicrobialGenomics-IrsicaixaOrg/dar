@@ -7,10 +7,14 @@
 prep(rec, parallel = TRUE, workers = 8)
 }
 \arguments{
-\item{workers}{}
+\item{rec}{A \code{recipe} object.}
+
+\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution using future
+and furrr packages.}
+
+\item{workers}{Number of workers for palatalization.}
 }
 \description{
-For a recipe with at least one preprocessing operation, estimate the required
-parameters from a training set that can be later applied to other data
-sets.
+For a recipe with at least one preprocessing or DA operation run the steps in a
+convenient order.
 }

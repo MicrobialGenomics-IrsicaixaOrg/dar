@@ -7,6 +7,9 @@
 find_intersections(rec, steps = steps_ids(rec, "da"))
 }
 \arguments{
+\item{rec}{A recipe object. The step will be added to the sequence of operations for
+this recipe.}
+
 \item{steps}{}
 }
 \value{

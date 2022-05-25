@@ -71,7 +71,8 @@ step_to_expr <- function(step) {
 
 #' Title
 #'
-#' @param rec
+#' @param rec A recipe object. The step will be added to the sequence of operations for
+#'   this recipe.
 #' @param steps
 #'
 #' @return
@@ -117,10 +118,8 @@ intersection_plt <- function(rec,
 #' @param rec
 #' @param type
 #'
-#' @return
+#' @return character vector
 #' @export
-#'
-#' @examples
 steps_ids <- function(rec, type = "all") {
   if (!type %in% c("all", "da", "prepro")) {
     rlang::abort(c(x = "asdf"))
@@ -135,15 +134,13 @@ steps_ids <- function(rec, type = "all") {
   )
 }
 
-#' Title
+#' Data frame
 #'
 #' @param rec
 #' @param steps
 #'
-#' @return
+#' @return data.frame
 #' @export
-#'
-#' @examples
 intersection_df <- function(rec, steps = steps_ids(rec, "da")) {
   names(rec@results) %>%
     purrr::keep(. %in% steps) %>%
@@ -157,5 +154,112 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da")) {
     }) %>%
     dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
     as.data.frame()
+}
+
+#' Title
+#' @export
+tick <- function() {
+  crayon::green(cli::symbol$tick)
+}
+
+#' Title
+#' @export
+cross <- function() {
+  crayon::red(cli::symbol$cross)
+}
+
+#' Title
+#' @export
+info <- function() {
+  crayon::blue(cli::symbol$info)
+}
+
+
+
+#' Title
+#' @export
+dot <- function() {
+  crayon::blue(cli::symbol$circle_filled)
+}
+
+#' Title
+#' @export
+export_steps <- function(rec, file_name) {
+  to_cat <-
+    rec@steps %>%
+    purrr::map_chr(~ {
+      params <-
+        names(.x) %>%
+        purrr::map_chr(function(.y) {
+          msg <- .x[[.y]]
+          if (is.character(.x[[.y]]) | is.factor(.x[[.y]])) {
+            msg <- glue:::double_quote(.x[[.y]])
+          }
+          stringr::str_c("   ", glue:::double_quote(.y), ": ", paste0(msg, collapse = ""), ",")
+        }) %>%
+        stringr::str_c(collapse = "\n")
+
+      stringr::str_c("{\n", params, "\n}")
+    })
+
+  cat(to_cat, file = file_name)
+}
+
+#' Title
+#' @export
+import_steps <- function(rec, file) {
+  lines <-
+    readr::read_lines(file) %>%
+    purrr::discard(stringr::str_detect(., "[{]|[}]"))
+
+  id_idx <-  which(stringr::str_detect(lines, "id"))
+  for (i in seq_along(id_idx)) {
+    low_idx <- 1
+    if (i != 1) {
+      low_idx <- id_idx[i - 1] + 1
+    }
+
+    fun_name <-
+      lines[id_idx[i]] %>%
+      stringr::str_remove_all(".*: |,|\\\"") %>%
+      stringr::str_remove_all(".{6}$")
+
+    lines[low_idx:id_idx[i]] %>%
+      purrr::map_chr(function(.x) {
+        params <-
+          .x %>%
+          stringr::str_squish() %>%
+          stringr::str_split(pattern = ": ") %>%
+          unlist()
+
+        param <-
+          params[[1]] %>%
+          stringr::str_remove_all("\\\"")
+
+        value <-
+          params[[2]] %>%
+          stringr::str_squish() %>%
+          stringr::str_remove_all(",$")
+
+        if (stringr::str_detect(value, "%in%")) {
+          value <-
+            stringr::str_remove_all(value, "\\\"") %>%
+            stringr::str_replace_all("\\\\", "\\\"")
+
+          value <- encodeString(value, quote = "'")
+        }
+
+        if (stringr::str_count(value) == 0) {
+          value = expression(NULL)
+        }
+
+        stringr::str_c(param, " = ", paste0(value, sep = ""))
+
+      }) %>% stringr::str_c(collapse = ", ") %>%
+      stringr::str_c("rec <<- step_", fun_name, "(rec, ", ., ")") %>%
+      parse(text = .) %>%
+      eval()
+  }
+  rec
 }
 

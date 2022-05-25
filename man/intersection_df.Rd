@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{intersection_df}
 \alias{intersection_df}
-\title{Title}
+\title{Data frame}
 \usage{
 intersection_df(rec, steps = steps_ids(rec, "da"))
 }
@@ -10,8 +10,8 @@ intersection_df(rec, steps = steps_ids(rec, "da"))
 \item{steps}{}
 }
 \value{
-
+data.frame
 }
 \description{
-Title
+Data frame
 }

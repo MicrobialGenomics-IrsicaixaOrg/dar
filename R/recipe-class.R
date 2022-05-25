@@ -1,4 +1,4 @@
-# CLASS ---------------------------------------------------------------------------
+# CLASS RECIPE -------------------------------------------------------------------------
 
 ## class unions ----
 
@@ -31,15 +31,13 @@ methods::setClass(
     phyloseq = "phyloseq_or_null",
     var_info = "tibble_or_NULL",
     tax_info = "tibble_or_NULL",
-    steps = "list",
-    results = "list"
+    steps = "list"
   ),
   prototype = list(
     phyloseq = NULL,
     var_info = NULL,
     tax_info = NULL,
-    steps = list(),
-    results = list()
+    steps = list()
   )
 )
 
@@ -65,7 +63,7 @@ methods::setClass(
 #'
 #' @aliases recipe
 #' @export
-recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL) {
+recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
 
   var_info <- tibble::tibble(vars = var_info)
   tax_info <- tibble::tibble(tax_lev = tax_info)
@@ -75,8 +73,7 @@ recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL) {
     phyloseq = phyloseq,
     var_info = var_info,
     tax_info = tax_info,
-    steps = list(),
-    results = list()
+    steps = steps
   )
 }
 
@@ -91,8 +88,41 @@ methods::setValidity(
 
 ## printing ----
 
-# methods::setMethod("show", signature = "recipe", definition = function(rec) {})
+methods::setMethod("show", signature = "recipe", definition = function(object) {
+  cat(crayon::blue("dar recipe\n\n"))
+  cat("Inputs:\n\n")
 
+  ## Phyloseq
+  phy <- get_phy(object)
+  ntax <- phyloseq::ntaxa(phy)
+  nsam <- phyloseq::nsamples(phy)
+  cat(glue::glue("     {info()} phyloseq object with {crayon::blue(ntax)} taxa and {crayon::blue(nsam)} samples"), "\n")
+
+  ## Variable
+  var <- get_var(object) %>% dplyr::pull(1)
+  var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
+  if (is.character(var_vals) | is.factor(var_vals)) {
+    levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
+    msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
+  }
+  if (is.numeric(var_vals)) {
+    msg <- glue::glue("class: numeric")
+  }
+  cat(glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"), "\n")
+
+  ## Taxa
+  cat(glue::glue("     {info()} taxonomic level {crayon::blue(get_tax(object))}"), "\n\n")
+
+  ## Steps
+  if (length(object@steps) > 0) {
+    cat("Steps:\n\n")
+    object@steps %>%
+      purrr::walk(~ {
+        class(.x)[[1]]
+        cat(c(glue::glue("     {dot()} {class(.x)[[1]]}()"), "\n"))
+      })
+  }
+})
 
 # METHODS ---------------------------------------------------------------------------
 
@@ -239,28 +269,85 @@ methods::setMethod(
   }
 )
 
+# CLASS PREP_RECIPE -------------------------------------------------------------------------
+
+
+## class def ----
+
+#' prep_recipe-class object
+#'
+#' A prep_recipe is recipe with the results corresponding to the steps defined in the
+#' recipe.
+#'
+#' @slot results Contains the results of all defined analysis in the recipe.
+#'
+#' @name prep_recipe-class
+#' @rdname prep_recipe-class
+#' @exportClass prep_recipe
+methods::setClass(
+  Class = "prep_recipe",
+  slots = c(results = "list"),
+  contains = "recipe"
+)
+
+## constructor ----
+
+#' Create a recipe prep_recipe.
+#'
+#' A prep_recipe is recipe with the results corresponding to the steps defined in the
+#' recipe.
+#'
+#' @param rec A recipe object.
+#' @param results list with the results
+#'
+#' @return An object of class `prep_recipe`.
+#'
+#' @aliases prep_recipe
+#' @export
+prep_recipe <- function(rec, results) {
+  methods::new(
+    Class = "prep_recipe",
+    rec,
+    results = results
+  )
+}
+
+## validity ----
+
+methods::setValidity(
+  Class = "recipe",
+  method = function(object) {
+    TRUE
+  }
+)
+
+## printing ----
+
+methods::setMethod("show", signature = "prep_recipe", definition = function(object) {
+
+})
+
 
 #' @noRd
 #' @keywords internal
-required_pkgs_backe <- function(x, ...) {  c("furrr", "future") }
-
+required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 
 #' Estimate a preprocessing recipe
 #'
-#' For a recipe with at least one preprocessing operation, estimate the required
-#'   parameters from a training set that can be later applied to other data
-#'   sets.
+#' For a recipe with at least one preprocessing or DA operation run the steps in a
+#' convenient order.
 #'
-#' @param rec
-#' @param parallel
-#' @param workers
+#' @param rec A `recipe` object.
+#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution using future
+#'   and furrr packages.
+#' @param workers Number of workers for palatalization.
 #'
 #' @export
 prep <- function(rec, parallel = TRUE, workers = 8) {
 
   ## Phyloseq preporcessing steps
   to_execute <-
-    rec@steps %>%
+    rec@steps[7] %>%
     purrr::map_chr(step_to_expr) %>%
     purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
 
@@ -274,7 +361,7 @@ prep <- function(rec, parallel = TRUE, workers = 8) {
     purrr::discard(stringr::str_detect(., "subset|filter"))
 
   if (parallel) {
-    recipes_pkg_check(required_pkgs_backe())
+    recipes_pkg_check(required_pkgs_prep())
     future::plan(future::multisession, workers = workers)
     on.exit(future::plan(future::sequential))
 
@@ -303,10 +390,24 @@ prep <- function(rec, parallel = TRUE, workers = 8) {
     names(res) <- names
   }
 
-  rec@results <- res
+  prep_recipe(rec, res)
+}
 
-  ## Otu Overlaps
-  rec@results$intersections <- find_intersections(rec)
+#' Extract results from recipe
+#'
+#' For a prep recipe with extracts the results.
+#'
+#' @param rec A `recipe` object.
+#' @param overlap Indicates the minimum proportion of overlap with the different methods
+#'   of an OTU.
+#' @param exclude Method ids to exclude.
+#'
+#' @export
+bake <- function(rec, overlap = 0.8, exclude = NULL) {
+  ids <- steps_ids(rec, type = "da") %>%
+    .[!. %in% exclude]
 
-  rec
+  find_intersections(rec, steps = ids) %>%
+    dplyr::filter((.data$sum_methods / length(.env$ids)) >= overlap) %>%
+    dplyr::select(.data$taxa_id, .data$taxa)
 }

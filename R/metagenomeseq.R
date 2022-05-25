@@ -12,7 +12,6 @@
 #'   OTUs observed as a linear effect of the depth of coverage.
 #' @param useCSSoffset Boolean, whether to include the default scaling parameters in the
 #'   model or not.
-#' @param control The settings for fitZig.
 #' @param useMixedModel Estimate the correlation between duplicate features or replicates
 #'   using duplicateCorrelation.
 #' @param max_significance The q-value threshold for significance.
@@ -29,7 +28,6 @@ methods::setGeneric(
   def = function(rec,
                  zeroMod = NULL,
                  useCSSoffset = TRUE,
-                 control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
                  useMixedModel = FALSE,
                  max_significance = 0.05,
                  log2FC = 1,
@@ -46,7 +44,6 @@ methods::setMethod(
   definition = function(rec,
                         zeroMod,
                         useCSSoffset,
-                        control,
                         useMixedModel,
                         max_significance,
                         log2FC,
@@ -58,7 +55,6 @@ methods::setMethod(
       step_metagenomeseq_new(
         zeroMod = zeroMod,
         useCSSoffset = useCSSoffset,
-        control = control,
         useMixedModel = useMixedModel,
         max_significance = max_significance,
         log2FC = log2FC,
@@ -73,7 +69,6 @@ methods::setMethod(
 step_metagenomeseq_new <- function(rec,
                                    zeroMod,
                                    useCSSoffset,
-                                   control,
                                    useMixedModel,
                                    max_significance,
                                    log2FC,
@@ -82,7 +77,6 @@ step_metagenomeseq_new <- function(rec,
     subclass = "metagenomeseq",
     zeroMod = zeroMod,
     useCSSoffset = useCSSoffset,
-    control = control,
     useMixedModel = useMixedModel,
     max_significance = max_significance,
     log2FC = log2FC,
@@ -102,7 +96,6 @@ required_pkgs_metagenomeseq <-
 run_metagenomeseq <- function(rec,
                               zeroMod,
                               useCSSoffset,
-                              control,
                               useMixedModel,
                               max_significance,
                               log2FC) {

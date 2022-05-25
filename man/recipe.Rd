@@ -4,7 +4,7 @@
 \alias{recipe}
 \title{Create a recipe for preprocessing data}
 \usage{
-recipe(phyloseq = NULL, var_info = NULL, tax_info = NULL)
+recipe(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list())
 }
 \arguments{
 \item{phyloseq}{Phyloseq-class object.}
