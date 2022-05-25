@@ -31,6 +31,8 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    cli,
+    crayon,
     data.table,
     dplyr,
     generics,
@@ -39,6 +41,7 @@ Imports:
     methods,
     phyloseq,
     purrr,
+    readr,
     rlang (>= 0.4.11),
     stringr,
     tibble,

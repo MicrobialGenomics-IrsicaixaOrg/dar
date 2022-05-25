@@ -7,7 +7,9 @@
 intersection_df(rec, steps = steps_ids(rec, "da"))
 }
 \arguments{
-\item{steps}{}
+\item{rec}{asdf}
+
+\item{steps}{asdf}
 }
 \value{
 data.frame

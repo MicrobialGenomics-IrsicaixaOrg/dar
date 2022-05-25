@@ -14,6 +14,8 @@ be used in any context.}
 
 \item{tax_info}{A character string of taxonomic levels that will be used in any
 context.}
+
+\item{steps}{list with steps.}
 }
 \value{
 An object of class \code{recipe} with sub-objects:

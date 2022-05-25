@@ -11,7 +11,6 @@ step_metagenomeseq(
   rec,
   zeroMod = NULL,
   useCSSoffset = TRUE,
-  control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
   useMixedModel = FALSE,
   max_significance = 0.05,
   log2FC = 1,
@@ -22,7 +21,6 @@ step_metagenomeseq(
   rec,
   zeroMod = NULL,
   useCSSoffset = TRUE,
-  control = expression(metagenomeSeq::zigControl(verbose = FALSE)),
   useMixedModel = FALSE,
   max_significance = 0.05,
   log2FC = 1,
@@ -33,7 +31,6 @@ step_metagenomeseq_new(
   rec,
   zeroMod,
   useCSSoffset,
-  control,
   useMixedModel,
   max_significance,
   log2FC,
@@ -44,7 +41,6 @@ run_metagenomeseq(
   rec,
   zeroMod,
   useCSSoffset,
-  control,
   useMixedModel,
   max_significance,
   log2FC
@@ -59,8 +55,6 @@ OTUs observed as a linear effect of the depth of coverage.}
 
 \item{useCSSoffset}{Boolean, whether to include the default scaling parameters in the
 model or not.}
-
-\item{control}{The settings for fitZig.}
 
 \item{useMixedModel}{Estimate the correlation between duplicate features or replicates
 using duplicateCorrelation.}

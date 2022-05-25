@@ -53,6 +53,7 @@ methods::setClass(
 #'   be used in any context.
 #' @param tax_info A character string of taxonomic levels that will be used in any
 #'   context.
+#' @param steps list with steps.
 #'
 #' @return An object of class `recipe` with sub-objects:
 #'   \item{phyloseq}{object of class `phyloseq` with taxa abundance information.}

@@ -73,12 +73,10 @@ step_to_expr <- function(step) {
 #'
 #' @param rec A recipe object. The step will be added to the sequence of operations for
 #'   this recipe.
-#' @param steps
+#' @param steps ad
 #'
 #' @return
 #' @export
-#'
-#' @examples
 find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   intersection_df(rec, steps) %>%
     tibble::as_tibble() %>%
@@ -94,14 +92,12 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 
 #' Title
 #'
-#' @param rec
-#' @param steps
-#' @param ordered_by
+#' @param rec asdf
+#' @param steps asdf
+#' @param ordered_by asdf
 #'
 #' @return
 #' @export
-#'
-#' @examples
 intersection_plt <- function(rec,
                              steps = steps_ids(rec, "da"),
                              ordered_by = c("freq", "degree")) {
@@ -115,8 +111,8 @@ intersection_plt <- function(rec,
 
 #' Title
 #'
-#' @param rec
-#' @param type
+#' @param rec asdf
+#' @param type asdf
 #'
 #' @return character vector
 #' @export
@@ -136,8 +132,8 @@ steps_ids <- function(rec, type = "all") {
 
 #' Data frame
 #'
-#' @param rec
-#' @param steps
+#' @param rec asdf
+#' @param steps asdf
 #'
 #' @return data.frame
 #' @export
@@ -183,6 +179,10 @@ dot <- function() {
 }
 
 #' Title
+#'
+#' @param rec asfd
+#' @param file_name asfd
+#'
 #' @export
 export_steps <- function(rec, file_name) {
   to_cat <-
@@ -206,6 +206,10 @@ export_steps <- function(rec, file_name) {
 }
 
 #' Title
+#'
+#' @param rec asfd
+#' @param file adf
+#'
 #' @export
 import_steps <- function(rec, file) {
   lines <-

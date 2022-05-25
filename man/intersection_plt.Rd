@@ -11,7 +11,11 @@ intersection_plt(
 )
 }
 \arguments{
-\item{ordered_by}{}
+\item{rec}{asdf}
+
+\item{steps}{asdf}
+
+\item{ordered_by}{asdf}
 }
 \value{
 
