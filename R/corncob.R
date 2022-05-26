@@ -71,7 +71,7 @@ methods::setMethod(
                         log2FC,
                         id) {
 
-    recipes_pkg_check(required_pkgs_corncob())
+    recipes_pkg_check(required_pkgs_corncob(), "step_croncob()")
     add_step(
       rec,
       step_corncob_new(

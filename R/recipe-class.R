@@ -386,8 +386,6 @@ methods::setMethod("show", signature = "prep_recipe", definition = function(obje
 #' @keywords internal
 required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 
-
-
 ## prep ----
 
 #' Performs all the steps defined in a recipe
@@ -427,6 +425,16 @@ methods::setMethod(
       ))
     }
 
+    check <- capture.output(required_deps(rec))
+    if (length(check) > 0) {
+      rlang::abort(c(
+        "Not all necessary dependencies are installed.",
+        i = glue::glue(
+          "Use {crayon::bgMagenta('required_deps(rec)')} to see how to install them."
+        )
+      ))
+    }
+
     ## Phyloseq preporcessing steps
     to_execute <-
       rec@steps %>%
@@ -443,7 +451,7 @@ methods::setMethod(
       purrr::discard(stringr::str_detect(., "subset|filter"))
 
     if (parallel) {
-      recipes_pkg_check(required_pkgs_prep())
+      recipes_pkg_check(required_pkgs_prep(), "prep()")
       future::plan(future::multisession, workers = workers)
       on.exit(future::plan(future::sequential))
 

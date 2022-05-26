@@ -62,7 +62,7 @@ methods::setMethod(
   f = "step_aldex",
   signature = c(rec = "recipe"),
   definition = function(rec, max_significance, mc.samples, denom, id) {
-    recipes_pkg_check(required_pkgs_aldex())
+    recipes_pkg_check(required_pkgs_aldex(), "step_aldex()")
     add_step(
       rec,
       step_aldex_new(

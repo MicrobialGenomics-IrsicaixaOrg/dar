@@ -34,7 +34,7 @@ methods::setMethod(
   f = "step_subset_taxa",
   signature = c(rec = "recipe"),
   definition = function(rec, expr, id) {
-    recipes_pkg_check(required_pkgs_subset_taxa())
+    recipes_pkg_check(required_pkgs_subset_taxa(), "step_subset_taxa()")
     add_step(rec, step_subset_taxa_new(expr = expr, id = id))
   }
 )

@@ -49,7 +49,7 @@ methods::setMethod(
                         log2FC,
                         id) {
 
-    recipes_pkg_check(required_pkgs_metagenomeseq())
+    recipes_pkg_check(required_pkgs_metagenomeseq(), "step_matagenomeseq()")
     add_step(
       rec,
       step_metagenomeseq_new(

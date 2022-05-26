@@ -55,9 +55,9 @@ methods::setMethod(
   signature = c(rec = "recipe"),
   definition = function(rec, test, fitType, betaPrior, type, max_significance, log2FC, id) {
     if (type == "ashr") {
-      recipes_pkg_check(required_pkgs_deseq()[-3])
+      recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
     } else {
-      recipes_pkg_check(required_pkgs_deseq()[-2])
+      recipes_pkg_check(required_pkgs_deseq()[-2], "step_deseq()")
     }
 
     add_step(

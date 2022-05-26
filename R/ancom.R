@@ -59,7 +59,7 @@ methods::setMethod(
                         alpha,
                         id) {
 
-    recipes_pkg_check(required_pkgs_ancom())
+    recipes_pkg_check(required_pkgs_ancom(), "step_ancom()")
     add_step(
       rec,
       step_ancom_new(

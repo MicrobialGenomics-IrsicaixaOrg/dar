@@ -55,7 +55,7 @@ methods::setMethod(
                         trim.names,
                         id) {
 
-    recipes_pkg_check(required_pkgs_lefse())
+    recipes_pkg_check(required_pkgs_lefse(), "step_lefser()")
     add_step(
       rec,
       step_lefse_new(
@@ -95,7 +95,7 @@ step_lefse_new <-
 
 #' @noRd
 #' @keywords internal
-required_pkgs_lefse <- function(x, ...) { c("bioc/lefser", "bioc::SummarizedExperiment") }
+required_pkgs_lefse <- function(x, ...) { c("bioc::lefser", "bioc::SummarizedExperiment") }
 
 #' @rdname step_lefse
 #' @export

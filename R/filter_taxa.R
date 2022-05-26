@@ -33,7 +33,7 @@ methods::setMethod(
   f = "step_filter_taxa",
   signature = c(rec = "recipe"),
   definition = function(rec, .f, id) {
-    recipes_pkg_check(required_pkgs_filter_taxa())
+    recipes_pkg_check(required_pkgs_filter_taxa(), "step_filter_taxa()")
     add_step(rec, step_filter_taxa_new(.f = .f, id = id))
   }
 )

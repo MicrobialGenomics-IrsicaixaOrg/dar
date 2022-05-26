@@ -67,7 +67,7 @@ methods::setMethod(
                         reference,
                         id) {
 
-    recipes_pkg_check(required_pkgs_maaslin())
+    recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
     add_step(
       rec,
       step_maaslin_new(
