@@ -2,9 +2,15 @@
 % Please edit documentation in R/recipe-class.R
 \name{bake}
 \alias{bake}
+\alias{bake,prep_recipe-method}
+\alias{bake,recipe-method}
 \title{Extract results from recipe}
 \usage{
 bake(rec, overlap = 0.8, exclude = NULL)
+
+\S4method{bake}{prep_recipe}(rec, overlap = 0.8, exclude = NULL)
+
+\S4method{bake}{recipe}(rec, overlap = 0.8, exclude = NULL)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
@@ -13,6 +19,9 @@ bake(rec, overlap = 0.8, exclude = NULL)
 of an OTU.}
 
 \item{exclude}{Method ids to exclude.}
+}
+\value{
+Tibble containing differentially expressed taxa.
 }
 \description{
 For a prep recipe with extracts the results.

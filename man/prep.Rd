@@ -2,9 +2,12 @@
 % Please edit documentation in R/recipe-class.R
 \name{prep}
 \alias{prep}
-\title{Estimate a preprocessing recipe}
+\alias{prep,recipe-method}
+\title{Performs all the steps defined in a recipe}
 \usage{
-prep(rec, parallel = TRUE, workers = 8)
+prep(rec, parallel = TRUE, workers = 8, force = FALSE)
+
+\S4method{prep}{recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
@@ -13,6 +16,11 @@ prep(rec, parallel = TRUE, workers = 8)
 and furrr packages.}
 
 \item{workers}{Number of workers for palatalization.}
+
+\item{force}{Force the reexecution of all steps. This remove previous results.}
+}
+\value{
+A \code{prep_recipe} object.
 }
 \description{
 For a recipe with at least one preprocessing or DA operation run the steps in a

@@ -129,7 +129,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
   }
 })
 
-# METHODS ---------------------------------------------------------------------------
+# METHODS RECIPE -----------------------------------------------------------------------
 
 ## get_var ----
 
@@ -376,15 +376,21 @@ methods::setMethod("show", signature = "prep_recipe", definition = function(obje
     nrow()
 
   cli::cat_line()
-  cat(glue::glue("     {info()} {n_overlap} taxa present are in all tested methods"), "\n")
+  cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n")
 })
 
+
+# METHODS PREP_RECIPE -----------------------------------------------------------------------
 
 #' @noRd
 #' @keywords internal
 required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 
-#' Estimate a preprocessing recipe
+
+
+## prep ----
+
+#' Performs all the steps defined in a recipe
 #'
 #' For a recipe with at least one preprocessing or DA operation run the steps in a
 #' convenient order.
@@ -393,57 +399,84 @@ required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 #' @param parallel if FALSE, no palatalization. if TRUE, parallel execution using future
 #'   and furrr packages.
 #' @param workers Number of workers for palatalization.
+#' @param force Force the reexecution of all steps. This remove previous results.
 #'
+#' @aliases prep
+#' @return A `prep_recipe` object.
 #' @export
-prep <- function(rec, parallel = TRUE, workers = 8) {
-
-  ## Phyloseq preporcessing steps
-  to_execute <-
-    rec@steps[7] %>%
-    purrr::map_chr(step_to_expr) %>%
-    purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
-
-  for (.x in to_execute) {
-    rec <- eval(parse(text = .x))
+methods::setGeneric(
+  name = "prep",
+  def = function(rec, parallel = TRUE, workers = 8, force = FALSE) {
+    standardGeneric("prep")
   }
+)
 
-  ## DA steps
-  names <-
-    purrr::map_chr(rec@steps, ~ .x[["id"]]) %>%
-    purrr::discard(stringr::str_detect(., "subset|filter"))
+#' @rdname prep
+#' @export
+methods::setMethod(
+  f = "prep",
+  signature = "recipe",
+  definition = function(rec, parallel, workers, force) {
 
-  if (parallel) {
-    recipes_pkg_check(required_pkgs_prep())
-    future::plan(future::multisession, workers = workers)
-    on.exit(future::plan(future::sequential))
+    if ("results" %in% methods::slotNames(rec) & !force) {
+      rlang::abort(c(
+        "The input recipe has already been prep!",
+        i = glue::glue(
+          "To force the rerun of all steps plese run {crayon::bgMagenta('prep(rec, force = T)')}"
+        )
+      ))
+    }
 
-    res <-
+    ## Phyloseq preporcessing steps
+    to_execute <-
       rec@steps %>%
       purrr::map_chr(step_to_expr) %>%
-      purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
-      furrr::future_map(~ {
-        rec <- rec
-        eval(parse(text = .x))
-      }, .options = furrr::furrr_options(seed = TRUE))
+      purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
 
-    names(res) <- names
+    for (.x in to_execute) {
+      rec <- eval(parse(text = .x))
+    }
+
+    ## DA steps
+    names <-
+      purrr::map_chr(rec@steps, ~ .x[["id"]]) %>%
+      purrr::discard(stringr::str_detect(., "subset|filter"))
+
+    if (parallel) {
+      recipes_pkg_check(required_pkgs_prep())
+      future::plan(future::multisession, workers = workers)
+      on.exit(future::plan(future::sequential))
+
+      res <-
+        rec@steps %>%
+        purrr::map_chr(step_to_expr) %>%
+        purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+        furrr::future_map( ~ {
+          rec <- rec
+          eval(parse(text = .x))
+        }, .options = furrr::furrr_options(seed = TRUE))
+
+      names(res) <- names
+    }
+
+    if (!parallel) {
+      res <-
+        rec@steps %>%
+        purrr::map(step_to_expr) %>%
+        purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+        purrr::map( ~ {
+          rec <- rec
+          eval(parse(text = .x))
+        })
+
+      names(res) <- names
+    }
+
+    prep_recipe(rec, res)
   }
+)
 
-  if (!parallel) {
-    res <-
-      rec@steps %>%
-      purrr::map(step_to_expr) %>%
-      purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
-      purrr::map(~ {
-        rec <- rec
-        eval(parse(text = .x))
-      })
-
-    names(res) <- names
-  }
-
-  prep_recipe(rec, res)
-}
+## bake ----
 
 #' Extract results from recipe
 #'
@@ -454,12 +487,36 @@ prep <- function(rec, parallel = TRUE, workers = 8) {
 #'   of an OTU.
 #' @param exclude Method ids to exclude.
 #'
+#' @aliases bake
+#' @return Tibble containing differentially expressed taxa.
 #' @export
-bake <- function(rec, overlap = 0.8, exclude = NULL) {
-  ids <- steps_ids(rec, type = "da") %>%
-    .[!. %in% exclude]
+methods::setGeneric("bake", function(rec, overlap = 0.8, exclude = NULL) standardGeneric("bake"))
 
-  find_intersections(rec, steps = ids) %>%
-    dplyr::filter((.data$sum_methods / length(.env$ids)) >= overlap) %>%
-    dplyr::select(.data$taxa_id, .data$taxa)
-}
+#' @rdname bake
+#' @export
+methods::setMethod(
+  f = "bake",
+  signature = "prep_recipe",
+  definition = function(rec, overlap, exclude) {
+    ids <-
+      steps_ids(rec, type = "da") %>%
+      .[!. %in% exclude]
+
+    find_intersections(rec, steps = ids) %>%
+      dplyr::filter((.data$sum_methods / length(.env$ids)) >= overlap) %>%
+      dplyr::select(.data$taxa_id, .data$taxa)
+  }
+)
+
+#' @rdname bake
+#' @export
+methods::setMethod(
+  f = "bake",
+  signature = "recipe",
+  definition = function(rec, overlap, exclude) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue("Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}")
+    ))
+  }
+)
