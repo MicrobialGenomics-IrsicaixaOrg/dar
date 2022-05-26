@@ -90,7 +90,7 @@ methods::setValidity(
 ## printing ----
 
 methods::setMethod("show", signature = "recipe", definition = function(object) {
-  cat(crayon::blue("dar recipe\n\n"))
+  cli::cat_rule(crayon::blue("DAR Recipe"))
   cat("Inputs:\n\n")
 
   ## Phyloseq
@@ -119,8 +119,12 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     cat("Steps:\n\n")
     object@steps %>%
       purrr::walk(~ {
+        id <-
+          glue::glue("id = {.x[['id']]}") %>%
+          crayon::silver()
+
         class(.x)[[1]]
-        cat(c(glue::glue("     {dot()} {class(.x)[[1]]}()"), "\n"))
+        cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
       })
   }
 })
@@ -287,8 +291,8 @@ methods::setMethod(
 #' @exportClass prep_recipe
 methods::setClass(
   Class = "prep_recipe",
-  slots = c(results = "list"),
-  contains = "recipe"
+  contains = "recipe",
+  slots = c(results = "list")
 )
 
 ## constructor ----
@@ -308,8 +312,8 @@ methods::setClass(
 prep_recipe <- function(rec, results) {
   methods::new(
     Class = "prep_recipe",
-    rec,
-    results = results
+    results = results,
+    rec
   )
 }
 
@@ -325,7 +329,54 @@ methods::setValidity(
 ## printing ----
 
 methods::setMethod("show", signature = "prep_recipe", definition = function(object) {
+  cli::cat_rule(crayon::blue("DAR Results"))
+  cat("Inputs:\n\n")
 
+  ## Phyloseq
+  phy <- get_phy(object)
+  ntax <- phyloseq::ntaxa(phy)
+  nsam <- phyloseq::nsamples(phy)
+  cat(glue::glue("     {info()} phyloseq object with {crayon::blue(ntax)} taxa and {crayon::blue(nsam)} samples"), "\n")
+
+  ## Variable
+  var <- get_var(object) %>% dplyr::pull(1)
+  var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
+  if (is.character(var_vals) | is.factor(var_vals)) {
+    levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
+    msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
+  }
+  if (is.numeric(var_vals)) {
+    msg <- glue::glue("class: numeric")
+  }
+  cat(glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"), "\n")
+
+  ## Taxa
+  cat(glue::glue("     {info()} taxonomic level {crayon::blue(get_tax(object))}"), "\n\n")
+
+
+  ## Results
+  cat("Results:\n\n")
+  names(object@results) %>%
+    purrr::discard(stringr::str_detect(., "step_subster|step_filter")) %>%
+    purrr::walk(~ {
+      n_taxa <-
+        object@results[[.x]][[1]] %>%
+        dplyr::pull(.data$taxa_id) %>%
+        unique() %>%
+        length()
+
+      n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
+
+      cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
+    })
+
+  n_overlap <-
+    find_intersections(object) %>%
+    dplyr::filter(.data$sum_methods == length(steps_ids(object, type = "da"))) %>%
+    nrow()
+
+  cli::cat_line()
+  cat(glue::glue("     {info()} {n_overlap} taxa present are in all tested methods"), "\n")
 })
 
 

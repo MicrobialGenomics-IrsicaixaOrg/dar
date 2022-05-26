@@ -81,11 +81,11 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   intersection_df(rec, steps) %>%
     tibble::as_tibble() %>%
     tidyr::pivot_longer(cols = -1) %>%
-    dplyr::filter(value == 1) %>%
+    dplyr::filter(.data$value == 1) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
-      step_ids = purrr::map_chr(name, ~ .x) %>% stringr::str_c(collapse = ", "),
-      sum_methods = sum(value)
+      step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
+      sum_methods = sum(.data$value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id")
 }

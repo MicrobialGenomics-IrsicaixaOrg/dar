@@ -163,7 +163,7 @@ run_corncob <- function(rec,
             dplyr::pull(sample_id) %>%
             assign("f_samples", ., envir = globalenv())
 
-          f_phy <- phyloseq::subset_samples(phy, sample_id %in% f_samples)
+          f_phy <- phyloseq::subset_samples(phy, sample_id %in% .env$f_samples)
           rm("f_samples", envir = globalenv())
 
           corncob_res <- corncob::differentialTest(
@@ -206,7 +206,7 @@ run_corncob <- function(rec,
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
             ) %>%
-            tidyr::separate(taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
+            tidyr::separate(.data$taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
             dplyr::mutate(taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")) %>%
             dplyr::filter(.data$padj < fdr_cutoff & abs(log2FC) >= log2FC)
         })
