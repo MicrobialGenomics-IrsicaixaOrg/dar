@@ -4,10 +4,12 @@
 \alias{recipes_pkg_check}
 \title{Update packages}
 \usage{
-recipes_pkg_check(pkg = NULL, ...)
+recipes_pkg_check(pkg = NULL, step_name, ...)
 }
 \arguments{
 \item{pkg}{A character string for the package being checked}
+
+\item{step_name}{Name of the step.}
 
 \item{...}{Extra arguments to pass to \code{\link[utils:install.packages]{utils::install.packages()}}}
 }

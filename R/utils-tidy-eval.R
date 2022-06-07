@@ -103,7 +103,7 @@
 #' @keywords internal
 #' @importFrom rlang enquo enquos .data := as_name as_label .env
 #' @aliases enquo enquos .data := as_name as_label .env
-#' @export enquo enquos .data := as_name as_label .env
+#' @export .data := .env
 NULL
 
 utils::globalVariables(c(".", "sample_id", "taxa_id"))

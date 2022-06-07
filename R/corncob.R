@@ -130,7 +130,7 @@ step_corncob_new <- function(phi.formula,
 required_pkgs_corncob <- function(x, ...) { c("corncob") }
 
 #' @rdname step_corncob
-#' @export
+#' @keywords internal
 run_corncob <- function(rec,
                         phi.formula,
                         formula_null,
@@ -163,7 +163,7 @@ run_corncob <- function(rec,
             dplyr::pull(sample_id) %>%
             assign("f_samples", ., envir = globalenv())
 
-          f_phy <- phyloseq::subset_samples(phy, sample_id %in% .env$f_samples)
+          f_phy <- phyloseq::subset_samples(phy, sample_id %in% f_samples)
           rm("f_samples", envir = globalenv())
 
           corncob_res <- corncob::differentialTest(

@@ -6,7 +6,9 @@
 #'  and underscore.
 #'
 #' @export
-#' @keywords internal
+#' @return character vector
+#' @examples
+#' rand_id("step")
 rand_id <- function(prefix = "step", len = 5) {
   candidates <- c(letters, LETTERS, paste(0:9))
   paste(prefix,
@@ -23,6 +25,10 @@ rand_id <- function(prefix = "step", len = 5) {
 #' @param n_cut minimum of observations by level.
 #'
 #' @return tibble or list
+#' @keywords internal
+#' @examples \dontrun{
+#' get_comparisons("RiskGroup2", metaHIV_phy)
+#' }
 get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
   dat <-
     phyloseq::sample_data(phy) %>%
@@ -43,13 +49,29 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
   dat
 }
 
+#' Wrapper to convert phyloseq slots to tibble
+#'
+#' @param df output of `otu_table()`, `sample_data()` or `tax_table()` phyloseq functions.
+#' @param id_name Name of the new column generated from rownames
+#'
+#' @return tibble
+#' @keywords internal
+#' @examples \dontrun{
+#' to_tibble(phyloseq::otu_table(metaHIV_phy))
+#' }
 to_tibble <- function(df, id_name = "otu_id") {
   df %>%
     data.frame() %>%
     tibble::as_tibble(rownames = id_name)
 }
 
-
+#' Extracts parameters from steps and makes a character vector with the expression to
+#' evaluate
+#'
+#' @param step object of class step
+#'
+#' @return character vector
+#' @keywords internal
 step_to_expr <- function(step) {
   params <-
     step %>%
@@ -66,7 +88,7 @@ step_to_expr <- function(step) {
     step["id"] %>%
     stringr::str_remove_all(".{6}$")
 
-  glue::glue("rec %>% dar::run_{method}({params})")
+  glue::glue("rec %>% dar:::run_{method}({params})")
 }
 
 

@@ -96,7 +96,7 @@ step_deseq_new <- function(rec, test, fitType, betaPrior, type, max_significance
 required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ashr") }
 
 #' @rdname step_deseq
-#' @export
+#' @keywords internal
 run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC) {
 
   phy <- get_phy(rec)

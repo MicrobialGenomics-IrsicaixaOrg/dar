@@ -92,9 +92,8 @@ step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, id) {
 required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 
 #' @rdname step_aldex
-#' @export
+#' @keywords internal
 run_aldex <- function(rec, max_significance, mc.samples, denom) {
-
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
@@ -105,7 +104,9 @@ run_aldex <- function(rec, max_significance, mc.samples, denom) {
     purrr::map(function(var) {
       get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
-          sample_data <- dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+          sample_data <-
+            dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+
           otu_table <-
             otu_table(rec) %>%
             dplyr::select(taxa_id, dplyr::all_of(sample_data$sample_id)) %>%

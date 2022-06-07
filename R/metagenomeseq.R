@@ -92,7 +92,7 @@ required_pkgs_metagenomeseq <-
   }
 
 #' @rdname step_metagenomeseq
-#' @export
+#' @keywords internal
 run_metagenomeseq <- function(rec,
                               zeroMod,
                               useCSSoffset,
@@ -150,6 +150,7 @@ run_metagenomeseq <- function(rec,
 #' @param phy Phyloseq object
 #'
 #' @noRd
+#' @keywords internal
 phyloseq_to_MRexperiment <- function(phy) {
   counts <- phyloseq::otu_table(phy) %>% data.frame(check.names = FALSE)
 

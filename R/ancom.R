@@ -102,7 +102,7 @@ step_ancom_new <-
 required_pkgs_ancom <- function(x, ...) { c("xec-cm/ANCOM") }
 
 #' @rdname step_ancom
-#' @export
+#' @keywords internal
 run_ancom <- function(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha) {
 
   phy <- get_phy(rec)

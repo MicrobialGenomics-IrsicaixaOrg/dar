@@ -98,7 +98,7 @@ step_lefse_new <-
 required_pkgs_lefse <- function(x, ...) { c("bioc::lefser", "bioc::SummarizedExperiment") }
 
 #' @rdname step_lefse
-#' @export
+#' @keywords internal
 run_lefse <-
   function(rec,
            kruskal.threshold = kruskal.threshold,

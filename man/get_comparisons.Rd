@@ -21,3 +21,9 @@ tibble or list
 \description{
 Generate all unique contrasts between levels of a categorical variable.
 }
+\examples{
+\dontrun{
+get_comparisons("RiskGroup2", metaHIV_phy)
+}
+}
+\keyword{internal}

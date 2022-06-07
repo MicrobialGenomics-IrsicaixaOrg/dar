@@ -3,7 +3,7 @@
 #' This will check to see if all required packages are installed.
 #'
 #' @param pkg A character string for the package being checked
-#' @step_name Name of the step.
+#' @param step_name Name of the step.
 #' @param ... Extra arguments to pass to [utils::install.packages()]
 #' @return Nothing is returned but a message is printed to the
 #'  console about which packages (if any) should be installed along
@@ -38,15 +38,27 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   invisible()
 }
 
+#' Returns required pakcages for recipe object
+#'
+#' @param rec A `recipe` object
+#'
+#' @aliases required_deps
 #' @export
-required_deps <- function(rec) {
-  rec@steps %>%
-    purrr::walk( ~ {
-      id <- class(.x)[[1]]
-      id_2 <- stringr::str_remove_all(id, "step_")
-      glue::glue("recipes_pkg_check(required_pkgs_{id_2}(), '{id}()')") %>%
-        parse(text = .) %>%
-        eval()
-    })
-}
+methods::setGeneric("required_deps", function(rec) standardGeneric("required_deps"))
 
+#' @rdname required_deps
+#' @export
+methods::setMethod(
+  f = "required_deps",
+  signature = "recipe",
+  definition = function(rec) {
+    rec@steps %>%
+      purrr::walk( ~ {
+        id <- class(.x)[[1]]
+        id_2 <- stringr::str_remove_all(id, "step_")
+        glue::glue("recipes_pkg_check(required_pkgs_{id_2}(), '{id}()')") %>%
+          parse(text = .) %>%
+          eval()
+      })
+  }
+)

@@ -425,7 +425,7 @@ methods::setMethod(
       ))
     }
 
-    check <- capture.output(required_deps(rec))
+    check <- utils::capture.output(required_deps(rec))
     if (length(check) > 0) {
       rlang::abort(c(
         "Not all necessary dependencies are installed.",

@@ -50,7 +50,7 @@ step_subset_taxa_new <- function(expr, id) {
 required_pkgs_subset_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 
 #' @rdname step_subset_taxa
-#' @export
+#' @keywords internal
 run_subset_taxa <- function(rec, expr) {
   rec@phyloseq <-
     glue::glue("phyloseq::subset_taxa(get_phy(rec), {expr})") %>%

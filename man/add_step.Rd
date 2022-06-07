@@ -27,3 +27,4 @@ A updated \code{\link[=recipe]{recipe()}} with the new operation in the last slo
 \code{add_step} adds a step to the last location in the recipe.
 \code{add_check} does the same for checks.
 }
+\keyword{internal}

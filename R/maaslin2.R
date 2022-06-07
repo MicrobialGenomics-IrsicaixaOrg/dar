@@ -125,7 +125,7 @@ step_maaslin_new <- function(rec,
 required_pkgs_maaslin <- function(x, ...) { c("bioc::Maaslin2") }
 
 #' @rdname step_maaslin
-#' @export
+#' @keywords internal
 run_maaslin <- function(rec,
                         min_abundance,
                         min_prevalence,
@@ -199,6 +199,7 @@ run_maaslin <- function(rec,
 #' Maaslin2 without log infromation
 #'
 #' @noRd
+#' @keywords internal
 maaslin2_quietly <- function(input_data,
                              input_metadata,
                              output,

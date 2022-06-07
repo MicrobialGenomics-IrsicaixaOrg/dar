@@ -10,13 +10,13 @@
 #'
 #' @keywords internal
 #' @return An updated step or check with the new class.
-#' @export
+#' @keywords internal
 step <- function(subclass, ..., .prefix = "step_") {
   structure(list(...), class = c(paste0(.prefix, subclass), "step"))
 }
 
 #' @rdname step
-#' @export
+#' @keywords internal
 check <- function(subclass, ..., .prefix = "check_") {
   structure(list(...), class = c(paste0(.prefix, subclass), "check"))
 }
@@ -29,11 +29,11 @@ check <- function(subclass, ..., .prefix = "check_") {
 #' @param rec A [recipe()].
 #' @param object A step or check object.
 #' @return A updated [recipe()] with the new operation in the last slot.
-#' @export
+#' @keywords internal
 methods::setGeneric("add_step", function(rec, object) standardGeneric("add_step"))
 
 #' @rdname add_step
-#' @export
+#' @keywords internal
 methods::setMethod(
   f = "add_step",
   signature = c("recipe"),
@@ -62,11 +62,11 @@ methods::setMethod(
 )
 
 #' @rdname add_step
-#' @export
+#' @keywords internal
 methods::setGeneric("add_check", function(rec, object) standardGeneric("add_check"))
 
 #' @rdname add_step
-#' @export
+#' @keywords internal
 methods::setMethod(
   f = "add_check",
   signature = c("recipe"),
