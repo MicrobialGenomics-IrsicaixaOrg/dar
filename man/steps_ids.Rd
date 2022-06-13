@@ -2,18 +2,18 @@
 % Please edit documentation in R/misc.R
 \name{steps_ids}
 \alias{steps_ids}
-\title{Title}
+\title{Get step_ids from recipe}
 \usage{
 steps_ids(rec, type = "all")
 }
 \arguments{
-\item{rec}{asdf}
+\item{rec}{A recipe object.}
 
-\item{type}{asdf}
+\item{type}{character vector indicating the type class. Options \code{c("all", "da", "prepro")}.}
 }
 \value{
 character vector
 }
 \description{
-Title
+Get step_ids from recipe
 }

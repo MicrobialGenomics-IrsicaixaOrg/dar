@@ -528,3 +528,103 @@ methods::setMethod(
     ))
   }
 )
+
+## Find intersections ----
+
+#' Returns data.frame with OTU intersection between methods
+#'
+#' @param rec A `recipe` object.
+#' @param steps character vector with step_ids to take in account.
+#'
+#' @aliases intersection_df
+#' @return data.frame class object
+#' @export
+methods::setGeneric(
+  name = "intersection_df",
+  def = function(rec, steps = steps_ids(rec, "da")) { standardGeneric("intersection_df") }
+)
+
+#' @rdname intersection_df
+#' @export
+methods::setMethod(
+  f = "intersection_df",
+  signature = "recipe",
+  definition = function(rec, steps) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then retry last command."
+      )
+    ))
+  }
+)
+
+#' @rdname intersection_df
+#' @export
+methods::setMethod(
+  f = "intersection_df",
+  signature = "prep_recipe",
+  definition = function(rec, steps) {
+    names(rec@results) %>%
+      purrr::keep(. %in% steps) %>%
+      purrr::set_names() %>%
+      purrr::map_dfc(~ {
+        taxa <- rec@results[[.x]][[1]][["taxa_id"]]
+        rownames(rec@phyloseq@otu_table) %>%
+          tibble::tibble(taxa_id = .) %>%
+          dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
+          dplyr::select(!!.x)
+      }) %>%
+      dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
+      as.data.frame()
+  }
+)
+
+## Intersection plot----
+
+#' Plot results using UpSet plot
+#'
+#' @param rec A `recipe` object.
+#' @param steps Character vector with step_ids to take in account.
+#' @param ordered_by How the intersections in the matrix should be ordered by. Options
+#'   include frequency (entered as "freq"), degree, or both in any order.
+#'
+#' @aliases intersection_plt
+#' @return UpSet plot
+#' @export
+methods::setGeneric(
+  name = "intersection_plt",
+  def = function(rec, steps = steps_ids(rec, "da"), ordered_by = c("freq", "degree")) {
+    standardGeneric("intersection_plt")
+  }
+)
+
+#' @rdname intersection_plt
+#' @export
+methods::setMethod(
+  f = "intersection_plt",
+  signature = "recipe",
+  definition = function(rec, steps) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('intersection_plt()')}"
+      )
+    ))
+  }
+)
+
+#' @rdname intersection_plt
+#' @export
+methods::setMethod(
+  f = "intersection_plt",
+  signature = "prep_recipe",
+  definition = function(rec, steps, ordered_by) {
+    UpSetR::upset(
+      data = intersection_df(rec, steps),
+      nsets = length(rec@results),
+      sets.bar.color = "#56B4E9",
+      order.by = ordered_by
+    )
+  }
+)

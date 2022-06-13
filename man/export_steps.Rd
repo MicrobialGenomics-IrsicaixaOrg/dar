@@ -2,15 +2,15 @@
 % Please edit documentation in R/misc.R
 \name{export_steps}
 \alias{export_steps}
-\title{Title}
+\title{Export step parameters as json.}
 \usage{
 export_steps(rec, file_name)
 }
 \arguments{
-\item{rec}{asfd}
+\item{rec}{A recipe object.}
 
-\item{file_name}{asfd}
+\item{file_name}{The path and file name of the optout file.}
 }
 \description{
-Title
+Export step parameters as json.
 }

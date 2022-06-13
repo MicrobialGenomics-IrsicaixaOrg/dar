@@ -2,19 +2,18 @@
 % Please edit documentation in R/misc.R
 \name{find_intersections}
 \alias{find_intersections}
-\title{Title}
+\title{Finds common OTU between method results}
 \usage{
 find_intersections(rec, steps = steps_ids(rec, "da"))
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object.}
 
-\item{steps}{ad}
+\item{steps}{character vector with step ids to take in account}
 }
 \value{
-
+tibble
 }
 \description{
-Title
+Finds common OTU between method results
 }

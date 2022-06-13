@@ -2,15 +2,15 @@
 % Please edit documentation in R/misc.R
 \name{import_steps}
 \alias{import_steps}
-\title{Title}
+\title{Import steps from json file}
 \usage{
 import_steps(rec, file)
 }
 \arguments{
-\item{rec}{asfd}
+\item{rec}{A recipe object.}
 
-\item{file}{adf}
+\item{file}{Path to the input file}
 }
 \description{
-Title
+Import steps from json file
 }

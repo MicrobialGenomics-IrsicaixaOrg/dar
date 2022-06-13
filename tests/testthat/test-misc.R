@@ -32,13 +32,12 @@ test_that("to_tibble works", {
   expect_equal(names(test_2)[1], "random_id")
 })
 
-test_that("str_to_expr", {
+test_that("str_to_expr works", {
   rec <-
     recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
     step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
     step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))") %>%
     step_ancom()
-
 
   exprs <-
     rec@steps %>%
@@ -46,5 +45,35 @@ test_that("str_to_expr", {
 
   expect_length(exprs, 3)
   expect_true(all(stringr::str_detect(exprs, "dar:::run_")))
+})
 
+set.seed(123)
+rec <-
+  recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
+  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.5 * length(x))") %>%
+  step_metagenomeseq() %>%
+  step_maaslin()
+
+da_results <- prep(rec, parallel = FALSE)
+
+test_that("find_intersections works", {
+  res_1 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da"))
+  res_2 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-1])
+  res_3 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-2])
+
+  expect_equal(nrow(res_1), 64)
+  expect_equal(nrow(res_2), 64)
+  expect_equal(nrow(res_3), 49)
+  expect_s3_class(res_1, "tbl_df")
+  expect_s3_class(res_2, "tbl_df")
+  expect_s3_class(res_3, "tbl_df")
+})
+
+test_that("steps_ids works", {
+  expect_equal(steps_ids(rec), c("subset_taxa_EoYnc", "filter_taxa_PX1QK", "metagenomeseq_Zn1yz", "maaslin_AeYA4"))
+  expect_equal(steps_ids(rec, "da"), c("metagenomeseq_Zn1yz", "maaslin_AeYA4"))
+  expect_equal(steps_ids(rec, "prepro"), c("subset_taxa_EoYnc", "filter_taxa_PX1QK"))
+  expect_error(steps_ids(rec, "das"))
+  expect_type(steps_ids(rec), "character")
 })

@@ -92,13 +92,12 @@ step_to_expr <- function(step) {
 }
 
 
-#' Title
+#' Finds common OTU between method results
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
-#' @param steps ad
+#' @param rec A recipe object.
+#' @param steps character vector with step ids to take in account
 #'
-#' @return
+#' @return tibble
 #' @export
 find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   intersection_df(rec, steps) %>%
@@ -113,35 +112,22 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
     dplyr::right_join(tax_table(rec), ., by = "taxa_id")
 }
 
-#' Title
+#' Get step_ids from recipe
 #'
-#' @param rec asdf
-#' @param steps asdf
-#' @param ordered_by asdf
-#'
-#' @return
-#' @export
-intersection_plt <- function(rec,
-                             steps = steps_ids(rec, "da"),
-                             ordered_by = c("freq", "degree")) {
-  UpSetR::upset(
-    data = intersection_df(rec, steps),
-    nsets = length(rec@results),
-    sets.bar.color = "#56B4E9",
-    order.by = ordered_by
-  )
-}
-
-#' Title
-#'
-#' @param rec asdf
-#' @param type asdf
+#' @param rec A recipe object.
+#' @param type character vector indicating the type class. Options `c("all", "da",
+#'   "prepro")`.
 #'
 #' @return character vector
 #' @export
 steps_ids <- function(rec, type = "all") {
   if (!type %in% c("all", "da", "prepro")) {
-    rlang::abort(c(x = "asdf"))
+    rlang::abort(c(
+      "Incorrect step type!",
+      i = glue::glue(
+        "Please use one of: {crayon::bgMagenta('c(all, da, prepro)')}"
+      )
+    ))
   }
 
   out <- purrr::map_chr(rec@steps, ~ .x[["id"]])
@@ -153,58 +139,30 @@ steps_ids <- function(rec, type = "all") {
   )
 }
 
-#' Data frame
-#'
-#' @param rec asdf
-#' @param steps asdf
-#'
-#' @return data.frame
-#' @export
-intersection_df <- function(rec, steps = steps_ids(rec, "da")) {
-  names(rec@results) %>%
-    purrr::keep(. %in% steps) %>%
-    purrr::set_names() %>%
-    purrr::map_dfc( ~ {
-      taxa <- rec@results[[.x]][[1]][["taxa_id"]]
-      rownames(rec@phyloseq@otu_table) %>%
-        tibble::tibble(taxa_id = .) %>%
-        dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
-        dplyr::select(!!.x)
-    }) %>%
-    dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
-    as.data.frame()
-}
-
-#' Title
-#' @export
+#' @keywords internal
 tick <- function() {
   crayon::green(cli::symbol$tick)
 }
 
-#' Title
-#' @export
+#' @keywords internal
 cross <- function() {
   crayon::red(cli::symbol$cross)
 }
 
-#' Title
-#' @export
+#' @keywords internal
 info <- function() {
   crayon::blue(cli::symbol$info)
 }
 
-
-
-#' Title
-#' @export
+#' @keywords internal
 dot <- function() {
   crayon::blue(cli::symbol$circle_filled)
 }
 
-#' Title
+#' Export step parameters as json.
 #'
-#' @param rec asfd
-#' @param file_name asfd
+#' @param rec A recipe object.
+#' @param file_name The path and file name of the optout file.
 #'
 #' @export
 export_steps <- function(rec, file_name) {
@@ -228,10 +186,10 @@ export_steps <- function(rec, file_name) {
   cat(to_cat, file = file_name)
 }
 
-#' Title
+#' Import steps from json file
 #'
-#' @param rec asfd
-#' @param file adf
+#' @param rec A recipe object.
+#' @param file Path to the input file
 #'
 #' @export
 import_steps <- function(rec, file) {
