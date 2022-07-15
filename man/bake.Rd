@@ -6,17 +6,17 @@
 \alias{bake,recipe-method}
 \title{Extract results from recipe}
 \usage{
-bake(rec, overlap = 0.8, exclude = NULL)
+bake(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
 
-\S4method{bake}{prep_recipe}(rec, overlap = 0.8, exclude = NULL)
+\S4method{bake}{prep_recipe}(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
 
-\S4method{bake}{recipe}(rec, overlap = 0.8, exclude = NULL)
+\S4method{bake}{recipe}(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
-\item{overlap}{Indicates the minimum proportion of overlap with the different methods
-of an OTU.}
+\item{overlap_count}{Indicates the minimum number of methods in which an OTU must be
+present.}
 
 \item{exclude}{Method ids to exclude.}
 }

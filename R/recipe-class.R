@@ -491,27 +491,36 @@ methods::setMethod(
 #' For a prep recipe with extracts the results.
 #'
 #' @param rec A `recipe` object.
-#' @param overlap Indicates the minimum proportion of overlap with the different methods
-#'   of an OTU.
+#' @param overlap_count Indicates the minimum number of methods in which an OTU must be
+#'   present.
 #' @param exclude Method ids to exclude.
 #'
 #' @aliases bake
 #' @return Tibble containing differentially expressed taxa.
 #' @export
-methods::setGeneric("bake", function(rec, overlap = 0.8, exclude = NULL) standardGeneric("bake"))
+methods::setGeneric(
+  name = "bake",
+  def = function(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL) {
+    standardGeneric("bake")
+  }
+)
 
 #' @rdname bake
 #' @export
 methods::setMethod(
   f = "bake",
   signature = "prep_recipe",
-  definition = function(rec, overlap, exclude) {
-    ids <-
-      steps_ids(rec, type = "da") %>%
-      .[!. %in% exclude]
+  definition = function(rec, overlap_count, exclude) {
+    ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
+    rlang::inform(c(
+      c(i = glue::glue(
+        "Results for {crayon::blue('overlap_count =')} {crayon::blue(overlap_count)} ",
+        "out of a total of {length(ids)}",
+      ), "")
+    ))
 
     find_intersections(rec, steps = ids) %>%
-      dplyr::filter((.data$sum_methods / length(.env$ids)) >= overlap) %>%
+      dplyr::filter(.data$sum_methods >= overlap_count) %>%
       dplyr::select(.data$taxa_id, .data$taxa)
   }
 )
@@ -521,7 +530,7 @@ methods::setMethod(
 methods::setMethod(
   f = "bake",
   signature = "recipe",
-  definition = function(rec, overlap, exclude) {
+  definition = function(rec, overlap_count, exclude) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue("Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}")
