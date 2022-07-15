@@ -109,7 +109,8 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
       step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
       sum_methods = sum(.data$value)
     ) %>%
-    dplyr::right_join(tax_table(rec), ., by = "taxa_id")
+    dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
+    dplyr::arrange(-sum_methods)
 }
 
 #' Get step_ids from recipe
