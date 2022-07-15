@@ -110,7 +110,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
       sum_methods = sum(.data$value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
-    dplyr::arrange(-sum_methods)
+    dplyr::arrange(-.data$sum_methods)
 }
 
 #' Get step_ids from recipe
@@ -165,6 +165,7 @@ dot <- function() {
 #' @param rec A recipe object.
 #' @param file_name The path and file name of the optout file.
 #'
+#' @importFrom glue double_quote
 #' @export
 export_steps <- function(rec, file_name) {
   to_cat <-
@@ -175,9 +176,9 @@ export_steps <- function(rec, file_name) {
         purrr::map_chr(function(.y) {
           msg <- .x[[.y]]
           if (is.character(.x[[.y]]) | is.factor(.x[[.y]])) {
-            msg <- glue:::double_quote(.x[[.y]])
+            msg <- double_quote(.x[[.y]])
           }
-          stringr::str_c("   ", glue:::double_quote(.y), ": ", paste0(msg, collapse = ""), ",")
+          stringr::str_c("   ", double_quote(.y), ": ", paste0(msg, collapse = ""), ",")
         }) %>%
         stringr::str_c(collapse = "\n")
 
