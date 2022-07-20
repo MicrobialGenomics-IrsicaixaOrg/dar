@@ -124,7 +124,8 @@ Other Diff taxa steps:
 \code{\link{step_deseq}()},
 \code{\link{step_lefse}()},
 \code{\link{step_maaslin}()},
-\code{\link{step_metagenomeseq}()}
+\code{\link{step_metagenomeseq}()},
+\code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}
