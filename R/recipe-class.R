@@ -116,15 +116,32 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
 
   ## Steps
   if (length(object@steps) > 0) {
-    cat("Steps:\n\n")
+    cat("Preporcessing steps:\n\n")
     object@steps %>%
       purrr::walk(~ {
-        id <-
-          glue::glue("id = {.x[['id']]}") %>%
-          crayon::silver()
+        if (stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+          id <-
+            glue::glue("id = {.x[['id']]}") %>%
+            crayon::silver()
 
-        class(.x)[[1]]
-        cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+          class(.x)[[1]]
+          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+        }
+      })
+  }
+  cat("\n")
+  if (length(object@steps) > 0) {
+    cat("DA steps:\n\n")
+    object@steps %>%
+      purrr::walk(~ {
+        if (!stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+          id <-
+            glue::glue("id = {.x[['id']]}") %>%
+            crayon::silver()
+
+          class(.x)[[1]]
+          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+        }
       })
   }
 })
