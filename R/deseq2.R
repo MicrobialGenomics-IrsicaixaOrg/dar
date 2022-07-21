@@ -26,7 +26,6 @@
 #'   using a fitted mixture of normals prior - see the Stephens (2016) reference below for
 #'   citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.
 #' @param max_significance The q-value threshold for significance.
-#' @param log2FC log2FC cutoff.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
 #'   the standard R sample function to resample from the abundance values in the otu_table
 #'   component of the first argument, physeq. Often one of the major goals of this
@@ -48,7 +47,6 @@ methods::setGeneric(
                  betaPrior = FALSE,
                  type = "ashr",
                  max_significance = 0.05,
-                 log2FC = 1,
                  rarefy = FALSE,
                  id = rand_id("deseq")) {
     standardGeneric("step_deseq")
@@ -66,7 +64,6 @@ methods::setMethod(
                         betaPrior,
                         type,
                         max_significance,
-                        log2FC,
                         rarefy,
                         id) {
 
@@ -84,7 +81,6 @@ methods::setMethod(
         betaPrior = betaPrior,
         type = type,
         max_significance = max_significance,
-        log2FC = log2FC,
         rarefy = rarefy,
         id = id
       )
@@ -101,7 +97,6 @@ step_deseq_new <-
            betaPrior,
            type,
            max_significance,
-           log2FC,
            rarefy,
            id) {
 
@@ -112,7 +107,6 @@ step_deseq_new <-
     betaPrior = betaPrior,
     type = type,
     max_significance = max_significance,
-    log2FC = log2FC,
     rarefy = rarefy,
     id = id
   )
@@ -124,7 +118,7 @@ required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ash
 
 #' @rdname step_deseq
 #' @keywords internal
-run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy) {
+run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -170,7 +164,7 @@ run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(comparison = stringr::str_c(x, "_vs_", y), var = !!var) %>%
-            dplyr::filter(abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance)
+            dplyr::filter(.data$padj < max_significance)
         })
     })
 }

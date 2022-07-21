@@ -20,7 +20,6 @@ step_corncob(
   filter_discriminant = TRUE,
   fdr_cutoff = 0.05,
   fdr = "fdr",
-  log2FC = 1,
   rarefy = FALSE,
   id = rand_id("corncob")
 )
@@ -38,7 +37,6 @@ step_corncob(
   filter_discriminant = TRUE,
   fdr_cutoff = 0.05,
   fdr = "fdr",
-  log2FC = 1,
   rarefy = FALSE,
   id = rand_id("corncob")
 )
@@ -55,7 +53,6 @@ step_corncob_new(
   filter_discriminant,
   fdr_cutoff,
   fdr,
-  log2FC,
   rarefy,
   id
 )
@@ -72,7 +69,6 @@ run_corncob(
   B,
   filter_discriminant,
   fdr_cutoff,
-  log2FC,
   fdr,
   rarefy
 )
@@ -108,8 +104,6 @@ not be filtered out.}
 
 \item{fdr}{Character. Defaults to "fdr". False discovery rate control method, see
 p.adjust for more options.}
-
-\item{log2FC}{log2FC cutoff.}
 
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
 the standard R sample function to resample from the abundance values in the otu_table

@@ -40,8 +40,8 @@
 methods::setGeneric(
   name = "step_ancom",
   def = function(rec,
-                 out_cut = 0,
-                 zero_cut = 1,
+                 out_cut = 0.05,
+                 zero_cut = 0.9,
                  lib_cut = 0,
                  neg_lb = FALSE,
                  p_adj_method = "BH",

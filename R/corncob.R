@@ -23,7 +23,6 @@
 #' @param fdr_cutoff Integer. Defaults to 0.05. Desired type 1 error rate.
 #' @param fdr Character. Defaults to "fdr". False discovery rate control method, see
 #'   p.adjust for more options.
-#' @param log2FC log2FC cutoff.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
 #'   the standard R sample function to resample from the abundance values in the otu_table
 #'   component of the first argument, physeq. Often one of the major goals of this
@@ -51,7 +50,6 @@ methods::setGeneric(
                  filter_discriminant = TRUE,
                  fdr_cutoff = 0.05,
                  fdr = "fdr",
-                 log2FC = 1,
                  rarefy = FALSE,
                  id = rand_id("corncob")) {
     standardGeneric("step_corncob")
@@ -75,7 +73,6 @@ methods::setMethod(
                         filter_discriminant,
                         fdr_cutoff,
                         fdr,
-                        log2FC,
                         rarefy,
                         id) {
 
@@ -94,7 +91,6 @@ methods::setMethod(
         filter_discriminant = filter_discriminant,
         fdr_cutoff = fdr_cutoff,
         fdr = fdr,
-        log2FC = log2FC,
         rarefy = rarefy,
         id = id
       ))
@@ -114,7 +110,6 @@ step_corncob_new <- function(phi.formula,
                              filter_discriminant,
                              fdr_cutoff,
                              fdr,
-                             log2FC,
                              rarefy,
                              id) {
   step(
@@ -130,7 +125,6 @@ step_corncob_new <- function(phi.formula,
     filter_discriminant = filter_discriminant,
     fdr_cutoff = fdr_cutoff,
     fdr = fdr,
-    log2FC = log2FC,
     rarefy = rarefy,
     id = id
   )
@@ -153,7 +147,6 @@ run_corncob <- function(rec,
                         B,
                         filter_discriminant,
                         fdr_cutoff,
-                        log2FC,
                         fdr,
                         rarefy) {
 
@@ -222,7 +215,7 @@ run_corncob <- function(rec,
             ) %>%
             tidyr::separate(.data$taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
             dplyr::mutate(taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")) %>%
-            dplyr::filter(.data$padj < fdr_cutoff & abs(log2FC) >= log2FC)
+            dplyr::filter(.data$padj < fdr_cutoff)
         })
     })
 }

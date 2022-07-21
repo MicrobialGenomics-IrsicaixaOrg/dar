@@ -14,7 +14,6 @@ step_deseq(
   betaPrior = FALSE,
   type = "ashr",
   max_significance = 0.05,
-  log2FC = 1,
   rarefy = FALSE,
   id = rand_id("deseq")
 )
@@ -26,7 +25,6 @@ step_deseq(
   betaPrior = FALSE,
   type = "ashr",
   max_significance = 0.05,
-  log2FC = 1,
   rarefy = FALSE,
   id = rand_id("deseq")
 )
@@ -38,21 +36,11 @@ step_deseq_new(
   betaPrior,
   type,
   max_significance,
-  log2FC,
   rarefy,
   id
 )
 
-run_deseq(
-  rec,
-  test,
-  fitType,
-  betaPrior,
-  type,
-  max_significance,
-  log2FC,
-  rarefy
-)
+run_deseq(rec, test, fitType, betaPrior, type, max_significance, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -77,8 +65,6 @@ using a fitted mixture of normals prior - see the Stephens (2016) reference belo
 citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.}
 
 \item{max_significance}{The q-value threshold for significance.}
-
-\item{log2FC}{log2FC cutoff.}
 
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
 the standard R sample function to resample from the abundance values in the otu_table

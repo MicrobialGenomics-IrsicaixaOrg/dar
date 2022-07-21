@@ -15,7 +15,6 @@
 #' @param useMixedModel Estimate the correlation between duplicate features or replicates
 #'   using duplicateCorrelation.
 #' @param max_significance The q-value threshold for significance.
-#' @param log2FC log2FC cutoff.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
 #'   the standard R sample function to resample from the abundance values in the otu_table
 #'   component of the first argument, physeq. Often one of the major goals of this
@@ -36,7 +35,6 @@ methods::setGeneric(
                  useCSSoffset = TRUE,
                  useMixedModel = FALSE,
                  max_significance = 0.05,
-                 log2FC = 1,
                  rarefy = FALSE,
                  id = rand_id("metagenomeseq")) {
     standardGeneric("step_metagenomeseq")
@@ -53,7 +51,6 @@ methods::setMethod(
                         useCSSoffset,
                         useMixedModel,
                         max_significance,
-                        log2FC,
                         rarefy,
                         id) {
 
@@ -65,7 +62,6 @@ methods::setMethod(
         useCSSoffset = useCSSoffset,
         useMixedModel = useMixedModel,
         max_significance = max_significance,
-        log2FC = log2FC,
         rarefy = rarefy,
         id = id
       )
@@ -80,7 +76,6 @@ step_metagenomeseq_new <- function(rec,
                                    useCSSoffset,
                                    useMixedModel,
                                    max_significance,
-                                   log2FC,
                                    rarefy,
                                    id) {
   step(
@@ -89,7 +84,6 @@ step_metagenomeseq_new <- function(rec,
     useCSSoffset = useCSSoffset,
     useMixedModel = useMixedModel,
     max_significance = max_significance,
-    log2FC = log2FC,
     rarefy = rarefy,
     id = id
   )
@@ -109,7 +103,6 @@ run_metagenomeseq <- function(rec,
                               useCSSoffset,
                               useMixedModel,
                               max_significance,
-                              log2FC,
                               rarefy) {
 
   phy <- get_phy(rec)
@@ -129,6 +122,9 @@ run_metagenomeseq <- function(rec,
         metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.)) %>%
         metagenomeSeq::fitZig(
           mod = model,
+          zeroMod = zeroMod,
+          useCSSoffset = useCSSoffset,
+          useMixedModel = useMixedModel,
           control = metagenomeSeq::zigControl(verbose = FALSE)
         )
 
@@ -151,7 +147,7 @@ run_metagenomeseq <- function(rec,
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::rename(pvalue = P.Value, padj = adj.P.Val) %>%
             dplyr::mutate(comparison = stringr::str_replace_all(.x, " - ", "_"), var = var) %>%
-            dplyr::filter(abs(.data$logFC) >= log2FC & .data$padj < max_significance)
+            dplyr::filter(.data$padj < max_significance)
         })
     })
 }
