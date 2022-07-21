@@ -22,6 +22,12 @@
 #' @param reference The factor to use as a reference for a variable with more than two
 #'   levels provided as a string of 'variable,reference' semi-colon delimited for multiple
 #'   variables.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -43,6 +49,7 @@ methods::setGeneric(
                  correction = "BH",
                  standardize = TRUE,
                  reference = NULL,
+                 rarefy = FALSE,
                  id = rand_id("maaslin")) {
     standardGeneric("step_maaslin")
   }
@@ -65,6 +72,7 @@ methods::setMethod(
                         correction,
                         standardize,
                         reference,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
@@ -82,6 +90,7 @@ methods::setMethod(
         correction = correction,
         standardize = standardize,
         reference = reference,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -102,6 +111,7 @@ step_maaslin_new <- function(rec,
                              correction,
                              standardize,
                              reference,
+                             rarefy,
                              id) {
   step(
     subclass = "maaslin",
@@ -116,6 +126,7 @@ step_maaslin_new <- function(rec,
     correction = correction,
     standardize = standardize,
     reference = reference,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -137,15 +148,17 @@ run_maaslin <- function(rec,
                         random_effects,
                         correction,
                         standardize,
-                        reference) {
+                        reference,
+                        rarefy) {
 
   output <- glue::glue("{tempdir()}/maaslin_output")
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
@@ -216,7 +229,8 @@ maaslin2_quietly <- function(input_data,
                              fixed_effects,
                              correction,
                              standardize,
-                             reference) {
+                             reference,
+                             rarefy) {
   f_quietly <- function(input_data,
                         input_metadata,
                         output,

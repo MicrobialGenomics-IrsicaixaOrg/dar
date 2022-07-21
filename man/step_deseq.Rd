@@ -15,6 +15,7 @@ step_deseq(
   type = "ashr",
   max_significance = 0.05,
   log2FC = 1,
+  rarefy = FALSE,
   id = rand_id("deseq")
 )
 
@@ -26,6 +27,7 @@ step_deseq(
   type = "ashr",
   max_significance = 0.05,
   log2FC = 1,
+  rarefy = FALSE,
   id = rand_id("deseq")
 )
 
@@ -37,10 +39,20 @@ step_deseq_new(
   type,
   max_significance,
   log2FC,
+  rarefy,
   id
 )
 
-run_deseq(rec, test, fitType, betaPrior, type, max_significance, log2FC)
+run_deseq(
+  rec,
+  test,
+  fitType,
+  betaPrior,
+  type,
+  max_significance,
+  log2FC,
+  rarefy
+)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -67,6 +79,13 @@ citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.}
 \item{max_significance}{The q-value threshold for significance.}
 
 \item{log2FC}{log2FC cutoff.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

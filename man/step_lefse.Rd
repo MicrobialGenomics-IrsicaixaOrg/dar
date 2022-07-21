@@ -15,6 +15,7 @@ step_lefse(
   blockCol = NULL,
   assay = 1L,
   trim.names = FALSE,
+  rarefy = TRUE,
   id = rand_id("lefse")
 )
 
@@ -26,6 +27,7 @@ step_lefse(
   blockCol = NULL,
   assay = 1L,
   trim.names = FALSE,
+  rarefy = TRUE,
   id = rand_id("lefse")
 )
 
@@ -36,6 +38,7 @@ step_lefse_new(
   blockCol,
   assay,
   trim.names,
+  rarefy,
   id
 )
 
@@ -46,7 +49,8 @@ run_lefse(
   lda.threshold = lda.threshold,
   blockCol = blockCol,
   assay = assay,
-  trim.names = trim.names
+  trim.names = trim.names,
+  rarefy = rarefy
 )
 }
 \arguments{
@@ -68,6 +72,13 @@ NULL).}
 \item{assay}{The i-th assay matrix in the ‘SummarizedExperiment' (’expr'; default 1).}
 
 \item{trim.names}{If 'TRUE' extracts the most specific taxonomic rank of organism.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

@@ -15,6 +15,7 @@ step_ancom(
   neg_lb = FALSE,
   p_adj_method = "BH",
   alpha = 0.05,
+  rarefy = FALSE,
   id = rand_id("ancom")
 )
 
@@ -26,12 +27,22 @@ step_ancom(
   neg_lb = FALSE,
   p_adj_method = "BH",
   alpha = 0.05,
+  rarefy = FALSE,
   id = rand_id("ancom")
 )
 
-step_ancom_new(out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha, id)
+step_ancom_new(
+  out_cut,
+  zero_cut,
+  lib_cut,
+  neg_lb,
+  p_adj_method,
+  alpha,
+  rarefy,
+  id
+)
 
-run_ancom(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha)
+run_ancom(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -58,6 +69,13 @@ the equation 1 in section 3.2 of ANCOM-II for declaring structural zeros.}
 comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
 \item{alpha}{Level of significance. Default is 0.05.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

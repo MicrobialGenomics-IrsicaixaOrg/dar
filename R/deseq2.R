@@ -27,6 +27,12 @@
 #'   citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.
 #' @param max_significance The q-value threshold for significance.
 #' @param log2FC log2FC cutoff.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -43,6 +49,7 @@ methods::setGeneric(
                  type = "ashr",
                  max_significance = 0.05,
                  log2FC = 1,
+                 rarefy = FALSE,
                  id = rand_id("deseq")) {
     standardGeneric("step_deseq")
   }
@@ -53,7 +60,16 @@ methods::setGeneric(
 methods::setMethod(
   f = "step_deseq",
   signature = c(rec = "recipe"),
-  definition = function(rec, test, fitType, betaPrior, type, max_significance, log2FC, id) {
+  definition = function(rec,
+                        test,
+                        fitType,
+                        betaPrior,
+                        type,
+                        max_significance,
+                        log2FC,
+                        rarefy,
+                        id) {
+
     if (type == "ashr") {
       recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
     } else {
@@ -69,6 +85,7 @@ methods::setMethod(
         type = type,
         max_significance = max_significance,
         log2FC = log2FC,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -77,7 +94,16 @@ methods::setMethod(
 
 #' @rdname step_deseq
 #' @keywords internal
-step_deseq_new <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, id) {
+step_deseq_new <-
+  function(rec,
+           test,
+           fitType,
+           betaPrior,
+           type,
+           max_significance,
+           log2FC,
+           rarefy,
+           id) {
 
   step(
     subclass = "deseq",
@@ -87,6 +113,7 @@ step_deseq_new <- function(rec, test, fitType, betaPrior, type, max_significance
     type = type,
     max_significance = max_significance,
     log2FC = log2FC,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -97,13 +124,14 @@ required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ash
 
 #' @rdname step_deseq
 #' @keywords internal
-run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC) {
+run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
   phy <-  phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {

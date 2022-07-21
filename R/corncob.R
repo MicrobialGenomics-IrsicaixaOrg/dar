@@ -24,6 +24,12 @@
 #' @param fdr Character. Defaults to "fdr". False discovery rate control method, see
 #'   p.adjust for more options.
 #' @param log2FC log2FC cutoff.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -46,6 +52,7 @@ methods::setGeneric(
                  fdr_cutoff = 0.05,
                  fdr = "fdr",
                  log2FC = 1,
+                 rarefy = FALSE,
                  id = rand_id("corncob")) {
     standardGeneric("step_corncob")
   }
@@ -69,6 +76,7 @@ methods::setMethod(
                         fdr_cutoff,
                         fdr,
                         log2FC,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_corncob(), "step_croncob()")
@@ -87,6 +95,7 @@ methods::setMethod(
         fdr_cutoff = fdr_cutoff,
         fdr = fdr,
         log2FC = log2FC,
+        rarefy = rarefy,
         id = id
       ))
   }
@@ -106,6 +115,7 @@ step_corncob_new <- function(phi.formula,
                              fdr_cutoff,
                              fdr,
                              log2FC,
+                             rarefy,
                              id) {
   step(
     subclass = "corncob",
@@ -121,6 +131,7 @@ step_corncob_new <- function(phi.formula,
     fdr_cutoff = fdr_cutoff,
     fdr = fdr,
     log2FC = log2FC,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -143,11 +154,14 @@ run_corncob <- function(rec,
                         filter_discriminant,
                         fdr_cutoff,
                         log2FC,
-                        fdr) {
+                        fdr,
+                        rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
+
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%

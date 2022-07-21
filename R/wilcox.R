@@ -13,6 +13,12 @@
 #' @param p_adj_method Character. Specifying the method to adjust p-values for multiple
 #'   comparisons. Default is “BH” (Benjamini-Hochberg procedure).
 #' @param max_significance The q-value threshold for significance.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -26,6 +32,7 @@ methods::setGeneric(
                  norm_method = "compositional",
                  max_significance = 0.05,
                  p_adj_method = "BH",
+                 rarefy = TRUE,
                  id = rand_id("wilcox")) {
     standardGeneric("step_wilcox")
   }
@@ -40,15 +47,25 @@ methods::setMethod(
                         norm_method,
                         max_significance,
                         p_adj_method,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_wilcox(), "step_wilcox()")
+    if (!rarefy & !contains_rarefaction(rec)) {
+      rlang::inform(c(
+        "!" = glue::glue(
+          "Run wilcox without rarefaction is not recommended ({crayon::blue(paste0('id = ', id))})"
+        )
+      ))
+    }
+
     add_step(
       rec,
       step_wilcox_new(
         norm_method = norm_method,
         max_significance = max_significance,
         p_adj_method = p_adj_method,
+        rarefy, rarefy,
         id = id
       )
     )
@@ -57,16 +74,13 @@ methods::setMethod(
 
 #' @rdname step_wilcox
 #' @keywords internal
-step_wilcox_new <- function(rec,
-                                   norm_method,
-                                   max_significance,
-                                   p_adj_method,
-                                   id) {
+step_wilcox_new <- function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
   step(
     subclass = "wilcox",
     norm_method = norm_method,
     max_significance = max_significance,
     p_adj_method = p_adj_method,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -81,13 +95,13 @@ required_pkgs_wilcox <-
 
 #' @rdname step_wilcox
 #' @keywords internal
-run_wilcox <- function(rec,
-                       norm_method,
-                       max_significance,
-                       p_adj_method) {
+run_wilcox <- function(rec, norm_method, max_significance, p_adj_method, rarefy) {
+
+  phy <- get_phy(rec)
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
 
   prepro_df <-
-    get_phy(rec) %>%
+    phy %>%
     phyloseq::tax_glom(taxrank = get_tax(rec), NArm = FALSE) %>%
     microbiome::transform(transform = norm_method) %>%
     phyloseq::otu_table() %>%

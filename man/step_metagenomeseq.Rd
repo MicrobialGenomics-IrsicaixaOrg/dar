@@ -14,6 +14,7 @@ step_metagenomeseq(
   useMixedModel = FALSE,
   max_significance = 0.05,
   log2FC = 1,
+  rarefy = FALSE,
   id = rand_id("metagenomeseq")
 )
 
@@ -24,6 +25,7 @@ step_metagenomeseq(
   useMixedModel = FALSE,
   max_significance = 0.05,
   log2FC = 1,
+  rarefy = FALSE,
   id = rand_id("metagenomeseq")
 )
 
@@ -34,6 +36,7 @@ step_metagenomeseq_new(
   useMixedModel,
   max_significance,
   log2FC,
+  rarefy,
   id
 )
 
@@ -43,7 +46,8 @@ run_metagenomeseq(
   useCSSoffset,
   useMixedModel,
   max_significance,
-  log2FC
+  log2FC,
+  rarefy
 )
 }
 \arguments{
@@ -62,6 +66,13 @@ using duplicateCorrelation.}
 \item{max_significance}{The q-value threshold for significance.}
 
 \item{log2FC}{log2FC cutoff.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

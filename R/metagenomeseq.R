@@ -16,6 +16,12 @@
 #'   using duplicateCorrelation.
 #' @param max_significance The q-value threshold for significance.
 #' @param log2FC log2FC cutoff.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -31,6 +37,7 @@ methods::setGeneric(
                  useMixedModel = FALSE,
                  max_significance = 0.05,
                  log2FC = 1,
+                 rarefy = FALSE,
                  id = rand_id("metagenomeseq")) {
     standardGeneric("step_metagenomeseq")
   }
@@ -47,6 +54,7 @@ methods::setMethod(
                         useMixedModel,
                         max_significance,
                         log2FC,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_metagenomeseq(), "step_matagenomeseq()")
@@ -58,6 +66,7 @@ methods::setMethod(
         useMixedModel = useMixedModel,
         max_significance = max_significance,
         log2FC = log2FC,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -72,6 +81,7 @@ step_metagenomeseq_new <- function(rec,
                                    useMixedModel,
                                    max_significance,
                                    log2FC,
+                                   rarefy,
                                    id) {
   step(
     subclass = "metagenomeseq",
@@ -80,6 +90,7 @@ step_metagenomeseq_new <- function(rec,
     useMixedModel = useMixedModel,
     max_significance = max_significance,
     log2FC = log2FC,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -98,13 +109,15 @@ run_metagenomeseq <- function(rec,
                               useCSSoffset,
                               useMixedModel,
                               max_significance,
-                              log2FC) {
+                              log2FC,
+                              rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {

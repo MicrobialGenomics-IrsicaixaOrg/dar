@@ -12,6 +12,7 @@ step_aldex(
   max_significance = 0.05,
   mc.samples = 128,
   denom = "all",
+  rarefy = FALSE,
   id = rand_id("aldex")
 )
 
@@ -20,12 +21,13 @@ step_aldex(
   max_significance = 0.05,
   mc.samples = 128,
   denom = "all",
+  rarefy = FALSE,
   id = rand_id("aldex")
 )
 
-step_aldex_new(out_cut, max_significance, mc.samples, denom, id)
+step_aldex_new(out_cut, max_significance, mc.samples, denom, rarefy, id)
 
-run_aldex(rec, max_significance, mc.samples, denom)
+run_aldex(rec, max_significance, mc.samples, denom, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -52,6 +54,13 @@ this could include ribosomal protein genes and and other house-keeping genes. Th
 should be used with caution because the offsets may be different in the original data
 and in the data used by the function because features that are 0 in all samples are
 removed by aldex.clr.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

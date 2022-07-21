@@ -66,6 +66,7 @@ Collate:
     'metagenomeseq.R'
     'misc.R'
     'pkg_check.R'
+    'rarefaction.R'
     'read_data.R'
     'steps_and_checks.R'
     'subset_taxa.R'

@@ -12,6 +12,7 @@ step_wilcox(
   norm_method = "compositional",
   max_significance = 0.05,
   p_adj_method = "BH",
+  rarefy = TRUE,
   id = rand_id("wilcox")
 )
 
@@ -20,12 +21,13 @@ step_wilcox(
   norm_method = "compositional",
   max_significance = 0.05,
   p_adj_method = "BH",
+  rarefy = TRUE,
   id = rand_id("wilcox")
 )
 
-step_wilcox_new(rec, norm_method, max_significance, p_adj_method, id)
+step_wilcox_new(rec, norm_method, max_significance, p_adj_method, rarefy, id)
 
-run_wilcox(rec, norm_method, max_significance, p_adj_method)
+run_wilcox(rec, norm_method, max_significance, p_adj_method, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -39,6 +41,13 @@ or any method from the vegan::decostand function.}
 
 \item{p_adj_method}{Character. Specifying the method to adjust p-values for multiple
 comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }

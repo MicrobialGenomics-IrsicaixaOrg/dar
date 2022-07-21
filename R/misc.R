@@ -135,8 +135,8 @@ steps_ids <- function(rec, type = "all") {
   switch(
     type,
     "all" = out,
-    "da" = purrr::discard(out, stringr::str_detect(out, "subset|filter")),
-    "prepro" = purrr::keep(out, stringr::str_detect(out, "subset|filter"))
+    "da" = purrr::discard(out, stringr::str_detect(out, "subset|filter|rarefaction")),
+    "prepro" = purrr::keep(out, stringr::str_detect(out, "subset|filter|rarefaction"))
   )
 }
 
@@ -249,4 +249,20 @@ import_steps <- function(rec, file) {
   }
   rec
 }
+
+#' Checks if recipe contains a rarefaction step
+#'
+#' @param rec A recipe object. The step will be added to the sequence of operations for
+#'   this recipe.
+#'
+#' @export
+contains_rarefaction <- function(rec) {
+  dar::steps_ids(rec) %>%
+    stringr::str_detect("^rarefaction_") %>%
+    any()
+}
+
+
+
+
 
