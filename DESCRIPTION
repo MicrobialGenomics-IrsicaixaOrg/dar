@@ -26,7 +26,9 @@ Suggests:
     limma,
     Maaslin2,
     metagenomeSeq,
+    microbiome,
     roxygen2,
+    rstatix,
     SummarizedExperiment,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -64,11 +66,13 @@ Collate:
     'metagenomeseq.R'
     'misc.R'
     'pkg_check.R'
+    'rarefaction.R'
     'read_data.R'
     'steps_and_checks.R'
     'subset_taxa.R'
     'utils-pipe.R'
     'utils-tidy-eval.R'
     'utils.R'
+    'wilcox.R'
 Remotes: 
     xec-cm/ANCOM

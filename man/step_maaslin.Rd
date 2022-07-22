@@ -15,11 +15,12 @@ step_maaslin(
   normalization = "TSS",
   transform = "LOG",
   analysis_method = "LM",
-  max_significance = 0.05,
+  max_significance = 0.25,
   random_effects = NULL,
   correction = "BH",
   standardize = TRUE,
   reference = NULL,
+  rarefy = FALSE,
   id = rand_id("maaslin")
 )
 
@@ -31,11 +32,12 @@ step_maaslin(
   normalization = "TSS",
   transform = "LOG",
   analysis_method = "LM",
-  max_significance = 0.05,
+  max_significance = 0.25,
   random_effects = NULL,
   correction = "BH",
   standardize = TRUE,
   reference = NULL,
+  rarefy = FALSE,
   id = rand_id("maaslin")
 )
 
@@ -52,6 +54,7 @@ step_maaslin_new(
   correction,
   standardize,
   reference,
+  rarefy,
   id
 )
 
@@ -67,7 +70,8 @@ run_maaslin(
   random_effects,
   correction,
   standardize,
-  reference
+  reference,
+  rarefy
 )
 }
 \arguments{
@@ -100,6 +104,13 @@ effects.}
 levels provided as a string of 'variable,reference' semi-colon delimited for multiple
 variables.}
 
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+the standard R sample function to resample from the abundance values in the otu_table
+component of the first argument, physeq. Often one of the major goals of this
+procedure is to achieve parity in total number of counts between samples, as an
+alternative to other formal normalization procedures, which is why a single value for
+the sample.size is expected.}
+
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
@@ -118,7 +129,8 @@ Other Diff taxa steps:
 \code{\link{step_corncob}()},
 \code{\link{step_deseq}()},
 \code{\link{step_lefse}()},
-\code{\link{step_metagenomeseq}()}
+\code{\link{step_metagenomeseq}()},
+\code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
 \keyword{internal}

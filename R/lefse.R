@@ -10,7 +10,6 @@
 #'
 #' @param rec A recipe object. The step will be added to the sequence of operations for
 #'   this recipe.
-#' @param id A character string that is unique to this step to identify it.
 #' @param kruskal.threshold numeric(1) The p-value for the Kruskal-Wallis Rank Sum Test
 #'   (default 0.05).
 #' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test when
@@ -21,6 +20,13 @@
 #'   NULL).
 #' @param assay The i-th assay matrix in the ‘SummarizedExperiment' (’expr'; default 1).
 #' @param trim.names If 'TRUE' extracts the most specific taxonomic rank of organism.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
+#' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -36,6 +42,7 @@ methods::setGeneric(
                  blockCol = NULL,
                  assay = 1L,
                  trim.names = FALSE,
+                 rarefy = TRUE,
                  id = rand_id("lefse")) {
     standardGeneric("step_lefse")
   }
@@ -53,9 +60,18 @@ methods::setMethod(
                         blockCol,
                         assay,
                         trim.names,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_lefse(), "step_lefser()")
+    if (!rarefy & !contains_rarefaction(rec)) {
+      rlang::inform(c(
+        "!" = glue::glue(
+          "Run lefse without rarefaction is not recommended ({crayon::blue(paste0('id = ', id))})"
+        )
+      ))
+    }
+
     add_step(
       rec,
       step_lefse_new(
@@ -65,6 +81,7 @@ methods::setMethod(
         blockCol = blockCol,
         assay = assay,
         trim.names = trim.names,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -80,6 +97,7 @@ step_lefse_new <-
            blockCol,
            assay,
            trim.names,
+           rarefy,
            id) {
     step(
       subclass = "lefse",
@@ -89,6 +107,7 @@ step_lefse_new <-
       blockCol = blockCol,
       assay = assay,
       trim.names = trim.names,
+      rarefy = rarefy,
       id = id
     )
   }
@@ -106,9 +125,10 @@ run_lefse <-
            lda.threshold = lda.threshold,
            blockCol = blockCol,
            assay = assay,
-           trim.names = trim.names) {
+           trim.names = trim.names,
+           rarefy = rarefy ) {
 
-  lefse_mat <- prepro_lefse(rec)
+  lefse_mat <- prepro_lefse(rec, rarefy)
   vars <- get_var(rec)
   vars %>%
     purrr::set_names() %>%
@@ -152,9 +172,13 @@ run_lefse <-
 
 #' @noRd
 #' @keywords internal
-prepro_lefse <- function(rec) {
+prepro_lefse <- function(rec, rarefy) {
+
   tax_level <- get_tax(rec)
-  phy <- phyloseq::rarefy_even_depth(get_phy(rec), rngseed = 1234, verbose = FALSE)
+  phy <- get_phy(rec)
+  if (rarefy) {
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
+  }
 
   # Defining iterating tax levels -------------------------------------------
   tax_otp <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")

@@ -24,6 +24,12 @@
 #' @param p_adj_method Character. Specifying the method to adjust p-values for multiple
 #'   comparisons. Default is “BH” (Benjamini-Hochberg procedure).
 #' @param alpha Level of significance. Default is 0.05.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -34,12 +40,13 @@
 methods::setGeneric(
   name = "step_ancom",
   def = function(rec,
-                 out_cut = 0,
-                 zero_cut = 1,
+                 out_cut = 0.05,
+                 zero_cut = 0.9,
                  lib_cut = 0,
                  neg_lb = FALSE,
                  p_adj_method = "BH",
                  alpha = 0.05,
+                 rarefy = FALSE,
                  id = rand_id("ancom")) {
     standardGeneric("step_ancom")
   }
@@ -57,6 +64,7 @@ methods::setMethod(
                         neg_lb,
                         p_adj_method,
                         alpha,
+                        rarefy,
                         id) {
 
     recipes_pkg_check(required_pkgs_ancom(), "step_ancom()")
@@ -69,6 +77,7 @@ methods::setMethod(
         neg_lb = neg_lb,
         p_adj_method = p_adj_method,
         alpha = alpha,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -84,6 +93,7 @@ step_ancom_new <-
            neg_lb,
            p_adj_method,
            alpha,
+           rarefy,
            id) {
     step(
       subclass = "ancom",
@@ -93,6 +103,7 @@ step_ancom_new <-
       neg_lb = neg_lb,
       p_adj_method = p_adj_method,
       alpha = alpha,
+      rarefy = rarefy,
       id = id
     )
   }
@@ -103,13 +114,14 @@ required_pkgs_ancom <- function(x, ...) { c("xec-cm/ANCOM") }
 
 #' @rdname step_ancom
 #' @keywords internal
-run_ancom <- function(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha) {
+run_ancom <- function(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha, rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {

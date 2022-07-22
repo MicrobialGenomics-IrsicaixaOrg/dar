@@ -116,15 +116,32 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
 
   ## Steps
   if (length(object@steps) > 0) {
-    cat("Steps:\n\n")
+    cat("Preporcessing steps:\n\n")
     object@steps %>%
       purrr::walk(~ {
-        id <-
-          glue::glue("id = {.x[['id']]}") %>%
-          crayon::silver()
+        if (stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+          id <-
+            glue::glue("id = {.x[['id']]}") %>%
+            crayon::silver()
 
-        class(.x)[[1]]
-        cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+          class(.x)[[1]]
+          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+        }
+      })
+  }
+  cat("\n")
+  if (length(object@steps) > 0) {
+    cat("DA steps:\n\n")
+    object@steps %>%
+      purrr::walk(~ {
+        if (!stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+          id <-
+            glue::glue("id = {.x[['id']]}") %>%
+            crayon::silver()
+
+          class(.x)[[1]]
+          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+        }
       })
   }
 })
@@ -441,6 +458,12 @@ methods::setMethod(
       purrr::map_chr(step_to_expr) %>%
       purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
 
+    to_execute <-
+      rec@steps %>%
+      purrr::map_chr(step_to_expr) %>%
+      purrr::keep(stringr::str_detect(., "run_rarefaction")) %>%
+      c(to_execute, .)
+
     for (.x in to_execute) {
       rec <- eval(parse(text = .x))
     }
@@ -448,7 +471,7 @@ methods::setMethod(
     ## DA steps
     names <-
       purrr::map_chr(rec@steps, ~ .x[["id"]]) %>%
-      purrr::discard(stringr::str_detect(., "subset|filter"))
+      purrr::discard(stringr::str_detect(., "subset|filter|rarefaction"))
 
     if (parallel) {
       recipes_pkg_check(required_pkgs_prep(), "prep()")
@@ -458,7 +481,7 @@ methods::setMethod(
       res <-
         rec@steps %>%
         purrr::map_chr(step_to_expr) %>%
-        purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+        purrr::discard(stringr::str_detect(., "run_subset|run_filter|run_rarefaction")) %>%
         furrr::future_map( ~ {
           rec <- rec
           eval(parse(text = .x))
@@ -471,7 +494,7 @@ methods::setMethod(
       res <-
         rec@steps %>%
         purrr::map(step_to_expr) %>%
-        purrr::discard(stringr::str_detect(., "run_subset|run_filter")) %>%
+        purrr::discard(stringr::str_detect(., "run_subset|run_filter|run_rarefaction")) %>%
         purrr::map( ~ {
           rec <- rec
           eval(parse(text = .x))

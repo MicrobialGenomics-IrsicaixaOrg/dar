@@ -38,6 +38,12 @@
 #'   should be used with caution because the offsets may be different in the original data
 #'   and in the data used by the function because features that are 0 in all samples are
 #'   removed by aldex.clr.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
+#'   the standard R sample function to resample from the abundance values in the otu_table
+#'   component of the first argument, physeq. Often one of the major goals of this
+#'   procedure is to achieve parity in total number of counts between samples, as an
+#'   alternative to other formal normalization procedures, which is why a single value for
+#'   the sample.size is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -51,6 +57,7 @@ methods::setGeneric(
                  max_significance = 0.05,
                  mc.samples = 128,
                  denom = "all",
+                 rarefy = FALSE,
                  id = rand_id("aldex")) {
     standardGeneric("step_aldex")
   }
@@ -61,7 +68,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "step_aldex",
   signature = c(rec = "recipe"),
-  definition = function(rec, max_significance, mc.samples, denom, id) {
+  definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
     recipes_pkg_check(required_pkgs_aldex(), "step_aldex()")
     add_step(
       rec,
@@ -69,6 +76,7 @@ methods::setMethod(
         max_significance = max_significance,
         mc.samples = mc.samples,
         denom = denom,
+        rarefy = rarefy,
         id = id
       )
     )
@@ -77,12 +85,13 @@ methods::setMethod(
 
 #' @rdname step_aldex
 #' @keywords internal
-step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, id) {
+step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, rarefy, id) {
   step(
     subclass = "aldex",
     max_significance = max_significance,
     mc.samples = mc.samples,
     denom = denom,
+    rarefy = rarefy,
     id = id
   )
 }
@@ -93,10 +102,13 @@ required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 
 #' @rdname step_aldex
 #' @keywords internal
-run_aldex <- function(rec, max_significance, mc.samples, denom) {
+run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
+
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
+
+  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = F)
   vars %>%
