@@ -6,17 +6,20 @@
 \alias{bake,recipe-method}
 \title{Extract results from recipe}
 \usage{
-bake(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
+bake(rec = rec, count_cutoff = NULL, weights = NULL, exclude = NULL)
 
-\S4method{bake}{prep_recipe}(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
+\S4method{bake}{prep_recipe}(rec = rec, count_cutoff = NULL, weights = NULL, exclude = NULL)
 
-\S4method{bake}{recipe}(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL)
+\S4method{bake}{recipe}(rec = rec, count_cutoff = NULL, weights = NULL, exclude = NULL)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
-\item{overlap_count}{Indicates the minimum number of methods in which an OTU must be
-present.}
+\item{count_cutoff}{Indicates the minimum number of methods in which an OTU must be
+present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
+\code{length(steps_ids(rec, "da")) - length(exclude)}}
+
+\item{weights}{Named vector with the ponderation value for each method.}
 
 \item{exclude}{Method ids to exclude.}
 }

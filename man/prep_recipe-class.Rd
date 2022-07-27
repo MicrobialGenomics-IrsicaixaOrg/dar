@@ -12,5 +12,7 @@ recipe.
 
 \describe{
 \item{\code{results}}{Contains the results of all defined analysis in the recipe.}
+
+\item{\code{bakes}}{Contains the executed bakes.}
 }}
 

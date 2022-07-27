@@ -302,6 +302,7 @@ methods::setMethod(
 #' recipe.
 #'
 #' @slot results Contains the results of all defined analysis in the recipe.
+#' @slot bakes Contains the executed bakes.
 #'
 #' @name prep_recipe-class
 #' @rdname prep_recipe-class
@@ -309,7 +310,7 @@ methods::setMethod(
 methods::setClass(
   Class = "prep_recipe",
   contains = "recipe",
-  slots = c(results = "list")
+  slots = c(results = "list", bakes = "list")
 )
 
 ## constructor ----
@@ -321,15 +322,17 @@ methods::setClass(
 #'
 #' @param rec A recipe object.
 #' @param results list with the results
+#' @param bakes list with saved bakes
 #'
 #' @return An object of class `prep_recipe`.
 #'
 #' @aliases prep_recipe
 #' @export
-prep_recipe <- function(rec, results) {
+prep_recipe <- function(rec, results, bakes) {
   methods::new(
     Class = "prep_recipe",
     results = results,
+    bakes = bakes,
     rec
   )
 }
@@ -503,7 +506,7 @@ methods::setMethod(
       names(res) <- names
     }
 
-    prep_recipe(rec, res)
+    prep_recipe(rec, res, list())
   }
 )
 
@@ -514,8 +517,10 @@ methods::setMethod(
 #' For a prep recipe with extracts the results.
 #'
 #' @param rec A `recipe` object.
-#' @param overlap_count Indicates the minimum number of methods in which an OTU must be
-#'   present.
+#' @param count_cutoff Indicates the minimum number of methods in which an OTU must be
+#'   present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
+#'   `length(steps_ids(rec, "da")) - length(exclude)`
+#' @param weights Named vector with the ponderation value for each method.
 #' @param exclude Method ids to exclude.
 #'
 #' @aliases bake
@@ -523,7 +528,10 @@ methods::setMethod(
 #' @export
 methods::setGeneric(
   name = "bake",
-  def = function(rec = rec, overlap_count = length(steps_ids(rec, "da")), exclude = NULL) {
+  def = function(rec = rec,
+                 count_cutoff = NULL,
+                 weights = NULL,
+                 exclude = NULL) {
     standardGeneric("bake")
   }
 )
@@ -533,18 +541,69 @@ methods::setGeneric(
 methods::setMethod(
   f = "bake",
   signature = "prep_recipe",
-  definition = function(rec, overlap_count, exclude) {
-    ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
-    rlang::inform(c(
-      c(i = glue::glue(
-        "Results for {crayon::blue('overlap_count =')} {crayon::blue(overlap_count)} ",
-        "out of a total of {length(ids)}",
-      ), "")
-    ))
+  definition = function(rec, count_cutoff, weights, exclude) {
 
-    find_intersections(rec, steps = ids) %>%
-      dplyr::filter(.data$sum_methods >= overlap_count) %>%
+    ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
+    if (is.null(count_cutoff)) {
+      count_cutoff <- length(steps_ids(rec, "da")) - length(exclude)
+    }
+
+    if (is.null(weights)) {
+      ids %>%
+        purrr::set_names() %>%
+        purrr::map_chr(~ 1) %>%
+        as.numeric()
+
+      weights <- rep(1, length(ids))
+      names(weights) <- ids
+    }
+
+    not_weights <- ids[!ids %in% names(weights)]
+    if (length(not_weights) > 0) {
+      not_weights <- not_weights %>%  stringr::str_c(collapse = ", ")
+      rlang::abort(c(
+        glue::glue("Some non-excluded methods are not present in the weights vector ({crayon::yellow(not_weights)})."),
+        "Please include a value for this/these step/s in the vector of weights.",
+        "Alternatively, explicitly exclude the method/s via the exclude parameter."
+      ))
+    }
+
+    # weighted matrix
+    res <-
+      ids %>%
+      purrr::map2_dfc(seq_along(.), ~ {
+        intersection_df(rec, ids) %>%
+          tibble::as_tibble() %>%
+          dplyr::select(!!.x) %>%
+          dplyr::mutate(!!(.x) := (!!dplyr::sym(.x) * weights[.y]))
+      }) %>%
+      dplyr::bind_cols(intersection_df(rec, ids)[1], .) %>%
+      tidyr::pivot_longer(cols = -1) %>%
+      dplyr::group_by(taxa_id) %>%
+      dplyr::summarise(
+        step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
+        sum_methods = sum(.data$value)
+      ) %>%
+      dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
+      dplyr::arrange(-.data$sum_methods) %>%
+      dplyr::filter(.data$sum_methods >= count_cutoff) %>%
       dplyr::select(.data$taxa_id, .data$taxa)
+
+    not_incl <- NULL
+    if (!is.null(exclude)) {
+      coll <- stringr::str_c(exclude, collapse = ", ")
+      not_incl <- glue::glue("Results from {crayon::blue(coll)} are excluded")
+    }
+
+    rlang::inform(
+      c(
+        i = glue::glue("Bake for {crayon::blue('count_cutoff =')} {crayon::blue(count_cutoff)}"),
+        i = not_incl,
+        ""
+      )
+    )
+
+    res
   }
 )
 
@@ -553,7 +612,7 @@ methods::setMethod(
 methods::setMethod(
   f = "bake",
   signature = "recipe",
-  definition = function(rec, overlap_count, exclude) {
+  definition = function(rec, count_cutoff, weights, exclude) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue("Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}")

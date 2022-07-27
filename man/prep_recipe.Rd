@@ -4,12 +4,14 @@
 \alias{prep_recipe}
 \title{Create a recipe prep_recipe.}
 \usage{
-prep_recipe(rec, results)
+prep_recipe(rec, results, bakes)
 }
 \arguments{
 \item{rec}{A recipe object.}
 
 \item{results}{list with the results}
+
+\item{bakes}{list with saved bakes}
 }
 \value{
 An object of class \code{prep_recipe}.
