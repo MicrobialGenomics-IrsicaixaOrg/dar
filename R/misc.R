@@ -261,8 +261,3 @@ contains_rarefaction <- function(rec) {
     stringr::str_detect("^rarefaction_") %>%
     any()
 }
-
-
-
-
-

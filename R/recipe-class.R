@@ -719,3 +719,79 @@ methods::setMethod(
     )
   }
 )
+
+## Exclusion plot----
+
+#' Plot the number of shared DA OTUs between methods.
+#'
+#' @param rec A `recipe` object.
+#' @param steps Character vector with step_ids to take in account.
+#'
+#' @aliases exclusion_plt
+#' @return ggplot2
+#' @export
+methods::setGeneric(
+  name = "exclusion_plt",
+  def = function(rec, steps = steps_ids(rec, "da")) {
+    standardGeneric("exclusion_plt")
+  }
+)
+
+#' @rdname exclusion_plt
+#' @export
+methods::setMethod(
+  f = "exclusion_plt",
+  signature = "recipe",
+  definition = function(rec, steps) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('exclusion_plt()')}"
+      )
+    ))
+  }
+)
+
+#' @rdname exclusion_plt
+#' @export
+methods::setMethod(
+  f = "exclusion_plt",
+  signature = "prep_recipe",
+  definition = function(rec, steps) {
+    df <-
+      steps_ids(rec, "da") %>%
+      purrr::map_dfr( ~ {
+        df <-
+          intersection_df(rec, steps = steps) %>%
+          tidyr::pivot_longer(cols = -1)
+
+        to_retain <-
+          df %>%
+          dplyr::filter(name == .x & value == 1) %>%
+          dplyr::pull(taxa_id)
+
+        df %>%
+          dplyr::filter(taxa_id %in% to_retain) %>%
+          dplyr::group_by(taxa_id) %>%
+          dplyr::summarise(sum = sum(value)) %>%
+          dplyr::count(sum) %>%
+          dplyr::mutate(method = .x, total = sum(.dat$n))
+      })
+
+    df %>%
+      ggplot2::ggplot(ggplot2::aes(
+        x = stats::reorder(.data$method, .data$total),
+        y = .data$n,
+        fill = factor(sum)
+      )) +
+      ggplot2::geom_bar(stat = "identity", alpha = 0.9) +
+      ggplot2::scale_fill_brewer(palette = "Spectral", direction = -1) +
+      ggplot2::coord_flip() +
+      ggplot2::theme_minimal() +
+      ggplot2::labs(
+        y = "Total number of differentially Abundant OTUs",
+        x = "method identifier",
+        fill = "Shared"
+      )
+  }
+)

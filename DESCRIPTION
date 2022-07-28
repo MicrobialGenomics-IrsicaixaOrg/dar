@@ -38,6 +38,7 @@ Imports:
     data.table,
     dplyr,
     generics,
+    ggplot2,
     glue,
     magrittr,
     methods,
