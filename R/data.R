@@ -8,3 +8,12 @@
 #'
 #' @source s3://fcatala-09142020-eu-west-1/cloud_test/SpeciesQuantification/Kraken2
 "metaHIV_phy"
+
+#' Pastery data for step id generation
+#'
+#' Tibble contain
+#'
+#' @format A tbl_df object with 228 unique pasteries.
+#'
+#' @source https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
+"pastry_df"

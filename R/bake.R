@@ -12,9 +12,9 @@
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
-#' @family bake steps
+#' @family Bake steps
 #' @aliases bake
-#' @return An object of class `recipe`
+#' @return An object of class `prep_recipe`
 #' @export
 methods::setGeneric(
   name = "bake",
