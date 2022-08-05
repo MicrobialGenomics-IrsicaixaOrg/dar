@@ -63,6 +63,35 @@ methods::setMethod(
 
 #' @rdname add_step
 #' @keywords internal
+methods::setMethod(
+  f = "add_step",
+  signature = c("prep_recipe"),
+  definition = function(rec, object) {
+
+    dupl_rec <-
+      rec@bakes %>%
+      purrr::map_lgl(function(.x) {
+        .x["id"] <- NULL
+        object["id"] <- NULL
+        testthat::compare(.x, object)$equal
+      }) %>%
+      any()
+
+    if (dupl_rec) {
+      rlang::inform(c(
+        "!" = "This bake is already defined with the same parameters and will be skipped: ",
+        glue::glue("{crayon::blue(step_to_expr(object) %>% stringr::str_replace('run', 'step'))}")
+      ))
+    } else {
+      rec@bakes[[length(rec@bakes) + 1]] <- object
+    }
+
+    rec
+  }
+)
+
+#' @rdname add_step
+#' @keywords internal
 methods::setGeneric("add_check", function(rec, object) standardGeneric("add_check"))
 
 #' @rdname add_step

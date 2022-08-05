@@ -93,6 +93,24 @@ methods::setMethod(
 )
 
 #' @rdname step_deseq
+#' @export
+methods::setMethod(
+  f = "step_deseq",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        test,
+                        fitType,
+                        betaPrior,
+                        type,
+                        max_significance,
+                        log2FC,
+                        rarefy,
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_deseq
 #' @keywords internal
 step_deseq_new <-
   function(rec,

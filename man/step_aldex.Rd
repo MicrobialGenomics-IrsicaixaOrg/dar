@@ -3,6 +3,7 @@
 \name{step_aldex}
 \alias{step_aldex}
 \alias{step_aldex,recipe-method}
+\alias{step_aldex,prep_recipe-method}
 \alias{step_aldex_new}
 \alias{run_aldex}
 \title{ALDEx2 analysis}
@@ -17,6 +18,15 @@ step_aldex(
 )
 
 \S4method{step_aldex}{recipe}(
+  rec,
+  max_significance = 0.05,
+  mc.samples = 128,
+  denom = "all",
+  rarefy = FALSE,
+  id = rand_id("aldex")
+)
+
+\S4method{step_aldex}{prep_recipe}(
   rec,
   max_significance = 0.05,
   mc.samples = 128,

@@ -3,6 +3,7 @@
 \name{step_metagenomeseq}
 \alias{step_metagenomeseq}
 \alias{step_metagenomeseq,recipe-method}
+\alias{step_metagenomeseq,prep_recipe-method}
 \alias{step_metagenomeseq_new}
 \alias{run_metagenomeseq}
 \title{MetagenomeSeq analysis}
@@ -19,6 +20,17 @@ step_metagenomeseq(
 )
 
 \S4method{step_metagenomeseq}{recipe}(
+  rec,
+  zeroMod = NULL,
+  useCSSoffset = TRUE,
+  useMixedModel = FALSE,
+  max_significance = 0.05,
+  log2FC = 0,
+  rarefy = FALSE,
+  id = rand_id("metagenomeseq")
+)
+
+\S4method{step_metagenomeseq}{prep_recipe}(
   rec,
   zeroMod = NULL,
   useCSSoffset = TRUE,

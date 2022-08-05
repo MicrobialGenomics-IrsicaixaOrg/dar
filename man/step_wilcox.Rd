@@ -3,6 +3,7 @@
 \name{step_wilcox}
 \alias{step_wilcox}
 \alias{step_wilcox,recipe-method}
+\alias{step_wilcox,prep_recipe-method}
 \alias{step_wilcox_new}
 \alias{run_wilcox}
 \title{Wilcox analysis}
@@ -17,6 +18,15 @@ step_wilcox(
 )
 
 \S4method{step_wilcox}{recipe}(
+  rec,
+  norm_method = "compositional",
+  max_significance = 0.05,
+  p_adj_method = "BH",
+  rarefy = TRUE,
+  id = rand_id("wilcox")
+)
+
+\S4method{step_wilcox}{prep_recipe}(
   rec,
   norm_method = "compositional",
   max_significance = 0.05,

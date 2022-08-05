@@ -98,6 +98,29 @@ methods::setMethod(
 )
 
 #' @rdname step_maaslin
+#' @export
+methods::setMethod(
+  f = "step_maaslin",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        min_abundance,
+                        min_prevalence,
+                        min_variance,
+                        normalization,
+                        transform,
+                        analysis_method,
+                        max_significance,
+                        random_effects,
+                        correction,
+                        standardize,
+                        reference,
+                        rarefy,
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_maaslin
 #' @keywords internal
 step_maaslin_new <- function(rec,
                              min_abundance,

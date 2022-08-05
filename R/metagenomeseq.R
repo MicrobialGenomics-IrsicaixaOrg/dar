@@ -74,6 +74,24 @@ methods::setMethod(
 )
 
 #' @rdname step_metagenomeseq
+#' @export
+methods::setMethod(
+  f = "step_metagenomeseq",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        zeroMod,
+                        useCSSoffset,
+                        useMixedModel,
+                        max_significance,
+                        log2FC,
+                        rarefy,
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+
+#' @rdname step_metagenomeseq
 #' @keywords internal
 step_metagenomeseq_new <- function(rec,
                                    zeroMod,

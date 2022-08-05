@@ -73,6 +73,16 @@ methods::setMethod(
 )
 
 #' @rdname step_wilcox
+#' @export
+methods::setMethod(
+  f = "step_wilcox",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_wilcox
 #' @keywords internal
 step_wilcox_new <- function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
   step(
