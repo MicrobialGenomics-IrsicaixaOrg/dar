@@ -4,12 +4,10 @@
 \alias{rand_id}
 \title{Make a random identification field for steps}
 \usage{
-rand_id(prefix = "step", len = 5)
+rand_id(prefix = "step")
 }
 \arguments{
 \item{prefix}{A single character string}
-
-\item{len}{An integer for the number of random characters}
 }
 \value{
 A character string with the prefix and random letters separated by

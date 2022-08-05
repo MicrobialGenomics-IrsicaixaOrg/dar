@@ -1,6 +1,8 @@
+library(dar)
+
 test_that("rand_id works", {
   set.seed(123)
-  expect_equal(rand_id(), "step_EoYnc")
+  expect_equal(rand_id(), "step__Filo")
 })
 
 test_that("get_comparisons works", {
@@ -71,9 +73,11 @@ test_that("find_intersections works", {
 })
 
 test_that("steps_ids works", {
-  expect_equal(steps_ids(rec), c("subset_taxa_EoYnc", "filter_taxa_PX1QK", "metagenomeseq_Zn1yz", "maaslin_AeYA4"))
-  expect_equal(steps_ids(rec, "da"), c("metagenomeseq_Zn1yz", "maaslin_AeYA4"))
-  expect_equal(steps_ids(rec, "prepro"), c("subset_taxa_EoYnc", "filter_taxa_PX1QK"))
+  set.seed(123)
+  expect_equal(steps_ids(rec), c("subset_taxa__Filo", "filter_taxa__Stutenkerl", "metagenomeseq__Rab_cake", "maaslin__Beaver_Tail"))
+  expect_equal(steps_ids(rec, "da"), c("metagenomeseq__Rab_cake", "maaslin__Beaver_Tail"))
+  expect_equal(steps_ids(rec, "prepro"), c("subset_taxa__Filo", "filter_taxa__Stutenkerl"))
   expect_error(steps_ids(rec, "das"))
   expect_type(steps_ids(rec), "character")
 })
+

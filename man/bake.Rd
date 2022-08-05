@@ -51,10 +51,10 @@ present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{prep_recipe}
 }
 \description{
 For a prep recipe with add step to define the result extraction method.
 }
-\concept{bake steps}
+\concept{Bake steps}
 \keyword{internal}

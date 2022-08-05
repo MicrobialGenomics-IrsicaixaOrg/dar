@@ -9,8 +9,8 @@
 #' @examples
 #' rand_id("step")
 rand_id <- function(prefix = "step") {
-  candidate <- sample(x = pastry_db$id, size = 1)
-  paste(prefix, candidate, sep = "_")
+  candidate <- sample(x = pastry_df$id, size = 1)
+  paste(prefix, candidate, sep = "__")
 }
 
 #' Generate all unique contrasts between levels of a categorical variable.
@@ -82,7 +82,7 @@ step_to_expr <- function(step) {
 
   method <-
     step["id"] %>%
-    stringr::str_remove_all(".{6}$")
+    stringr::str_remove_all("__.*")
 
   glue::glue("rec %>% dar:::run_{method}({params})")
 }
