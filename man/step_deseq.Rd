@@ -3,6 +3,7 @@
 \name{step_deseq}
 \alias{step_deseq}
 \alias{step_deseq,recipe-method}
+\alias{step_deseq,prep_recipe-method}
 \alias{step_deseq_new}
 \alias{run_deseq}
 \title{DESeq2 analysis}
@@ -20,6 +21,18 @@ step_deseq(
 )
 
 \S4method{step_deseq}{recipe}(
+  rec,
+  test = "Wald",
+  fitType = "parametric",
+  betaPrior = FALSE,
+  type = "ashr",
+  max_significance = 0.05,
+  log2FC = 0,
+  rarefy = FALSE,
+  id = rand_id("deseq")
+)
+
+\S4method{step_deseq}{prep_recipe}(
   rec,
   test = "Wald",
   fitType = "parametric",

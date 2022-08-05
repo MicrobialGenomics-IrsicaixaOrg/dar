@@ -3,6 +3,7 @@
 \name{step_lefse}
 \alias{step_lefse}
 \alias{step_lefse,recipe-method}
+\alias{step_lefse,prep_recipe-method}
 \alias{step_lefse_new}
 \alias{run_lefse}
 \title{lefse analysis}
@@ -20,6 +21,18 @@ step_lefse(
 )
 
 \S4method{step_lefse}{recipe}(
+  rec,
+  kruskal.threshold = 0.05,
+  wilcox.threshold = 0.05,
+  lda.threshold = 2,
+  blockCol = NULL,
+  assay = 1L,
+  trim.names = FALSE,
+  rarefy = TRUE,
+  id = rand_id("lefse")
+)
+
+\S4method{step_lefse}{prep_recipe}(
   rec,
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,

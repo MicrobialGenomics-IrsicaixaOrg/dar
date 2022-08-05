@@ -3,6 +3,7 @@
 \name{step_maaslin}
 \alias{step_maaslin}
 \alias{step_maaslin,recipe-method}
+\alias{step_maaslin,prep_recipe-method}
 \alias{step_maaslin_new}
 \alias{run_maaslin}
 \title{MaAsLin2 analysis}
@@ -25,6 +26,23 @@ step_maaslin(
 )
 
 \S4method{step_maaslin}{recipe}(
+  rec,
+  min_abundance = 0,
+  min_prevalence = 0.1,
+  min_variance = 0,
+  normalization = "TSS",
+  transform = "LOG",
+  analysis_method = "LM",
+  max_significance = 0.25,
+  random_effects = NULL,
+  correction = "BH",
+  standardize = TRUE,
+  reference = NULL,
+  rarefy = FALSE,
+  id = rand_id("maaslin")
+)
+
+\S4method{step_maaslin}{prep_recipe}(
   rec,
   min_abundance = 0,
   min_prevalence = 0.1,

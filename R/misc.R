@@ -1,7 +1,6 @@
 #' Make a random identification field for steps
 #'
 #' @param prefix A single character string
-#' @param len An integer for the number of random characters
 #' @return A character string with the prefix and random letters separated by
 #'  and underscore.
 #'
@@ -9,12 +8,9 @@
 #' @return character vector
 #' @examples
 #' rand_id("step")
-rand_id <- function(prefix = "step", len = 5) {
-  candidates <- c(letters, LETTERS, paste(0:9))
-  paste(prefix,
-        paste0(sample(candidates, len, replace = TRUE), collapse = ""),
-        sep = "_"
-  )
+rand_id <- function(prefix = "step") {
+  candidate <- sample(x = pastry_db$id, size = 1)
+  paste(prefix, candidate, sep = "_")
 }
 
 #' Generate all unique contrasts between levels of a categorical variable.

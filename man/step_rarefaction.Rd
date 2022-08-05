@@ -3,6 +3,7 @@
 \name{step_rarefaction}
 \alias{step_rarefaction}
 \alias{step_rarefaction,recipe-method}
+\alias{step_rarefaction,prep_recipe-method}
 \alias{step_rarefaction_new}
 \alias{run_rarefaction}
 \title{Resample an OTU table such that all samples have the same library size.}
@@ -10,6 +11,8 @@
 step_rarefaction(rec, id = rand_id("rarefaction"))
 
 \S4method{step_rarefaction}{recipe}(rec, id = rand_id("rarefaction"))
+
+\S4method{step_rarefaction}{prep_recipe}(rec, id = rand_id("rarefaction"))
 
 step_rarefaction_new(id)
 

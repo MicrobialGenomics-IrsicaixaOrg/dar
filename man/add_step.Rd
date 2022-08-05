@@ -3,6 +3,7 @@
 \name{add_step}
 \alias{add_step}
 \alias{add_step,recipe-method}
+\alias{add_step,prep_recipe-method}
 \alias{add_check}
 \alias{add_check,recipe-method}
 \title{Add a New Operation to the Current Recipe}
@@ -10,6 +11,8 @@
 add_step(rec, object)
 
 \S4method{add_step}{recipe}(rec, object)
+
+\S4method{add_step}{prep_recipe}(rec, object)
 
 add_check(rec, object)
 

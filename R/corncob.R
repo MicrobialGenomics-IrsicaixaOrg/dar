@@ -102,6 +102,30 @@ methods::setMethod(
 )
 
 #' @rdname step_corncob
+#' @export
+methods::setMethod(
+  f = "step_corncob",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        phi.formula,
+                        formula_null,
+                        phi.formula_null,
+                        link,
+                        phi.link,
+                        test,
+                        boot,
+                        B,
+                        filter_discriminant,
+                        fdr_cutoff,
+                        fdr,
+                        log2FC,
+                        rarefy,
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_corncob
 #' @keywords internal
 step_corncob_new <- function(phi.formula,
                              formula_null,

@@ -89,6 +89,24 @@ methods::setMethod(
 )
 
 #' @rdname step_lefse
+#' @export
+methods::setMethod(
+  f = "step_lefse",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        kruskal.threshold,
+                        wilcox.threshold,
+                        lda.threshold,
+                        blockCol,
+                        assay,
+                        trim.names,
+                        rarefy,
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_lefse
 #' @keywords internal
 step_lefse_new <-
   function(kruskal.threshold,

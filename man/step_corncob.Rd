@@ -3,6 +3,7 @@
 \name{step_corncob}
 \alias{step_corncob}
 \alias{step_corncob,recipe-method}
+\alias{step_corncob,prep_recipe-method}
 \alias{step_corncob_new}
 \alias{run_corncob}
 \title{corncob analysis}
@@ -26,6 +27,24 @@ step_corncob(
 )
 
 \S4method{step_corncob}{recipe}(
+  rec,
+  phi.formula = stats::formula(~1),
+  formula_null = stats::formula(~1),
+  phi.formula_null = stats::formula(~1),
+  link = "logit",
+  phi.link = "logit",
+  test = "Wald",
+  boot = FALSE,
+  B = 1000,
+  filter_discriminant = TRUE,
+  fdr_cutoff = 0.05,
+  fdr = "fdr",
+  log2FC = 0,
+  rarefy = FALSE,
+  id = rand_id("corncob")
+)
+
+\S4method{step_corncob}{prep_recipe}(
   rec,
   phi.formula = stats::formula(~1),
   formula_null = stats::formula(~1),

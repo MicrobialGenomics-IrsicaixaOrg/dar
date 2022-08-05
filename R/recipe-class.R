@@ -293,7 +293,6 @@ methods::setMethod(
 
 # CLASS PREP_RECIPE -------------------------------------------------------------------------
 
-
 ## class def ----
 
 #' prep_recipe-class object
@@ -510,116 +509,6 @@ methods::setMethod(
   }
 )
 
-## bake ----
-
-#' Extract results from recipe
-#'
-#' For a prep recipe with extracts the results.
-#'
-#' @param rec A `recipe` object.
-#' @param count_cutoff Indicates the minimum number of methods in which an OTU must be
-#'   present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
-#'   `length(steps_ids(rec, "da")) - length(exclude)`
-#' @param weights Named vector with the ponderation value for each method.
-#' @param exclude Method ids to exclude.
-#'
-#' @aliases bake
-#' @return Tibble containing differentially expressed taxa.
-#' @export
-methods::setGeneric(
-  name = "bake",
-  def = function(rec = rec,
-                 count_cutoff = NULL,
-                 weights = NULL,
-                 exclude = NULL) {
-    standardGeneric("bake")
-  }
-)
-
-#' @rdname bake
-#' @export
-methods::setMethod(
-  f = "bake",
-  signature = "prep_recipe",
-  definition = function(rec, count_cutoff, weights, exclude) {
-
-    ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
-    if (is.null(count_cutoff)) {
-      count_cutoff <- length(steps_ids(rec, "da")) - length(exclude)
-    }
-
-    if (is.null(weights)) {
-      ids %>%
-        purrr::set_names() %>%
-        purrr::map_chr(~ 1) %>%
-        as.numeric()
-
-      weights <- rep(1, length(ids))
-      names(weights) <- ids
-    }
-
-    not_weights <- ids[!ids %in% names(weights)]
-    if (length(not_weights) > 0) {
-      not_weights <- not_weights %>%  stringr::str_c(collapse = ", ")
-      rlang::abort(c(
-        glue::glue("Some non-excluded methods are not present in the weights vector ({crayon::yellow(not_weights)})."),
-        "Please include a value for this/these step/s in the vector of weights.",
-        "Alternatively, explicitly exclude the method/s via the exclude parameter."
-      ))
-    }
-
-    # weighted matrix
-    res <-
-      ids %>%
-      purrr::map2_dfc(seq_along(.), ~ {
-        intersection_df(rec, ids) %>%
-          tibble::as_tibble() %>%
-          dplyr::select(!!.x) %>%
-          dplyr::mutate(!!(.x) := (!!dplyr::sym(.x) * weights[.y]))
-      }) %>%
-      dplyr::bind_cols(intersection_df(rec, ids)[1], .) %>%
-      tidyr::pivot_longer(cols = -1) %>%
-      dplyr::group_by(taxa_id) %>%
-      dplyr::summarise(
-        step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
-        sum_methods = sum(.data$value)
-      ) %>%
-      dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
-      dplyr::arrange(-.data$sum_methods) %>%
-      dplyr::filter(.data$sum_methods >= count_cutoff) %>%
-      dplyr::select(.data$taxa_id, .data$taxa)
-
-    not_incl <- NULL
-    if (!is.null(exclude)) {
-      coll <- stringr::str_c(exclude, collapse = ", ")
-      not_incl <- glue::glue("Results from {crayon::blue(coll)} are excluded")
-    }
-
-    rlang::inform(
-      c(
-        i = glue::glue("Bake for {crayon::blue('count_cutoff =')} {crayon::blue(count_cutoff)}"),
-        i = not_incl,
-        ""
-      )
-    )
-
-    res
-  }
-)
-
-#' @rdname bake
-#' @export
-methods::setMethod(
-  f = "bake",
-  signature = "recipe",
-  definition = function(rec, count_cutoff, weights, exclude) {
-    rlang::abort(c(
-      "This function needs a prep recipe!",
-      glue::glue("Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}")
-    ))
-  }
-)
-
 ## Find intersections ----
 
 #' Returns data.frame with OTU intersection between methods
@@ -775,7 +664,7 @@ methods::setMethod(
           dplyr::group_by(taxa_id) %>%
           dplyr::summarise(sum = sum(value)) %>%
           dplyr::count(sum) %>%
-          dplyr::mutate(method = .x, total = sum(.dat$n))
+          dplyr::mutate(method = .x, total = sum(.data$n))
       })
 
     df %>%
@@ -795,3 +684,70 @@ methods::setMethod(
       )
   }
 )
+
+## Cool: Extract results from defined bake ----
+
+#' Extract results from defined bake
+#'
+#' @param rec A `recipe` object.
+#' @param bake Name or index of the bake to extract.
+#'
+#' @aliases cool
+#' @return tbl_df
+#' @export
+methods::setGeneric(
+  name = "cool",
+  def = function(rec, bake = 1) {
+    standardGeneric("cool")
+  }
+)
+
+#' @rdname cool
+#' @export
+methods::setMethod(
+  f = "cool",
+  signature = "recipe",
+  definition = function(rec, bake) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('cool()')}"
+      )
+    ))
+  }
+)
+
+#' @rdname cool
+#' @export
+methods::setMethod(
+  f = "cool",
+  signature = "prep_recipe",
+  definition = function(rec, bake) {
+    all_bakes <- rec@bakes
+    all_names <- all_bakes %>% purrr::map_chr( ~ .x[["id"]])
+
+    if (is.numeric(bake) & length(all_bakes) < bake) {
+      rlang::abort(c(
+        "Bake index is not defined in the prep_recipe!",
+        glue::glue("Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with {crayon::bgMagenta('cool()')}")
+      ))
+    }
+    if (!is.numeric(bake) & !bake %in% all_names) {
+      rlang::abort(c(
+        "Bake name is not defined in the prep_recipe!",
+        glue::glue("Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with {crayon::bgMagenta('cool()')}")
+      ))
+    }
+
+    if (!is.numeric(bake)) { bake <- which(all_names == bake) }
+
+    to_execute <-
+      rec@bakes %>%
+      .[bake] %>%
+      purrr::map_chr(step_to_expr)
+
+    eval(parse(text = to_execute))
+  }
+)
+
+

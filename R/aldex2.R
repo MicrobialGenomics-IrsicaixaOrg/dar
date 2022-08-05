@@ -84,6 +84,16 @@ methods::setMethod(
 )
 
 #' @rdname step_aldex
+#' @export
+methods::setMethod(
+  f = "step_aldex",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+#' @rdname step_aldex
 #' @keywords internal
 step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, rarefy, id) {
   step(

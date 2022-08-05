@@ -46,6 +46,17 @@ methods::setMethod(
 )
 
 #' @rdname step_rarefaction
+#' @export
+methods::setMethod(
+  f = "step_rarefaction",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec, id) {
+    rlang::abort("This function needs a non-prep recipe!")
+  }
+)
+
+
+#' @rdname step_rarefaction
 #' @keywords internal
 step_rarefaction_new <- function(id) {
   step(subclass = "rarefaction", id = id)
