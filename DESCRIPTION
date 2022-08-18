@@ -22,11 +22,13 @@ Suggests:
     DESeq2,
     furrr,
     future,
+    knitr,
     lefser,
     limma,
     Maaslin2,
     metagenomeSeq,
     microbiome,
+    rmarkdown,
     roxygen2,
     rstatix,
     SummarizedExperiment,
@@ -78,3 +80,4 @@ Collate:
     'wilcox.R'
 Remotes: 
     xec-cm/ANCOM
+VignetteBuilder: knitr
