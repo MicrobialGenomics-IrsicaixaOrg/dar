@@ -13,6 +13,7 @@ To learn more about dar, start with the vignettes:
 Useful links:
 \itemize{
   \item \url{https://github.com/MicrobialGenomics-IrsicaixaOrg/dar}
+  \item \url{https://microbialgenomics-irsicaixaorg.github.io/dar/}
   \item Report bugs at \url{https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues}
 }
 

@@ -282,3 +282,39 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
 
   data.table::fread(file_path) %>% tibble::as_tibble()
 }
+
+#' Converts SummarizedExperiment to a Phyloseq object
+#'
+#' @param dataset SummarizedExperiment
+#' @param assay_idx assay index
+#'
+#' @return phyloseq
+#' @export
+SummarizedExperiment2phyloseq <- function(dataset, assay_idx = 1) {
+
+  counts_df <-
+    SummarizedExperiment::assay(dataset, i = assay_idx) %>%
+    tibble::as_tibble(rownames = "otu_id")
+
+  validate_otu(counts_df)
+
+  taxa_df <-
+    SummarizedExperiment::rowData(dataset) %>%
+    tibble::as_tibble(rownames = "otu_id") %>%
+    validate_tax_table()
+
+  metadata_df <-
+    SummarizedExperiment::colData(dataset) %>%
+    tibble::as_tibble(rownames = "sample_id") %>%
+    validate_sample_data()
+
+  phy <-
+    phyloseq::phyloseq(
+      data.frame(counts_df, row.names = 1, check.names = F) %>% phyloseq::otu_table(taxa_are_rows = T),
+      data.frame(taxa_df, row.names = 1) %>% as.matrix() %>%  phyloseq::tax_table(),
+      data.frame(metadata_df, row.names = 1) %>% phyloseq::sample_data()
+    ) %>%
+    validate_phyloseq()
+
+  phy
+}
