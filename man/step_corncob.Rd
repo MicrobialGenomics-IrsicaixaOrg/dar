@@ -4,8 +4,6 @@
 \alias{step_corncob}
 \alias{step_corncob,recipe-method}
 \alias{step_corncob,prep_recipe-method}
-\alias{step_corncob_new}
-\alias{run_corncob}
 \title{corncob analysis}
 \usage{
 step_corncob(
@@ -60,40 +58,6 @@ step_corncob(
   log2FC = 0,
   rarefy = FALSE,
   id = rand_id("corncob")
-)
-
-step_corncob_new(
-  phi.formula,
-  formula_null,
-  phi.formula_null,
-  link,
-  phi.link,
-  test,
-  boot,
-  B,
-  filter_discriminant,
-  fdr_cutoff,
-  fdr,
-  log2FC,
-  rarefy,
-  id
-)
-
-run_corncob(
-  rec,
-  phi.formula,
-  formula_null,
-  phi.formula_null,
-  link,
-  phi.link,
-  test,
-  boot,
-  B,
-  filter_discriminant,
-  fdr_cutoff,
-  fdr,
-  log2FC,
-  rarefy
 )
 }
 \arguments{
@@ -158,4 +122,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

@@ -36,14 +36,9 @@ You can install the development version of dar from [GitHub](https://github.com/
 devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
 ```
 
-``` r
-# install.packages("devtools")
-devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
-```
-
 ## Usage 
 
-```{r }
+```{r}
 library(dar)
 
 ## Define recipe
@@ -54,11 +49,8 @@ rec <-
   step_metagenomeseq() %>%
   step_maaslin()
 
-rec
-
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
-da_results
 
 ## Consensus strategy
 n_methods <- 3
@@ -66,9 +58,7 @@ da_results <- bake(da_results, count_cutoff = n_methods)
 
 # Results
 cool(da_results)
-
 ```
-
 
 ## Contributing
 
@@ -76,7 +66,7 @@ cool(da_results)
 
 - Either way, learn how to create and share a [reprex](https://reprex.tidyverse.org/articles/articles/learn-reprex.html) (a minimal, reproducible example), to clearly communicate about your code.
 
-- **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request)
+- Working on your first Pull Request? You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://kcd.im/pull-request)
 
 ## Code of Conduct
 

@@ -91,7 +91,7 @@ methods::setMethod(
 )
 
 
-#' @rdname step_metagenomeseq
+#' @noRd
 #' @keywords internal
 step_metagenomeseq_new <- function(rec,
                                    zeroMod,
@@ -120,7 +120,7 @@ required_pkgs_metagenomeseq <-
     c("bioc::metagenomeSeq", "bioc::limma", "bioc::Biobase")
   }
 
-#' @rdname step_metagenomeseq
+#' @noRd
 #' @keywords internal
 run_metagenomeseq <- function(rec,
                               zeroMod,

@@ -110,7 +110,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_deseq
+#' @noRd
 #' @keywords internal
 step_deseq_new <-
   function(rec,
@@ -140,7 +140,7 @@ step_deseq_new <-
 #' @keywords internal
 required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ashr") }
 
-#' @rdname step_deseq
+#' @noRd
 #' @keywords internal
 run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy) {
 

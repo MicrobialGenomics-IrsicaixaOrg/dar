@@ -39,11 +39,6 @@ You can install the development version of dar from
 devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
 ```
 
-``` r
-# install.packages("devtools")
-devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
-```
-
 ## Usage
 
 ``` r
@@ -57,41 +52,9 @@ rec <-
   step_metagenomeseq() %>%
   step_maaslin()
 
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Preporcessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Qottab 
-#>      ◉ step_filter_taxa() id = filter_taxa__Briouat 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Kürtőskalács 
-#>      ◉ step_maaslin() id = maaslin__Bierock
-
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
 #> Default value being used.
-da_results
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 278 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Results:
-#> 
-#>      ✔ metagenomeseq__Kürtőskalács diff_taxa = 237 
-#>      ✔ maaslin__Bierock diff_taxa = 205 
-#> 
-#>      ℹ 174 taxa are present in all tested methods
 
 ## Consensus strategy
 n_methods <- 3
@@ -115,7 +78,7 @@ cool(da_results)
     (a minimal, reproducible example), to clearly communicate about your
     code.
 
--   **Working on your first Pull Request?** You can learn how from this
+-   Working on your first Pull Request? You can learn how from this
     *free* series [How to Contribute to an Open Source Project on
     GitHub](https://kcd.im/pull-request)
 

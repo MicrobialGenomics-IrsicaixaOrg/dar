@@ -4,8 +4,6 @@
 \alias{step_deseq}
 \alias{step_deseq,recipe-method}
 \alias{step_deseq,prep_recipe-method}
-\alias{step_deseq_new}
-\alias{run_deseq}
 \title{DESeq2 analysis}
 \usage{
 step_deseq(
@@ -42,29 +40,6 @@ step_deseq(
   log2FC = 0,
   rarefy = FALSE,
   id = rand_id("deseq")
-)
-
-step_deseq_new(
-  rec,
-  test,
-  fitType,
-  betaPrior,
-  type,
-  max_significance,
-  log2FC,
-  rarefy,
-  id
-)
-
-run_deseq(
-  rec,
-  test,
-  fitType,
-  betaPrior,
-  type,
-  max_significance,
-  log2FC,
-  rarefy
 )
 }
 \arguments{
@@ -126,4 +101,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

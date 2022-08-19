@@ -38,7 +38,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_filter_taxa
+#' @noRd
 #' @keywords internal
 step_filter_taxa_new <- function(.f, id) {
   step(subclass = "filter_taxa", .f = .f, id = id)
@@ -48,7 +48,7 @@ step_filter_taxa_new <- function(.f, id) {
 #' @keywords internal
 required_pkgs_filter_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 
-#' @rdname step_filter_taxa
+#' @noRd
 #' @keywords internal
 run_filter_taxa <- function(rec, .f) {
   rec@phyloseq <- phyloseq::filter_taxa(get_phy(rec), eval(parse(text = .f)), prune = TRUE)

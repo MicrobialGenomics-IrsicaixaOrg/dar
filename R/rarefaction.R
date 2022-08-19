@@ -56,7 +56,7 @@ methods::setMethod(
 )
 
 
-#' @rdname step_rarefaction
+#' @noRd
 #' @keywords internal
 step_rarefaction_new <- function(id) {
   step(subclass = "rarefaction", id = id)
@@ -66,7 +66,7 @@ step_rarefaction_new <- function(id) {
 #' @keywords internal
 required_pkgs_rarefaction <- function(x, ...) {  c("bioc::phyloseq") }
 
-#' @rdname step_rarefaction
+#' @noRd
 #' @keywords internal
 run_rarefaction <- function(rec) {
   rec@phyloseq <- phyloseq::rarefy_even_depth(get_phy(rec), rngseed = 1234, verbose = FALSE)

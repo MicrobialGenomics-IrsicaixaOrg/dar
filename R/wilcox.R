@@ -82,7 +82,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_wilcox
+#' @noRd
 #' @keywords internal
 step_wilcox_new <- function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
   step(
@@ -103,7 +103,7 @@ required_pkgs_wilcox <-
   }
 
 
-#' @rdname step_wilcox
+#' @noRd
 #' @keywords internal
 run_wilcox <- function(rec, norm_method, max_significance, p_adj_method, rarefy) {
 

@@ -106,7 +106,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_lefse
+#' @noRd
 #' @keywords internal
 step_lefse_new <-
   function(kruskal.threshold,
@@ -134,7 +134,7 @@ step_lefse_new <-
 #' @keywords internal
 required_pkgs_lefse <- function(x, ...) { c("bioc::lefser", "bioc::SummarizedExperiment") }
 
-#' @rdname step_lefse
+#' @noRd
 #' @keywords internal
 run_lefse <-
   function(rec,

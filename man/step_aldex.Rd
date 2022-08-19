@@ -4,8 +4,6 @@
 \alias{step_aldex}
 \alias{step_aldex,recipe-method}
 \alias{step_aldex,prep_recipe-method}
-\alias{step_aldex_new}
-\alias{run_aldex}
 \title{ALDEx2 analysis}
 \usage{
 step_aldex(
@@ -34,10 +32,6 @@ step_aldex(
   rarefy = FALSE,
   id = rand_id("aldex")
 )
-
-step_aldex_new(out_cut, max_significance, mc.samples, denom, rarefy, id)
-
-run_aldex(rec, max_significance, mc.samples, denom, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -107,4 +101,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}
