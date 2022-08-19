@@ -1,0 +1,18 @@
+---
+title: "Data Import"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Import}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+)
+options(digits = 3)
+```
