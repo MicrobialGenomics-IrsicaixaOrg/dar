@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
@@ -47,7 +47,223 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="basic-functions">Basic Functions<a class="anchor" aria-label="anchor" href="#basic-functions"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="dar-package.html">dar</a></code> <code><a href="dar-package.html">dar-package</a></code> 
+        </dt>
+        <dd>dar: Differential Abundance Analysis by Consensus</dd>
+      </dl><dl><dt>
+          
+          <code><a href="recipe.html">recipe()</a></code> 
+        </dt>
+        <dd>Create a recipe for preprocessing data</dd>
+      </dl><dl><dt>
+          
+          <code><a href="prep.html">prep()</a></code> 
+        </dt>
+        <dd>Performs all the steps defined in a recipe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="bake.html">bake()</a></code> 
+        </dt>
+        <dd>Extract results from recipe step</dd>
+      </dl><dl><dt>
+          
+          <code><a href="cool.html">cool()</a></code> 
+        </dt>
+        <dd>Extract results from defined bake</dd>
+      </dl></div><div class="section level2">
+      <h2 id="step-functions-data-preprocessing">Step Functions - Data Preprocessing<a class="anchor" aria-label="anchor" href="#step-functions-data-preprocessing"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="step_filter_taxa.html">step_filter_taxa()</a></code> 
+        </dt>
+        <dd>Filter taxa based on across-sample OTU abundance criteria</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_subset_taxa.html">step_subset_taxa()</a></code> 
+        </dt>
+        <dd>Subset species by taxonomic expression</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_rarefaction.html">step_rarefaction()</a></code> 
+        </dt>
+        <dd>Resample an OTU table such that all samples have the same library size.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="step-functions-differential-abundance-methods">Step Functions - Differential Abundance Methods<a class="anchor" aria-label="anchor" href="#step-functions-differential-abundance-methods"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="step_aldex.html">step_aldex()</a></code> 
+        </dt>
+        <dd>ALDEx2 analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_ancom.html">step_ancom()</a></code> 
+        </dt>
+        <dd>ANCOM analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_corncob.html">step_corncob()</a></code> 
+        </dt>
+        <dd>corncob analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_deseq.html">step_deseq()</a></code> 
+        </dt>
+        <dd>DESeq2 analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_lefse.html">step_lefse()</a></code> 
+        </dt>
+        <dd>lefse analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_maaslin.html">step_maaslin()</a></code> 
+        </dt>
+        <dd>MaAsLin2 analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_metagenomeseq.html">step_metagenomeseq()</a></code> 
+        </dt>
+        <dd>MetagenomeSeq analysis</dd>
+      </dl><dl><dt>
+          
+          <code><a href="step_wilcox.html">step_wilcox()</a></code> 
+        </dt>
+        <dd>Wilcox analysis</dd>
+      </dl></div><div class="section level2">
+      <h2 id="exploration">Exploration<a class="anchor" aria-label="anchor" href="#exploration"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="exclusion_plt.html">exclusion_plt()</a></code> 
+        </dt>
+        <dd>Plot the number of shared DA OTUs between methods.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="find_intersections.html">find_intersections()</a></code> 
+        </dt>
+        <dd>Finds common OTU between method results</dd>
+      </dl><dl><dt>
+          
+          <code><a href="intersection_df.html">intersection_df()</a></code> 
+        </dt>
+        <dd>Returns data.frame with OTU intersection between methods</dd>
+      </dl><dl><dt>
+          
+          <code><a href="intersection_plt.html">intersection_plt()</a></code> 
+        </dt>
+        <dd>Plot results using UpSet plot</dd>
+      </dl></div><div class="section level2">
+      <h2 id="recipe-getters">Recipe Getters<a class="anchor" aria-label="anchor" href="#recipe-getters"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="get_phy.html">get_phy()</a></code> 
+        </dt>
+        <dd>Returns phyloseq from recipe-class object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_tax.html">get_tax()</a></code> 
+        </dt>
+        <dd>Returns tax_info from recipe-class object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_var.html">get_var()</a></code> 
+        </dt>
+        <dd>Returns var_info from recipe-class object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="otu_table.html">otu_table()</a></code> 
+        </dt>
+        <dd>Extracts otu_table from phyloseq inside a recipe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="sample_data.html">sample_data()</a></code> 
+        </dt>
+        <dd>Extracts sample_data from phyloseq inside a recipe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="steps_ids.html">steps_ids()</a></code> 
+        </dt>
+        <dd>Get step_ids from recipe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tax_table.html">tax_table()</a></code> 
+        </dt>
+        <dd>Extracts tax_table from phyloseq inside a recipe</dd>
+      </dl><dl><dt>
+          
+          <code><a href="required_deps.html">required_deps()</a></code> 
+        </dt>
+        <dd>Returns required pakcages for recipe object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="import-and-export">Import and Export<a class="anchor" aria-label="anchor" href="#import-and-export"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="export_steps.html">export_steps()</a></code> 
+        </dt>
+        <dd>Export step parameters as json.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="import_steps.html">import_steps()</a></code> 
+        </dt>
+        <dd>Import steps from json file</dd>
+      </dl></div><div class="section level2">
+      <h2 id="other-functions">Other functions<a class="anchor" aria-label="anchor" href="#other-functions"></a></h2>
       
       
 
@@ -69,81 +285,6 @@
         <dd>Checks if recipe contains a rarefaction step</dd>
       </dl><dl><dt>
           
-          <code><a href="cool.html">cool()</a></code> 
-        </dt>
-        <dd>Extract results from defined bake</dd>
-      </dl><dl><dt>
-          
-          <code><a href="exclusion_plt.html">exclusion_plt()</a></code> 
-        </dt>
-        <dd>Plot the number of shared DA OTUs between methods.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="export_steps.html">export_steps()</a></code> 
-        </dt>
-        <dd>Export step parameters as json.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="find_intersections.html">find_intersections()</a></code> 
-        </dt>
-        <dd>Finds common OTU between method results</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_phy.html">get_phy()</a></code> 
-        </dt>
-        <dd>Returns phyloseq from recipe-class object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_tax.html">get_tax()</a></code> 
-        </dt>
-        <dd>Returns tax_info from recipe-class object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="get_var.html">get_var()</a></code> 
-        </dt>
-        <dd>Returns var_info from recipe-class object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="import_steps.html">import_steps()</a></code> 
-        </dt>
-        <dd>Import steps from json file</dd>
-      </dl><dl><dt>
-          
-          <code><a href="intersection_df.html">intersection_df()</a></code> 
-        </dt>
-        <dd>Returns data.frame with OTU intersection between methods</dd>
-      </dl><dl><dt>
-          
-          <code><a href="intersection_plt.html">intersection_plt()</a></code> 
-        </dt>
-        <dd>Plot results using UpSet plot</dd>
-      </dl><dl><dt>
-          
-          <code><a href="metaHIV_phy.html">metaHIV_phy</a></code> 
-        </dt>
-        <dd>Phyloseq object from metaHIV project</dd>
-      </dl><dl><dt>
-          
-          <code><a href="otu_table.html">otu_table()</a></code> 
-        </dt>
-        <dd>Extracts otu_table from phyloseq inside a recipe</dd>
-      </dl><dl><dt>
-          
-          <code><a href="pastry_df.html">pastry_df</a></code> 
-        </dt>
-        <dd>Pastery data for step id generation</dd>
-      </dl><dl><dt>
-          
-          <code><a href="prep.html">prep()</a></code> 
-        </dt>
-        <dd>Performs all the steps defined in a recipe</dd>
-      </dl><dl><dt>
-          
-          <code><a href="prep_recipe-class.html">prep_recipe-class</a></code> 
-        </dt>
-        <dd>prep_recipe-class object</dd>
-      </dl><dl><dt>
-          
           <code><a href="prep_recipe.html">prep_recipe()</a></code> 
         </dt>
         <dd>Create a recipe prep_recipe.</dd>
@@ -154,45 +295,47 @@
         <dd>Make a random identification field for steps</dd>
       </dl><dl><dt>
           
+          <code><a href="prep_recipe-class.html">prep_recipe-class</a></code> 
+        </dt>
+        <dd>prep_recipe-class object</dd>
+      </dl><dl><dt>
+          
           <code><a href="recipe-class.html">phyloseq_or_null-class</a></code> <code><a href="recipe-class.html">tibble_or_NULL-class</a></code> <code><a href="recipe-class.html">recipe-class</a></code> 
         </dt>
         <dd>recipe-class object</dd>
       </dl><dl><dt>
           
-          <code><a href="recipe.html">recipe()</a></code> 
-        </dt>
-        <dd>Create a recipe for preprocessing data</dd>
-      </dl><dl><dt>
-          
-          <code><a href="required_deps.html">required_deps()</a></code> 
-        </dt>
-        <dd>Returns required pakcages for recipe object</dd>
-      </dl><dl><dt>
-          
           <code><a href="required_pkgs_recipe.html">required_pkgs_recipe()</a></code> 
         </dt>
         <dd>Methods for tracking which additional packages are needed for steps.</dd>
+      </dl></div><div class="section level2">
+      <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="metaHIV_phy.html">metaHIV_phy</a></code> 
+        </dt>
+        <dd>Phyloseq object from metaHIV project</dd>
       </dl><dl><dt>
           
-          <code><a href="sample_data.html">sample_data()</a></code> 
+          <code><a href="pastry_df.html">pastry_df</a></code> 
         </dt>
-        <dd>Extracts sample_data from phyloseq inside a recipe</dd>
-      </dl><dl><dt>
-          
-          <code><a href="steps_ids.html">steps_ids()</a></code> 
-        </dt>
-        <dd>Get step_ids from recipe</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tax_table.html">tax_table()</a></code> 
-        </dt>
-        <dd>Extracts tax_table from phyloseq inside a recipe</dd>
+        <dd>Pastery data for step id generation</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Francesc Catala-Moll.</p>
+  <p></p><p>Developed by Francesc Catala-Moll, Marc Noguera-Julian.</p>
 </div>
 
 <div class="pkgdown-footer-right">
