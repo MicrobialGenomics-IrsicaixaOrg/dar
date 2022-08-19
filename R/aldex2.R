@@ -93,7 +93,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_aldex
+#' @noRd
 #' @keywords internal
 step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, rarefy, id) {
   step(
@@ -110,7 +110,7 @@ step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, rarefy,
 #' @keywords internal
 required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 
-#' @rdname step_aldex
+#' @noRd
 #' @keywords internal
 run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
 

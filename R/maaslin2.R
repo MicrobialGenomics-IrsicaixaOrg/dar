@@ -120,7 +120,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_maaslin
+#' @noRd
 #' @keywords internal
 step_maaslin_new <- function(rec,
                              min_abundance,
@@ -158,7 +158,7 @@ step_maaslin_new <- function(rec,
 #' @keywords internal
 required_pkgs_maaslin <- function(x, ...) { c("bioc::Maaslin2") }
 
-#' @rdname step_maaslin
+#' @noRd
 #' @keywords internal
 run_maaslin <- function(rec,
                         min_abundance,

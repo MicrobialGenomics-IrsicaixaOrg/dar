@@ -4,8 +4,6 @@
 \alias{step_lefse}
 \alias{step_lefse,recipe-method}
 \alias{step_lefse,prep_recipe-method}
-\alias{step_lefse_new}
-\alias{run_lefse}
 \title{lefse analysis}
 \usage{
 step_lefse(
@@ -42,28 +40,6 @@ step_lefse(
   trim.names = FALSE,
   rarefy = TRUE,
   id = rand_id("lefse")
-)
-
-step_lefse_new(
-  kruskal.threshold,
-  wilcox.threshold,
-  lda.threshold,
-  blockCol,
-  assay,
-  trim.names,
-  rarefy,
-  id
-)
-
-run_lefse(
-  rec,
-  kruskal.threshold = kruskal.threshold,
-  wilcox.threshold = wilcox.threshold,
-  lda.threshold = lda.threshold,
-  blockCol = blockCol,
-  assay = assay,
-  trim.names = trim.names,
-  rarefy = rarefy
 )
 }
 \arguments{
@@ -118,4 +94,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

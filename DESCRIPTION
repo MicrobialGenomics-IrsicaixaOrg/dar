@@ -2,7 +2,17 @@ Package: dar
 Title: Differential Abundance Analysis by Consensus
 Version: 0.0.0.9000
 Authors@R: 
-    person("Francesc", "Catala-Moll", , "fcatalamoll@gmail.com", role = c("aut", "cre"))
+    c(person(given = "Francesc",
+             family = "Catala-Moll",
+             role = c("aut", "cre"),
+             email = "fcatala@irsicaixa.es",
+             comment = c(ORCID = "0000-0002-2354-8648")),
+      person(given = "Marc",
+             family = "Noguera-Julian",
+             role = c("aut"),
+             email = "mnoguera@irsicaixa.es",
+             comment = c(ORCID = "0000-0002-6194-1395"))
+    )
 Description: A fast, consistent and interactive tool for consensus
     differential abundance analysis using the most popular tools in the
     field.

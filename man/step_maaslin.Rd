@@ -4,8 +4,6 @@
 \alias{step_maaslin}
 \alias{step_maaslin,recipe-method}
 \alias{step_maaslin,prep_recipe-method}
-\alias{step_maaslin_new}
-\alias{run_maaslin}
 \title{MaAsLin2 analysis}
 \usage{
 step_maaslin(
@@ -57,39 +55,6 @@ step_maaslin(
   reference = NULL,
   rarefy = FALSE,
   id = rand_id("maaslin")
-)
-
-step_maaslin_new(
-  rec,
-  min_abundance,
-  min_prevalence,
-  min_variance,
-  normalization,
-  transform,
-  analysis_method,
-  max_significance,
-  random_effects,
-  correction,
-  standardize,
-  reference,
-  rarefy,
-  id
-)
-
-run_maaslin(
-  rec,
-  min_abundance,
-  min_prevalence,
-  min_variance,
-  normalization,
-  transform,
-  analysis_method,
-  max_significance,
-  random_effects,
-  correction,
-  standardize,
-  reference,
-  rarefy
 )
 }
 \arguments{
@@ -151,4 +116,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

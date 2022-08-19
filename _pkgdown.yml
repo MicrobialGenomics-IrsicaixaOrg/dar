@@ -1,4 +1,53 @@
 url: https://microbialgenomics-irsicaixaorg.github.io/dar/
 template:
   bootstrap: 5
-
+  bootswatch: minty
+reference:
+- title: "Basic Functions"
+  contents:
+  - dar
+  - recipe
+  - prep
+  - bake
+  - cool
+- title: "Step Functions - Data Preprocessing"
+  contents:
+  - step_filter_taxa
+  - step_subset_taxa
+  - step_rarefaction
+- title: "Step Functions - Differential Abundance Methods"
+  contents:
+  - step_aldex
+  - step_ancom
+  - step_corncob
+  - step_deseq
+  - step_lefse
+  - step_maaslin
+  - step_metagenomeseq
+  - step_wilcox
+- title: "Exploration"
+  contents:
+  - exclusion_plt
+  - find_intersections
+  - intersection_df
+  - intersection_plt
+- title: "Recipe Getters"
+  contents:
+  - get_phy
+  - get_tax
+  - get_var
+  - otu_table
+  - sample_data
+  - steps_ids
+  - tax_table
+  - required_deps
+- title: "Import and Export"
+  contents:
+  - export_steps
+  - import_steps
+- title: "Other functions"
+  contents:
+  - SummarizedExperiment2phyloseq
+  - contains_rarefaction
+  - prep_recipe
+  - rand_id

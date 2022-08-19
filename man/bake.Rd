@@ -4,8 +4,6 @@
 \alias{bake}
 \alias{bake,prep_recipe-method}
 \alias{bake,recipe-method}
-\alias{bake_new}
-\alias{run_bake}
 \title{Extract results from recipe step}
 \usage{
 bake(
@@ -31,10 +29,6 @@ bake(
   exclude = NULL,
   id = rand_id("bake")
 )
-
-bake_new(count_cutoff, weights, exclude, id)
-
-run_bake(rec, count_cutoff, weights, exclude, id)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -57,4 +51,3 @@ An object of class \code{prep_recipe}
 For a prep recipe with add step to define the result extraction method.
 }
 \concept{Bake steps}
-\keyword{internal}

@@ -39,7 +39,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_subset_taxa
+#' @noRd
 #' @keywords internal
 step_subset_taxa_new <- function(expr, id) {
   step(subclass = "subset_taxa", expr = expr, id = id)
@@ -49,7 +49,7 @@ step_subset_taxa_new <- function(expr, id) {
 #' @keywords internal
 required_pkgs_subset_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 
-#' @rdname step_subset_taxa
+#' @noRd
 #' @keywords internal
 run_subset_taxa <- function(rec, expr) {
   rec@phyloseq <-

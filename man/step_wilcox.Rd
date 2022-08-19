@@ -4,8 +4,6 @@
 \alias{step_wilcox}
 \alias{step_wilcox,recipe-method}
 \alias{step_wilcox,prep_recipe-method}
-\alias{step_wilcox_new}
-\alias{run_wilcox}
 \title{Wilcox analysis}
 \usage{
 step_wilcox(
@@ -34,10 +32,6 @@ step_wilcox(
   rarefy = TRUE,
   id = rand_id("wilcox")
 )
-
-step_wilcox_new(rec, norm_method, max_significance, p_adj_method, rarefy, id)
-
-run_wilcox(rec, norm_method, max_significance, p_adj_method, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -80,4 +74,3 @@ Other Diff taxa steps:
 \code{\link{step_metagenomeseq}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

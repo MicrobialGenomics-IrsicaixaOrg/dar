@@ -55,7 +55,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname bake
+#' @noRd
 #' @keywords internal
 bake_new <- function(count_cutoff, weights, exclude, id) {
   step(
@@ -71,7 +71,7 @@ bake_new <- function(count_cutoff, weights, exclude, id) {
 #' @keywords internal
 required_pkgs_bake <- function(x, ...) { c() }
 
-#' @rdname bake
+#' @noRd
 #' @keywords internal
 run_bake <- function(rec,count_cutoff, weights, exclude, id) {
 

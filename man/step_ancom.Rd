@@ -3,8 +3,6 @@
 \name{step_ancom}
 \alias{step_ancom}
 \alias{step_ancom,recipe-method}
-\alias{step_ancom_new}
-\alias{run_ancom}
 \title{ANCOM analysis}
 \usage{
 step_ancom(
@@ -30,19 +28,6 @@ step_ancom(
   rarefy = FALSE,
   id = rand_id("ancom")
 )
-
-step_ancom_new(
-  out_cut,
-  zero_cut,
-  lib_cut,
-  neg_lb,
-  p_adj_method,
-  alpha,
-  rarefy,
-  id
-)
-
-run_ancom(rec, out_cut, zero_cut, lib_cut, neg_lb, p_adj_method, alpha, rarefy)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -100,4 +85,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

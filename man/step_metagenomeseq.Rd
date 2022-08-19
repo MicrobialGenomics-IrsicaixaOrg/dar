@@ -4,8 +4,6 @@
 \alias{step_metagenomeseq}
 \alias{step_metagenomeseq,recipe-method}
 \alias{step_metagenomeseq,prep_recipe-method}
-\alias{step_metagenomeseq_new}
-\alias{run_metagenomeseq}
 \title{MetagenomeSeq analysis}
 \usage{
 step_metagenomeseq(
@@ -39,27 +37,6 @@ step_metagenomeseq(
   log2FC = 0,
   rarefy = FALSE,
   id = rand_id("metagenomeseq")
-)
-
-step_metagenomeseq_new(
-  rec,
-  zeroMod,
-  useCSSoffset,
-  useMixedModel,
-  max_significance,
-  log2FC,
-  rarefy,
-  id
-)
-
-run_metagenomeseq(
-  rec,
-  zeroMod,
-  useCSSoffset,
-  useMixedModel,
-  max_significance,
-  log2FC,
-  rarefy
 )
 }
 \arguments{
@@ -109,4 +86,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

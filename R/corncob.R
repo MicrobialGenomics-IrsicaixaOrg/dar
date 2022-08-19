@@ -125,7 +125,7 @@ methods::setMethod(
   }
 )
 
-#' @rdname step_corncob
+#' @noRd
 #' @keywords internal
 step_corncob_new <- function(phi.formula,
                              formula_null,
@@ -164,7 +164,7 @@ step_corncob_new <- function(phi.formula,
 #' @keywords internal
 required_pkgs_corncob <- function(x, ...) { c("corncob") }
 
-#' @rdname step_corncob
+#' @noRd
 #' @keywords internal
 run_corncob <- function(rec,
                         phi.formula,

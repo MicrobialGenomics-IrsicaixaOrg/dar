@@ -3,17 +3,11 @@
 \name{step_subset_taxa}
 \alias{step_subset_taxa}
 \alias{step_subset_taxa,recipe-method}
-\alias{step_subset_taxa_new}
-\alias{run_subset_taxa}
 \title{Subset species by taxonomic expression}
 \usage{
 step_subset_taxa(rec, expr, id = rand_id("subset_taxa"))
 
 \S4method{step_subset_taxa}{recipe}(rec, expr, id = rand_id("subset_taxa"))
-
-step_subset_taxa_new(expr, id)
-
-run_subset_taxa(rec, expr)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -43,4 +37,3 @@ Other filter phy steps:
 \code{\link{step_filter_taxa}()}
 }
 \concept{filter phy steps}
-\keyword{internal}

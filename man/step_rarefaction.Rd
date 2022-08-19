@@ -4,8 +4,6 @@
 \alias{step_rarefaction}
 \alias{step_rarefaction,recipe-method}
 \alias{step_rarefaction,prep_recipe-method}
-\alias{step_rarefaction_new}
-\alias{run_rarefaction}
 \title{Resample an OTU table such that all samples have the same library size.}
 \usage{
 step_rarefaction(rec, id = rand_id("rarefaction"))
@@ -13,10 +11,6 @@ step_rarefaction(rec, id = rand_id("rarefaction"))
 \S4method{step_rarefaction}{recipe}(rec, id = rand_id("rarefaction"))
 
 \S4method{step_rarefaction}{prep_recipe}(rec, id = rand_id("rarefaction"))
-
-step_rarefaction_new(id)
-
-run_rarefaction(rec)
 }
 \arguments{
 \item{rec}{A recipe object. The step will be added to the sequence of operations for
@@ -47,4 +41,3 @@ select a random number generator seed before invoking this function, or, alterna
 that you explicitly provide a single positive integer argument as rngseed.
 }
 \concept{rarefaction phy steps}
-\keyword{internal}
