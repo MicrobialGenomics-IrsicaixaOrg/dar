@@ -389,13 +389,16 @@ methods::setMethod("show", signature = "prep_recipe", definition = function(obje
       cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
     })
 
-  n_overlap <-
-    find_intersections(object) %>%
-    dplyr::filter(.data$sum_methods == length(steps_ids(object, type = "da"))) %>%
-    nrow()
+  if (length(object@results) > 0) {
+    n_overlap <-
+      find_intersections(object) %>%
+      dplyr::filter(.data$sum_methods == length(steps_ids(object, type = "da"))) %>%
+      nrow()
 
-  cli::cat_line()
-  cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n")
+    cli::cat_line()
+    cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n")
+  }
+
 })
 
 
