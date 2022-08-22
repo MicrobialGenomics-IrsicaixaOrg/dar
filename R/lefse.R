@@ -1,31 +1,35 @@
 #' lefse analysis
 #'
-#' Lefser is metagenomic biomarker discovery tool that is based on LEfSe tool and is
-#' published by Huttenhower et al. 2011. Lefser is the R implementation of the LEfSe
-#' method. Using statistical analyses, lefser compares microbial populations of healthy
-#' and diseased subjects to discover differencially expressed microorganisms. Lefser than
-#' computes effect size, which estimates magnitude of differential expression between the
-#' populations for each differentially expressed microorganism. Subclasses of classes can
-#' also be assigned and used within the analysis.
+#' Lefser is metagenomic biomarker discovery tool that is based on LEfSe tool
+#' and is published by Huttenhower et al. 2011. Lefser is the R implementation
+#' of the LEfSe method. Using statistical analyses, lefser compares microbial
+#' populations of healthy and diseased subjects to discover differencially
+#' expressed microorganisms. Lefser than computes effect size, which estimates
+#' magnitude of differential expression between the populations for each
+#' differentially expressed microorganism. Subclasses of classes can also be
+#' assigned and used within the analysis.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
-#' @param kruskal.threshold numeric(1) The p-value for the Kruskal-Wallis Rank Sum Test
-#'   (default 0.05).
-#' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test when
-#'   'blockCol' is present (default 0.05).
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
+#' @param kruskal.threshold numeric(1) The p-value for the Kruskal-Wallis Rank
+#'   Sum Test (default 0.05).
+#' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test
+#'   when 'blockCol' is present (default 0.05).
 #' @param lda.threshold numeric(1) The effect size threshold (default 2.0).
-#' @param blockCol character(1) Optional column name in 'colData(expr)' indicating the
-#'   blocks, usually a factor with two levels (e.g., 'c("adult", "senior")'; default
-#'   NULL).
-#' @param assay The i-th assay matrix in the ‘SummarizedExperiment' (’expr'; default 1).
-#' @param trim.names If 'TRUE' extracts the most specific taxonomic rank of organism.
-#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-#'   the standard R sample function to resample from the abundance values in the otu_table
-#'   component of the first argument, physeq. Often one of the major goals of this
-#'   procedure is to achieve parity in total number of counts between samples, as an
-#'   alternative to other formal normalization procedures, which is why a single value for
-#'   the sample.size is expected.
+#' @param blockCol character(1) Optional column name in 'colData(expr)'
+#'   indicating the blocks, usually a factor with two levels (e.g., 'c("adult",
+#'   "senior")'; default NULL).
+#' @param assay The i-th assay matrix in the ‘SummarizedExperiment' (’expr';
+#'   default 1).
+#' @param trim.names If 'TRUE' extracts the most specific taxonomic rank of
+#'   organism.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
+#'   rarefaction uses the standard R sample function to resample from the
+#'   abundance values in the otu_table component of the first argument, physeq.
+#'   Often one of the major goals of this procedure is to achieve parity in
+#'   total number of counts between samples, as an alternative to other formal
+#'   normalization procedures, which is why a single value for the sample.size
+#'   is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R

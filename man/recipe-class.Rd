@@ -7,19 +7,19 @@
 \alias{recipe-class}
 \title{recipe-class object}
 \description{
-A recipe is a description of the steps to be applied to a data set in order to prepare
-it for data analysis.
+A recipe is a description of the steps to be applied to a data set in order
+to prepare it for data analysis.
 }
 \section{Slots}{
 
 \describe{
 \item{\code{phyloseq}}{Phyloseq-class object}
 
-\item{\code{var_info}}{A tibble that contains the current set of terms in the data set. This
-initially defaults to the same data contained in \code{var_info}.}
+\item{\code{var_info}}{A tibble that contains the current set of terms in the data
+set. This initially defaults to the same data contained in \code{var_info}.}
 
-\item{\code{tax_info}}{A tibble that contains the current set of taxonomic levels that will be
-used in the analysis.}
+\item{\code{tax_info}}{A tibble that contains the current set of taxonomic levels
+that will be used in the analysis.}
 
 \item{\code{steps}}{List of step-class objects that will be used by DA.}
 }}

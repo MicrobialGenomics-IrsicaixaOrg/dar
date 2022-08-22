@@ -12,14 +12,14 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 
 #' recipe-class object
 #'
-#' A recipe is a description of the steps to be applied to a data set in order to prepare
-#' it for data analysis.
+#' A recipe is a description of the steps to be applied to a data set in order
+#' to prepare it for data analysis.
 #'
 #' @slot phyloseq Phyloseq-class object
-#' @slot var_info A tibble that contains the current set of terms in the data set. This
-#'   initially defaults to the same data contained in `var_info`.
-#' @slot tax_info A tibble that contains the current set of taxonomic levels that will be
-#'   used in the analysis.
+#' @slot var_info A tibble that contains the current set of terms in the data
+#'   set. This initially defaults to the same data contained in `var_info`.
+#' @slot tax_info A tibble that contains the current set of taxonomic levels
+#'   that will be used in the analysis.
 #' @slot steps List of step-class objects that will be used by DA.
 #'
 #' @name recipe-class
@@ -45,22 +45,22 @@ methods::setClass(
 
 #' Create a recipe for preprocessing data
 #'
-#' A recipe is a description of the steps to be applied to a data set in order to prepare
-#' it for data analysis.
+#' A recipe is a description of the steps to be applied to a data set in order
+#' to prepare it for data analysis.
 #'
 #' @param phyloseq Phyloseq-class object.
-#' @param var_info A character string of column names corresponding to variables that will
-#'   be used in any context.
-#' @param tax_info A character string of taxonomic levels that will be used in any
-#'   context.
+#' @param var_info A character string of column names corresponding to variables
+#'   that will be used in any context.
+#' @param tax_info A character string of taxonomic levels that will be used in
+#'   any context.
 #' @param steps list with steps.
 #'
-#' @return An object of class `recipe` with sub-objects:
-#'   \item{phyloseq}{object of class `phyloseq` with taxa abundance information.}
-#'   \item{var_info}{A tibble that contains the current set of terms in the data set.
-#'   This initially defaults to the same data contained in `var_info`.}
-#'   \item{tax_info}{A tibble that contains the current set of taxonomic levels that will
-#'   be used in the analysis.}
+#' @return An object of class `recipe` with sub-objects: \item{phyloseq}{object
+#'   of class `phyloseq` with taxa abundance information.} \item{var_info}{A
+#'   tibble that contains the current set of terms in the data set. This
+#'   initially defaults to the same data contained in `var_info`.}
+#'   \item{tax_info}{A tibble that contains the current set of taxonomic levels
+#'   that will be used in the analysis.}
 #'
 #' @aliases recipe
 #' @export
@@ -435,14 +435,16 @@ required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 
 #' Performs all the steps defined in a recipe
 #'
-#' For a recipe with at least one preprocessing or DA operation run the steps in a
-#' convenient order.
+#' For a recipe with at least one preprocessing or DA operation run the steps in
+#' a convenient order.
 #'
 #' @param rec A `recipe` object.
-#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution using future
 #'   and furrr packages.
+#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
+#'   using future and furrr packages.
 #' @param workers Number of workers for palatalization.
-#' @param force Force the reexecution of all steps. This remove previous results.
+#' @param force Force the reexecution of all steps. This remove previous
+#'   results.
 #'
 #' @aliases prep
 #' @return A `prep_recipe` object.

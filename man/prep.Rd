@@ -12,17 +12,18 @@ prep(rec, parallel = TRUE, workers = 8, force = FALSE)
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
-\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution using future
-and furrr packages.}
+\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
+using future and furrr packages.}
 
 \item{workers}{Number of workers for palatalization.}
 
-\item{force}{Force the reexecution of all steps. This remove previous results.}
+\item{force}{Force the reexecution of all steps. This remove previous
+results.}
 }
 \value{
 A \code{prep_recipe} object.
 }
 \description{
-For a recipe with at least one preprocessing or DA operation run the steps in a
-convenient order.
+For a recipe with at least one preprocessing or DA operation run the steps in
+a convenient order.
 }

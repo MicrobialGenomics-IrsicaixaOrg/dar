@@ -126,3 +126,10 @@ Finally we can extract the table with the results using the `cool` function.
 ```{r cool}
 cool(da_results)
 ```
+
+## Session info
+
+```{r}
+devtools::session_info()
+```
+
