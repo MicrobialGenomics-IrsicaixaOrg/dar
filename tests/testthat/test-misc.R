@@ -1,4 +1,5 @@
 library(dar)
+data("metaHIV_phy")
 
 test_that("rand_id works", {
   set.seed(123)
@@ -6,7 +7,7 @@ test_that("rand_id works", {
 })
 
 test_that("get_comparisons works", {
-  phy <- dar::metaHIV_phy
+  phy <- metaHIV_phy
   var <- "RiskGroup2"
 
   is_list <- get_comparisons(var, phy)
@@ -21,7 +22,7 @@ test_that("get_comparisons works", {
 })
 
 test_that("to_tibble works", {
-  phy <- dar::metaHIV_phy
+  phy <- metaHIV_phy
   df <- phyloseq::otu_table(phy)
 
   test_1 <- to_tibble(df)

@@ -7,7 +7,14 @@
 #'   taxonomic ranks.
 #'
 #' @source s3://fcatala-09142020-eu-west-1/cloud_test/SpeciesQuantification/Kraken2
-"metaHIV_phy"
+#' @name data-metaHIV_phy
+#' @aliases metaHIV_phy
+#' @docType data
+#' @keywords data
+#' @examples
+#' data(metaHIV_phy)
+#' print(metaHIV_phy)
+NA
 
 #' Pastery data for step id generation
 #'
@@ -16,4 +23,8 @@
 #' @format A tbl_df object with 228 unique pasteries.
 #'
 #' @source https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
-"pastry_df"
+#' @name data-pastry_df
+#' @aliases pastry_df
+#' @docType data
+#' @keywords data
+NA

@@ -396,9 +396,32 @@ methods::setMethod("show", signature = "prep_recipe", definition = function(obje
       nrow()
 
     cli::cat_line()
-    cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n")
+    cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n\n")
   }
 
+  ## Bakes
+  if (length(object@bakes) > 0) {
+    cat("Bakes:\n\n")
+
+    object@bakes %>%
+      purrr::iwalk( ~ {
+        msg <-
+          .x %>%
+          purrr::map2_chr(names(.), ~ {
+            if (is.null(.x)) {
+              .x = "NULL"
+            }
+            glue::glue("{.y}: {.x}")
+          }) %>% stringr::str_c(collapse = ", ")
+
+        cat(c(
+          glue::glue(
+            "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} {crayon::silver(msg)}"
+          ),
+          "\n"
+        ))
+      })
+  }
 })
 
 
