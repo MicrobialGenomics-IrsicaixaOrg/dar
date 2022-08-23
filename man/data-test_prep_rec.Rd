@@ -3,7 +3,7 @@
 \docType{data}
 \name{data-test_prep_rec}
 \alias{data-test_prep_rec}
-\alias{est_prep_rec}
+\alias{test_prep_rec}
 \title{Prep-recipe for metaHIV_phy data}
 \format{
 A prep-recipe object.
