@@ -60,7 +60,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">import_steps</span><span class="op">(</span><span class="va">rec</span>, <span class="va">file</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">import_steps</span><span class="op">(</span><span class="va">rec</span>, <span class="va">file</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span>, workers <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,6 +71,15 @@
 
 <dt>file</dt>
 <dd><p>Path to the input file</p></dd>
+
+
+<dt>parallel</dt>
+<dd><p>if FALSE, no palatalization. if TRUE, parallel execution using future
+and furrr packages.</p></dd>
+
+
+<dt>workers</dt>
+<dd><p>Number of workers for palatalization.</p></dd>
 
 </dl></div>
 
