@@ -316,6 +316,14 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
 #'   this recipe.
 #'
 #' @export
+#' @examples
+#' data(GlobalPatterns, package = "phyloseq")
+#' rec <-
+#'   phyloseq::subset_samples(GlobalPatterns, SampleType %in% c("Soil", "Skin")) %>%
+#'   recipe(var_info  = "SampleType", tax_info = "Genus") %>%
+#'   step_rarefaction()
+#'
+#' contains_rarefaction(rec)
 contains_rarefaction <- function(rec) {
   dar::steps_ids(rec) %>%
     stringr::str_detect("^rarefaction_") %>%

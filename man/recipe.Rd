@@ -29,3 +29,32 @@ that will be used in the analysis.}
 A recipe is a description of the steps to be applied to a data set in order
 to prepare it for data analysis.
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") \%>\%
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") \%>\%
+  step_metagenomeseq() \%>\%
+  step_maaslin()
+
+## Prep recipe
+da_results <- prep(rec)
+
+## Consensus strategy
+n_methods <- 2
+da_results <- bake(da_results, count_cutoff = n_methods)
+
+## Results
+cool(da_results)
+
+## You can also crate a recipe without var and tax info
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## And define them later
+rec <- rec \%>\%
+  add_var("RiskGroup2") \%>\%
+  add_tax("Genus")
+}

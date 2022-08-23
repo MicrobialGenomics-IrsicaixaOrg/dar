@@ -2,12 +2,12 @@
 % Please edit documentation in R/recipe-class.R
 \name{required_pkgs_recipe}
 \alias{required_pkgs_recipe}
-\alias{required_pkgs_recipe,recipe-method}
+\alias{required_pkgs_recipe,ANY-method}
 \title{Methods for tracking which additional packages are needed for steps.}
 \usage{
 required_pkgs_recipe(rec)
 
-\S4method{required_pkgs_recipe}{recipe}(rec)
+\S4method{required_pkgs_recipe}{ANY}(rec)
 }
 \arguments{
 \item{rec}{A recipe or recipe step.}

@@ -18,3 +18,13 @@ A tibble
 \description{
 Extracts tax_table from phyloseq inside a recipe
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## Extract tax_table from phyloseq object
+tax_table(rec)
+}

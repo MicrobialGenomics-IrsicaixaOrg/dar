@@ -18,3 +18,13 @@ Phyloseq class object
 \description{
 Returns phyloseq from recipe-class object
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## Extract phyloseq object
+get_phy(rec)
+}

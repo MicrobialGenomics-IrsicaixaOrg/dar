@@ -10,7 +10,8 @@ prep(rec, parallel = TRUE, workers = 8, force = FALSE)
 \S4method{prep}{recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{recipe} object.
+and furrr packages.}
 
 \item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
 using future and furrr packages.}

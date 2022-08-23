@@ -40,6 +40,7 @@ devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
 
 ```{r}
 library(dar)
+data("metaHIV_phy")
 
 ## Define recipe
 rec <-
@@ -53,10 +54,10 @@ rec <-
 da_results <- prep(rec, parallel = TRUE)
 
 ## Consensus strategy
-n_methods <- 3
+n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
 
-# Results
+## Results
 cool(da_results)
 ```
 
