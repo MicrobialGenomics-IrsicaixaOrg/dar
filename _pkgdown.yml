@@ -31,8 +31,10 @@ reference:
   - find_intersections
   - intersection_df
   - intersection_plt
-- title: "Recipe Getters"
+- title: "Recipe Getters and Adders"
   contents:
+  - add_tax
+  - add_var
   - get_phy
   - get_tax
   - get_var
@@ -57,4 +59,6 @@ reference:
   contents:
   - metaHIV_phy
   - pastry_df
+  - test_rec
+  - test_prep_rec
 
