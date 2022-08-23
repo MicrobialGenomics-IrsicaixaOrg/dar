@@ -19,7 +19,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   for (i in seq(along.with = pkg)) {
     x <- stringr::str_remove_all(pkg[i], ".*[/]|.*[:]")
     tested <- try(find.package(x), silent = TRUE)
-    if (id(tested)[1], "try-error") {
+    if (is(tested, "try-error")) {
       good[i] <- FALSE
     }
   }
