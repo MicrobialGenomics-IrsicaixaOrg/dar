@@ -32,19 +32,12 @@ rec <-
   recipe(metaHIV_phy)
 
 ## add var info
-rec <- add_tax(rec, tax_info = "RiskGroup2")
-data(metaHIV_phy)
+rec <- add_tax(rec, tax_info = "Species")
+rec
 
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Genus") \%>\%
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") \%>\%
-  step_maaslin()
-
-## Prep
-rec <- prep(rec)
-
-## add var info
-rec <- add_tax(rec, tax_info = "RiskGroup2")
+## add tax info to a prep-recipe returns an error
+\dontrun{
+data(test_prep_rec)
+rec <- add_tax(test_prep_rec, tax_info = "Species")
+}
 }

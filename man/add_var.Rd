@@ -3,13 +3,14 @@
 \name{add_var}
 \alias{add_var}
 \alias{add_var,recipe-method}
+\alias{add_var,prep_recipe-method}
 \title{Adds variable of interest to the recipe}
 \usage{
 add_var(rec, var_info)
 
 \S4method{add_var}{recipe}(rec, var_info)
 
-\S4method{add_var}{recipe}(rec, var_info)
+\S4method{add_var}{prep_recipe}(rec, var_info)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
@@ -32,15 +33,11 @@ rec <-
 
 ## add var info
 rec <- add_var(rec, var_info = "RiskGroup2")
-data(metaHIV_phy)
+rec
 
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Genus") \%>\%
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") \%>\%
-  step_maaslin()
-
-## add var info
-rec <- add_var(rec, var_info = "RiskGroup2")
+## add var info to a prep-recipe returns an error
+\dontrun{
+data(test_prep_rec)
+rec <- add_var(test_prep_rec, var_info = "RiskGroup2")
+}
 }

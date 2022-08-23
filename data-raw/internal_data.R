@@ -7,3 +7,4 @@ pastry_df <-
     dplyr::mutate(id = stringr::str_replace_all(Name, " ", "_"), .before = 1)
 
 usethis::use_data(pastry_df, overwrite = TRUE, internal = TRUE)
+

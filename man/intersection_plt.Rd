@@ -34,3 +34,22 @@ UpSet plot
 \description{
 Plot results using UpSet plot
 }
+\examples{
+data(test_prep_rec)
+
+## Running the function returns a UpSet plot ordered by frequency.
+intersection_plt(test_prep_rec)
+
+## Alternatively, you can order the plot by degree
+intersection_plt(test_prep_rec, ordered_by = "degree")
+
+## If you want to exclude a method for the plot, you can remove it with the
+## step parameter. In the following example we eliminate from the graph the
+## results of maaslin
+intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+
+## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+## recipe the output is an error.
+data(test_rec)
+\dontrun{df <- intersection_plt(test_rec)}
+}

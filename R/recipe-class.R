@@ -194,10 +194,6 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
 #' @aliases get_var
 #' @return Tibble containing `var_info`.
 #' @export
-methods::setGeneric("get_var", function(rec) standardGeneric("get_var"))
-
-#' @rdname get_var
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -207,6 +203,10 @@ methods::setGeneric("get_var", function(rec) standardGeneric("get_var"))
 #'
 #' ## Extract variable of interest
 #' get_var(rec)
+methods::setGeneric("get_var", function(rec) standardGeneric("get_var"))
+
+#' @rdname get_var
+#' @export
 methods::setMethod(
   f = "get_var",
   signature = "recipe",
@@ -222,10 +222,6 @@ methods::setMethod(
 #' @aliases get_tax
 #' @return Tibble containing `tax_info`.
 #' @export
-methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
-
-#' @rdname get_tax
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -235,6 +231,10 @@ methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
 #'
 #' ## Extract taxonomic level
 #' get_tax(rec)
+methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
+
+#' @rdname get_tax
+#' @export
 methods::setMethod(
   f = "get_tax",
   signature = "recipe",
@@ -250,10 +250,6 @@ methods::setMethod(
 #' @aliases get_phy
 #' @return Phyloseq class object
 #' @export
-methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
-
-#' @rdname get_phy
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -263,6 +259,10 @@ methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
 #'
 #' ## Extract phyloseq object
 #' get_phy(rec)
+methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
+
+#' @rdname get_phy
+#' @export
 methods::setMethod(
   f = "get_phy",
   signature = "recipe",
@@ -280,10 +280,6 @@ methods::setMethod(
 #' @aliases add_var
 #' @return A `recipe` object.
 #' @export
-methods::setGeneric("add_var", function(rec, var_info) standardGeneric("add_var"))
-
-#' @rdname add_var
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -293,6 +289,17 @@ methods::setGeneric("add_var", function(rec, var_info) standardGeneric("add_var"
 #'
 #' ## add var info
 #' rec <- add_var(rec, var_info = "RiskGroup2")
+#' rec
+#'
+#' ## add var info to a prep-recipe returns an error
+#' \dontrun{
+#' data(test_prep_rec)
+#' rec <- add_var(test_prep_rec, var_info = "RiskGroup2")
+#' }
+methods::setGeneric("add_var", function(rec, var_info) standardGeneric("add_var"))
+
+#' @rdname add_var
+#' @export
 methods::setMethod(
   f = "add_var",
   signature = "recipe",
@@ -313,10 +320,6 @@ methods::setMethod(
 #' @aliases add_tax
 #' @return A `recipe` object.
 #' @export
-methods::setGeneric("add_tax", function(rec, tax_info) standardGeneric("add_tax"))
-
-#' @rdname add_tax
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -325,7 +328,18 @@ methods::setGeneric("add_tax", function(rec, tax_info) standardGeneric("add_tax"
 #'   recipe(metaHIV_phy)
 #'
 #' ## add var info
-#' rec <- add_tax(rec, tax_info = "RiskGroup2")
+#' rec <- add_tax(rec, tax_info = "Species")
+#' rec
+#'
+#' ## add tax info to a prep-recipe returns an error
+#' \dontrun{
+#' data(test_prep_rec)
+#' rec <- add_tax(test_prep_rec, tax_info = "Species")
+#' }
+methods::setGeneric("add_tax", function(rec, tax_info) standardGeneric("add_tax"))
+
+#' @rdname add_tax
+#' @export
 methods::setMethod(
   f = "add_tax",
   signature = "recipe",
@@ -335,26 +349,7 @@ methods::setMethod(
   }
 )
 
-## package deps ----
 
-#' Methods for tracking which additional packages are needed for steps.
-#'
-#' @param rec A recipe or recipe step.
-#'
-#' @return A character vector
-#' @export
-methods::setGeneric("required_pkgs_recipe", function(rec) standardGeneric("required_pkgs_recipe"))
-
-#' @rdname required_pkgs_recipe
-#' @export
-methods::setMethod(
-  f = "required_pkgs_recipe",
-  definition = function(rec) {
-    res <- purrr::map(rec@steps, required_pkgs)
-    res <- unique(unlist(res))
-    res <- res[length(res) != 0]
-  }
-)
 
 ## Phyloseq slots as tibble from recipe ----
 
@@ -363,10 +358,6 @@ methods::setMethod(
 #' @param rec A recipe or recipe step.
 #'
 #' @return A tibble
-#' @export
-methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
-
-#' @rdname tax_table
 #' @export
 #' @examples
 #' data(metaHIV_phy)
@@ -377,6 +368,10 @@ methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
 #'
 #' ## Extract tax_table from phyloseq object
 #' tax_table(rec)
+methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
+
+#' @rdname tax_table
+#' @export
 methods::setMethod(
   f = "tax_table",
   signature = "recipe",
@@ -393,10 +388,6 @@ methods::setMethod(
 #'
 #' @return A tibble
 #' @export
-methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
-
-#' @rdname sample_data
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -406,6 +397,10 @@ methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
 #'
 #' ## Extract sample_data from phyloseq object
 #' sample_data(rec)
+methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
+
+#' @rdname sample_data
+#' @export
 methods::setMethod(
   f = "sample_data",
   signature = "recipe",
@@ -423,10 +418,6 @@ methods::setMethod(
 #'
 #' @return A tibble
 #' @export
-methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
-
-#' @rdname otu_table
-#' @export
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -436,6 +427,10 @@ methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
 #'
 #' ## Extract otu_table from phyloseq object
 #' otu_table(rec)
+methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
+
+#' @rdname otu_table
+#' @export
 methods::setMethod(
   f = "otu_table",
   signature = "recipe",
@@ -598,21 +593,9 @@ required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
 
 #' @rdname add_var
 #' @export
-#' @examples
-#' data(metaHIV_phy)
-#'
-#' ## Define recipe
-#' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Genus") %>%
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
-#'   step_maaslin()
-#'
-#' ## add var info
-#' rec <- add_var(rec, var_info = "RiskGroup2")
 methods::setMethod(
   f = "add_var",
-  signature = "recipe",
+  signature = "prep_recipe",
   definition = function(rec, var_info) {
     rlang::abort("var_info can only be added to a non-prep recipe")
   }
@@ -622,21 +605,6 @@ methods::setMethod(
 
 #' @rdname add_tax
 #' @export
-#' @examples
-#' data(metaHIV_phy)
-#'
-#' ## Define recipe
-#' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Genus") %>%
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
-#'   step_maaslin()
-#'
-#' ## Prep
-#' rec <- prep(rec)
-#'
-#' ## add var info
-#' rec <- add_tax(rec, tax_info = "RiskGroup2")
 methods::setMethod(
   f = "add_tax",
   signature = "prep_recipe",
@@ -645,8 +613,6 @@ methods::setMethod(
   }
 )
 
-
-
 ## prep ----
 
 #' Performs all the steps defined in a recipe
@@ -654,8 +620,7 @@ methods::setMethod(
 #' For a recipe with at least one preprocessing or DA operation run the steps in
 #' a convenient order.
 #'
-#' @param rec A `recipe` object.
-#'   and furrr packages.
+#' @param rec A `recipe` object. and furrr packages.
 #' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
 #'   using future and furrr packages.
 #' @param workers Number of workers for palatalization.
@@ -665,6 +630,34 @@ methods::setMethod(
 #' @aliases prep
 #' @return A `prep_recipe` object.
 #' @export
+#' @examples
+#' data(metaHIV_phy)
+#'
+#' ## Define recipe
+#' rec <-
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
+#'   step_maaslin()
+#'
+#' ## Prep recipe
+#' da_results <- prep(rec)
+#'
+#' ## If you try
+#'
+#' ## Consensus strategy
+#' n_methods <- 2
+#' da_results <- bake(da_results, count_cutoff = n_methods)
+#' da_results
+#'
+#' ## If you try to run prep on an object of class prep_recipe it returns an error.
+#' \dontrun{prep(da_results)}
+#'
+#' ## You can force the overwrite with:
+#' prep(rec, force = TRUE)
+#'
+#' ## This function can operate in parallel thanks to future and furrr packages.
+#' prep(rec, parallel = TRUE, workers = 2)
 methods::setGeneric(
   name = "prep",
   def = function(rec, parallel = TRUE, workers = 8, force = FALSE) {
@@ -763,6 +756,16 @@ methods::setMethod(
 #' @aliases intersection_df
 #' @return data.frame class object
 #' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' df <- intersection_df(test_prep_rec)
+#' head(df)
+#'
+#' ## intersection_df function needs a prep-recipe. If you pass a a non-prep
+#' ## recipe the output is an error.
+#' data(test_rec)
+#' \dontrun{df <- intersection_df(test_rec)}
 methods::setGeneric(
   name = "intersection_df",
   def = function(rec, steps = steps_ids(rec, "da")) { standardGeneric("intersection_df") }
@@ -816,6 +819,24 @@ methods::setMethod(
 #' @aliases intersection_plt
 #' @return UpSet plot
 #' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' ## Running the function returns a UpSet plot ordered by frequency.
+#' intersection_plt(test_prep_rec)
+#'
+#' ## Alternatively, you can order the plot by degree
+#' intersection_plt(test_prep_rec, ordered_by = "degree")
+#'
+#' ## If you want to exclude a method for the plot, you can remove it with the
+#' ## step parameter. In the following example we eliminate from the graph the
+#' ## results of maaslin
+#' intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+#'
+#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+#' ## recipe the output is an error.
+#' data(test_rec)
+#' \dontrun{df <- intersection_plt(test_rec)}
 methods::setGeneric(
   name = "intersection_plt",
   def = function(rec, steps = steps_ids(rec, "da"), ordered_by = c("freq", "degree")) {
@@ -863,6 +884,21 @@ methods::setMethod(
 #' @aliases exclusion_plt
 #' @return ggplot2
 #' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' ## Running the function returns a barplot plot,
+#' exclusion_plt(test_prep_rec)
+#'
+#' ## If you want to exclude a method for the plot, you can remove it with the
+#' ## step parameter. In the following example we eliminate from the graph the
+#' ## results of maaslin
+#' exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+#'
+#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+#' ## recipe the output is an error.
+#' data(test_rec)
+#' \dontrun{df <- exclusion_plt(test_rec)}
 methods::setGeneric(
   name = "exclusion_plt",
   def = function(rec, steps = steps_ids(rec, "da")) {
@@ -939,6 +975,26 @@ methods::setMethod(
 #' @aliases cool
 #' @return tbl_df
 #' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' ## First we need to add bakes (extraction strategies) to the prep recipe.
+#' rec <- bake(test_prep_rec)
+#'
+#' ## Finally we can extract the results with the cool method
+#' cool(rec)
+#'
+#' ## By default cool extracts the results of the first bake. If we have more
+#' ## bakes we can extract the one that you want with the bake paramter.
+#' rec <- bake(rec, count_cutoff = 1)
+#' cool(rec, 2)
+#'
+#' ## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe the
+#' ## output is an error.
+#' data(test_rec)
+#' \dontrun{
+#' bake(test_rec) %>% cool()
+#' }
 methods::setGeneric(
   name = "cool",
   def = function(rec, bake = 1) {
@@ -993,5 +1049,3 @@ methods::setMethod(
     eval(parse(text = to_execute))
   }
 )
-
-

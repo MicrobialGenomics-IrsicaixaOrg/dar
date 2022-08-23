@@ -23,3 +23,24 @@ tbl_df
 \description{
 Extract results from defined bake
 }
+\examples{
+data(test_prep_rec)
+
+## First we need to add bakes (extraction strategies) to the prep recipe.
+rec <- bake(test_prep_rec)
+
+## Finally we can extract the results with the cool method
+cool(rec)
+
+## By default cool extracts the results of the first bake. If we have more
+## bakes we can extract the one that you want with the bake paramter.
+rec <- bake(rec, count_cutoff = 1)
+cool(rec, 2)
+
+## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe the
+## output is an error.
+data(test_rec)
+\dontrun{
+bake(test_rec) \%>\% cool()
+}
+}

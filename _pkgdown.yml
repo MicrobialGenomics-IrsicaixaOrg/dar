@@ -53,7 +53,6 @@ reference:
   - rand_id
   - prep_recipe-class
   - phyloseq_or_null-class
-  - required_pkgs_recipe
 - title: "Data"
   contents:
   - metaHIV_phy

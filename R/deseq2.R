@@ -166,7 +166,7 @@ run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log
                 X = DESeq2::counts(.),
                 MARGIN = 1,
                 FUN = function(x) {
-                  exp(sum(log(x[x > 0]), na.rm = T) / length(x))
+                  exp(sum(log(x[x > 0]), na.rm = TRUE) / length(x))
                 }
               )) %>%
               DESeq2::DESeq(

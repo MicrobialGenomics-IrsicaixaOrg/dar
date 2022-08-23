@@ -209,7 +209,7 @@ prepro_lefse <- function(rec, rarefy) {
   # Computing output table --------------------------------------------------
   lefse_input <-
     purrr::map2_dfr(tax_lev_f, 1:length(tax_lev_f), function(tax, it) {
-      dat <- phyloseq::tax_glom(phy, taxrank = tax, NArm = F)
+      dat <- phyloseq::tax_glom(phy, taxrank = tax, NArm = FALSE)
       abundance_df <- phyloseq::otu_table(dat) %>% to_tibble("RTC")
       tax_lev_names <-
         dat %>%

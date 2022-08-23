@@ -126,7 +126,7 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
 
   if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
 
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = F)
+  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
