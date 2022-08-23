@@ -43,6 +43,7 @@ devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
 
 ``` r
 library(dar)
+data("metaHIV_phy")
 
 ## Define recipe
 rec <-
@@ -57,15 +58,27 @@ da_results <- prep(rec, parallel = TRUE)
 #> Default value being used.
 
 ## Consensus strategy
-n_methods <- 3
+n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
 
-# Results
+## Results
 cool(da_results)
-#> ℹ Bake for count_cutoff = 3
-#> # A tibble: 0 × 2
-#> # … with 2 variables: taxa_id <chr>, taxa <chr>
-#> # ℹ Use `colnames()` to see all variable names
+#> ℹ Bake for count_cutoff = 2
+#> # A tibble: 174 × 2
+#>    taxa_id taxa                             
+#>    <chr>   <chr>                            
+#>  1 Otu_1   Methanobrevibacter_smithii       
+#>  2 Otu_2   Methanosphaera_stadtmanae        
+#>  3 Otu_12  Bifidobacterium_animalis         
+#>  4 Otu_13  Bifidobacterium_bifidum          
+#>  5 Otu_15  Bifidobacterium_catenulatum      
+#>  6 Otu_18  Bifidobacterium_longum           
+#>  7 Otu_19  Bifidobacterium_pseudocatenulatum
+#>  8 Otu_34  Olsenella_scatoligenes           
+#>  9 Otu_35  Collinsella_aerofaciens          
+#> 10 Otu_36  Collinsella_intestinalis         
+#> # … with 164 more rows
+#> # ℹ Use `print(n = ...)` to see more rows
 ```
 
 ## Contributing

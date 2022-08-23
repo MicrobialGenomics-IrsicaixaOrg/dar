@@ -9,23 +9,52 @@ recipe(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list())
 \arguments{
 \item{phyloseq}{Phyloseq-class object.}
 
-\item{var_info}{A character string of column names corresponding to variables that will
-be used in any context.}
+\item{var_info}{A character string of column names corresponding to variables
+that will be used in any context.}
 
-\item{tax_info}{A character string of taxonomic levels that will be used in any
-context.}
+\item{tax_info}{A character string of taxonomic levels that will be used in
+any context.}
 
 \item{steps}{list with steps.}
 }
 \value{
-An object of class \code{recipe} with sub-objects:
-\item{phyloseq}{object of class \code{phyloseq} with taxa abundance information.}
-\item{var_info}{A tibble that contains the current set of terms in the data set.
-This initially defaults to the same data contained in \code{var_info}.}
-\item{tax_info}{A tibble that contains the current set of taxonomic levels that will
-be used in the analysis.}
+An object of class \code{recipe} with sub-objects: \item{phyloseq}{object
+of class \code{phyloseq} with taxa abundance information.} \item{var_info}{A
+tibble that contains the current set of terms in the data set. This
+initially defaults to the same data contained in \code{var_info}.}
+\item{tax_info}{A tibble that contains the current set of taxonomic levels
+that will be used in the analysis.}
 }
 \description{
-A recipe is a description of the steps to be applied to a data set in order to prepare
-it for data analysis.
+A recipe is a description of the steps to be applied to a data set in order
+to prepare it for data analysis.
+}
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") \%>\%
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") \%>\%
+  step_metagenomeseq() \%>\%
+  step_maaslin()
+
+## Prep recipe
+da_results <- prep(rec)
+
+## Consensus strategy
+n_methods <- 2
+da_results <- bake(da_results, count_cutoff = n_methods)
+
+## Results
+cool(da_results)
+
+## You can also crate a recipe without var and tax info
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## And define them later
+rec <- rec \%>\%
+  add_var("RiskGroup2") \%>\%
+  add_tax("Genus")
 }

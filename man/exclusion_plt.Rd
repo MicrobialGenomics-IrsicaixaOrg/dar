@@ -23,3 +23,19 @@ ggplot2
 \description{
 Plot the number of shared DA OTUs between methods.
 }
+\examples{
+data(test_prep_rec)
+
+## Running the function returns a barplot plot,
+exclusion_plt(test_prep_rec)
+
+## If you want to exclude a method for the plot, you can remove it with the
+## step parameter. In the following example we eliminate from the graph the
+## results of maaslin
+exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+
+## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+## recipe the output is an error.
+data(test_rec)
+\dontrun{df <- exclusion_plt(test_rec)}
+}

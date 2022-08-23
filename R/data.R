@@ -7,7 +7,14 @@
 #'   taxonomic ranks.
 #'
 #' @source s3://fcatala-09142020-eu-west-1/cloud_test/SpeciesQuantification/Kraken2
-"metaHIV_phy"
+#' @name data-metaHIV_phy
+#' @aliases metaHIV_phy
+#' @docType data
+#' @keywords data
+#' @examples
+#' data(metaHIV_phy)
+#' print(metaHIV_phy)
+NA
 
 #' Pastery data for step id generation
 #'
@@ -16,4 +23,35 @@
 #' @format A tbl_df object with 228 unique pasteries.
 #'
 #' @source https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
-"pastry_df"
+#' @name data-pastry_df
+#' @aliases pastry_df
+#' @docType data
+#' @keywords data
+NA
+
+#' Recipe for metaHIV_phy data
+#'
+#' A recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
+#' and "Genus" as a `tax_info`.
+#'
+#' @format A recipe object.
+#'
+#' @name data-test_rec
+#' @aliases test_rec
+#' @docType data
+#' @keywords data
+NA
+
+#' Prep-recipe for metaHIV_phy data
+#'
+#' A recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
+#' and "Genus" as a `tax_info`. Also includes `step_deseq`, `step_maaslin` and
+#' `step_metagenomeSeq`.
+#'
+#' @format A prep-recipe object.
+#'
+#' @name data-test_prep_rec
+#' @aliases test_prep_rec
+#' @docType data
+#' @keywords data
+NA

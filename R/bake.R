@@ -29,7 +29,6 @@ methods::setMethod(
   f = "bake",
   signature = c(rec = "prep_recipe"),
   definition = function(rec, count_cutoff, weights, exclude, id) {
-
     recipes_pkg_check(required_pkgs_bake(), "bake()")
     add_step(
       rec,
@@ -38,7 +37,8 @@ methods::setMethod(
         weights = weights,
         exclude = exclude,
         id = id
-      ))
+      )
+    )
   }
 )
 
@@ -50,7 +50,9 @@ methods::setMethod(
   definition = function(rec, count_cutoff, weights, exclude, id) {
     rlang::abort(c(
       "This function needs a prep recipe!",
-      glue::glue("Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}")
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}"
+      )
     ))
   }
 )

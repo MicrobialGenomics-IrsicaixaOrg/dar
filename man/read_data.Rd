@@ -31,14 +31,12 @@ read_file(file_path, ext = c(".txt|.csv|.tsv"))
 a phylseq-class object
 }
 \description{
-This function returns a validated Phyloseq object by loading it directly from a file
-with the .rds extension. Alternatively, this function can also take three text files as
-input that will be used to construct and validate the Phyloseq object:
-\itemize{
-\item Counts matrix with the otu_id in the first column.
-\item Taxonomic annotation matrix with the otu_id in the first column.
-\item Metadata annotation with sample_id in the first column.
-}
+This function returns a validated Phyloseq object by loading it directly from
+a file with the .rds extension. Alternatively, this function can also take
+three text files as input that will be used to construct and validate the
+Phyloseq object: - Counts matrix with the otu_id in the first column. -
+Taxonomic annotation matrix with the otu_id in the first column. - Metadata
+annotation with sample_id in the first column.
 }
 \examples{
 # From a phyloseq object saved with .rds extension.

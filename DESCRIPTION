@@ -65,7 +65,7 @@ Imports:
     UpSetR
 Depends: 
     R (>= 2.10)
-LazyData: true
+LazyData: false
 Collate: 
     'recipe-class.R'
     'aldex2.R'

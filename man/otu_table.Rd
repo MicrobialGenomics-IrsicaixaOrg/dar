@@ -18,3 +18,13 @@ A tibble
 \description{
 Extracts otu_table from phyloseq inside a recipe
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## Extract otu_table from phyloseq object
+otu_table(rec)
+}

@@ -23,3 +23,14 @@ data.frame class object
 \description{
 Returns data.frame with OTU intersection between methods
 }
+\examples{
+data(test_prep_rec)
+
+df <- intersection_df(test_prep_rec)
+head(df)
+
+## intersection_df function needs a prep-recipe. If you pass a a non-prep
+## recipe the output is an error.
+data(test_rec)
+\dontrun{df <- intersection_df(test_rec)}
+}

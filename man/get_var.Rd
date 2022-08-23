@@ -18,3 +18,13 @@ Tibble containing \code{var_info}.
 \description{
 Returns var_info from recipe-class object
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## Extract variable of interest
+get_var(rec)
+}

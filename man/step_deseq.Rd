@@ -43,37 +43,40 @@ step_deseq(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{test}{Either "Wald" or "LRT", which will then use either Wald significance tests
-(defined by nbinomWaldTest), or the likelihood ratio test on the difference in
-deviance between a full and reduced model formula (defined by nbinomLRT).}
+\item{test}{Either "Wald" or "LRT", which will then use either Wald
+significance tests (defined by nbinomWaldTest), or the likelihood ratio
+test on the difference in deviance between a full and reduced model formula
+(defined by nbinomLRT).}
 
-\item{fitType}{either "parametric", "local", "mean", or "glmGamPoi" for the type of
-fitting of dispersions to the mean intensity. See estimateDispersions for
-description.}
+\item{fitType}{either "parametric", "local", "mean", or "glmGamPoi" for the
+type of fitting of dispersions to the mean intensity. See
+estimateDispersions for description.}
 
-\item{betaPrior}{whether or not to put a zero-mean normal prior on the non-intercept
-coefficients See nbinomWaldTest for description of the calculation of the beta prior.
-In versions >=1.16, the default is set to FALSE, and shrunken LFCs are obtained
-afterwards using lfcShrink.}
+\item{betaPrior}{whether or not to put a zero-mean normal prior on the
+non-intercept coefficients See nbinomWaldTest for description of the
+calculation of the beta prior. In versions >=1.16, the default is set to
+FALSE, and shrunken LFCs are obtained afterwards using lfcShrink.}
 
-\item{type}{"apeglm" is the adaptive Student's t prior shrinkage estimator from the
-'apeglm' package; "ashr" is the adaptive shrinkage estimator from the 'ashr' package,
-using a fitted mixture of normals prior - see the Stephens (2016) reference below for
-citation; "normal" is the 2014 DESeq2 shrinkage estimator using a Normal prior.}
+\item{type}{"apeglm" is the adaptive Student's t prior shrinkage estimator
+from the 'apeglm' package; "ashr" is the adaptive shrinkage estimator from
+the 'ashr' package, using a fitted mixture of normals prior - see the
+Stephens (2016) reference below for citation; "normal" is the 2014 DESeq2
+shrinkage estimator using a Normal prior.}
 
 \item{max_significance}{The q-value threshold for significance.}
 
 \item{log2FC}{log2FC cutoff.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -81,14 +84,15 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-Differential expression analysis based on the Negative Binomial (a.k.a. Gamma-Poisson)
-distribution. This function performs a default analysis through the steps: 1)
-estimation of size factors: \code{estimateSizeFactors}. 2) estimation of dispersion:
-\code{estimateDispersions}. 3) Negative Binomial GLM fitting and Wald statistics:
-nbinomWaldTest. For complete details on each step, see the manual pages of the
-respective functions. After the DESeq function returns a DESeqDataSet object, results
-tables (log2 fold changes and p-values) can be generated using the results function.
-Shrunken LFC can then be generated using the lfcShrink function.
+Differential expression analysis based on the Negative Binomial (a.k.a.
+Gamma-Poisson) distribution. This function performs a default analysis
+through the steps: 1) estimation of size factors: \code{estimateSizeFactors}. 2)
+estimation of dispersion: \code{estimateDispersions}. 3) Negative Binomial GLM
+fitting and Wald statistics: nbinomWaldTest. For complete details on each
+step, see the manual pages of the respective functions. After the DESeq
+function returns a DESeqDataSet object, results tables (log2 fold changes and
+p-values) can be generated using the results function. Shrunken LFC can then
+be generated using the lfcShrink function.
 }
 \seealso{
 Other Diff taxa steps: 

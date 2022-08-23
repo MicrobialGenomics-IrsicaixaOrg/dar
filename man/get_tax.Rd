@@ -18,3 +18,13 @@ Tibble containing \code{tax_info}.
 \description{
 Returns tax_info from recipe-class object
 }
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+
+## Extract taxonomic level
+get_tax(rec)
+}

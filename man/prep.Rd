@@ -10,19 +10,49 @@ prep(rec, parallel = TRUE, workers = 8, force = FALSE)
 \S4method{prep}{recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{recipe} object. and furrr packages.}
 
-\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution using future
-and furrr packages.}
+\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
+using future and furrr packages.}
 
 \item{workers}{Number of workers for palatalization.}
 
-\item{force}{Force the reexecution of all steps. This remove previous results.}
+\item{force}{Force the reexecution of all steps. This remove previous
+results.}
 }
 \value{
 A \code{prep_recipe} object.
 }
 \description{
-For a recipe with at least one preprocessing or DA operation run the steps in a
-convenient order.
+For a recipe with at least one preprocessing or DA operation run the steps in
+a convenient order.
+}
+\examples{
+data(metaHIV_phy)
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") \%>\%
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") \%>\%
+  step_maaslin()
+
+## Prep recipe
+da_results <- prep(rec)
+
+## If you try
+
+## Consensus strategy
+n_methods <- 2
+da_results <- bake(da_results, count_cutoff = n_methods)
+da_results
+
+## If you try to run prep on an object of class prep_recipe it returns an error.
+\dontrun{prep(da_results)}
+
+## You can force the overwrite with:
+prep(rec, force = TRUE)
+
+## This function can operate in parallel thanks to future and furrr packages.
+prep(rec, parallel = TRUE, workers = 2)
 }
