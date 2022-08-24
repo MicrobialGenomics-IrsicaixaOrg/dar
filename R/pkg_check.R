@@ -7,7 +7,6 @@
 #' @param ... Extra arguments to pass to [utils::install.packages()]
 #' @return Nothing is returned but a message is printed to the console about
 #'   which packages (if any) should be installed along with code to do so.
-#' @export
 #' @keywords internal
 #' @examples
 #' \dontrun{
@@ -48,6 +47,16 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 #' @aliases required_deps
 #' @return character
 #' @export
+#' @examples 
+#' data(test_rec)
+#' 
+#' ## The function returns instructions to install any uninstalled dependencies 
+#' ## needed to run the recipe steps
+#' required_deps(test_rec)
+#' 
+#' ## The function also works with prep_recipe-class objects
+#' data(test_prep_rec)
+#' required_deps(test_prep_rec)
 methods::setGeneric("required_deps", function(rec)
   standardGeneric("required_deps"))
 
@@ -57,7 +66,8 @@ methods::setMethod(
   f = "required_deps",
   signature = "recipe",
   definition = function(rec) {
-    rec@steps %>%
+    text <- 
+      rec@steps %>%
       purrr::walk( ~ {
         id <- class(.x)[[1]]
         id_2 <- stringr::str_remove_all(id, "step_")
@@ -65,5 +75,7 @@ methods::setMethod(
           parse(text = .) %>%
           eval()
       })
+    
+    invisible()
   }
 )

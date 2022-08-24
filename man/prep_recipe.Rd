@@ -20,3 +20,4 @@ An object of class \code{prep_recipe}.
 A prep_recipe is recipe with the results corresponding to the steps defined
 in the recipe.
 }
+\keyword{internal}

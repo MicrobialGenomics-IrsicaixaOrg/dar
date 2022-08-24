@@ -502,9 +502,8 @@ methods::setClass(
 #' @param bakes list with saved bakes
 #'
 #' @return An object of class `prep_recipe`.
-#'
+#' @keywords internal
 #' @aliases prep_recipe
-#' @export
 prep_recipe <- function(rec, results, bakes) {
   methods::new(
     Class = "prep_recipe",

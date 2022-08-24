@@ -79,6 +79,13 @@ step_to_expr <- function(step) {
       if (inherits(.x, "formula")) { 
         return(paste0(.y, " = ", paste0(.x, collapse = ""))) 
       }
+      if (.y == "weights" & is(step, "step_bake") & !is.null(.x)) {
+        text <- .x %>% 
+          purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>% 
+          stringr::str_c(collapse = ", ")
+        return(glue::glue("{.y} = c({text})"))
+      }
+      
       glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
@@ -98,6 +105,21 @@ step_to_expr <- function(step) {
 #'
 #' @return tibble
 #' @export
+#' @examples 
+#' 
+#' data(test_prep_rec)
+#' 
+#' ## From a prep-recipe we can extract a tibble with all intersections
+#' intersections <- find_intersections(test_prep_rec)
+#' intersections
+#' 
+#' ## Additionally, we can exclude some methods form the table
+#' intersections <- find_intersections(
+#'   test_prep_rec, 
+#'   steps = steps_ids(test_prep_rec, "da")[-1]
+#' )
+#' 
+#' intersections
 find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   intersection_df(rec, steps) %>%
     tibble::as_tibble() %>%
@@ -122,6 +144,19 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #'
 #' @return character vector
 #' @export
+#' @examples 
+#' data(test_rec)
+#' 
+#' ## We can extract the step identifiers from a recipe with `step_ids`
+#' ids <- steps_ids(test_rec)
+#' ids
+#' 
+#' ## With the `type` parameter, extract the prepro and da steps separately.
+#' da_ids <- steps_ids(test_rec, type = "da")
+#' da_ids
+#' 
+#' prepro_ids <- steps_ids(test_rec, type = "prepro")
+#' prepro_ids
 steps_ids <- function(rec, type = "all") {
   if (!type %in% c("all", "da", "prepro")) {
     rlang::abort(c(
@@ -173,6 +208,22 @@ dot <- function() {
 #' @importFrom glue double_quote
 #' @return invisible
 #' @export
+#' @examples
+#' data(metaHIV_phy)
+#' 
+#' ## Create a recipe with steps
+#' rec <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
+#'   step_maaslin() %>% 
+#'   step_corncob()
+#'  
+#' ## Prep recipe   
+#' rec <- prep(rec, parallel = TRUE)
+#' 
+#' ## Export to json file
+#' export_steps(rec, "test.json")
 export_steps <- function(rec, file_name) {
   to_cat <-
     c(rec@steps, rec@bakes) %>%
@@ -206,6 +257,17 @@ export_steps <- function(rec, file_name) {
 #'
 #' @return recipe-class object
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Initialize the recipe with a phyloseq object
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Import steps
+#' json_file <- system.file("extdata", "test.json", package = "dar")
+#' rec <- import_steps(rec, json_file)
+#' rec
 import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
   lines <-
     readr::read_lines(file) %>%

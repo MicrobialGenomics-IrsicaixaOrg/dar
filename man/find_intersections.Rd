@@ -17,3 +17,19 @@ tibble
 \description{
 Finds common OTU between method results
 }
+\examples{
+
+data(test_prep_rec)
+
+## From a prep-recipe we can extract a tibble with all intersections
+intersections <- find_intersections(test_prep_rec)
+intersections
+
+## Additionally, we can exclude some methods form the table
+intersections <- find_intersections(
+  test_prep_rec, 
+  steps = steps_ids(test_prep_rec, "da")[-1]
+)
+
+intersections
+}

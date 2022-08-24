@@ -22,3 +22,15 @@ recipe-class object
 \description{
 Import steps from json file
 }
+\examples{
+data(metaHIV_phy)
+
+## Initialize the recipe with a phyloseq object
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Import steps
+json_file <- system.file("extdata", "test.json", package = "dar")
+rec <- import_steps(rec, json_file)
+rec
+}

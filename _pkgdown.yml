@@ -49,9 +49,7 @@ reference:
   - import_steps
 - title: "Other functions"
   contents:
-  - SummarizedExperiment2phyloseq
   - contains_rarefaction
-  - prep_recipe
   - rand_id
   - prep_recipe-class
   - phyloseq_or_null-class

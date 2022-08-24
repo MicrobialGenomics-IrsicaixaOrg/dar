@@ -332,7 +332,7 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
 #' @param assay_idx assay index
 #'
 #' @return phyloseq
-#' @export
+#' @keywords internal
 SummarizedExperiment2phyloseq <- function(dataset, assay_idx = 1) {
   counts_df <-
     SummarizedExperiment::assay(dataset, i = assay_idx) %>%

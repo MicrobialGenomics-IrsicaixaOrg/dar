@@ -17,3 +17,20 @@ invisible
 \description{
 Export step parameters as json.
 }
+\examples{
+data(metaHIV_phy)
+
+## Create a recipe with steps
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") \%>\%
+  step_maaslin() \%>\% 
+  step_corncob()
+ 
+## Prep recipe   
+rec <- prep(rec, parallel = TRUE)
+
+## Export to json file
+export_steps(rec, "test.json")
+}
