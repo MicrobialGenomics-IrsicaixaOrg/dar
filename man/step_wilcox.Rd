@@ -34,24 +34,26 @@ step_wilcox(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{norm_method}{Transformation to apply. The options include: 'compositional' (ie
-relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr',
-or any method from the vegan::decostand function.}
+\item{norm_method}{Transformation to apply. The options include:
+'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+'hellinger', 'identity', 'clr', 'alr', or any method from the
+vegan::decostand function.}
 
 \item{max_significance}{The q-value threshold for significance.}
 
-\item{p_adj_method}{Character. Specifying the method to adjust p-values for multiple
-comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
+\item{p_adj_method}{Character. Specifying the method to adjust p-values for
+multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -59,9 +61,9 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-Performs a wilcox test to determine features (be it Operational Taxanomic Unit
-(OTU), species, etc.) that are differentially abundant between two or more groups of
-multiple samples.
+Performs a wilcox test to determine features (be it Operational Taxanomic
+Unit (OTU), species, etc.) that are differentially abundant between two or
+more groups of multiple samples.
 }
 \seealso{
 Other Diff taxa steps: 

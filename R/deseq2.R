@@ -142,16 +142,28 @@ step_deseq_new <-
 
 #' @noRd
 #' @keywords internal
-required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ashr") }
+required_pkgs_deseq <- function(x, ...) {
+  c("bioc::DESeq2", "bioc::apeglm", "ashr")
+}
 
 #' @noRd
 #' @keywords internal
-run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy) {
+run_deseq <- function(rec,
+                      test,
+                      fitType,
+                      betaPrior,
+                      type,
+                      max_significance,
+                      log2FC,
+                      rarefy) {
 
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
+  if (rarefy) { 
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) 
+  }
+  
   phy <-  phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
 
   vars %>%
@@ -161,7 +173,9 @@ run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log
         suppressWarnings(
           suppressMessages(
             phy %>%
-              phyloseq::phyloseq_to_deseq2(design = stats::as.formula(stringr::str_c("~", var))) %>%
+              phyloseq::phyloseq_to_deseq2(
+                design = stats::as.formula(stringr::str_c("~", var))
+              ) %>%
               DESeq2::estimateSizeFactors(geoMeans = apply(
                 X = DESeq2::counts(.),
                 MARGIN = 1,
@@ -191,8 +205,12 @@ run_deseq <- function(rec, test, fitType, betaPrior, type, max_significance, log
           ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::mutate(comparison = stringr::str_c(x, "_vs_", y), var = !!var) %>%
-            dplyr::filter(abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance)
+            dplyr::mutate(
+              comparison = stringr::str_c(x, "_vs_", y), var = !!var
+            ) %>%
+            dplyr::filter(
+              abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance
+            )
         })
     })
 }

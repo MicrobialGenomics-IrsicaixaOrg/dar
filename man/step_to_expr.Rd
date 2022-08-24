@@ -2,8 +2,8 @@
 % Please edit documentation in R/misc.R
 \name{step_to_expr}
 \alias{step_to_expr}
-\title{Extracts parameters from steps and makes a character vector with the expression to
-evaluate}
+\title{Extracts parameters from steps and makes a character vector with the
+expression to evaluate}
 \usage{
 step_to_expr(step)
 }
@@ -14,7 +14,7 @@ step_to_expr(step)
 character vector
 }
 \description{
-Extracts parameters from steps and makes a character vector with the expression to
-evaluate
+Extracts parameters from steps and makes a character vector with the
+expression to evaluate
 }
 \keyword{internal}

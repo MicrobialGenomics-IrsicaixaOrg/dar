@@ -40,28 +40,29 @@ step_metagenomeseq(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{zeroMod}{The zero model, the model to account for the change in the number of
-OTUs observed as a linear effect of the depth of coverage.}
+\item{zeroMod}{The zero model, the model to account for the change in the
+number of OTUs observed as a linear effect of the depth of coverage.}
 
-\item{useCSSoffset}{Boolean, whether to include the default scaling parameters in the
-model or not.}
+\item{useCSSoffset}{Boolean, whether to include the default scaling
+parameters in the model or not.}
 
-\item{useMixedModel}{Estimate the correlation between duplicate features or replicates
-using duplicateCorrelation.}
+\item{useMixedModel}{Estimate the correlation between duplicate features or
+replicates using duplicateCorrelation.}
 
 \item{max_significance}{The q-value threshold for significance.}
 
 \item{log2FC}{log2FC cutoff.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -69,11 +70,11 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-metagenomeSeq is designed to determine features (be it Operational Taxanomic Unit
-(OTU), species, etc.) that are differentially abundant between two or more groups of
-multiple samples. metagenomeSeq is designed to address the effects of both
-normalization and under-sampling of microbial communities on disease association
-detection and the testing of feature correlations.
+metagenomeSeq is designed to determine features (be it Operational Taxanomic
+Unit (OTU), species, etc.) that are differentially abundant between two or
+more groups of multiple samples. metagenomeSeq is designed to address the
+effects of both normalization and under-sampling of microbial communities on
+disease association detection and the testing of feature correlations.
 }
 \seealso{
 Other Diff taxa steps: 

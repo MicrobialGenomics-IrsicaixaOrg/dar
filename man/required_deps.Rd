@@ -12,6 +12,9 @@ required_deps(rec)
 \arguments{
 \item{rec}{A \code{recipe} object}
 }
+\value{
+character
+}
 \description{
 Returns required pakcages for recipe object
 }

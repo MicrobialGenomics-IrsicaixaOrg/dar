@@ -11,10 +11,13 @@ import_steps(rec, file, parallel = TRUE, workers = 8)
 
 \item{file}{Path to the input file}
 
-\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution using future
-and furrr packages.}
+\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
+using future and furrr packages.}
 
 \item{workers}{Number of workers for palatalization.}
+}
+\value{
+recipe-class object
 }
 \description{
 Import steps from json file

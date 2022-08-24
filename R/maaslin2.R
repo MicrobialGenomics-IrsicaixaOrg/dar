@@ -1,33 +1,36 @@
 #' MaAsLin2 analysis
 #'
-#' MaAsLin2 finds associations between microbiome meta-omics features and complex metadata
-#' in population-scale epidemiological studies. The software includes multiple analysis
-#' methods (including support for multiple covariates and repeated measures), filtering,
-#' normalization, and transform options to customize analysis for your specific study.
+#' MaAsLin2 finds associations between microbiome meta-omics features and
+#' complex metadata in population-scale epidemiological studies. The software
+#' includes multiple analysis methods (including support for multiple covariates
+#' and repeated measures), filtering, normalization, and transform options to
+#' customize analysis for your specific study.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
 #' @param min_abundance The minimum abundance for each feature.
-#' @param min_prevalence The minimum percent of samples for which a feature is detected at
-#'   minimum abundance.
+#' @param min_prevalence The minimum percent of samples for which a feature is
+#'   detected at minimum abundance.
 #' @param min_variance Keep features with variance greater than.
 #' @param normalization The normalization method to apply.
 #' @param transform The transform to apply.
 #' @param analysis_method The transform to apply.
 #' @param max_significance The q-value threshold for significance.
-#' @param random_effects The random effects for the model, comma-delimited for multiple
-#'   effects.
+#' @param random_effects The random effects for the model, comma-delimited for
+#'   multiple effects.
 #' @param correction The correction method for computing the q-value.
-#' @param standardize Apply z-score so continuous metadata are on the same scale.
-#' @param reference The factor to use as a reference for a variable with more than two
-#'   levels provided as a string of 'variable,reference' semi-colon delimited for multiple
-#'   variables.
-#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-#'   the standard R sample function to resample from the abundance values in the otu_table
-#'   component of the first argument, physeq. Often one of the major goals of this
-#'   procedure is to achieve parity in total number of counts between samples, as an
-#'   alternative to other formal normalization procedures, which is why a single value for
-#'   the sample.size is expected.
+#' @param standardize Apply z-score so continuous metadata are on the same
+#'   scale.
+#' @param reference The factor to use as a reference for a variable with more
+#'   than two levels provided as a string of 'variable,reference' semi-colon
+#'   delimited for multiple variables.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
+#'   rarefaction uses the standard R sample function to resample from the
+#'   abundance values in the otu_table component of the first argument, physeq.
+#'   Often one of the major goals of this procedure is to achieve parity in
+#'   total number of counts between samples, as an alternative to other formal
+#'   normalization procedures, which is why a single value for the sample.size
+#'   is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -179,7 +182,10 @@ run_maaslin <- function(rec,
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
+  if (rarefy) { 
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) 
+  }
+  
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
 
   vars %>%

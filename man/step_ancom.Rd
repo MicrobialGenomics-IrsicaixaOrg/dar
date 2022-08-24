@@ -30,37 +30,39 @@ step_ancom(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{out_cut}{Numerical fraction between 0 and 1. For each taxon, observations with
-proportion of mixture distribution less than out_cut will be detected as outlier
-zeros; while observations with proportion of mixture distribution greater than 1 -
-out_cut will be detected as outlier values.}
+\item{out_cut}{Numerical fraction between 0 and 1. For each taxon,
+observations with proportion of mixture distribution less than out_cut will
+be detected as outlier zeros; while observations with proportion of mixture
+distribution greater than 1 - out_cut will be detected as outlier values.}
 
-\item{zero_cut}{Numerical fraction between 0 and 1. Taxa with proportion of zeroes
-greater than zero_cut are not included in the analysis.}
+\item{zero_cut}{Numerical fraction between 0 and 1. Taxa with proportion of
+zeroes greater than zero_cut are not included in the analysis.}
 
-\item{lib_cut}{Numeric. Samples with library size less than lib_cut are not included in
-the analysis.}
+\item{lib_cut}{Numeric. Samples with library size less than lib_cut are not
+included in the analysis.}
 
-\item{neg_lb}{Logical. TRUE indicates a taxon would be classified as a structural zero
-in the corresponding experimental group using its asymptotic lower bound. More
-specifically, neg_lb = TRUE indicates you are using both criteria stated in section
-3.2 of ANCOM-II to detect structural zeros; Otherwise, neg_lb = FALSE will only use
-the equation 1 in section 3.2 of ANCOM-II for declaring structural zeros.}
+\item{neg_lb}{Logical. TRUE indicates a taxon would be classified as a
+structural zero in the corresponding experimental group using its
+asymptotic lower bound. More specifically, neg_lb = TRUE indicates you are
+using both criteria stated in section 3.2 of ANCOM-II to detect structural
+zeros; Otherwise, neg_lb = FALSE will only use the equation 1 in section
+3.2 of ANCOM-II for declaring structural zeros.}
 
-\item{p_adj_method}{Character. Specifying the method to adjust p-values for multiple
-comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
+\item{p_adj_method}{Character. Specifying the method to adjust p-values for
+multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
 \item{alpha}{Level of significance. Default is 0.05.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -68,11 +70,11 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-This function performs an analysis of composition of microbiomes (ANCOM). ANCOM
-accounts for the underlying structure in the data and can be used for comparing the
-composition of microbiomes in two or more populations. ANCOM makes no distributional
-assumptions and can be implemented in a linear model framework to adjust for covariates
-as well as model longitudinal data.
+This function performs an analysis of composition of microbiomes (ANCOM).
+ANCOM accounts for the underlying structure in the data and can be used for
+comparing the composition of microbiomes in two or more populations. ANCOM
+makes no distributional assumptions and can be implemented in a linear model
+framework to adjust for covariates as well as model longitudinal data.
 }
 \seealso{
 Other Diff taxa steps: 

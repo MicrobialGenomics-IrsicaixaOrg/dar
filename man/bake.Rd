@@ -31,12 +31,12 @@ bake(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{count_cutoff}{Indicates the minimum number of methods in which an OTU must be
-present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
-\code{length(steps_ids(rec, "da")) - length(exclude)}}
+\item{count_cutoff}{Indicates the minimum number of methods in which an OTU
+must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
+equal to \code{length(steps_ids(rec, "da")) - length(exclude)}}
 
 \item{weights}{Named vector with the ponderation value for each method.}
 

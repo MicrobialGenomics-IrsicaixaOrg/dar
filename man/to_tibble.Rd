@@ -7,7 +7,8 @@
 to_tibble(df, id_name = "otu_id")
 }
 \arguments{
-\item{df}{output of \code{otu_table()}, \code{sample_data()} or \code{tax_table()} phyloseq functions.}
+\item{df}{output of \code{otu_table()}, \code{sample_data()} or \code{tax_table()} phyloseq
+functions.}
 
 \item{id_name}{Name of the new column generated from rownames}
 }

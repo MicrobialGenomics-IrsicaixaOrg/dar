@@ -71,7 +71,8 @@ methods::setMethod(
     if (!rarefy & !contains_rarefaction(rec)) {
       rlang::inform(c(
         "!" = glue::glue(
-          "Run lefse without rarefaction is not recommended ({crayon::blue(paste0('id = ', id))})"
+          "Run lefse without rarefaction is not recommended", 
+          " ({crayon::blue(paste0('id = ', id))})"
         )
       ))
     }
@@ -136,7 +137,9 @@ step_lefse_new <-
 
 #' @noRd
 #' @keywords internal
-required_pkgs_lefse <- function(x, ...) { c("bioc::lefser", "bioc::SummarizedExperiment") }
+required_pkgs_lefse <- function(x, ...) { 
+  c("bioc::lefser", "bioc::SummarizedExperiment") 
+}
 
 #' @noRd
 #' @keywords internal
@@ -157,13 +160,15 @@ run_lefse <-
     purrr::map(function(var) {
       get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
-          sample_data <- dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+          sample_data <- 
+            dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+         
           se <- SummarizedExperiment::SummarizedExperiment(
             assays = list(counts = lefse_mat[, sample_data$sample_id]),
             colData = sample_data
           )
 
-          set.seed(1234)
+          # set.seed(1234)
           lefse_res <- lefser::lefser(
             se,
             groupCol = var,
@@ -179,7 +184,9 @@ run_lefse <-
             tibble::as_tibble() %>%
             dplyr::rename(otu = .data$Names) %>%
             dplyr::mutate(otu = stringr::str_remove_all(.data$otu, "\`")) %>%
-            dplyr::left_join(kruskal_test(se, sample_data[[var]]), by = "otu") %>%
+            dplyr::left_join(
+              kruskal_test(se, sample_data[[var]]), by = "otu"
+            ) %>%
             dplyr::arrange(.data$pvalue, dplyr::desc(abs(.data$scores))) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
@@ -203,12 +210,14 @@ prepro_lefse <- function(rec, rarefy) {
   }
 
   # Defining iterating tax levels -------------------------------------------
-  tax_otp <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
-  tax_lev_f <- tax_otp[1:match(tax_level, tax_otp)]
+  tax_otp <- 
+    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+  
+  tax_lev_f <- tax_otp[seq_len(match(tax_level, tax_otp))]
 
   # Computing output table --------------------------------------------------
   lefse_input <-
-    purrr::map2_dfr(tax_lev_f, 1:length(tax_lev_f), function(tax, it) {
+    purrr::map2_dfr(tax_lev_f, seq_along(tax_lev_f), function(tax, it) {
       dat <- phyloseq::tax_glom(phy, taxrank = tax, NArm = FALSE)
       abundance_df <- phyloseq::otu_table(dat) %>% to_tibble("RTC")
       tax_lev_names <-
@@ -216,7 +225,7 @@ prepro_lefse <- function(rec, rarefy) {
         phyloseq::tax_table(object = .) %>%
         data.frame() %>%
         tibble::as_tibble() %>%
-        dplyr::select(1:(!!tax)) %>%
+        dplyr::select(dplyr::all_of(seq_len(it))) %>%
         dplyr::mutate(dplyr::across(
           .fns = function(x)
             stringr::str_replace_all(x, " |[.]|-", "_")
@@ -236,7 +245,9 @@ prepro_lefse <- function(rec, rarefy) {
       }
       abundance_df <- abundance_df %>% dplyr::mutate(RTC = tax_lev_names)
     }) %>%
-    dplyr::filter(stringr::str_count(.data$RTC, "[|]") == match(tax_level, tax_otp) - 1) %>%
+    dplyr::filter(
+      stringr::str_count(.data$RTC, "[|]") == match(tax_level, tax_otp) - 1
+    ) %>%
     dplyr::arrange(.data$RTC) %>%
     data.frame(row.names = 1, check.names = FALSE) %>%
     as.matrix()

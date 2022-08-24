@@ -11,6 +11,9 @@ export_steps(rec, file_name)
 
 \item{file_name}{The path and file name of the optout file.}
 }
+\value{
+invisible
+}
 \description{
 Export step parameters as json.
 }

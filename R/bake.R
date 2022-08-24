@@ -2,11 +2,11 @@
 #'
 #' For a prep recipe with add step to define the result extraction method.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
-#' @param count_cutoff Indicates the minimum number of methods in which an OTU must be
-#'   present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
-#'   `length(steps_ids(rec, "da")) - length(exclude)`
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
+#' @param count_cutoff Indicates the minimum number of methods in which an OTU
+#'   must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
+#'   equal to `length(steps_ids(rec, "da")) - length(exclude)`
 #' @param weights Named vector with the ponderation value for each method.
 #' @param exclude Method ids to exclude.
 #' @param id A character string that is unique to this step to identify it.
@@ -18,7 +18,11 @@
 #' @export
 methods::setGeneric(
   name = "bake",
-  def = function(rec, count_cutoff = NULL, weights = NULL, exclude = NULL, id = rand_id("bake")) {
+  def = function(rec,
+                 count_cutoff = NULL,
+                 weights = NULL,
+                 exclude = NULL,
+                 id = rand_id("bake")) {
     standardGeneric("bake")
   }
 )
@@ -48,10 +52,11 @@ methods::setMethod(
   f = "bake",
   signature = "recipe",
   definition = function(rec, count_cutoff, weights, exclude, id) {
+    text <- crayon::bgMagenta('prep(rec)')
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('bake()')}"
+        "Run {text} and then try with {crayon::bgMagenta('bake()')}"
       )
     ))
   }
@@ -75,7 +80,7 @@ required_pkgs_bake <- function(x, ...) { c() }
 
 #' @noRd
 #' @keywords internal
-run_bake <- function(rec,count_cutoff, weights, exclude, id) {
+run_bake <- function(rec, count_cutoff, weights, exclude, id) {
 
   ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
   if (is.null(count_cutoff)) {
@@ -94,16 +99,19 @@ run_bake <- function(rec,count_cutoff, weights, exclude, id) {
 
   not_weights <- ids[!ids %in% names(weights)]
   if (length(not_weights) > 0) {
-    not_weights <- not_weights %>%  stringr::str_c(collapse = ", ")
-    rlang::abort(
-      c(
-        glue::glue(
-          "Some non-excluded methods are not present in the weights vector ({crayon::yellow(not_weights)})."
-        ),
-        "Please include a value for this/these step/s in the vector of weights.",
-        "Alternatively, explicitly exclude the method/s via the exclude parameter."
-      )
-    )
+    not_weights <- not_weights %>% stringr::str_c(collapse = ", ")
+    text_1 <-
+      "Please include a value for this/these step/s in the vector of weights."
+    text_2 <-
+      "Alternatively, explicitly exclude the method/s via the exclude parameter."
+    rlang::abort(c(
+      glue::glue(
+        "Some non-excluded methods are not present in the weights vector ",
+        "({crayon::yellow(not_weights)})"
+      ),
+      text_1,
+      text_2
+    ))
   }
 
   # weighted matrix
@@ -119,7 +127,9 @@ run_bake <- function(rec,count_cutoff, weights, exclude, id) {
     tidyr::pivot_longer(cols = -1) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
-      step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
+      step_ids = 
+        purrr::map_chr(.data$name, ~ .x) %>% 
+        stringr::str_c(collapse = ", "),
       sum_methods = sum(.data$value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%

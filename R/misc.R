@@ -2,7 +2,7 @@
 #'
 #' @param prefix A single character string
 #' @return A character string with the prefix and random letters separated by
-#'  and underscore.
+#'   and underscore.
 #'
 #' @export
 #' @return character vector
@@ -47,7 +47,8 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 
 #' Wrapper to convert phyloseq slots to tibble
 #'
-#' @param df output of `otu_table()`, `sample_data()` or `tax_table()` phyloseq functions.
+#' @param df output of `otu_table()`, `sample_data()` or `tax_table()` phyloseq
+#'   functions.
 #' @param id_name Name of the new column generated from rownames
 #'
 #' @return tibble
@@ -61,8 +62,8 @@ to_tibble <- function(df, id_name = "otu_id") {
     tibble::as_tibble(rownames = id_name)
 }
 
-#' Extracts parameters from steps and makes a character vector with the expression to
-#' evaluate
+#' Extracts parameters from steps and makes a character vector with the
+#' expression to evaluate
 #'
 #' @param step object of class step
 #'
@@ -75,7 +76,9 @@ step_to_expr <- function(step) {
     purrr::map2_chr(names(.), ~ {
       if (is.null(.x)) { return(  glue::glue("{.y} = NULL"))}
       if (is.character(.x)) { return(glue::glue("{.y} = '{.x}'")) }
-      if (inherits(.x, "formula")) { return(paste0(.y, " = ", paste0(.x, collapse = ""))) }
+      if (inherits(.x, "formula")) { 
+        return(paste0(.y, " = ", paste0(.x, collapse = ""))) 
+      }
       glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
@@ -102,7 +105,9 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
     dplyr::filter(.data$value == 1) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
-      step_ids = purrr::map_chr(.data$name, ~ .x) %>% stringr::str_c(collapse = ", "),
+      step_ids = 
+        purrr::map_chr(.data$name, ~ .x) %>% 
+        stringr::str_c(collapse = ", "),
       sum_methods = sum(.data$value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
@@ -112,8 +117,8 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' Get step_ids from recipe
 #'
 #' @param rec A recipe object.
-#' @param type character vector indicating the type class. Options `c("all", "da",
-#'   "prepro")`.
+#' @param type character vector indicating the type class. Options `c("all",
+#'   "da", "prepro")`.
 #'
 #' @return character vector
 #' @export
@@ -131,8 +136,12 @@ steps_ids <- function(rec, type = "all") {
   switch(
     type,
     "all" = out,
-    "da" = purrr::discard(out, stringr::str_detect(out, "subset|filter|rarefaction")),
-    "prepro" = purrr::keep(out, stringr::str_detect(out, "subset|filter|rarefaction"))
+    "da" = purrr::discard(
+      out, stringr::str_detect(out, "subset|filter|rarefaction")
+    ),
+    "prepro" = purrr::keep(
+      out, stringr::str_detect(out, "subset|filter|rarefaction")
+      )
   )
 }
 
@@ -162,6 +171,7 @@ dot <- function() {
 #' @param file_name The path and file name of the optout file.
 #'
 #' @importFrom glue double_quote
+#' @return invisible
 #' @export
 export_steps <- function(rec, file_name) {
   to_cat <-
@@ -174,7 +184,9 @@ export_steps <- function(rec, file_name) {
           if (is.character(.x[[.y]]) | is.factor(.x[[.y]])) {
             msg <- double_quote(.x[[.y]])
           }
-          stringr::str_c("   ", double_quote(.y), ": ", paste0(msg, collapse = ""), ",")
+          stringr::str_c(
+            "   ", double_quote(.y), ": ", paste0(msg, collapse = ""), ","
+          )
         }) %>%
         stringr::str_c(collapse = "\n")
 
@@ -188,10 +200,11 @@ export_steps <- function(rec, file_name) {
 #'
 #' @param rec A recipe object.
 #' @param file Path to the input file
-#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution using future
-#'   and furrr packages.
+#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
+#'   using future and furrr packages.
 #' @param workers	Number of workers for palatalization.
 #'
+#' @return recipe-class object
 #' @export
 import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
   lines <-
@@ -312,14 +325,17 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
 
 #' Checks if recipe contains a rarefaction step
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
 #'
 #' @export
+#' @return boolean
 #' @examples
 #' data(GlobalPatterns, package = "phyloseq")
 #' rec <-
-#'   phyloseq::subset_samples(GlobalPatterns, SampleType %in% c("Soil", "Skin")) %>%
+#'   phyloseq::subset_samples(
+#'     GlobalPatterns, SampleType %in% c("Soil", "Skin")
+#'   ) %>%
 #'   recipe(var_info  = "SampleType", tax_info = "Genus") %>%
 #'   step_rarefaction()
 #'
