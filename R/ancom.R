@@ -67,7 +67,7 @@ methods::setGeneric(
                  lib_cut = 0,
                  group = NULL,
                  struc_zero = FALSE,
-                 neg_lb	= FALSE,
+                 neg_lb = FALSE,
                  tol = 1e-05, 
                  max_iter = 100, 
                  conserve = FALSE, 
@@ -161,7 +161,7 @@ step_ancom_new <-
 
 #' @noRd
 #' @keywords internal
-required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOBC") }
+required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 
 #' @noRd
 #' @keywords internal
