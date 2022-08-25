@@ -35,7 +35,6 @@ BugReports: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues
 biocViews: Software, Sequencing, Microbiome, Metagenomics, MultipleComparison
 Suggests: 
     ALDEx2,
-    ANCOM (>= 2.2),
     ANCOMBC,
     apeglm,
     ashr,
