@@ -18,7 +18,7 @@ exclusion_plt(rec, steps = steps_ids(rec, "da"))
 \item{steps}{Character vector with step_ids to take in account.}
 }
 \value{
-ggplot2
+ggplot2-class object
 }
 \description{
 Plot the number of shared DA OTUs between methods.

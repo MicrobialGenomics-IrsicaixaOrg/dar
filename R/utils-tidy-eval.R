@@ -104,6 +104,48 @@
 #' @importFrom rlang enquo enquos .data := as_name as_label .env
 #' @aliases enquo enquos .data := as_name as_label .env
 #' @export .data := .env
+#' @examples 
+#' # `enquo()` defuses the expression supplied by your user
+#' f <- function(arg) {
+#'   rlang::enquo(arg)
+#' }
+#' 
+#' f(1 + 1)
+#' 
+#' # `enquos()` works with arguments and dots. It returns a list of
+#' # expressions
+#' f <- function(...) {
+#'   rlang::enquos(...)
+#' }
+#' 
+#' f(1 + 1, 2 * 10)
+#' 
+#' # Let's create some symbols:
+#' foo <- quote(foo)
+#' bar <- rlang::sym("bar")
+#' 
+#' # as_name() converts symbols to strings:
+#' foo
+#' 
+#' rlang::as_name(foo)
+#' 
+#' typeof(bar)
+#' 
+#' typeof(rlang::as_name(bar))
+#' 
+#' # as_name() unwraps quosured symbols automatically:
+#' rlang::as_name(rlang::quo(foo))
+#' 
+#' # as_label() is useful with quoted expressions:
+#' rlang::as_label(rlang::expr(foo(bar)))
+#' 
+#' rlang::as_label(rlang::expr(foobar))
+#' 
+#' # It works with any R object. This is also useful for quoted
+#' # arguments because the user might unquote constant objects:
+#' rlang::as_label(1:3)
+#' 
+#' rlang::as_label(base::list)
 NULL
 
 utils::globalVariables(c(".", "sample_id", "taxa_id"))

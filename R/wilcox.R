@@ -1,24 +1,26 @@
 #' Wilcox analysis
 #'
 #'
-#' Performs a wilcox test to determine features (be it Operational Taxanomic Unit
-#' (OTU), species, etc.) that are differentially abundant between two or more groups of
-#' multiple samples.
+#' Performs a wilcox test to determine features (be it Operational Taxanomic
+#' Unit (OTU), species, etc.) that are differentially abundant between two or
+#' more groups of multiple samples.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of operations for
-#'   this recipe.
-#' @param norm_method Transformation to apply. The options include: 'compositional' (ie
-#'   relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr',
-#'   or any method from the vegan::decostand function.
-#' @param p_adj_method Character. Specifying the method to adjust p-values for multiple
-#'   comparisons. Default is “BH” (Benjamini-Hochberg procedure).
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
+#' @param norm_method Transformation to apply. The options include:
+#'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+#'   'hellinger', 'identity', 'clr', 'alr', or any method from the
+#'   vegan::decostand function.
+#' @param p_adj_method Character. Specifying the method to adjust p-values for
+#'   multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).
 #' @param max_significance The q-value threshold for significance.
-#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-#'   the standard R sample function to resample from the abundance values in the otu_table
-#'   component of the first argument, physeq. Often one of the major goals of this
-#'   procedure is to achieve parity in total number of counts between samples, as an
-#'   alternative to other formal normalization procedures, which is why a single value for
-#'   the sample.size is expected.
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
+#'   rarefaction uses the standard R sample function to resample from the
+#'   abundance values in the otu_table component of the first argument, physeq.
+#'   Often one of the major goals of this procedure is to achieve parity in
+#'   total number of counts between samples, as an alternative to other formal
+#'   normalization procedures, which is why a single value for the sample.size
+#'   is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -26,6 +28,16 @@
 #' @aliases step_wilcox
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define wilcox step with default parameters
+#' rec <- step_wilcox(rec)
+#' rec
 methods::setGeneric(
   name = "step_wilcox",
   def = function(rec,
@@ -54,7 +66,8 @@ methods::setMethod(
     if (!rarefy & !contains_rarefaction(rec)) {
       rlang::inform(c(
         "!" = glue::glue(
-          "Run wilcox without rarefaction is not recommended ({crayon::blue(paste0('id = ', id))})"
+          "Run wilcox without rarefaction is not recommended ", 
+          "({crayon::blue(paste0('id = ', id))})"
         )
       ))
     }
@@ -77,14 +90,24 @@ methods::setMethod(
 methods::setMethod(
   f = "step_wilcox",
   signature = c(rec = "prep_recipe"),
-  definition = function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
+  definition = function(rec,
+                        norm_method,
+                        max_significance,
+                        p_adj_method,
+                        rarefy,
+                        id) {
     rlang::abort("This function needs a non-prep recipe!")
   }
 )
 
 #' @noRd
 #' @keywords internal
-step_wilcox_new <- function(rec, norm_method, max_significance, p_adj_method, rarefy, id) {
+step_wilcox_new <- function(rec,
+                            norm_method,
+                            max_significance,
+                            p_adj_method,
+                            rarefy,
+                            id) {
   step(
     subclass = "wilcox",
     norm_method = norm_method,
@@ -105,10 +128,16 @@ required_pkgs_wilcox <-
 
 #' @noRd
 #' @keywords internal
-run_wilcox <- function(rec, norm_method, max_significance, p_adj_method, rarefy) {
+run_wilcox <- function(rec,
+                       norm_method,
+                       max_significance,
+                       p_adj_method,
+                       rarefy) {
 
   phy <- get_phy(rec)
-  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
+  if (rarefy) { 
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) 
+  }
 
   prepro_df <-
     phy %>%
@@ -135,7 +164,9 @@ run_wilcox <- function(rec, norm_method, max_significance, p_adj_method, rarefy)
             dplyr::filter(sum == 0) %>%
             dplyr::pull(!!var)
 
-          comparisons <- get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1)
+          comparisons <- 
+            get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1)
+          
           if (length(to_exclude) >= 2) {
             comparisons <-
               comparisons %>% purrr::discard(~ {

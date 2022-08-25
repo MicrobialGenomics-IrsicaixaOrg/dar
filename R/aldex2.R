@@ -57,6 +57,16 @@
 #' @aliases step_aldex
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define ALDEX step with default parameters
+#' rec <- step_aldex(rec)
+#' rec
 methods::setGeneric(
   name = "step_aldex",
   def = function(rec,
@@ -101,16 +111,21 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
-step_aldex_new <- function(out_cut, max_significance, mc.samples, denom, rarefy, id) {
-  step(
-    subclass = "aldex",
-    max_significance = max_significance,
-    mc.samples = mc.samples,
-    denom = denom,
-    rarefy = rarefy,
-    id = id
-  )
-}
+step_aldex_new <- function(out_cut,
+                           max_significance,
+                           mc.samples,
+                           denom,
+                           rarefy,
+                           id) {
+    step(
+      subclass = "aldex",
+      max_significance = max_significance,
+      mc.samples = mc.samples,
+      denom = denom,
+      rarefy = rarefy,
+      id = id
+    )
+  }
 
 #' @noRd
 #' @keywords internal
@@ -124,7 +139,9 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
 
-  if (rarefy) { phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) }
+  if (rarefy) {
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
+  }
 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
@@ -154,7 +171,10 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
             suppressMessages(ALDEx2::aldex.ttest(clr)),
             suppressMessages(ALDEx2::aldex.effect(clr, CI = TRUE))
           ) %>%
-            dplyr::mutate(comparison = stringr::str_c(comparison, collapse = "-"), var = var) %>%
+            dplyr::mutate(
+              comparison = stringr::str_c(comparison, collapse = "-"), 
+              var = var
+            ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::filter(.data$we.eBH < max_significance)

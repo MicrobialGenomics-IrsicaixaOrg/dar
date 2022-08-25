@@ -17,6 +17,7 @@ prep_recipe(rec, results, bakes)
 An object of class \code{prep_recipe}.
 }
 \description{
-A prep_recipe is recipe with the results corresponding to the steps defined in the
-recipe.
+A prep_recipe is recipe with the results corresponding to the steps defined
+in the recipe.
 }
+\keyword{internal}

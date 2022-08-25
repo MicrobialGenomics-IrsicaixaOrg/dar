@@ -12,6 +12,20 @@ required_deps(rec)
 \arguments{
 \item{rec}{A \code{recipe} object}
 }
+\value{
+character
+}
 \description{
 Returns required pakcages for recipe object
+}
+\examples{
+data(test_rec)
+
+## The function returns instructions to install any uninstalled dependencies 
+## needed to run the recipe steps
+required_deps(test_rec)
+
+## The function also works with prep_recipe-class objects
+data(test_prep_rec)
+required_deps(test_prep_rec)
 }

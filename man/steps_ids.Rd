@@ -17,3 +17,17 @@ character vector
 \description{
 Get step_ids from recipe
 }
+\examples{
+data(test_rec)
+
+## We can extract the step identifiers from a recipe with `step_ids`
+ids <- steps_ids(test_rec)
+ids
+
+## With the `type` parameter, extract the prepro and da steps separately.
+da_ids <- steps_ids(test_rec, type = "da")
+da_ids
+
+prepro_ids <- steps_ids(test_rec, type = "prepro")
+prepro_ids
+}

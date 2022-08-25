@@ -7,60 +7,89 @@
 \usage{
 step_ancom(
   rec,
-  out_cut = 0.05,
+  formula = get_var(rec),
+  p_adj_method = "holm",
   zero_cut = 0.9,
   lib_cut = 0,
+  group = NULL,
+  struc_zero = FALSE,
   neg_lb = FALSE,
-  p_adj_method = "BH",
+  tol = 1e-05,
+  max_iter = 100,
+  conserve = FALSE,
   alpha = 0.05,
+  global = FALSE,
   rarefy = FALSE,
   id = rand_id("ancom")
 )
 
 \S4method{step_ancom}{recipe}(
   rec,
-  out_cut = 0.05,
+  formula = get_var(rec),
+  p_adj_method = "holm",
   zero_cut = 0.9,
   lib_cut = 0,
+  group = NULL,
+  struc_zero = FALSE,
   neg_lb = FALSE,
-  p_adj_method = "BH",
+  tol = 1e-05,
+  max_iter = 100,
+  conserve = FALSE,
   alpha = 0.05,
+  global = FALSE,
   rarefy = FALSE,
   id = rand_id("ancom")
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{out_cut}{Numerical fraction between 0 and 1. For each taxon, observations with
-proportion of mixture distribution less than out_cut will be detected as outlier
-zeros; while observations with proportion of mixture distribution greater than 1 -
-out_cut will be detected as outlier values.}
+\item{formula}{the character string expresses how the microbial absolute
+abundances for each taxon depend on the variables in metadata.}
 
-\item{zero_cut}{Numerical fraction between 0 and 1. Taxa with proportion of zeroes
-greater than zero_cut are not included in the analysis.}
+\item{p_adj_method}{method to adjust p-values by. Default is "holm". Options
+include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
+"none". See p.adjust for more details.}
 
-\item{lib_cut}{Numeric. Samples with library size less than lib_cut are not included in
-the analysis.}
+\item{zero_cut}{a numerical fraction between 0 and 1. Taxa with proportion of
+zeroes greater than zero_cut will be excluded in the analysis. Default is
+0.90.}
 
-\item{neg_lb}{Logical. TRUE indicates a taxon would be classified as a structural zero
-in the corresponding experimental group using its asymptotic lower bound. More
-specifically, neg_lb = TRUE indicates you are using both criteria stated in section
-3.2 of ANCOM-II to detect structural zeros; Otherwise, neg_lb = FALSE will only use
-the equation 1 in section 3.2 of ANCOM-II for declaring structural zeros.}
+\item{lib_cut}{a numerical threshold for filtering samples based on library
+sizes. Samples with library sizes less than lib_cut will be excluded in the
+analysis. Default is 0, i.e. do not filter any sample.}
 
-\item{p_adj_method}{Character. Specifying the method to adjust p-values for multiple
-comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
+\item{group}{the name of the group variable in metadata. Specifying group is
+required for detecting structural zeros and performing global test.}
 
-\item{alpha}{Level of significance. Default is 0.05.}
+\item{struc_zero}{whether to detect structural zeros. Default is FALSE.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{neg_lb}{whether to classify a taxon as a structural zero in the
+corresponding study group using its asymptotic lower bound. Default is
+FALSE.}
+
+\item{tol}{the iteration convergence tolerance for the E-M algorithm. Default
+is 1e-05.}
+
+\item{max_iter}{the maximum number of iterations for the E-M algorithm.
+Default is 100.}
+
+\item{conserve}{whether to use a conservative variance estimate of the test
+statistic. It is recommended if the sample size is small and/or the number
+of differentially abundant taxa is believed to be large. Default is FALSE.}
+
+\item{alpha}{level of significance. Default is 0.05.}
+
+\item{global}{whether to perform global test. Default is FALSE.}
+
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -68,11 +97,22 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-This function performs an analysis of composition of microbiomes (ANCOM). ANCOM
-accounts for the underlying structure in the data and can be used for comparing the
-composition of microbiomes in two or more populations. ANCOM makes no distributional
-assumptions and can be implemented in a linear model framework to adjust for covariates
-as well as model longitudinal data.
+This function performs an analysis of composition of microbiomes (ANCOM).
+ANCOM accounts for the underlying structure in the data and can be used for
+comparing the composition of microbiomes in two or more populations. ANCOM
+makes no distributional assumptions and can be implemented in a linear model
+framework to adjust for covariates as well as model longitudinal data.
+}
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define ANCOM step with default parameters
+rec <- step_ancom(rec)
+rec
 }
 \seealso{
 Other Diff taxa steps: 

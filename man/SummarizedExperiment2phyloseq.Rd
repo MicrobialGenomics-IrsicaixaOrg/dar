@@ -17,3 +17,4 @@ phyloseq
 \description{
 Converts SummarizedExperiment to a Phyloseq object
 }
+\keyword{internal}

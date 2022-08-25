@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: 
     c(person(given = "Francesc",
              family = "Catala-Moll",
@@ -13,9 +13,18 @@ Authors@R:
              email = "mnoguera@irsicaixa.es",
              comment = c(ORCID = "0000-0002-6194-1395"))
     )
-Description: A fast, consistent and interactive tool for consensus
-    differential abundance analysis using the most popular tools in the
-    field.
+Description: Differential abundance testing in microbiome data challenges both 
+    parametric and non-parametric statistical methods, due to its sparsity, high 
+    variability and compositional nature. Microbiome-specific statistical 
+    methods often assume classical distribution models or take into account 
+    compositional specifics. These produce results that range within the 
+    specificity vs sensitivity space in such a way that type I and type II error 
+    that are difficult to ascertain in real microbiome data when a single method 
+    is used. Recently, a consensus approach based on multiple differential 
+    abundance (DA) methods was recently suggested in order to increase robustness. 
+    With dar, you can use dplyr-like pipeable sequences of DA methods and then 
+    apply different consensus strategies. In this way we can obtain more reliable 
+    results in a fast, consistent and reproducible way.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -23,13 +32,15 @@ RoxygenNote: 7.2.0
 URL: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar,
     https://microbialgenomics-irsicaixaorg.github.io/dar/
 BugReports: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues
+biocViews: Software, Sequencing, Microbiome, Metagenomics, MultipleComparison
 Suggests: 
     ALDEx2,
-    ANCOM (>= 2.2),
+    ANCOMBC,
     apeglm,
     ashr,
     Biobase,
     corncob,
+    covr,
     DESeq2,
     devtools,
     furrr,
@@ -65,7 +76,7 @@ Imports:
     tidyr,
     UpSetR
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 LazyData: false
 Collate: 
     'recipe-class.R'
@@ -90,6 +101,4 @@ Collate:
     'utils-tidy-eval.R'
     'utils.R'
     'wilcox.R'
-Remotes: 
-    xec-cm/ANCOM
 VignetteBuilder: knitr

@@ -10,12 +10,12 @@ step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
 \S4method{step_filter_taxa}{recipe}(rec, .f, id = rand_id("filter_taxa"))
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{.f}{A function or list of functions that take a vector of abundance values and
-return a logical. Some canned useful function types are included in the
-genefilter-package.}
+\item{.f}{A function or list of functions that take a vector of abundance
+values and return a logical. Some canned useful function types are included
+in the genefilter-package.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -24,12 +24,23 @@ An object of class \code{recipe}
 }
 \description{
 This function is directly analogous to the genefilter function for microarray
-filtering, but is used for filtering OTUs from phyloseq objects. It applies an
-arbitrary set of functions — as a function list, for instance, created by filterfun —
-as across-sample criteria, one OTU at a time. It takes as input a phyloseq object, and
-returns a logical vector indicating whether or not each OTU passed the criteria.
-Alternatively, if the "prune" option is set to FALSE, it returns the already-trimmed
-version of the phyloseq object.
+filtering, but is used for filtering OTUs from phyloseq objects. It applies
+an arbitrary set of functions — as a function list, for instance, created by
+filterfun — as across-sample criteria, one OTU at a time. It takes as input a
+phyloseq object, and returns a logical vector indicating whether or not each
+OTU passed the criteria. Alternatively, if the "prune" option is set to
+FALSE, it returns the already-trimmed version of the phyloseq object.
+}
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define filter taxa step with default parameters
+rec <-  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+rec
 }
 \seealso{
 Other filter phy steps: 

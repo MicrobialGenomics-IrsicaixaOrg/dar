@@ -1,4 +1,4 @@
-# CLASS RECIPE -------------------------------------------------------------------------
+# CLASS RECIPE -----------------------------------------------------------------
 
 ## class unions ----
 
@@ -92,7 +92,8 @@ methods::setClass(
 #' rec <- rec %>%
 #'   add_var("RiskGroup2") %>%
 #'   add_tax("Genus")
-recipe <- function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
+recipe <- 
+  function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
 
   var_info <- tibble::tibble(vars = var_info)
   tax_info <- tibble::tibble(tax_lev = tax_info)
@@ -125,12 +126,24 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
   phy <- get_phy(object)
   ntax <- phyloseq::ntaxa(phy)
   nsam <- phyloseq::nsamples(phy)
-  cat(glue::glue("     {info()} phyloseq object with {crayon::blue(ntax)} taxa and {crayon::blue(nsam)} samples"), "\n")
+  cat(
+    glue::glue(
+      "     {info()} phyloseq object with {crayon::blue(ntax)} taxa and ",
+      "{crayon::blue(nsam)} samples"
+    ),
+    "\n"
+  )
 
   ## Variable
 
   if (length(get_var(object)) == 0) {
-    cat(glue::glue("     {cross()} undefined variable of interest. Use {crayon::bgMagenta('add_var()')} to add to recipe!"), "\n")
+    cat(
+      glue::glue(
+        "     {cross()} undefined variable of interest. Use ",
+        "{crayon::bgMagenta('add_var()')} to add to recipe!"
+      ),
+      "\n"
+    )
   } else {
     var <- get_var(object) %>% dplyr::pull(1)
     var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
@@ -141,14 +154,27 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     if (is.numeric(var_vals)) {
       msg <- glue::glue("class: numeric")
     }
-    cat(glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"), "\n")
+    cat(glue::glue(
+      "     {info()} variable of interes {crayon::blue(var)} ({msg})"
+      ),
+      "\n"
+    )
   }
 
   ## Taxa
   if (length(get_tax(object)) == 0) {
-    cat(glue::glue("     {cross()} undefined taxonomic level. Use {crayon::bgMagenta('add_tax()')} to add to recipe!"), "\n")
+    cat(
+      glue::glue(
+        "     {cross()} undefined taxonomic level. Use ",
+        "{crayon::bgMagenta('add_tax()')} to add to recipe!"
+      ),
+      "\n"
+    )
   } else {
-    cat(glue::glue("     {info()} taxonomic level {crayon::blue(get_tax(object))}"), "\n\n")
+    cat(glue::glue(
+      "     {info()} taxonomic level {crayon::blue(get_tax(object))}"),
+      "\n\n"
+    )
   }
 
   ## Steps
@@ -183,7 +209,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
   }
 })
 
-# METHODS RECIPE -----------------------------------------------------------------------
+# METHODS RECIPE ---------------------------------------------------------------
 
 ## get_var ----
 
@@ -296,7 +322,8 @@ methods::setMethod(
 #' data(test_prep_rec)
 #' rec <- add_var(test_prep_rec, var_info = "RiskGroup2")
 #' }
-methods::setGeneric("add_var", function(rec, var_info) standardGeneric("add_var"))
+methods::setGeneric("add_var", function(rec, var_info)
+  standardGeneric("add_var"))
 
 #' @rdname add_var
 #' @export
@@ -336,7 +363,8 @@ methods::setMethod(
 #' data(test_prep_rec)
 #' rec <- add_tax(test_prep_rec, tax_info = "Species")
 #' }
-methods::setGeneric("add_tax", function(rec, tax_info) standardGeneric("add_tax"))
+methods::setGeneric("add_tax", function(rec, tax_info)
+  standardGeneric("add_tax"))
 
 #' @rdname add_tax
 #' @export
@@ -441,14 +469,14 @@ methods::setMethod(
   }
 )
 
-# CLASS PREP_RECIPE -------------------------------------------------------------------------
+# CLASS PREP_RECIPE ------------------------------------------------------------
 
 ## class def ----
 
 #' prep_recipe-class object
 #'
-#' A prep_recipe is recipe with the results corresponding to the steps defined in the
-#' recipe.
+#' A prep_recipe is recipe with the results corresponding to the steps defined
+#' in the recipe.
 #'
 #' @slot results Contains the results of all defined analysis in the recipe.
 #' @slot bakes Contains the executed bakes.
@@ -466,17 +494,16 @@ methods::setClass(
 
 #' Create a recipe prep_recipe.
 #'
-#' A prep_recipe is recipe with the results corresponding to the steps defined in the
-#' recipe.
+#' A prep_recipe is recipe with the results corresponding to the steps defined
+#' in the recipe.
 #'
 #' @param rec A recipe object.
 #' @param results list with the results
 #' @param bakes list with saved bakes
 #'
 #' @return An object of class `prep_recipe`.
-#'
+#' @keywords internal
 #' @aliases prep_recipe
-#' @export
 prep_recipe <- function(rec, results, bakes) {
   methods::new(
     Class = "prep_recipe",
@@ -497,96 +524,132 @@ methods::setValidity(
 
 ## printing ----
 
-methods::setMethod("show", signature = "prep_recipe", definition = function(object) {
-  cli::cat_rule(crayon::blue("DAR Results"))
-  cat("Inputs:\n\n")
-
-  ## Phyloseq
-  phy <- get_phy(object)
-  ntax <- phyloseq::ntaxa(phy)
-  nsam <- phyloseq::nsamples(phy)
-  cat(glue::glue("     {info()} phyloseq object with {crayon::blue(ntax)} taxa and {crayon::blue(nsam)} samples"), "\n")
-
-  ## Variable
-  if (is.null(var)) {
-    cat(glue::glue("     {cross()} undefined variable of interest. Use {crayon::bgMagenta('add_var()')} to add to recipe!"), "\n")
-  } else {
-    var <- get_var(object) %>% dplyr::pull(1)
-    var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
-    if (is.character(var_vals) | is.factor(var_vals)) {
-      levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
-      msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
+methods::setMethod(
+  "show",
+  signature = "prep_recipe",
+  definition = function(object) {
+    cli::cat_rule(crayon::blue("DAR Results"))
+    cat("Inputs:\n\n")
+    
+    ## Phyloseq
+    phy <- get_phy(object)
+    ntax <- phyloseq::ntaxa(phy)
+    nsam <- phyloseq::nsamples(phy)
+    cat(
+      glue::glue(
+        "     {info()} phyloseq object with {crayon::blue(ntax)} taxa and ", 
+        "{crayon::blue(nsam)} samples"
+      ),
+      "\n"
+    )
+    
+    ## Variable
+    if (is.null(var)) {
+      cat(
+        glue::glue(
+          "     {cross()} undefined variable of interest. Use ", 
+          "{crayon::bgMagenta('add_var()')} to add to recipe!"
+        ),
+        "\n"
+      )
+    } else {
+      var <- get_var(object) %>% dplyr::pull(1)
+      var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
+      if (is.character(var_vals) | is.factor(var_vals)) {
+        levs <-
+          factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
+        msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
+      }
+      if (is.numeric(var_vals)) {
+        msg <- glue::glue("class: numeric")
+      }
+      cat(glue::glue(
+        "     {info()} variable of interes {crayon::blue(var)} ({msg})"),
+        "\n")
     }
-    if (is.numeric(var_vals)) {
-      msg <- glue::glue("class: numeric")
+    
+    ## Taxa
+    if (is.null(var)) {
+      cat(
+        glue::glue(
+          "     {cross()} undefined taxonomic level. Use ", 
+          "{crayon::bgMagenta('add_tax()')} to add to recipe!"
+        ),
+        "\n"
+      )
+    } else {
+      cat(glue::glue(
+        "     {info()} taxonomic level {crayon::blue(get_tax(object))}"
+      ),
+      "\n\n")
     }
-    cat(glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"), "\n")
-  }
-
-  ## Taxa
-  if (is.null(var)) {
-    cat(glue::glue("     {cross()} undefined taxonomic level. Use {crayon::bgMagenta('add_tax()')} to add to recipe!"), "\n")
-  } else {
-    cat(glue::glue("     {info()} taxonomic level {crayon::blue(get_tax(object))}"), "\n\n")
-  }
-
-  ## Results
-  cat("Results:\n\n")
-  names(object@results) %>%
-    purrr::discard(stringr::str_detect(., "step_subster|step_filter")) %>%
-    purrr::walk(~ {
-      n_taxa <-
-        object@results[[.x]][[1]] %>%
-        dplyr::pull(.data$taxa_id) %>%
-        unique() %>%
-        length()
-
-      n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
-
-      cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
-    })
-
-  if (length(object@results) > 0) {
-    n_overlap <-
-      find_intersections(object) %>%
-      dplyr::filter(.data$sum_methods == length(steps_ids(object, type = "da"))) %>%
-      nrow()
-
-    cli::cat_line()
-    cat(glue::glue("     {info()} {n_overlap} taxa are present in all tested methods"), "\n\n")
-  }
-
-  ## Bakes
-  if (length(object@bakes) > 0) {
-    cat("Bakes:\n\n")
-
-    object@bakes %>%
-      purrr::iwalk( ~ {
-        msg <-
-          .x %>%
-          purrr::map2_chr(names(.), ~ {
-            if (is.null(.x)) {
-              .x = "NULL"
-            }
-            glue::glue("{.y}: {.x}")
-          }) %>% stringr::str_c(collapse = ", ")
-
-        cat(c(
-          glue::glue(
-            "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} {crayon::silver(msg)}"
-          ),
-          "\n"
-        ))
+    
+    ## Results
+    cat("Results:\n\n")
+    names(object@results) %>%
+      purrr::discard(stringr::str_detect(., "step_subster|step_filter")) %>%
+      purrr::walk( ~ {
+        n_taxa <-
+          object@results[[.x]][[1]] %>%
+          dplyr::pull(.data$taxa_id) %>%
+          unique() %>%
+          length()
+        
+        n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
+        
+        cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
       })
+    
+    if (length(object@results) > 0) {
+      n_overlap <-
+        find_intersections(object) %>%
+        dplyr::filter(
+          .data$sum_methods == length(steps_ids(object, type = "da"))
+        ) %>%
+        nrow()
+      
+      cli::cat_line()
+      cat(glue::glue(
+        "     {info()} {n_overlap} taxa are present in all tested methods"),
+        "\n\n"
+      )
+    }
+    
+    ## Bakes
+    if (length(object@bakes) > 0) {
+      cat("Bakes:\n\n")
+      
+      object@bakes %>%
+        purrr::iwalk(~ {
+          msg <-
+            .x %>%
+            purrr::map2_chr(names(.), ~ {
+              if (is.null(.x)) {
+                .x = "NULL"
+              }
+              glue::glue("{.y}: {.x}")
+            }) %>% stringr::str_c(collapse = ", ")
+          
+          cat(c(
+            glue::glue(
+              "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} ", 
+              "{crayon::silver(msg)}"
+            ),
+            "\n"
+          ))
+        })
+    }
   }
-})
+)
 
 
 # METHODS PREP_RECIPE -----------------------------------------------------------------------
 
 #' @noRd
 #' @keywords internal
-required_pkgs_prep <- function(x, ...) {  c("furrr", "future") }
+required_pkgs_prep <- function(x, ...) {
+  c("furrr", "future")
+}
 
 
 ## add_var ----
@@ -660,7 +723,10 @@ methods::setMethod(
 #' prep(rec, parallel = TRUE, workers = 2)
 methods::setGeneric(
   name = "prep",
-  def = function(rec, parallel = TRUE, workers = 8, force = FALSE) {
+  def = function(rec,
+                 parallel = TRUE,
+                 workers = 8,
+                 force = FALSE) {
     standardGeneric("prep")
   }
 )
@@ -671,77 +737,82 @@ methods::setMethod(
   f = "prep",
   signature = "recipe",
   definition = function(rec, parallel, workers, force) {
-
     if ("results" %in% methods::slotNames(rec) & !force) {
       rlang::abort(c(
         "The input recipe has already been prep!",
         i = glue::glue(
-          "To force the rerun of all steps plese run {crayon::bgMagenta('prep(rec, force = T)')}"
+          "To force the rerun of all steps plese run ", 
+          "{crayon::bgMagenta('prep(rec, force = T)')}"
         )
       ))
     }
-
+    
     check <- utils::capture.output(required_deps(rec))
     if (length(check) > 0) {
       rlang::abort(c(
         "Not all necessary dependencies are installed.",
         i = glue::glue(
-          "Use {crayon::bgMagenta('required_deps(rec)')} to see how to install them."
+          "Use {crayon::bgMagenta('required_deps(rec)')} to see how to install ", 
+          "them."
         )
       ))
     }
-
+    
     ## Phyloseq preporcessing steps
     to_execute <-
       rec@steps %>%
       purrr::map_chr(step_to_expr) %>%
       purrr::keep(stringr::str_detect(., "run_subset|run_filter"))
-
+    
     to_execute <-
       rec@steps %>%
       purrr::map_chr(step_to_expr) %>%
       purrr::keep(stringr::str_detect(., "run_rarefaction")) %>%
       c(to_execute, .)
-
+    
     for (.x in to_execute) {
       rec <- eval(parse(text = .x))
     }
-
+    
     ## DA steps
     names <-
       purrr::map_chr(rec@steps, ~ .x[["id"]]) %>%
       purrr::discard(stringr::str_detect(., "subset|filter|rarefaction"))
-
+    
     if (parallel) {
       recipes_pkg_check(required_pkgs_prep(), "prep()")
       future::plan(future::multisession, workers = workers)
       on.exit(future::plan(future::sequential))
-
+      
       res <-
         rec@steps %>%
         purrr::map_chr(step_to_expr) %>%
-        purrr::discard(stringr::str_detect(., "run_subset|run_filter|run_rarefaction")) %>%
-        furrr::future_map( ~ {
+        purrr::discard(
+          stringr::str_detect(., "run_subset|run_filter|run_rarefaction")
+        ) %>%
+        furrr::future_map(~ {
           rec <- rec
           eval(parse(text = .x))
         }, .options = furrr::furrr_options(seed = TRUE))
-
+      
       names(res) <- names
     }
-
+    
     if (!parallel) {
       res <-
         rec@steps %>%
         purrr::map(step_to_expr) %>%
-        purrr::discard(stringr::str_detect(., "run_subset|run_filter|run_rarefaction")) %>%
-        purrr::map( ~ {
+        purrr::discard(
+          stringr::str_detect(., "run_subset|run_filter|run_rarefaction")
+        ) %>%
+        purrr::map(~ {
           rec <- rec
           eval(parse(text = .x))
         })
-
+      
       names(res) <- names
     }
-
+    
     prep_recipe(rec, res, list())
   }
 )
@@ -768,7 +839,9 @@ methods::setMethod(
 #' \dontrun{df <- intersection_df(test_rec)}
 methods::setGeneric(
   name = "intersection_df",
-  def = function(rec, steps = steps_ids(rec, "da")) { standardGeneric("intersection_df") }
+  def = function(rec, steps = steps_ids(rec, "da")) {
+    standardGeneric("intersection_df")
+  }
 )
 
 #' @rdname intersection_df
@@ -795,14 +868,15 @@ methods::setMethod(
     names(rec@results) %>%
       purrr::keep(. %in% steps) %>%
       purrr::set_names() %>%
-      purrr::map_dfc(~ {
+      purrr::map_dfc( ~ {
         taxa <- rec@results[[.x]][[1]][["taxa_id"]]
         rownames(rec@phyloseq@otu_table) %>%
           tibble::tibble(taxa_id = .) %>%
           dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
           dplyr::select(!!.x)
       }) %>%
-      dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
+      dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table),
+                    .before = 1) %>%
       as.data.frame()
   }
 )
@@ -813,8 +887,9 @@ methods::setMethod(
 #'
 #' @param rec A `recipe` object.
 #' @param steps Character vector with step_ids to take in account.
-#' @param ordered_by How the intersections in the matrix should be ordered by. Options
-#'   include frequency (entered as "freq"), degree, or both in any order.
+#' @param ordered_by How the intersections in the matrix should be ordered by.
+#'   Options include frequency (entered as "freq"), degree, or both in any
+#'   order.
 #'
 #' @aliases intersection_plt
 #' @return UpSet plot
@@ -839,7 +914,9 @@ methods::setMethod(
 #' \dontrun{df <- intersection_plt(test_rec)}
 methods::setGeneric(
   name = "intersection_plt",
-  def = function(rec, steps = steps_ids(rec, "da"), ordered_by = c("freq", "degree")) {
+  def = function(rec,
+                 steps = steps_ids(rec, "da"),
+                 ordered_by = c("freq", "degree")) {
     standardGeneric("intersection_plt")
   }
 )
@@ -853,7 +930,8 @@ methods::setMethod(
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('intersection_plt()')}"
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
+        "{crayon::bgMagenta('intersection_plt()')}"
       )
     ))
   }
@@ -861,6 +939,7 @@ methods::setMethod(
 
 #' @rdname intersection_plt
 #' @export
+#' @importFrom UpSetR upset
 methods::setMethod(
   f = "intersection_plt",
   signature = "prep_recipe",
@@ -882,7 +961,7 @@ methods::setMethod(
 #' @param steps Character vector with step_ids to take in account.
 #'
 #' @aliases exclusion_plt
-#' @return ggplot2
+#' @return ggplot2-class object
 #' @export
 #' @examples
 #' data(test_prep_rec)
@@ -915,7 +994,8 @@ methods::setMethod(
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('exclusion_plt()')}"
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
+        "{crayon::bgMagenta('exclusion_plt()')}"
       )
     ))
   }
@@ -923,22 +1003,23 @@ methods::setMethod(
 
 #' @rdname exclusion_plt
 #' @export
+#' @import ggplot2
 methods::setMethod(
   f = "exclusion_plt",
   signature = "prep_recipe",
   definition = function(rec, steps) {
     df <-
       steps_ids(rec, "da") %>%
-      purrr::map_dfr( ~ {
+      purrr::map_dfr(~ {
         df <-
           intersection_df(rec, steps = steps) %>%
           tidyr::pivot_longer(cols = -1)
-
+        
         to_retain <-
           df %>%
           dplyr::filter(name == .x & value == 1) %>%
           dplyr::pull(taxa_id)
-
+        
         df %>%
           dplyr::filter(taxa_id %in% to_retain) %>%
           dplyr::group_by(taxa_id) %>%
@@ -946,22 +1027,20 @@ methods::setMethod(
           dplyr::count(sum) %>%
           dplyr::mutate(method = .x, total = sum(.data$n))
       })
-
+    
     df %>%
-      ggplot2::ggplot(ggplot2::aes(
+      ggplot(aes(
         x = stats::reorder(.data$method, .data$total),
         y = .data$n,
         fill = factor(sum)
       )) +
-      ggplot2::geom_bar(stat = "identity", alpha = 0.9) +
-      ggplot2::scale_fill_brewer(palette = "Spectral", direction = -1) +
-      ggplot2::coord_flip() +
-      ggplot2::theme_minimal() +
-      ggplot2::labs(
-        y = "Total number of differentially Abundant OTUs",
-        x = "method identifier",
-        fill = "Shared"
-      )
+      geom_bar(stat = "identity", alpha = 0.9) +
+      scale_fill_brewer(palette = "Spectral", direction = -1) +
+      coord_flip() +
+      theme_minimal() +
+      labs(y = "Total number of differentially Abundant OTUs",
+           x = "method identifier",
+           fill = "Shared")
   }
 )
 
@@ -989,8 +1068,8 @@ methods::setMethod(
 #' rec <- bake(rec, count_cutoff = 1)
 #' cool(rec, 2)
 #'
-#' ## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe the
-#' ## output is an error.
+#' ## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe 
+#' ## the output is an error.
 #' data(test_rec)
 #' \dontrun{
 #' bake(test_rec) %>% cool()
@@ -1011,7 +1090,8 @@ methods::setMethod(
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with {crayon::bgMagenta('cool()')}"
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
+        "{crayon::bgMagenta('cool()')}"
       )
     ))
   }
@@ -1024,28 +1104,36 @@ methods::setMethod(
   signature = "prep_recipe",
   definition = function(rec, bake) {
     all_bakes <- rec@bakes
-    all_names <- all_bakes %>% purrr::map_chr( ~ .x[["id"]])
-
+    all_names <- all_bakes %>% purrr::map_chr(~ .x[["id"]])
+    
     if (is.numeric(bake) & length(all_bakes) < bake) {
       rlang::abort(c(
         "Bake index is not defined in the prep_recipe!",
-        glue::glue("Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with {crayon::bgMagenta('cool()')}")
+        glue::glue(
+          "Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with ", 
+          "{crayon::bgMagenta('cool()')}"
+        )
       ))
     }
     if (!is.numeric(bake) & !bake %in% all_names) {
       rlang::abort(c(
         "Bake name is not defined in the prep_recipe!",
-        glue::glue("Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with {crayon::bgMagenta('cool()')}")
+        glue::glue(
+          "Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with ", 
+          "{crayon::bgMagenta('cool()')}"
+        )
       ))
     }
-
-    if (!is.numeric(bake)) { bake <- which(all_names == bake) }
-
+    
+    if (!is.numeric(bake)) {
+      bake <- which(all_names == bake)
+    }
+    
     to_execute <-
       rec@bakes %>%
       .[bake] %>%
       purrr::map_chr(step_to_expr)
-
+    
     eval(parse(text = to_execute))
   }
 )

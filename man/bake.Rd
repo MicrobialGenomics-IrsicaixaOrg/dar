@@ -4,7 +4,7 @@
 \alias{bake}
 \alias{bake,prep_recipe-method}
 \alias{bake,recipe-method}
-\title{Extract results from recipe step}
+\title{Define consensus strategies from a recipe}
 \usage{
 bake(
   rec,
@@ -31,12 +31,12 @@ bake(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{count_cutoff}{Indicates the minimum number of methods in which an OTU must be
-present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
-\code{length(steps_ids(rec, "da")) - length(exclude)}}
+\item{count_cutoff}{Indicates the minimum number of methods in which an OTU
+must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
+equal to \code{length(steps_ids(rec, "da")) - length(exclude)}}
 
 \item{weights}{Named vector with the ponderation value for each method.}
 
@@ -48,6 +48,31 @@ present (Default: NULL). If count_cutoff is NULL count_cutoff is equal to
 An object of class \code{prep_recipe}
 }
 \description{
-For a prep recipe with add step to define the result extraction method.
+For a prep recipe adds a consensus strategies to use for result extraction.
+}
+\examples{
+data(test_prep_rec)
+rec <- test_prep_rec
+
+## Default bake extracts common OTUs in all DA tested methods 
+## (In this case the recipe contains 3 methods)
+res <- bake(rec)
+cool(res)
+
+## We can use the parameter `cout_cutoff` to for example select those OTUs
+## shared with at least two methods
+res <- bake(rec, count_cutoff = 2)
+cool(res)
+
+## Furthermore, we can exclude methods from the consensus strategy with the 
+## `exclude` parameter.
+res <- bake(rec, exclude = steps_ids(rec, "da")[1])
+cool(res)
+
+## Finally, we can use the `weights` parameter to weigh each method.
+weights <- c(2, 1, 1)
+names(weights) <- steps_ids(rec, "da")
+res <- bake(rec, weights = weights)
+cool(res)
 }
 \concept{Bake steps}

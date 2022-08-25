@@ -25,8 +25,9 @@ intersection_plt(
 
 \item{steps}{Character vector with step_ids to take in account.}
 
-\item{ordered_by}{How the intersections in the matrix should be ordered by. Options
-include frequency (entered as "freq"), degree, or both in any order.}
+\item{ordered_by}{How the intersections in the matrix should be ordered by.
+Options include frequency (entered as "freq"), degree, or both in any
+order.}
 }
 \value{
 UpSet plot

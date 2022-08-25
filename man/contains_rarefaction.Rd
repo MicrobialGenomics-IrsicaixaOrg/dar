@@ -7,8 +7,11 @@
 contains_rarefaction(rec)
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
+}
+\value{
+boolean
 }
 \description{
 Checks if recipe contains a rarefaction step
@@ -16,7 +19,9 @@ Checks if recipe contains a rarefaction step
 \examples{
 data(GlobalPatterns, package = "phyloseq")
 rec <-
-  phyloseq::subset_samples(GlobalPatterns, SampleType \%in\% c("Soil", "Skin")) \%>\%
+  phyloseq::subset_samples(
+    GlobalPatterns, SampleType \%in\% c("Soil", "Skin")
+  ) \%>\%
   recipe(var_info  = "SampleType", tax_info = "Genus") \%>\%
   step_rarefaction()
 

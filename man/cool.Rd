@@ -37,8 +37,8 @@ cool(rec)
 rec <- bake(rec, count_cutoff = 1)
 cool(rec, 2)
 
-## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe the
-## output is an error.
+## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe 
+## the output is an error.
 data(test_rec)
 \dontrun{
 bake(test_rec) \%>\% cool()

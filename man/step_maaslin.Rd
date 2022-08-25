@@ -58,13 +58,13 @@ step_maaslin(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
 \item{min_abundance}{The minimum abundance for each feature.}
 
-\item{min_prevalence}{The minimum percent of samples for which a feature is detected at
-minimum abundance.}
+\item{min_prevalence}{The minimum percent of samples for which a feature is
+detected at minimum abundance.}
 
 \item{min_variance}{Keep features with variance greater than.}
 
@@ -76,23 +76,25 @@ minimum abundance.}
 
 \item{max_significance}{The q-value threshold for significance.}
 
-\item{random_effects}{The random effects for the model, comma-delimited for multiple
-effects.}
+\item{random_effects}{The random effects for the model, comma-delimited for
+multiple effects.}
 
 \item{correction}{The correction method for computing the q-value.}
 
-\item{standardize}{Apply z-score so continuous metadata are on the same scale.}
+\item{standardize}{Apply z-score so continuous metadata are on the same
+scale.}
 
-\item{reference}{The factor to use as a reference for a variable with more than two
-levels provided as a string of 'variable,reference' semi-colon delimited for multiple
-variables.}
+\item{reference}{The factor to use as a reference for a variable with more
+than two levels provided as a string of 'variable,reference' semi-colon
+delimited for multiple variables.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -100,10 +102,22 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-MaAsLin2 finds associations between microbiome meta-omics features and complex metadata
-in population-scale epidemiological studies. The software includes multiple analysis
-methods (including support for multiple covariates and repeated measures), filtering,
-normalization, and transform options to customize analysis for your specific study.
+MaAsLin2 finds associations between microbiome meta-omics features and
+complex metadata in population-scale epidemiological studies. The software
+includes multiple analysis methods (including support for multiple covariates
+and repeated measures), filtering, normalization, and transform options to
+customize analysis for your specific study.
+}
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define Maaslin step with default parameters
+rec <- step_maaslin(rec)
+rec
 }
 \seealso{
 Other Diff taxa steps: 

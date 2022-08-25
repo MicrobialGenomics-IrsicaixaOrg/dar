@@ -9,13 +9,28 @@ import_steps(rec, file, parallel = TRUE, workers = 8)
 \arguments{
 \item{rec}{A recipe object.}
 
-\item{file}{Path to the input file}
+\item{file}{Path to the input file.}
 
-\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution using future
-and furrr packages.}
+\item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
+using future and furrr packages.}
 
 \item{workers}{Number of workers for palatalization.}
 }
+\value{
+recipe-class object
+}
 \description{
 Import steps from json file
+}
+\examples{
+data(metaHIV_phy)
+
+## Initialize the recipe with a phyloseq object
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Import steps
+json_file <- system.file("extdata", "test.json", package = "dar")
+rec <- import_steps(rec, json_file)
+rec
 }

@@ -61,45 +61,47 @@ step_corncob(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of operations for
-this recipe.}
+\item{rec}{A recipe object. The step will be added to the sequence of
+operations for this recipe.}
 
-\item{phi.formula}{An object of class formula without the response: a symbolic
-description of the model to be fitted to the dispersion.}
+\item{phi.formula}{An object of class formula without the response: a
+symbolic description of the model to be fitted to the dispersion.}
 
 \item{formula_null}{Formula for mean under null, without response.}
 
-\item{phi.formula_null}{Formula for overdispersion under null, without response.}
+\item{phi.formula_null}{Formula for overdispersion under null, without
+response.}
 
 \item{link}{Link function for abundance covariates, defaults to "logit".}
 
 \item{phi.link}{Link function for dispersion covariates, defaults to "logit".}
 
-\item{test}{Character. Hypothesis testing procedure to use. One of "Wald" or "LRT"
-(likelihood ratio test).}
+\item{test}{Character. Hypothesis testing procedure to use. One of "Wald" or
+"LRT" (likelihood ratio test).}
 
-\item{boot}{Boolean. Defaults to FALSE. Indicator of whether or not to use parametric
-bootstrap algorithm. (See pbWald and pbLRT).}
+\item{boot}{Boolean. Defaults to FALSE. Indicator of whether or not to use
+parametric bootstrap algorithm. (See pbWald and pbLRT).}
 
-\item{B}{Optional integer. Number of bootstrap iterations. Ignored if boot is FALSE.
-Otherwise, defaults to 1000.}
+\item{B}{Optional integer. Number of bootstrap iterations. Ignored if boot is
+FALSE. Otherwise, defaults to 1000.}
 
-\item{filter_discriminant}{Boolean. Defaults to TRUE. If FALSE, discriminant taxa will
-not be filtered out.}
+\item{filter_discriminant}{Boolean. Defaults to TRUE. If FALSE, discriminant
+taxa will not be filtered out.}
 
 \item{fdr_cutoff}{Integer. Defaults to 0.05. Desired type 1 error rate.}
 
-\item{fdr}{Character. Defaults to "fdr". False discovery rate control method, see
-p.adjust for more options.}
+\item{fdr}{Character. Defaults to "fdr". False discovery rate control method,
+see p.adjust for more options.}
 
 \item{log2FC}{log2FC cutoff.}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This rarefaction uses
-the standard R sample function to resample from the abundance values in the otu_table
-component of the first argument, physeq. Often one of the major goals of this
-procedure is to achieve parity in total number of counts between samples, as an
-alternative to other formal normalization procedures, which is why a single value for
-the sample.size is expected.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
+rarefaction uses the standard R sample function to resample from the
+abundance values in the otu_table component of the first argument, physeq.
+Often one of the major goals of this procedure is to achieve parity in
+total number of counts between samples, as an alternative to other formal
+normalization procedures, which is why a single value for the sample.size
+is expected.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -107,9 +109,20 @@ the sample.size is expected.}
 An object of class \code{recipe}
 }
 \description{
-Corncob an individual taxon regression model that uses abundance tables and sample
-data. corncob is able to model differential abundance and differential variability, and
-addresses each of the challenges presented above.
+Corncob an individual taxon regression model that uses abundance tables and
+sample data. corncob is able to model differential abundance and differential
+variability, and addresses each of the challenges presented above.
+}
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define Corncob step with default parameters
+rec <- step_corncob(rec)
+rec
 }
 \seealso{
 Other Diff taxa steps: 
