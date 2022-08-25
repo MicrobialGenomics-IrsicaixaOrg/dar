@@ -76,6 +76,17 @@ more groups of multiple samples. metagenomeSeq is designed to address the
 effects of both normalization and under-sampling of microbial communities on
 disease association detection and the testing of feature correlations.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define metagenomeSeq step with default parameters
+rec <- step_metagenomeseq(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

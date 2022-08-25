@@ -22,6 +22,16 @@
 #' @aliases step_subset_taxa
 #' @return An object of class `recipe`
 #' @export
+#' @examples
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define subset taxa step with default parameters
+#' rec <- step_subset_taxa(rec, expr = 'Kingdom %in% c("Bacteria", "Archaea")')
+#' rec
 methods::setGeneric(
   name = "step_subset_taxa",
   def = function(rec, expr, id = rand_id("subset_taxa")) {

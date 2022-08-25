@@ -108,6 +108,17 @@ includes multiple analysis methods (including support for multiple covariates
 and repeated measures), filtering, normalization, and transform options to
 customize analysis for your specific study.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define Maaslin step with default parameters
+rec <- step_maaslin(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

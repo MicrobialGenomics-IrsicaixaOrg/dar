@@ -30,6 +30,16 @@
 #' @aliases step_metagenomeseq
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define metagenomeSeq step with default parameters
+#' rec <- step_metagenomeseq(rec)
+#' rec
 methods::setGeneric(
   name = "step_metagenomeseq",
   def = function(rec,

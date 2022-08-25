@@ -28,6 +28,16 @@
 #' @aliases step_wilcox
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define wilcox step with default parameters
+#' rec <- step_wilcox(rec)
+#' rec
 methods::setGeneric(
   name = "step_wilcox",
   def = function(rec,

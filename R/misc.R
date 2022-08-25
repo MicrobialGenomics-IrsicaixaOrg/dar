@@ -250,20 +250,20 @@ export_steps <- function(rec, file_name) {
 #' Import steps from json file
 #'
 #' @param rec A recipe object.
-#' @param file Path to the input file
+#' @param file Path to the input file.
 #' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
 #'   using future and furrr packages.
-#' @param workers	Number of workers for palatalization.
+#' @param workers Number of workers for palatalization.
 #'
 #' @return recipe-class object
 #' @export
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Initialize the recipe with a phyloseq object
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
-#' 
+#'
 #' ## Import steps
 #' json_file <- system.file("extdata", "test.json", package = "dar")
 #' rec <- import_steps(rec, json_file)

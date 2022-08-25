@@ -31,6 +31,17 @@ phyloseq object, and returns a logical vector indicating whether or not each
 OTU passed the criteria. Alternatively, if the "prune" option is set to
 FALSE, it returns the already-trimmed version of the phyloseq object.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define filter taxa step with default parameters
+rec <-  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+rec
+}
 \seealso{
 Other filter phy steps: 
 \code{\link{step_subset_taxa}()}

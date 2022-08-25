@@ -65,6 +65,17 @@ Performs a wilcox test to determine features (be it Operational Taxanomic
 Unit (OTU), species, etc.) that are differentially abundant between two or
 more groups of multiple samples.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define wilcox step with default parameters
+rec <- step_wilcox(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

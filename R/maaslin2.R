@@ -38,6 +38,16 @@
 #' @aliases step_maaslin
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define Maaslin step with default parameters
+#' rec <- step_maaslin(rec)
+#' rec
 methods::setGeneric(
   name = "step_maaslin",
   def = function(rec,

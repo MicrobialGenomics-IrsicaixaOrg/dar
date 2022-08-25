@@ -44,6 +44,16 @@
 #' @aliases step_deseq
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define DESeq2 step with default parameters
+#' rec <- step_deseq(rec)
+#' rec
 methods::setGeneric(
   name = "step_deseq",
   def = function(rec,

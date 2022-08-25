@@ -9,7 +9,7 @@ import_steps(rec, file, parallel = TRUE, workers = 8)
 \arguments{
 \item{rec}{A recipe object.}
 
-\item{file}{Path to the input file}
+\item{file}{Path to the input file.}
 
 \item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
 using future and furrr packages.}

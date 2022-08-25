@@ -39,6 +39,16 @@
 #' @aliases step_corncob
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define Corncob step with default parameters
+#' rec <- step_corncob(rec)
+#' rec
 methods::setGeneric(
   name = "step_corncob",
   def = function(rec,

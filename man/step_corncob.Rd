@@ -113,6 +113,17 @@ Corncob an individual taxon regression model that uses abundance tables and
 sample data. corncob is able to model differential abundance and differential
 variability, and addresses each of the challenges presented above.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define Corncob step with default parameters
+rec <- step_corncob(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

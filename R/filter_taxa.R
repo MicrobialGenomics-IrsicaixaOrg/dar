@@ -20,6 +20,16 @@
 #' @aliases step_filter_taxa
 #' @return An object of class `recipe`
 #' @export
+#' @examples
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define filter taxa step with default parameters
+#' rec <-  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+#' rec
 methods::setGeneric(
   name = "step_filter_taxa",
   def = function(rec, .f, id = rand_id("filter_taxa")) {

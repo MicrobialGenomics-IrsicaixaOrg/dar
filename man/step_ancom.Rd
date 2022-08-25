@@ -76,6 +76,17 @@ comparing the composition of microbiomes in two or more populations. ANCOM
 makes no distributional assumptions and can be implemented in a linear model
 framework to adjust for covariates as well as model longitudinal data.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define ANCOM step with default parameters
+rec <- step_ancom(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

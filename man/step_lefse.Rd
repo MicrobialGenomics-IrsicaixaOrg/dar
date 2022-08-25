@@ -87,6 +87,17 @@ magnitude of differential expression between the populations for each
 differentially expressed microorganism. Subclasses of classes can also be
 assigned and used within the analysis.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define lefser step with default parameters
+rec <- step_lefse(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},

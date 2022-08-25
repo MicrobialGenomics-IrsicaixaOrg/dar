@@ -96,6 +96,17 @@ log-ratio transform, then (c) returns test results for two sample (Welch's
 t, Wilcoxon) test. This function also estimates effect size for two sample
 analyses.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define ALDEX step with default parameters
+rec <- step_aldex(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_ancom}()},

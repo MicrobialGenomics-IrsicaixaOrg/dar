@@ -39,6 +39,16 @@
 #' @aliases step_ancom
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define ANCOM step with default parameters
+#' rec <- step_ancom(rec)
+#' rec
 methods::setGeneric(
   name = "step_ancom",
   def = function(rec,

@@ -57,6 +57,16 @@
 #' @aliases step_aldex
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec
+#' 
+#' ## Define ALDEX step with default parameters
+#' rec <- step_aldex(rec)
+#' rec
 methods::setGeneric(
   name = "step_aldex",
   def = function(rec,

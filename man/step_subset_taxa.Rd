@@ -33,6 +33,17 @@ that results from your subsetting expression. This is important to keep in
 mind, as users are often unaware that this subsetting step also removes/omits
 OTUs that have a missing value result, NA, somewhere in the expression.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define subset taxa step with default parameters
+rec <- step_subset_taxa(rec, expr = 'Kingdom \%in\% c("Bacteria", "Archaea")')
+rec
+}
 \seealso{
 Other filter phy steps: 
 \code{\link{step_filter_taxa}()}

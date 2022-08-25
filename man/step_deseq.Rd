@@ -94,6 +94,17 @@ function returns a DESeqDataSet object, results tables (log2 fold changes and
 p-values) can be generated using the results function. Shrunken LFC can then
 be generated using the lfcShrink function.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec
+
+## Define DESeq2 step with default parameters
+rec <- step_deseq(rec)
+rec
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
