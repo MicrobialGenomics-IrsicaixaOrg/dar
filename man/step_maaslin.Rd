@@ -112,11 +112,25 @@ customize analysis for your specific study.
 data(metaHIV_phy)
 
 ## Init recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+
 rec
 
-## Define Maaslin step with default parameters
-rec <- step_maaslin(rec)
+## Define step with default parameters and prep
+rec <- 
+  step_maaslin(rec) \%>\% 
+  prep(parallel = TRUE)
+  
+rec
+
+## Wearing rarefaction only for this step 
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_maaslin(rec, rarefy = TRUE)
+
 rec
 }
 \seealso{

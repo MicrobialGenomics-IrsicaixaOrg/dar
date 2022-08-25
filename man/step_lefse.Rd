@@ -91,12 +91,29 @@ assigned and used within the analysis.
 data(metaHIV_phy)
 
 ## Init recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
+
 rec
 
-## Define lefser step with default parameters
-rec <- step_lefse(rec)
+## Define step with default parameters and prep
+rec <- 
+  step_lefse(rec) \%>\% 
+  prep(parallel = TRUE)
+  
 rec
+
+## Wearing rarefaction only for this step 
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_lefse(rec, rarefy = TRUE)
+
+## Running lefse without rarefaction (not recommended)
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+  step_lefse(rec, rarefy = FALSE)
 }
 \seealso{
 Other Diff taxa steps: 

@@ -30,6 +30,21 @@
 #' @aliases step_rarefaction
 #' @return An object of class `recipe`
 #' @export
+#' @examples 
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' 
+#' rec
+#' 
+#' ## Define step with default parameters and prep
+#' rec <- 
+#'   step_rarefaction(rec) %>% 
+#'   prep(parallel = TRUE)
+#'   
+#' rec
 methods::setGeneric(
   name = "step_rarefaction",
   def = function(rec, id = rand_id("rarefaction")) {
