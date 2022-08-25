@@ -223,7 +223,7 @@ dot <- function() {
 #' rec <- prep(rec, parallel = TRUE)
 #' 
 #' ## Export to json file
-#' export_steps(rec, "test.json")
+#' export_steps(rec, tempfile(fileext = ".json"))
 export_steps <- function(rec, file_name) {
   to_cat <-
     c(rec@steps, rec@bakes) %>%

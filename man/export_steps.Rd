@@ -32,5 +32,5 @@ rec <-
 rec <- prep(rec, parallel = TRUE)
 
 ## Export to json file
-export_steps(rec, "test.json")
+export_steps(rec, tempfile(fileext = ".json"))
 }
