@@ -160,7 +160,7 @@ because it throws an error if the input is not a name as expected.
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -277,6 +277,75 @@ because it throws an error if the input is not a name as expected.</p></li>
 
 
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># `enquo()` defuses the expression supplied by your user</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">arg</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/enquo.html" class="external-link">enquo</a></span><span class="op">(</span><span class="va">arg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">f</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^1 + 1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55f8594155a8</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># `enquos()` works with arguments and dots. It returns a list of</span></span></span>
+<span class="r-in"><span><span class="co"># expressions</span></span></span>
+<span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/enquo.html" class="external-link">enquos</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">f</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span>, <span class="fl">2</span> <span class="op">*</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;list_of&lt;quosure&gt;&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^1 + 1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55f8594155a8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^2 * 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55f8594155a8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Let's create some symbols:</span></span></span>
+<span class="r-in"><span><span class="va">foo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">quote</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">bar</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/sym.html" class="external-link">sym</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># as_name() converts symbols to strings:</span></span></span>
+<span class="r-in"><span><span class="va">foo</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> foo</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "foo"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/typeof.html" class="external-link">typeof</a></span><span class="op">(</span><span class="va">bar</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "symbol"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/typeof.html" class="external-link">typeof</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="va">bar</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "character"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># as_name() unwraps quosured symbols automatically:</span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">quo</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "foo"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># as_label() is useful with quoted expressions:</span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_label.html" class="external-link">as_label</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">expr</a></span><span class="op">(</span><span class="fu">foo</span><span class="op">(</span><span class="va">bar</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "foo(bar)"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_label.html" class="external-link">as_label</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">expr</a></span><span class="op">(</span><span class="va">foobar</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "foobar"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># It works with any R object. This is also useful for quoted</span></span></span>
+<span class="r-in"><span><span class="co"># arguments because the user might unquote constant objects:</span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_label.html" class="external-link">as_label</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&lt;int&gt;"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_label.html" class="external-link">as_label</a></span><span class="op">(</span><span class="fu">base</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "&lt;fn&gt;"</span>
+</code></pre></div>
+    </div>
   </main></div>
 
 

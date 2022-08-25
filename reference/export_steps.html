@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,32 @@
 <dd><p>The path and file name of the optout file.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
 
+<p>invisible</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Create a recipe with steps</span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
+<span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>expr <span class="op">=</span> <span class="st">'Kingdom %in% c("Bacteria", "Archaea")'</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu"><a href="step_corncob.html">step_corncob</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span> </span></span>
+<span class="r-in"><span><span class="co">## Prep recipe   </span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Export to json file</span></span></span>
+<span class="r-in"><span><span class="fu">export_steps</span><span class="op">(</span><span class="va">rec</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

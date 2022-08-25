@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,6 +80,52 @@
 <p>tibble</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## From a prep-recipe we can extract a tibble with all intersections</span></span></span>
+<span class="r-in"><span><span class="va">intersections</span> <span class="op">&lt;-</span> <span class="fu">find_intersections</span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">intersections</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            step_ids                                      sum_m…¹</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_78  Bacteroides     maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_82  Barnesiella     maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_88  Odoribacter     maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_94  Paraprevotella  maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_96  Prevotella      maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_119 Alistipes       maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_125 Parabacteroides maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_231 Eubacterium     maaslin__Toaster_pastry, metagenomeseq__Cher…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 91 more rows, and abbreviated variable name ¹​sum_methods</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Additionally, we can exclude some methods form the table</span></span></span>
+<span class="r-in"><span><span class="va">intersections</span> <span class="op">&lt;-</span> <span class="fu">find_intersections</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">test_prep_rec</span>, </span></span>
+<span class="r-in"><span>  steps <span class="op">=</span> <span class="fu"><a href="steps_ids.html">steps_ids</a></span><span class="op">(</span><span class="va">test_prep_rec</span>, <span class="st">"da"</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">intersections</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 48 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            step_ids                                  sum_methods</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_78  Bacteroides     metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_82  Barnesiella     metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_88  Odoribacter     metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_94  Paraprevotella  metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_96  Prevotella      metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_119 Alistipes       metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_125 Parabacteroides metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_231 Eubacterium     metagenomeseq__Cherry_pie, deseq__Remonce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 38 more rows</span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
