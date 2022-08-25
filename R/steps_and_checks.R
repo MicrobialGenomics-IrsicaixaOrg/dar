@@ -104,19 +104,3 @@ methods::setMethod(
     rec
   }
 )
-
-#' @rdname add_step
-#' @keywords internal
-methods::setGeneric("add_check", function(rec, object)
-  standardGeneric("add_check"))
-
-#' @rdname add_step
-#' @keywords internal
-methods::setMethod(
-  f = "add_check",
-  signature = c("recipe"),
-  definition = function(rec, object) {
-    rec@steps[[length(rec@steps) + 1]] <- object
-    rec
-  }
-)

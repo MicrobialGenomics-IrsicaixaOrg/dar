@@ -8,10 +8,6 @@
 #' @return Nothing is returned but a message is printed to the console about
 #'   which packages (if any) should be installed along with code to do so.
 #' @keywords internal
-#' @examples
-#' \dontrun{
-#' recipes_pkg_check("recipes")
-#' }
 recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   good <- rep(TRUE, length(pkg))
   for (i in seq(along.with = pkg)) {
@@ -21,6 +17,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
       good[i] <- FALSE
     }
   }
+  
   if (any(!good)) {
     pkList <- paste(
       stringr::str_remove_all(pkg[!good], ".*[/]|.*[:]") , collapse = ", "
@@ -39,6 +36,10 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 
   invisible()
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 
 #' Returns required pakcages for recipe object
 #'

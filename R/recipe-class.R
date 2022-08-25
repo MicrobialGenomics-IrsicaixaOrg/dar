@@ -86,12 +86,25 @@ methods::setClass(
 #' cool(da_results)
 #'
 #' ## You can also crate a recipe without var and tax info
-#' rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+#' rec <- recipe(metaHIV_phy)
 #'
+#' rec
+#' 
 #' ## And define them later
 #' rec <- rec %>%
 #'   add_var("RiskGroup2") %>%
 #'   add_tax("Genus")
+#'
+#' rec
+#' 
+#' ## When trying to add an identical step to an existing one, the system 
+#' ## returns an information message.
+#' rec <- step_ancom(rec)
+#' rec <- step_ancom(rec)
+#' 
+#' ## The same with bake
+#' da_results <- bake(da_results)
+#' da_results <- bake(da_results)
 recipe <- 
   function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
 

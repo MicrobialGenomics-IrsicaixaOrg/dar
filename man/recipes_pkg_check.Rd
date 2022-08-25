@@ -20,9 +20,4 @@ which packages (if any) should be installed along with code to do so.
 \description{
 This will check to see if all required packages are installed.
 }
-\examples{
-\dontrun{
-recipes_pkg_check("recipes")
-}
-}
 \keyword{internal}

@@ -43,4 +43,20 @@ explicitly select a random number generator seed before invoking this
 function, or, alternatively, that you explicitly provide a single positive
 integer argument as rngseed.
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species")
+
+rec
+
+## Define step with default parameters and prep
+rec <- 
+  step_rarefaction(rec) \%>\% 
+  prep(parallel = TRUE)
+  
+rec
+}
 \concept{rarefaction phy steps}

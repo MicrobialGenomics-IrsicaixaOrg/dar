@@ -268,6 +268,12 @@ export_steps <- function(rec, file_name) {
 #' json_file <- system.file("extdata", "test.json", package = "dar")
 #' rec <- import_steps(rec, json_file)
 #' rec
+#' 
+#' ## If the json file contains 'bake', the recipe is automatically prepared. 
+#' json_file <- system.file("extdata", "test_bake.json", package = "dar")
+#' rec <- import_steps(rec, json_file)
+#' rec
+#' cool(rec)
 import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
   lines <-
     readr::read_lines(file) %>%
