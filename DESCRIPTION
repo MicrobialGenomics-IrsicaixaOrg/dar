@@ -36,6 +36,7 @@ biocViews: Sequencing, Microbiome, Metagenomics, MultipleComparison
 Suggests: 
     ALDEx2,
     ANCOM (>= 2.2),
+    ANCOMBC,
     apeglm,
     ashr,
     Biobase,
@@ -100,6 +101,4 @@ Collate:
     'utils-tidy-eval.R'
     'utils.R'
     'wilcox.R'
-Remotes: 
-    xec-cm/ANCOM
 VignetteBuilder: knitr
