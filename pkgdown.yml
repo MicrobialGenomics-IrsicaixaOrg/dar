@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   dar: dar.html
   data_import: data_import.html
-last_built: 2022-08-25T10:17Z
+last_built: 2022-08-25T10:54Z
 urls:
   reference: https://microbialgenomics-irsicaixaorg.github.io/dar/reference
   article: https://microbialgenomics-irsicaixaorg.github.io/dar/articles

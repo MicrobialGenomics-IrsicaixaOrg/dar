@@ -155,8 +155,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Gözleme</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Bichon_au_citron</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Cream_horn</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Roti_tissue</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span></code></pre></div>
 </div>
@@ -180,14 +180,14 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Gözleme</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Bichon_au_citron</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Cream_horn</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Roti_tissue</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Eccles_cake</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Berliner</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Vol-au-vent</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Tu</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Pretzel</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Huff_paste</span></span></span></code></pre></div>
 <p>The ‘dar’ package includes more da steps than those defined above. Below is the full list:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^step_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="st">"package:dar"</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
@@ -212,9 +212,9 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Eccles_cake <span style="color: #555555;">diff_taxa = 166</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Berliner <span style="color: #555555;">diff_taxa = 237</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Vol-au-vent <span style="color: #555555;">diff_taxa = 205</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Tu <span style="color: #555555;">diff_taxa = 166</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Pretzel <span style="color: #555555;">diff_taxa = 237</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Huff_paste <span style="color: #555555;">diff_taxa = 205</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 100 taxa are present in all tested methods</span></span></code></pre></div>
 <p>Note that the resulting object print shows information about the amount of differentially abundant OTUs in each of the methods, as well as the number of OTUs that have been detected by all methods (consensus).</p>
