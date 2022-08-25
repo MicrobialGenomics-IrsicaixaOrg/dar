@@ -12,3 +12,4 @@
 ^vignettes/articles$
 ^doc$
 ^Meta$
+^codecov\.yml$
