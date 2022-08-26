@@ -894,6 +894,159 @@ methods::setMethod(
   }
 )
 
+## Overlap df ----
+
+#' Overlap of significant OTUs between tested methods. 
+#'
+#' @param rec A `recipe` object.
+#' @param steps Character vector with step_ids to take in account.
+#'
+#' @aliases overlap_df
+#' @return df
+#' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' ## Running the function returns a UpSet plot ordered by frequency.
+#' df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
+#' head(df)
+#'
+#' ## If you want to exclude a method for the plot, you can remove it with the
+#' ## step parameter. In the following example we eliminate from the graph the
+#' ## results of maaslin
+#' overlap_df(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+#'
+#' ## overlap_df function needs a prep-recipe. If you pass a a non-prep
+#' ## recipe the output is an error.
+#' data(test_rec)
+#' \dontrun{df <- overlap_df(test_rec)}
+methods::setGeneric(
+  name = "overlap_df",
+  def = function(rec, steps = steps_ids(rec, "da")) {
+    standardGeneric("overlap_df")
+  }
+)
+
+#' @rdname overlap_df
+#' @export
+methods::setMethod(
+  f = "overlap_df",
+  signature = "recipe",
+  definition = function(rec, steps) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
+        "{crayon::bgMagenta('overlap_df()')}"
+      )
+    ))
+  }
+)
+
+#' @rdname overlap_df
+#' @export
+methods::setMethod(
+  f = "overlap_df",
+  signature = "prep_recipe",
+  definition = function(rec, steps) {
+    df <- 
+      intersection_df(rec) %>%  
+      tibble::as_tibble() %>% 
+      dplyr::select(dplyr::all_of(steps))
+    
+    names(df) %>%
+      purrr::map_dfr(~ {
+        names(df) %>%
+          purrr::map_dfc(function(.y) {
+            res <- tibble::tibble(
+              var_1 = dplyr::select(df, .x),
+              var_2 = dplyr::select(df, .y),
+              sum = var_1 - var_2
+            )
+            
+            tibble::tibble(
+              !!dplyr::sym(.y) := nrow(dplyr::filter(res, sum == 0)) / nrow(res)
+            )
+          })
+      }) %>%
+      data.frame(row.names = names(df))
+  }
+)
+
+## correlation plot----
+
+#' Plot otuput of the `overlap_df` function as a heatmap. 
+#'
+#' @param rec A `recipe` object.
+#' @param steps Character vector with step_ids to take in account.
+#'
+#' @aliases corr_heatmap
+#' @importFrom heatmaply heatmaply_cor
+#' @return heatmap
+#' @export
+#' @examples
+#' data(test_prep_rec)
+#'
+#' ## Running the function returns a UpSet plot ordered by frequency.
+#' corr_heatmap(test_prep_rec)
+#'
+#'
+#' ## If you want to exclude a method for the plot, you can remove it with the
+#' ## step parameter. In the following example we eliminate from the graph the
+#' ## results of maaslin
+#' corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
+#'
+#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+#' ## recipe the output is an error.
+#' data(test_rec)
+#' \dontrun{df <- corr_heatmap(test_rec)}
+methods::setGeneric(
+  name = "corr_heatmap",
+  def = function(rec, steps = steps_ids(rec, "da")) {
+    standardGeneric("corr_heatmap")
+  }
+)
+
+#' @rdname corr_heatmap
+#' @export
+methods::setMethod(
+  f = "corr_heatmap",
+  signature = "recipe",
+  definition = function(rec, steps) {
+    rlang::abort(c(
+      "This function needs a prep recipe!",
+      glue::glue(
+        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
+        "{crayon::bgMagenta('corr_heatmap()')}"
+      )
+    ))
+  }
+)
+
+#' @rdname corr_heatmap
+#' @export
+#' @importFrom UpSetR upset
+methods::setMethod(
+  f = "corr_heatmap",
+  signature = "prep_recipe",
+  definition = function(rec, steps) {
+    overlap_df(rec, steps = steps) %>%
+      heatmaply::heatmaply_cor(
+        x = .,
+        point_size_mat = .,
+        colors = rev(RColorBrewer::brewer.pal(11, 'RdYlGn')),
+        limits = c(0, 1),
+        node_type = "scatter",
+        trace = "none",
+        dist_method = "canberra", 
+        # fontsize_col = 15,
+        # fontsize_row = 15,
+        heatmap_layers = theme(axis.text = element_text(colour = "black", family = 'Arial')),
+        hclust_method = "complete"
+      ) 
+  }
+)
+
 ## Intersection plot----
 
 #' Plot results using UpSet plot

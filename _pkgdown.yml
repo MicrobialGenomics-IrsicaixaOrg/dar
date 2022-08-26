@@ -27,10 +27,12 @@ reference:
   - step_wilcox
 - title: "Exploration"
   contents:
+  - corr_heatmap
   - exclusion_plt
   - find_intersections
   - intersection_df
   - intersection_plt
+  - overlap_df
 - title: "Recipe Getters and Adders"
   contents:
   - add_tax

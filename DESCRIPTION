@@ -65,6 +65,7 @@ Imports:
     generics,
     ggplot2,
     glue,
+    heatmaply,
     magrittr,
     methods,
     phyloseq,
