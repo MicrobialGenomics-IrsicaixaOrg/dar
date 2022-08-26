@@ -1034,7 +1034,19 @@ methods::setMethod(
       heatmaply::heatmaply_cor(
         x = .,
         point_size_mat = .,
-        colors = rev(RColorBrewer::brewer.pal(11, 'RdYlGn')),
+        colors = c(
+          "#006837",
+          "#1A9850",
+          "#66BD63",
+          "#A6D96A",
+          "#D9EF8B",
+          "#FFFFBF",
+          "#FEE08B",
+          "#FDAE61",
+          "#F46D43",
+          "#D73027",
+          "#A50026"
+        ),
         limits = c(0, 1),
         node_type = "scatter",
         trace = "none",
