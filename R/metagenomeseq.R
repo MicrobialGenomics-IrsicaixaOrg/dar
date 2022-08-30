@@ -144,7 +144,6 @@ required_pkgs_metagenomeseq <-
   function(x, ...) {
     c("bioc::metagenomeSeq", "bioc::limma", "bioc::Biobase")
   }
-
 #' @noRd
 #' @keywords internal
 run_metagenomeseq <- function(rec,
@@ -154,7 +153,7 @@ run_metagenomeseq <- function(rec,
                               max_significance,
                               log2FC,
                               rarefy) {
-
+  
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
@@ -163,48 +162,57 @@ run_metagenomeseq <- function(rec,
   }
   
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-
+  
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      vct_var <- phyloseq::sample_data(phy)[[var]]
-      model <- stats::model.matrix(~ vct_var)
-      colnames(model) <- levels(factor(vct_var))
-      mr_obj <-
-        phyloseq_to_MRexperiment(phy) %>%
-        metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.)) %>%
-        metagenomeSeq::fitZig(
-          mod = model,
-          zeroMod = zeroMod,
-          useCSSoffset = useCSSoffset,
-          useMixedModel = useMixedModel,
-          control = metagenomeSeq::zigControl(verbose = FALSE)
-        )
-
-      contrasts_df <-
-        get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
-        purrr::map_chr(~ stringr::str_c(.x, collapse = " - "))
-
-      f_fit <-
-        limma::makeContrasts(
-          contrasts = contrasts_df,
-          levels = methods::slot(mr_obj, "fit") %>% purrr::pluck("design")
-        ) %>%
-        limma::contrasts.fit(fit = methods::slot(mr_obj, "fit"), contrasts = .) %>%
-        limma::eBayes()
-
-      contrasts_df %>%
-        purrr::imap_dfr(~ {
-          limma::topTable(f_fit, coef = .y, number = Inf) %>%
+      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
+        purrr::map_dfr(function(comparison) {
+          phyloseq::sample_data(phy)$sample_id <- 
+            phyloseq::sample_data(phy) %>% 
+            rownames()
+          
+          phyloseq::sample_data(phy) %>%
+            to_tibble("id") %>%
+            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
+            dplyr::pull(sample_id) %>%
+            assign("f_samples", ., envir = globalenv())
+          
+          phy2 <- phyloseq::subset_samples(phy, sample_id %in% f_samples)
+          rm("f_samples", envir = globalenv())
+          
+          suppressMessages(
+            mr_obj <- 
+              phy2 %>%
+              phyloseq_to_MRexperiment() %>%
+              metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.))
+          )
+          
+          vct_var <- phyloseq::sample_data(phy2)[[var]]
+          norm_factor <- metagenomeSeq::normFactors(mr_obj)
+          norm_factor <- log2(norm_factor / median(norm_factor) + 1)
+          
+          model <- stats::model.matrix( ~ 1 + vct_var + norm_factor)
+          
+          metagenomeSeq::fitZig(
+            mr_obj,
+            mod = model,
+            useCSSoffset = useCSSoffset,
+            zeroMod = zeroMod,
+            useMixedModel = useMixedModel,
+            control = metagenomeSeq::zigControl(
+              verbose = FALSE,
+              maxit = 100, 
+              dfMethod = "modified"
+            )
+          ) %>%
+            metagenomeSeq::MRfulltable(number = Inf, by = 2) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::rename(pvalue = P.Value, padj = adj.P.Val) %>%
+            dplyr::rename(pvalue = pvalues, padj = adjPvalues) %>%
             dplyr::mutate(
-              comparison = stringr::str_replace_all(.x, " - ", "_"), 
+              comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
-            ) %>%
-            dplyr::filter(
-              abs(.data$logFC) >= log2FC & .data$padj < max_significance
             )
         })
     })
