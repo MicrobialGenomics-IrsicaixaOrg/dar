@@ -73,7 +73,7 @@ For our data, we can add an operation to preprocessing the data stored in the in
 ```{r prepro_steps}
 rec_obj <- rec_obj %>% 
   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>% 
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
   
 rec_obj
 ```
