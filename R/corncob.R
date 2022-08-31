@@ -46,14 +46,13 @@
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 #' 
 #' rec
 #' 
 #' ## Define step with default parameters and prep
 #' rec <- 
-#'   step_corncob(rec) %>% 
-#'   prep(parallel = TRUE)
+#'   step_corncob(rec) # %>% prep(parallel = TRUE)
 #'   
 #' rec
 #' 
@@ -222,18 +221,13 @@ run_corncob <- function(rec,
       get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
 
-          phyloseq::sample_data(phy)$sample_id <- 
+          ## Filter samples
+          f_phy <- 
             phyloseq::sample_data(phy) %>% 
-            rownames()
-          
-          phyloseq::sample_data(phy) %>%
-            to_tibble("id") %>%
-            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
-            dplyr::pull(sample_id) %>%
-            assign("f_samples", ., envir = globalenv())
-
-          f_phy <- phyloseq::subset_samples(phy, sample_id %in% f_samples)
-          rm("f_samples", envir = globalenv())
+            to_tibble("sample_id") %>% 
+            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>% 
+            dplyr::pull(sample_id) %>% 
+            phyloseq::prune_samples(phy)
 
           corncob_res <- corncob::differentialTest(
             formula = glue::glue("~ { var }") %>% stats::formula(),
