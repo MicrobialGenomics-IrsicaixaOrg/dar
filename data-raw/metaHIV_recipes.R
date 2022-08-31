@@ -10,6 +10,14 @@ test_rec <-
   step_metagenomeseq(rm_zeros = 0.01) %>%
   step_deseq()
 
+test_rec
+
 test_prep_rec <- prep(test_rec, parallel = TRUE)
+test_prep_rec
 
 usethis::use_data(test_rec, test_prep_rec, overwrite = TRUE)
+
+export_steps(test_prep_rec, "inst/extdata/test.json")
+
+rec <- bake(test_prep_rec)
+export_steps(rec, "inst/extdata/test_bake.json")
