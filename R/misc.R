@@ -216,8 +216,7 @@ dot <- function() {
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
-#'   step_maaslin() %>% 
-#'   step_corncob()
+#'   step_maaslin()
 #'  
 #' ## Prep recipe   
 #' rec <- prep(rec, parallel = TRUE)
