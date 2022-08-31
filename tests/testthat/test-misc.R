@@ -54,8 +54,8 @@ set.seed(123)
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.5 * length(x))") %>%
-  step_metagenomeseq() %>%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
+  step_metagenomeseq(rm_zeros = 0.01) %>%
   step_maaslin()
 
 da_results <- prep(rec, parallel = FALSE)
@@ -65,9 +65,9 @@ test_that("find_intersections works", {
   res_2 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-1])
   res_3 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-2])
 
-  expect_equal(nrow(res_1), 64)
-  expect_equal(nrow(res_2), 64)
-  expect_equal(nrow(res_3), 64)
+  expect_equal(nrow(res_1), 101)
+  expect_equal(nrow(res_2), 101)
+  expect_equal(nrow(res_3), 101)
   expect_s3_class(res_1, "tbl_df")
   expect_s3_class(res_2, "tbl_df")
   expect_s3_class(res_3, "tbl_df")

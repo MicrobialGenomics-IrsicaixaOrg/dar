@@ -85,7 +85,7 @@ Now that we have defined the preprocessing of the input data for all the da meth
 ```{r da_steps}
 rec_obj <- rec_obj %>% 
   step_deseq() %>% 
-  step_metagenomeseq() %>% 
+  step_metagenomeseq(rm_zeros = 0.01) %>% 
   step_maaslin()
 
 rec_obj

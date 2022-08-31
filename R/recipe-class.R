@@ -72,7 +72,7 @@ methods::setClass(
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
-#'   step_metagenomeseq() %>%
+#'   step_metagenomeseq(rm_zeros = 0.01) %>%
 #'   step_maaslin()
 #'
 #' ## Prep recipe

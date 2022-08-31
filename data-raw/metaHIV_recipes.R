@@ -7,7 +7,7 @@ test_rec <-
   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
   step_maaslin() %>%
-  step_metagenomeseq() %>%
+  step_metagenomeseq(rm_zeros = 0.01) %>%
   step_deseq()
 
 test_prep_rec <- prep(test_rec, parallel = TRUE)

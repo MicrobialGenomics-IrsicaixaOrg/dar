@@ -23,6 +23,8 @@
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected.
+#' @param rm_zeros Proportion of samples of the same level with more than 0 
+#'   counts.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -37,13 +39,13 @@
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))")
 #' 
 #' rec
 #' 
 #' ## Define step with default parameters and prep
 #' rec <- 
-#'   step_metagenomeseq(rec) %>% 
+#'   step_metagenomeseq(rec, rm_zeros = 0.01) %>% 
 #'   prep(parallel = TRUE)
 #'   
 #' rec
@@ -63,6 +65,7 @@ methods::setGeneric(
                  max_significance = 0.05,
                  log2FC = 0,
                  rarefy = FALSE,
+                 rm_zeros = 0,
                  id = rand_id("metagenomeseq")) {
     standardGeneric("step_metagenomeseq")
   }
@@ -80,6 +83,7 @@ methods::setMethod(
                         max_significance,
                         log2FC,
                         rarefy,
+                        rm_zeros, 
                         id) {
 
     recipes_pkg_check(required_pkgs_metagenomeseq(), "step_matagenomeseq()")
@@ -92,6 +96,7 @@ methods::setMethod(
         max_significance = max_significance,
         log2FC = log2FC,
         rarefy = rarefy,
+        rm_zeros = rm_zeros, 
         id = id
       )
     )
@@ -110,6 +115,7 @@ methods::setMethod(
                         max_significance,
                         log2FC,
                         rarefy,
+                        rm_zeros,
                         id) {
     rlang::abort("This function needs a non-prep recipe!")
   }
@@ -125,6 +131,7 @@ step_metagenomeseq_new <- function(rec,
                                    max_significance,
                                    log2FC,
                                    rarefy,
+                                   rm_zeros, 
                                    id) {
   step(
     subclass = "metagenomeseq",
@@ -134,6 +141,7 @@ step_metagenomeseq_new <- function(rec,
     max_significance = max_significance,
     log2FC = log2FC,
     rarefy = rarefy,
+    rm_zeros = rm_zeros, 
     id = id
   )
 }
@@ -152,7 +160,8 @@ run_metagenomeseq <- function(rec,
                               useMixedModel,
                               max_significance,
                               log2FC,
-                              rarefy) {
+                              rarefy, 
+                              rm_zeros) {
   
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -168,18 +177,21 @@ run_metagenomeseq <- function(rec,
     purrr::map(function(var) {
       get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
-          phyloseq::sample_data(phy)$sample_id <- 
+          
+          ## Filter samples
+          phy2 <- 
             phyloseq::sample_data(phy) %>% 
-            rownames()
+            to_tibble("sample_id") %>% 
+            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>% 
+            dplyr::pull(sample_id) %>% 
+            phyloseq::prune_samples(phy)
           
-          phyloseq::sample_data(phy) %>%
-            to_tibble("id") %>%
-            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
-            dplyr::pull(sample_id) %>%
-            assign("f_samples", ., envir = globalenv())
-          
-          phy2 <- phyloseq::subset_samples(phy, sample_id %in% f_samples)
-          rm("f_samples", envir = globalenv())
+          ## Filter taxa
+          phy2 <-
+            zero_otu(phy2, var = var, pct_cutoff = rm_zeros) %>%
+            dplyr::pull(taxa_id) %>%
+            unique() %>%
+            phyloseq::prune_taxa(phy2)
           
           suppressMessages(
             mr_obj <- 

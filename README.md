@@ -49,6 +49,10 @@ devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
 
 ``` r
 library(dar)
+#> Registered S3 methods overwritten by 'vegan':
+#>   method         from      
+#>   reorder.hclust seriation 
+#>   rev.hclust     dendextend
 data("metaHIV_phy")
 
 ## Define recipe
@@ -56,7 +60,7 @@ rec <-
   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
-  step_metagenomeseq() %>%
+  step_metagenomeseq(rm_zeros = 0.01) %>%
   step_maaslin()
 
 rec
@@ -69,17 +73,16 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Crêpes_Suzette 
-#>      ◉ step_filter_taxa() id = filter_taxa__Alfajor 
+#>      ◉ step_subset_taxa() id = subset_taxa__Sad_cake 
+#>      ◉ step_filter_taxa() id = filter_taxa__Malsouka 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Mazarin 
-#>      ◉ step_maaslin() id = maaslin__Pineapple_cake
+#>      ◉ step_metagenomeseq() id = metagenomeseq__Moorkop 
+#>      ◉ step_maaslin() id = maaslin__Flaugnarde
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
-#> Default value being used.
 da_results
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -90,10 +93,10 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Mazarin diff_taxa = 237 
-#>      ✔ maaslin__Pineapple_cake diff_taxa = 205 
+#>      ✔ metagenomeseq__Moorkop diff_taxa = 278 
+#>      ✔ maaslin__Flaugnarde diff_taxa = 205 
 #> 
-#>      ℹ 174 taxa are present in all tested methods
+#>      ℹ 205 taxa are present in all tested methods
 
 ## Consensus strategy
 n_methods <- 2
@@ -108,33 +111,32 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Mazarin diff_taxa = 237 
-#>      ✔ maaslin__Pineapple_cake diff_taxa = 205 
+#>      ✔ metagenomeseq__Moorkop diff_taxa = 278 
+#>      ✔ maaslin__Flaugnarde diff_taxa = 205 
 #> 
-#>      ℹ 174 taxa are present in all tested methods 
+#>      ℹ 205 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Hellimli
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Curry_puff
 
 ## Results
 cool(da_results)
 #> ℹ Bake for count_cutoff = 2
-#> # A tibble: 174 × 2
+#> # A tibble: 205 × 2
 #>    taxa_id taxa                             
 #>    <chr>   <chr>                            
 #>  1 Otu_1   Methanobrevibacter_smithii       
 #>  2 Otu_2   Methanosphaera_stadtmanae        
-#>  3 Otu_12  Bifidobacterium_animalis         
-#>  4 Otu_13  Bifidobacterium_bifidum          
-#>  5 Otu_15  Bifidobacterium_catenulatum      
-#>  6 Otu_18  Bifidobacterium_longum           
-#>  7 Otu_19  Bifidobacterium_pseudocatenulatum
-#>  8 Otu_34  Olsenella_scatoligenes           
-#>  9 Otu_35  Collinsella_aerofaciens          
-#> 10 Otu_36  Collinsella_intestinalis         
-#> # … with 164 more rows
-#> # ℹ Use `print(n = ...)` to see more rows
+#>  3 Otu_10  Bifidobacterium_adolescentis     
+#>  4 Otu_12  Bifidobacterium_animalis         
+#>  5 Otu_13  Bifidobacterium_bifidum          
+#>  6 Otu_15  Bifidobacterium_catenulatum      
+#>  7 Otu_18  Bifidobacterium_longum           
+#>  8 Otu_19  Bifidobacterium_pseudocatenulatum
+#>  9 Otu_34  Olsenella_scatoligenes           
+#> 10 Otu_35  Collinsella_aerofaciens          
+#> # … with 195 more rows
 ```
 
 ## Contributing

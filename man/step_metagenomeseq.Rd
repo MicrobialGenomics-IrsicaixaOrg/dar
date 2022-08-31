@@ -14,6 +14,7 @@ step_metagenomeseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
+  rm_zeros = 0,
   id = rand_id("metagenomeseq")
 )
 
@@ -25,6 +26,7 @@ step_metagenomeseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
+  rm_zeros = 0,
   id = rand_id("metagenomeseq")
 )
 
@@ -36,6 +38,7 @@ step_metagenomeseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
+  rm_zeros = 0,
   id = rand_id("metagenomeseq")
 )
 }
@@ -64,6 +67,9 @@ total number of counts between samples, as an alternative to other formal
 normalization procedures, which is why a single value for the sample.size
 is expected.}
 
+\item{rm_zeros}{Proportion of samples of the same level with more than 0
+counts.}
+
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
@@ -83,13 +89,13 @@ data(metaHIV_phy)
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
   step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))")
 
 rec
 
 ## Define step with default parameters and prep
 rec <- 
-  step_metagenomeseq(rec) \%>\% 
+  step_metagenomeseq(rec, rm_zeros = 0.01) \%>\% 
   prep(parallel = TRUE)
   
 rec
