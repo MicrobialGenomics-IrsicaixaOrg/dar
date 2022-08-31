@@ -45,6 +45,7 @@ reference:
   - steps_ids
   - tax_table
   - required_deps
+  - zero_otu
 - title: "Import and Export"
   contents:
   - export_steps
