@@ -67,7 +67,7 @@ test_that("find_intersections works", {
 
   expect_equal(nrow(res_1), 64)
   expect_equal(nrow(res_2), 64)
-  expect_equal(nrow(res_3), 49)
+  expect_equal(nrow(res_3), 64)
   expect_s3_class(res_1, "tbl_df")
   expect_s3_class(res_2, "tbl_df")
   expect_s3_class(res_3, "tbl_df")

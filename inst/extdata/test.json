@@ -1,9 +1,9 @@
 {
    "expr": "Kingdom %in% c(\"Bacteria\", \"Archaea\")",
-   "id": "subset_taxa__Schaumrolle",
+   "id": "subset_taxa__Chou_à_la_crème",
 } {
-   ".f": "function(x) sum(x > 0) >= (0.03 * length(x))",
-   "id": "filter_taxa__Croquembouche",
+   ".f": "function(x) sum(x > 0) >= (0.3 * length(x))",
+   "id": "filter_taxa__Beaver_Tail",
 } {
    "min_abundance": 0,
    "min_prevalence": 0.1,
@@ -17,7 +17,7 @@
    "standardize": TRUE,
    "reference": ,
    "rarefy": FALSE,
-   "id": "maaslin__Croquembouche",
+   "id": "maaslin__Linzer_torte",
 } {
    "phi.formula": ~1,
    "formula_null": ~1,
@@ -32,5 +32,5 @@
    "fdr": "fdr",
    "log2FC": 0,
    "rarefy": FALSE,
-   "id": "corncob__Bierock",
+   "id": "corncob__Pastel",
 }
