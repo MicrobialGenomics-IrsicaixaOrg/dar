@@ -225,7 +225,8 @@ run_metagenomeseq <- function(rec,
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
-            )
+            ) %>% 
+            dplyr::filter(.data$padj < max_significance)
         })
     })
 }

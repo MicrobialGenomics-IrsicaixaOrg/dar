@@ -186,7 +186,7 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
             suppressMessages(ALDEx2::aldex.effect(clr, CI = TRUE))
           ) %>%
             dplyr::mutate(
-              comparison = stringr::str_c(comparison, collapse = "-"), 
+              comparison = stringr::str_c(comparison, collapse = "_"), 
               var = var
             ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
