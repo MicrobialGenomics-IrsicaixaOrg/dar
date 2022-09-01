@@ -55,6 +55,9 @@
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.html</loc>
   </url>
   <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.html</loc>
+  </url>
+  <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.html</loc>
   </url>
   <url>
@@ -104,6 +107,9 @@
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.html</loc>
+  </url>
+  <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.html</loc>
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pipe.html</loc>
@@ -188,5 +194,8 @@
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/to_tibble.html</loc>
+  </url>
+  <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.html</loc>
   </url>
 </urlset>

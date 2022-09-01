@@ -108,7 +108,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results that range within the specificity vs sensitivity space in such a way that type I and type II error that are difficult to ascertain in real microbiome data when a single method is used. Recently, a consensus approach based on multiple differential abundance (DA) methods was recently suggested in order to increase robustness.</p>
+<p>Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results that range within the specificity vs sensitivity space in such a way that type I and type II error are difficult to ascertain in real microbiome data when a single method is used. Recently, a consensus approach based on multiple differential abundance (DA) methods was recently suggested in order to increase robustness.</p>
 <p>With dar, you can use dplyr-like pipeable sequences of DA methods and then apply different consensus strategies. In this way we can obtain more reliable results in a fast, consistent and reproducible way.</p>
 </div>
 <div class="section level2">
@@ -124,6 +124,10 @@
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar" class="external-link">dar</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Registered S3 methods overwritten by 'vegan':</span></span>
+<span><span class="co">#&gt;   method         from      </span></span>
+<span><span class="co">#&gt;   reorder.hclust seriation </span></span>
+<span><span class="co">#&gt;   rev.hclust     dendextend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Define recipe</span></span>
@@ -131,35 +135,83 @@
 <span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>expr <span class="op">=</span> <span class="st">'Kingdom %in% c("Bacteria", "Archaea")'</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rec</span></span>
+<span><span class="co">#&gt; ── DAR Recipe ──────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Inputs:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ℹ phyloseq object with 451 taxa and 156 samples </span></span>
+<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
+<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Preporcessing steps:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Sad_cake </span></span>
+<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Malsouka </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; DA steps:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Moorkop </span></span>
+<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Flaugnarde</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Default value being used.</span></span>
+<span><span class="va">da_results</span></span>
+<span><span class="co">#&gt; ── DAR Results ─────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Inputs:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ℹ phyloseq object with 278 taxa and 156 samples </span></span>
+<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
+<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Moorkop diff_taxa = 278 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Flaugnarde diff_taxa = 205 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ℹ 205 taxa are present in all tested methods</span></span>
 <span></span>
 <span><span class="co">## Consensus strategy</span></span>
 <span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bake.html">bake</a></span><span class="op">(</span><span class="va">da_results</span>, count_cutoff <span class="op">=</span> <span class="va">n_methods</span><span class="op">)</span></span>
+<span><span class="va">da_results</span></span>
+<span><span class="co">#&gt; ── DAR Results ─────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Inputs:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ℹ phyloseq object with 278 taxa and 156 samples </span></span>
+<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
+<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Results:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Moorkop diff_taxa = 278 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Flaugnarde diff_taxa = 205 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ℹ 205 taxa are present in all tested methods </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Bakes:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Curry_puff</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
 <span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Bake for count_cutoff = 2</span></span>
-<span><span class="co">#&gt; # A tibble: 174 × 2</span></span>
+<span><span class="co">#&gt; # A tibble: 205 × 2</span></span>
 <span><span class="co">#&gt;    taxa_id taxa                             </span></span>
 <span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                            </span></span>
 <span><span class="co">#&gt;  1 Otu_1   Methanobrevibacter_smithii       </span></span>
 <span><span class="co">#&gt;  2 Otu_2   Methanosphaera_stadtmanae        </span></span>
-<span><span class="co">#&gt;  3 Otu_12  Bifidobacterium_animalis         </span></span>
-<span><span class="co">#&gt;  4 Otu_13  Bifidobacterium_bifidum          </span></span>
-<span><span class="co">#&gt;  5 Otu_15  Bifidobacterium_catenulatum      </span></span>
-<span><span class="co">#&gt;  6 Otu_18  Bifidobacterium_longum           </span></span>
-<span><span class="co">#&gt;  7 Otu_19  Bifidobacterium_pseudocatenulatum</span></span>
-<span><span class="co">#&gt;  8 Otu_34  Olsenella_scatoligenes           </span></span>
-<span><span class="co">#&gt;  9 Otu_35  Collinsella_aerofaciens          </span></span>
-<span><span class="co">#&gt; 10 Otu_36  Collinsella_intestinalis         </span></span>
-<span><span class="co">#&gt; # … with 164 more rows</span></span>
-<span><span class="co">#&gt; # ℹ Use `print(n = ...)` to see more rows</span></span></code></pre></div>
+<span><span class="co">#&gt;  3 Otu_10  Bifidobacterium_adolescentis     </span></span>
+<span><span class="co">#&gt;  4 Otu_12  Bifidobacterium_animalis         </span></span>
+<span><span class="co">#&gt;  5 Otu_13  Bifidobacterium_bifidum          </span></span>
+<span><span class="co">#&gt;  6 Otu_15  Bifidobacterium_catenulatum      </span></span>
+<span><span class="co">#&gt;  7 Otu_18  Bifidobacterium_longum           </span></span>
+<span><span class="co">#&gt;  8 Otu_19  Bifidobacterium_pseudocatenulatum</span></span>
+<span><span class="co">#&gt;  9 Otu_34  Olsenella_scatoligenes           </span></span>
+<span><span class="co">#&gt; 10 Otu_35  Collinsella_aerofaciens          </span></span>
+<span><span class="co">#&gt; # … with 195 more rows</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -223,7 +275,7 @@
 <li><a href="https://app.codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar?branch=main" class="external-link"><img src="https://codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://makeapullrequest.com" class="external-link"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"></a></li>
 <li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues" class="external-link"><img src="https://img.shields.io/github/issues/MicrobialGenomics-IrsicaixaOrg/dar" alt="GitHub issues"></a></li>
-<li><a href="https://github.com/lMicrobialGenomics-IrsicaixaOrg/dar/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/MicrobialGenomics-IrsicaixaOrg/dar" alt="GitHub pulls"></a></li>
+<li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/MicrobialGenomics-IrsicaixaOrg/dar" alt="GitHub pulls"></a></li>
 </ul>
 </div>
 
