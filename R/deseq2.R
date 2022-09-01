@@ -230,7 +230,7 @@ run_deseq <- function(rec,
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
-              comparison = stringr::str_c(x, "_vs_", y), var = !!var
+              comparison = stringr::str_c(x, "_", y), var = !!var
             ) %>%
             dplyr::filter(
               abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance
