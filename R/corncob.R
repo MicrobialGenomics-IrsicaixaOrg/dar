@@ -212,19 +212,21 @@ run_corncob <- function(rec,
   ver <- utils::packageVersion("detectseparation")
   if (ver != "0.2") {
     rlang::abort(c(
-      glue::glue(
-        "Temporarily the version of the package ", 
-        "{crayon::bgMagenta(pkg)} must be {crayon::blue(paste0('v', v))}, but ", 
-        "you have the version {crayon::blue(ver)} installed."
-      ), 
+      "!" = glue::glue(
+        "Temporarily the version of the package ",
+        "{crayon::bgMagenta('detectseparation')} must be ",
+        "{crayon::blue('v0.2')}, but you have the version ",
+        "{crayon::blue(ver)} installed."
+      ),
       "*" = glue::glue(
         "Please first run {crayon::blue('remove.packages(\"detectseparation\")')}.",
-      ), 
+      ),
       "*" = glue::glue(
-        "Finally install the necessary version with ", 
+        "Finally install the necessary version with ",
         "{crayon::blue('devtools::install_version(\"detectseparation\", version = 0.2)')}."
       )
-    ), use_cli_format = TRUE)
+    ),
+    use_cli_format = TRUE)
   }
   
   phy <- get_phy(rec)
