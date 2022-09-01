@@ -210,7 +210,9 @@ run_ancom <- function(rec,
         purrr::map_dfr(function(comparison) {
           vct_comp <- glue::glue("c('{comparison[1]}', '{comparison[2]}')")
           s_phy <-
-            glue::glue("phyloseq::subset_samples(phy, {var} %in% {vct_comp})") %>%
+            glue::glue(
+              "phyloseq::subset_samples(phy, {var} %in% {vct_comp})"
+            ) %>%
             parse(text = .) %>%
             eval()
           

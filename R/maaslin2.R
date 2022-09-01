@@ -257,7 +257,8 @@ run_maaslin <- function(rec,
               var = !!var
             ) %>%
             dplyr::rename(taxa_id = .data$feature) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id")
+            dplyr::left_join(tax_table(rec), by = "taxa_id") %>% 
+            dplyr::filter(.data$qval < .env$max_significance)
         })
     })
 }

@@ -215,9 +215,8 @@ dot <- function() {
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
-#'   step_maaslin() %>% 
-#'   step_corncob()
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
+#'   step_maaslin()
 #'  
 #' ## Prep recipe   
 #' rec <- prep(rec, parallel = TRUE)
@@ -271,7 +270,9 @@ export_steps <- function(rec, file_name) {
 #' 
 #' ## If the json file contains 'bake', the recipe is automatically prepared. 
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
-#' rec <- import_steps(rec, json_file)
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'   import_steps(json_file)
+#'   
 #' rec
 #' cool(rec)
 import_steps <- function(rec, file, parallel = TRUE, workers = 8) {

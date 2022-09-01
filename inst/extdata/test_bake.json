@@ -1,17 +1,9 @@
 {
    "expr": "Kingdom %in% c(\"Bacteria\", \"Archaea\")",
-   "id": "subset_taxa__Lattice",
+   "id": "subset_taxa__Beaver_Tail",
 } {
-   ".f": "function(x) sum(x > 0) >= (0.03 * length(x))",
-   "id": "filter_taxa__Turnover",
-} {
-   "zeroMod": ,
-   "useCSSoffset": TRUE,
-   "useMixedModel": FALSE,
-   "max_significance": 0.05,
-   "log2FC": 0,
-   "rarefy": FALSE,
-   "id": "metagenomeseq__Paris–Brest",
+   ".f": "function(x) sum(x > 0) >= (0.3 * length(x))",
+   "id": "filter_taxa__Schuxen",
 } {
    "min_abundance": 0,
    "min_prevalence": 0.1,
@@ -27,13 +19,26 @@
    "rarefy": FALSE,
    "id": "maaslin__Prekmurska_gibanica",
 } {
-   "count_cutoff": 2,
-   "weights": ,
-   "exclude": ,
-   "id": "bake__Kolache",
+   "zeroMod": ,
+   "useCSSoffset": TRUE,
+   "useMixedModel": FALSE,
+   "max_significance": 0.05,
+   "log2FC": 0,
+   "rarefy": FALSE,
+   "rm_zeros": 0.01,
+   "id": "metagenomeseq__Cream_horn",
+} {
+   "test": "Wald",
+   "fitType": "parametric",
+   "betaPrior": FALSE,
+   "type": "ashr",
+   "max_significance": 0.05,
+   "log2FC": 0,
+   "rarefy": FALSE,
+   "id": "deseq__Linzer_torte",
 } {
    "count_cutoff": ,
    "weights": ,
    "exclude": ,
-   "id": "bake__Pannekoek",
+   "id": "bake__Beaver_Tail",
 }

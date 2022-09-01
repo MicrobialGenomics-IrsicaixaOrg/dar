@@ -23,6 +23,8 @@
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected.
+#' @param rm_zeros Proportion of samples of the same level with more than 0 
+#'   counts.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -37,13 +39,13 @@
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))")
 #' 
 #' rec
 #' 
 #' ## Define step with default parameters and prep
 #' rec <- 
-#'   step_metagenomeseq(rec) %>% 
+#'   step_metagenomeseq(rec, rm_zeros = 0.01) %>% 
 #'   prep(parallel = TRUE)
 #'   
 #' rec
@@ -63,6 +65,7 @@ methods::setGeneric(
                  max_significance = 0.05,
                  log2FC = 0,
                  rarefy = FALSE,
+                 rm_zeros = 0,
                  id = rand_id("metagenomeseq")) {
     standardGeneric("step_metagenomeseq")
   }
@@ -80,6 +83,7 @@ methods::setMethod(
                         max_significance,
                         log2FC,
                         rarefy,
+                        rm_zeros, 
                         id) {
 
     recipes_pkg_check(required_pkgs_metagenomeseq(), "step_matagenomeseq()")
@@ -92,6 +96,7 @@ methods::setMethod(
         max_significance = max_significance,
         log2FC = log2FC,
         rarefy = rarefy,
+        rm_zeros = rm_zeros, 
         id = id
       )
     )
@@ -110,6 +115,7 @@ methods::setMethod(
                         max_significance,
                         log2FC,
                         rarefy,
+                        rm_zeros,
                         id) {
     rlang::abort("This function needs a non-prep recipe!")
   }
@@ -125,6 +131,7 @@ step_metagenomeseq_new <- function(rec,
                                    max_significance,
                                    log2FC,
                                    rarefy,
+                                   rm_zeros, 
                                    id) {
   step(
     subclass = "metagenomeseq",
@@ -134,6 +141,7 @@ step_metagenomeseq_new <- function(rec,
     max_significance = max_significance,
     log2FC = log2FC,
     rarefy = rarefy,
+    rm_zeros = rm_zeros, 
     id = id
   )
 }
@@ -144,7 +152,6 @@ required_pkgs_metagenomeseq <-
   function(x, ...) {
     c("bioc::metagenomeSeq", "bioc::limma", "bioc::Biobase")
   }
-
 #' @noRd
 #' @keywords internal
 run_metagenomeseq <- function(rec,
@@ -153,8 +160,9 @@ run_metagenomeseq <- function(rec,
                               useMixedModel,
                               max_significance,
                               log2FC,
-                              rarefy) {
-
+                              rarefy, 
+                              rm_zeros) {
+  
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
@@ -163,49 +171,62 @@ run_metagenomeseq <- function(rec,
   }
   
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-
+  
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      vct_var <- phyloseq::sample_data(phy)[[var]]
-      model <- stats::model.matrix(~ vct_var)
-      colnames(model) <- levels(factor(vct_var))
-      mr_obj <-
-        phyloseq_to_MRexperiment(phy) %>%
-        metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.)) %>%
-        metagenomeSeq::fitZig(
-          mod = model,
-          zeroMod = zeroMod,
-          useCSSoffset = useCSSoffset,
-          useMixedModel = useMixedModel,
-          control = metagenomeSeq::zigControl(verbose = FALSE)
-        )
-
-      contrasts_df <-
-        get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
-        purrr::map_chr(~ stringr::str_c(.x, collapse = " - "))
-
-      f_fit <-
-        limma::makeContrasts(
-          contrasts = contrasts_df,
-          levels = methods::slot(mr_obj, "fit") %>% purrr::pluck("design")
-        ) %>%
-        limma::contrasts.fit(fit = methods::slot(mr_obj, "fit"), contrasts = .) %>%
-        limma::eBayes()
-
-      contrasts_df %>%
-        purrr::imap_dfr(~ {
-          limma::topTable(f_fit, coef = .y, number = Inf) %>%
+      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
+        purrr::map_dfr(function(comparison) {
+          
+          ## Filter samples
+          phy2 <- 
+            phyloseq::sample_data(phy) %>% 
+            to_tibble("sample_id") %>% 
+            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>% 
+            dplyr::pull(sample_id) %>% 
+            phyloseq::prune_samples(phy)
+          
+          ## Filter taxa
+          phy2 <-
+            zero_otu(phy2, var = var, pct_cutoff = rm_zeros) %>%
+            dplyr::pull(taxa_id) %>%
+            unique() %>%
+            phyloseq::prune_taxa(phy2)
+          
+          suppressMessages(
+            mr_obj <- 
+              phy2 %>%
+              phyloseq_to_MRexperiment() %>%
+              metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.))
+          )
+          
+          vct_var <- phyloseq::sample_data(phy2)[[var]]
+          norm_factor <- metagenomeSeq::normFactors(mr_obj)
+          norm_factor <- log2(norm_factor / stats::median(norm_factor) + 1)
+          
+          model <- stats::model.matrix( ~ 1 + vct_var + norm_factor)
+          
+          metagenomeSeq::fitZig(
+            mr_obj,
+            mod = model,
+            useCSSoffset = useCSSoffset,
+            zeroMod = zeroMod,
+            useMixedModel = useMixedModel,
+            control = metagenomeSeq::zigControl(
+              verbose = FALSE,
+              maxit = 100, 
+              dfMethod = "modified"
+            )
+          ) %>%
+            metagenomeSeq::MRfulltable(number = Inf, by = 2) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::rename(pvalue = P.Value, padj = adj.P.Val) %>%
+            dplyr::rename(pvalue = .data$pvalues, padj = .data$adjPvalues) %>%
             dplyr::mutate(
-              comparison = stringr::str_replace_all(.x, " - ", "_"), 
+              comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
-            ) %>%
-            dplyr::filter(
-              abs(.data$logFC) >= log2FC & .data$padj < max_significance
-            )
+            ) %>% 
+            dplyr::filter(.data$padj < max_significance)
         })
     })
 }

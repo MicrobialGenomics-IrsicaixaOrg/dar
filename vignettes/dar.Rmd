@@ -73,7 +73,7 @@ For our data, we can add an operation to preprocessing the data stored in the in
 ```{r prepro_steps}
 rec_obj <- rec_obj %>% 
   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>% 
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
   
 rec_obj
 ```
@@ -85,7 +85,7 @@ Now that we have defined the preprocessing of the input data for all the da meth
 ```{r da_steps}
 rec_obj <- rec_obj %>% 
   step_deseq() %>% 
-  step_metagenomeseq() %>% 
+  step_metagenomeseq(rm_zeros = 0.01) %>% 
   step_maaslin()
 
 rec_obj

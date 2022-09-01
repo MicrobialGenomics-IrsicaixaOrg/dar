@@ -61,7 +61,114 @@ required_pkgs_filter_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 #' @noRd
 #' @keywords internal
 run_filter_taxa <- function(rec, .f) {
+  
+  rm_zeros <- rec@steps %>%
+    purrr::pluck(
+      which(stringr::str_detect(steps_ids(rec), "metagenomeseq")),
+      "rm_zeros"
+    )
+  
+  is_metagenomeseq <- TRUE
+  if (is.null(rm_zeros)) { 
+    rm_zeros <- 0 
+    is_metagenomeseq <- FALSE
+  }
+  
   rec@phyloseq <- 
     phyloseq::filter_taxa(get_phy(rec), eval(parse(text = .f)), prune = TRUE)
+  
+  val <- 
+    zero_otu(rec) %>% 
+    dplyr::filter(.data$pct == 0) %>% 
+    nrow()
+  
+  if (val > 0 & rm_zeros == 0 & is_metagenomeseq) {
+    rlang::abort(c(
+      "!" = glue::glue(
+        "{crayon::bgMagenta('step_filter_taxa()')} returns a phyloseq object ", 
+        "that contains taxa with values of 0 in all samples of a level within ",
+        "the variable of interest. This can cause errors during the execution ", 
+        "of metagenomeseq method!"
+      ),
+      "*" = "Please create a new recipe using a stricter filter expression.", 
+      "*" = glue::glue(
+        "Alternatively, you can increase the rm_zeros value ", 
+        "{crayon::bgMagenta('step_metagenomeseq(rm_zeros = 0.01)')}. This ", 
+        "value indicates the minimum proportion of samples of the same level ", 
+        "with more than 0 counts."
+      )
+    ), use_cli_format = TRUE)
+  }
+  
   rec
 }
+
+
+## Extract outs with all 0 values in at least on level of the variable ----
+
+#' Extract outs with all 0 values in at least on level of the variable 
+#'
+#' @param obj A `recipe` or `phyloseq` object.
+#' @param var Variable of interest. Must be present in the metadata.
+#' @param pct_cutoff Minimum of pct counts samples with counts for each taxa. 
+#'
+#' @aliases zero_otu
+#' @return character vector
+#' @export
+methods::setGeneric(
+  name = "zero_otu",
+  def = function(obj, var = NULL, pct_cutoff = 0) {
+    standardGeneric("zero_otu")
+  }
+)
+
+#' @rdname zero_otu
+#' @export
+methods::setMethod(
+  f = "zero_otu", 
+  signature = "recipe", 
+  definition = function(obj, var, pct_cutoff) {
+    var <- get_var(obj)[[1]]
+    otu_table(obj) %>% 
+      tidyr::pivot_longer(-1, names_to = "sample_id") %>% 
+      dplyr::left_join(sample_data(obj), by = "sample_id") %>% 
+      dplyr::mutate(no_zero = ifelse(.data$value == 0, 0, 1)) %>% 
+      dplyr::group_by(taxa_id, !!dplyr::sym(var)) %>%
+      dplyr::summarise(
+        no_zero = sum(.data$no_zero), 
+        total = dplyr::n(), 
+        pct = .data$no_zero / .data$total,
+        .groups = "drop"
+      ) %>%
+      dplyr::arrange(.data$pct) %>% 
+      dplyr::filter(.data$pct >= pct_cutoff)
+  }
+)
+
+#' @rdname zero_otu
+#' @export
+methods::setMethod(
+  f = "zero_otu",
+  signature = "phyloseq",
+  definition = function(obj, var, pct_cutoff) {
+    phyloseq::otu_table(obj) %>%
+      to_tibble("taxa_id") %>%
+      tidyr::pivot_longer(-1, names_to = "sample_id") %>%
+      dplyr::left_join(
+        phyloseq::sample_data(obj) %>%
+          to_tibble("sample_id") %>%
+          dplyr::select(1, !!var),
+        by = "sample_id"
+      ) %>%
+      dplyr::mutate(no_zero = ifelse(.data$value == 0, 0, 1)) %>% 
+      dplyr::group_by(taxa_id, !!dplyr::sym(var)) %>%
+      dplyr::summarise(
+        no_zero = sum(.data$no_zero), 
+        total = dplyr::n(), 
+        pct = .data$no_zero / .data$total,
+        .groups = "drop"
+      ) %>%
+      dplyr::arrange(.data$pct) %>% 
+      dplyr::filter(.data$pct >= pct_cutoff)
+  }
+)

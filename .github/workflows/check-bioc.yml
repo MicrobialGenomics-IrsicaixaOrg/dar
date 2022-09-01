@@ -200,6 +200,7 @@ jobs:
           ## that have seen been updated in Bioconductor
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
+          remotes::install_version("detectseparation", version = 0.2)
         shell: Rscript {0}
 
       - name: Install BiocGenerics

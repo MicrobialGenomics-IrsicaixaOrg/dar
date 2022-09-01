@@ -27,10 +27,12 @@ reference:
   - step_wilcox
 - title: "Exploration"
   contents:
+  - corr_heatmap
   - exclusion_plt
   - find_intersections
   - intersection_df
   - intersection_plt
+  - overlap_df
 - title: "Recipe Getters and Adders"
   contents:
   - add_tax
@@ -43,6 +45,7 @@ reference:
   - steps_ids
   - tax_table
   - required_deps
+  - zero_otu
 - title: "Import and Export"
   contents:
   - export_steps
