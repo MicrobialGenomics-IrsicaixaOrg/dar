@@ -80,3 +80,16 @@ methods::setMethod(
     invisible()
   }
 )
+
+check_version <- function(pkg, v) {
+  
+  check <- utils::packageVersion(pkg) == v
+  if (!check) {
+    rlang::warn(c(
+     "i" = glue::glue(
+       "Temporarily the version of the package ", 
+       "{crayon::blue(pkg)} must be {crayon::blue(paste0('v', v))}, but you ")
+    ), use_cli_format = TRUE)
+  }
+}
+

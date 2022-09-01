@@ -79,7 +79,7 @@ run_filter_taxa <- function(rec, .f) {
   
   val <- 
     zero_otu(rec) %>% 
-    dplyr::filter(pct == 0) %>% 
+    dplyr::filter(.data$pct == 0) %>% 
     nrow()
   
   if (val > 0 & rm_zeros == 0 & is_metagenomeseq) {
@@ -132,16 +132,16 @@ methods::setMethod(
     otu_table(obj) %>% 
       tidyr::pivot_longer(-1, names_to = "sample_id") %>% 
       dplyr::left_join(sample_data(obj), by = "sample_id") %>% 
-      dplyr::mutate(no_zero = ifelse(value == 0, 0, 1)) %>% 
+      dplyr::mutate(no_zero = ifelse(.data$value == 0, 0, 1)) %>% 
       dplyr::group_by(taxa_id, !!dplyr::sym(var)) %>%
       dplyr::summarise(
-        no_zero = sum(no_zero), 
+        no_zero = sum(.data$no_zero), 
         total = dplyr::n(), 
-        pct = no_zero / total,
+        pct = .data$no_zero / .data$total,
         .groups = "drop"
       ) %>%
-      dplyr::arrange(pct) %>% 
-      dplyr::filter(pct >= pct_cutoff)
+      dplyr::arrange(.data$pct) %>% 
+      dplyr::filter(.data$pct >= pct_cutoff)
   }
 )
 
@@ -160,15 +160,15 @@ methods::setMethod(
           dplyr::select(1, !!var),
         by = "sample_id"
       ) %>%
-      dplyr::mutate(no_zero = ifelse(value == 0, 0, 1)) %>% 
+      dplyr::mutate(no_zero = ifelse(.data$value == 0, 0, 1)) %>% 
       dplyr::group_by(taxa_id, !!dplyr::sym(var)) %>%
       dplyr::summarise(
-        no_zero = sum(no_zero), 
+        no_zero = sum(.data$no_zero), 
         total = dplyr::n(), 
-        pct = no_zero / total,
+        pct = .data$no_zero / .data$total,
         .groups = "drop"
       ) %>%
-      dplyr::arrange(pct) %>% 
-      dplyr::filter(pct >= pct_cutoff)
+      dplyr::arrange(.data$pct) %>% 
+      dplyr::filter(.data$pct >= pct_cutoff)
   }
 )

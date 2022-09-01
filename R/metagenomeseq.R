@@ -202,7 +202,7 @@ run_metagenomeseq <- function(rec,
           
           vct_var <- phyloseq::sample_data(phy2)[[var]]
           norm_factor <- metagenomeSeq::normFactors(mr_obj)
-          norm_factor <- log2(norm_factor / median(norm_factor) + 1)
+          norm_factor <- log2(norm_factor / stats::median(norm_factor) + 1)
           
           model <- stats::model.matrix( ~ 1 + vct_var + norm_factor)
           
@@ -221,7 +221,7 @@ run_metagenomeseq <- function(rec,
             metagenomeSeq::MRfulltable(number = Inf, by = 2) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::rename(pvalue = pvalues, padj = adjPvalues) %>%
+            dplyr::rename(pvalue = .data$pvalues, padj = .data$adjPvalues) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var

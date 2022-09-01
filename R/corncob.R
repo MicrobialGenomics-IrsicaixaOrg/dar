@@ -52,7 +52,8 @@
 #' 
 #' ## Define step with default parameters and prep
 #' rec <- 
-#'   step_corncob(rec) # %>% prep(parallel = TRUE)
+#'   step_corncob(rec) %>% 
+#'   prep(parallel = TRUE)
 #'   
 #' rec
 #' 
@@ -206,6 +207,26 @@ run_corncob <- function(rec,
                         log2FC,
                         rarefy) {
 
+  
+  ## Temporal solution to https://github.com/bryandmartin/corncob/issues/141
+  ver <- utils::packageVersion("detectseparation")
+  if (ver != "0.2") {
+    rlang::abort(c(
+      glue::glue(
+        "Temporarily the version of the package ", 
+        "{crayon::bgMagenta(pkg)} must be {crayon::blue(paste0('v', v))}, but ", 
+        "you have the version {crayon::blue(ver)} installed."
+      ), 
+      "*" = glue::glue(
+        "Please first run {crayon::blue('remove.packages(\"detectseparation\")')}.",
+      ), 
+      "*" = glue::glue(
+        "Finally install the necessary version with ", 
+        "{crayon::blue('devtools::install_version(\"detectseparation\", version = 0.2)')}."
+      )
+    ), use_cli_format = TRUE)
+  }
+  
   phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
