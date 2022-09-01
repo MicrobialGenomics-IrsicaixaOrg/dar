@@ -61,7 +61,6 @@ Imports:
     cli,
     crayon,
     data.table,
-    detectseparation (<= 0.2),
     dplyr,
     generics,
     ggplot2,
