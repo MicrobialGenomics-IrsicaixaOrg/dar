@@ -65,9 +65,9 @@ test_that("find_intersections works", {
   res_2 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-1])
   res_3 <- find_intersections(da_results, steps = steps_ids(da_results, type = "da")[-2])
 
-  expect_equal(nrow(res_1), 101)
-  expect_equal(nrow(res_2), 101)
-  expect_equal(nrow(res_3), 101)
+  expect_equal(nrow(res_1), 89)
+  expect_equal(nrow(res_2), 86)
+  expect_equal(nrow(res_3), 69)
   expect_s3_class(res_1, "tbl_df")
   expect_s3_class(res_2, "tbl_df")
   expect_s3_class(res_3, "tbl_df")
