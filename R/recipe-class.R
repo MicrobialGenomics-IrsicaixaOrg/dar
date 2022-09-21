@@ -604,6 +604,7 @@ methods::setMethod(
       purrr::walk( ~ {
         n_taxa <-
           object@results[[.x]][[1]] %>%
+          dplyr::filter(signif == TRUE) %>% 
           dplyr::pull(.data$taxa_id) %>%
           unique() %>%
           length()
@@ -882,7 +883,11 @@ methods::setMethod(
       purrr::keep(. %in% steps) %>%
       purrr::set_names() %>%
       purrr::map_dfc( ~ {
-        taxa <- rec@results[[.x]][[1]][["taxa_id"]]
+        taxa <- 
+          rec@results[[.x]][[1]] %>% 
+          dplyr::filter(signif == TRUE) %>% 
+          dplyr::pull(taxa_id)
+          
         rownames(rec@phyloseq@otu_table) %>%
           tibble::tibble(taxa_id = .) %>%
           dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%

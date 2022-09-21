@@ -199,14 +199,16 @@ run_lefse <-
           lefse_res <- lefser::lefser(
             se,
             groupCol = var,
-            kruskal.threshold = kruskal.threshold,
-            wilcox.threshold = wilcox.threshold,
-            lda.threshold = lda.threshold,
+            kruskal.threshold = 1,
+            wilcox.threshold = 1,
+            lda.threshold = 0,
             blockCol = blockCol,
             assay = assay,
             trim.names = trim.names
           )
-
+          
+          adjpval <- ifelse(is.null(blockCol), kruskal.threshold, wilcox.threshold)
+          
           lefse_res %>%
             tibble::as_tibble() %>%
             dplyr::rename(otu = .data$Names) %>%
@@ -218,7 +220,14 @@ run_lefse <-
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var,
-              taxa = stringr::str_remove_all(.data$otu, ".*[|]")
+              taxa = stringr::str_remove_all(.data$otu, ".*[|]"), 
+              effect = .data$scores,
+              scale_effect = scales::rescale(.data$scores, to = c(-1, 1)),
+              signif = ifelse(
+                .data$adjp < adjpval & abs(.data$scores) >= lda.threshold,
+                TRUE,
+                FALSE
+              )
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa") %>%
             dplyr::rename(lefse_id = .data$otu)
@@ -256,11 +265,11 @@ prepro_lefse <- function(rec, rarefy) {
         dplyr::mutate(dplyr::across(
           .fns = function(x)
             stringr::str_replace_all(x, " |[.]|-", "_")
-        )) %>%
-        dplyr::mutate(dplyr::across(
-          .fns = function(x)
-            stringr::str_replace_all(x, "\\[|\\]", "")
-        ))
+        )) 
+        # dplyr::mutate(dplyr::across(
+        #   .fns = function(x)
+        #     stringr::str_replace_all(x, "\\[|\\]", "")
+        # )) %>% 
 
       if (it == 1) {
         tax_lev_names <- tax_lev_names %>% dplyr::pull(!!tax)

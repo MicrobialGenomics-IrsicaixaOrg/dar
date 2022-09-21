@@ -191,7 +191,11 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
             ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::filter(.data$we.eBH < max_significance)
+            dplyr::mutate(
+              effect = .data$effect, 
+              scale_effect = scales::rescale(.data$effect, to = c(-1, 1)), 
+              signif = ifelse(.data$we.eBH < max_significance, TRUE, FALSE),
+            )
         })
     })
 }

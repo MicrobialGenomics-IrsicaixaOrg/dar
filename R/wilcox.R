@@ -179,7 +179,8 @@ run_wilcox <- function(rec,
             dplyr::pull(!!var)
 
           comparisons <- 
-            get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1)
+            get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>% 
+            purrr::map(~ c(.x[[2]], .x[[1]]))
           
           if (length(to_exclude) >= 2) {
             comparisons <-
@@ -195,10 +196,15 @@ run_wilcox <- function(rec,
             p.adjust.method = p_adj_method,
             detailed = TRUE
           ) %>%
-            dplyr::filter(p < max_significance) %>%
             tidyr::unite("comparison", group1:group2, sep = "_") %>%
-            dplyr::rename(padj = p, taxa_id = .y.) %>%
+            dplyr::rename(padj = p.adj, taxa_id = .y.) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id")
-        })
+        }) %>% 
+        dplyr::mutate(
+          estimate = -estimate, 
+          effect = estimate,
+          scale_effect = scales::rescale(.data$estimate, to = c(-1, 1)),
+          signif = ifelse(.data$padj < max_significance, TRUE, FALSE)
+        )
     })
 }

@@ -298,7 +298,15 @@ run_corncob <- function(rec,
             dplyr::mutate(
               taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")
             ) %>%
-            dplyr::filter(.data$padj < fdr_cutoff & abs(.data$log2FC) >= log2FC)
+            dplyr::mutate(
+              effect = .data$log2FC, 
+              scale_effect = scales::rescale(.data$log2FC, to = c(-1, 1)),
+              signif = ifelse(
+                .data$padj < fdr_cutoff & abs(.data$log2FC) >= log2FC,
+                TRUE,
+                FALSE
+              )
+            )
         })
     })
 }

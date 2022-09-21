@@ -243,7 +243,11 @@ run_ancom <- function(rec,
               var = var
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::filter(.data$diff_abn == TRUE)
+            dplyr::mutate(
+              effect = .data$beta,
+              scale_effect = scales::rescale(.data$beta, to = c(-1, 1)), 
+              signif = .data$diff_abn
+            )
         })
     }) 
 }

@@ -223,7 +223,7 @@ run_deseq <- function(rec,
           y <- contrasts_df[[it, "y"]]
           DESeq2::lfcShrink(
             dds = dds,
-            contrast = c(var, x, y),
+            contrast = c(var, y, x),
             type = type,
             quiet = TRUE
           ) %>%
@@ -232,8 +232,14 @@ run_deseq <- function(rec,
             dplyr::mutate(
               comparison = stringr::str_c(x, "_", y), var = !!var
             ) %>%
-            dplyr::filter(
-              abs(.data$log2FoldChange) >= log2FC & .data$padj < max_significance
+            dplyr::mutate(
+              effect = .data$log2FoldChange,
+              scale_effect = scales::rescale(.data$log2FoldChange, to = c(-1, 1)),
+              signif = ifelse(
+                .data$padj < max_significance & abs(.data$log2FoldChange) >= log2FC,
+                TRUE,
+                FALSE
+              )
             )
         })
     })
