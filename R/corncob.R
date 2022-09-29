@@ -209,25 +209,25 @@ run_corncob <- function(rec,
 
   
   ## Temporal solution to https://github.com/bryandmartin/corncob/issues/141
-  ver <- utils::packageVersion("detectseparation")
-  if (ver != "0.2") {
-    rlang::abort(c(
-      "!" = glue::glue(
-        "Temporarily the version of the package ",
-        "{crayon::bgMagenta('detectseparation')} must be ",
-        "{crayon::blue('v0.2')}, but you have the version ",
-        "{crayon::blue(ver)} installed."
-      ),
-      "*" = glue::glue(
-        "Please first run {crayon::blue('remove.packages(\"detectseparation\")')}.",
-      ),
-      "*" = glue::glue(
-        "Finally install the necessary version with ",
-        "{crayon::blue('devtools::install_version(\"detectseparation\", version = 0.2)')}."
-      )
-    ),
-    use_cli_format = TRUE)
-  }
+  # ver <- utils::packageVersion("detectseparation")
+  # if (ver != "0.2") {
+  #   rlang::abort(c(
+  #     "!" = glue::glue(
+  #       "Temporarily the version of the package ",
+  #       "{crayon::bgMagenta('detectseparation')} must be ",
+  #       "{crayon::blue('v0.2')}, but you have the version ",
+  #       "{crayon::blue(ver)} installed."
+  #     ),
+  #     "*" = glue::glue(
+  #       "Please first run {crayon::blue('remove.packages(\"detectseparation\")')}.",
+  #     ),
+  #     "*" = glue::glue(
+  #       "Finally install the necessary version with ",
+  #       "{crayon::blue('devtools::install_version(\"detectseparation\", version = 0.2)')}."
+  #     )
+  #   ),
+  #   use_cli_format = TRUE)
+  # }
   
   phy <- get_phy(rec)
   vars <- get_var(rec)
