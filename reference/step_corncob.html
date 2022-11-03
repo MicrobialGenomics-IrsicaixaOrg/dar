@@ -239,8 +239,8 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Apple_strudel</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Bichon_au_citron</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Lotus_seed_bun</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Kūčiukai</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -249,26 +249,20 @@ is expected.</p></dd>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
 <span class="r-in"><span>  <span class="fu">step_corncob</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span>parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dar:::run_corncob(., phi.formula = ~1, formula_null = ~1, phi.formula_null = ~1,     link = "logit", phi.link = "logit", test = "Wald", boot = FALSE,     B = 1000, filter_discriminant = TRUE, fdr_cutoff = 0.05,     fdr = "fdr", log2FC = 0, rarefy = FALSE):</span> <span style="color: #BBBB00;">!</span> Temporarily the version of the package detectseparation must be v0.2,</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   but you have the version 0.3 installed.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Please first run remove.packages("detectseparation").</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Finally install the necessary version with</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   devtools::install_version("detectseparation", version = 0.2).</span>
 <span class="r-in"><span>  </span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Results</span> ─────────────────────────────────────────────────────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">101</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Apple_strudel</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Bichon_au_citron</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> corncob__Bundevara <span style="color: #555555;">diff_taxa = 75</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 75 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Wearing rarefaction only for this step </span></span></span>
@@ -289,7 +283,7 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_corncob() <span style="color: #555555;">id = corncob__Streusel</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_corncob() <span style="color: #555555;">id = corncob__Galette</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

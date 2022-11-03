@@ -118,14 +118,14 @@ using future and furrr packages.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Beaver_Tail</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Schuxen</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Jalebi</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Palmier</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Prekmurska_gibanica</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Cream_horn</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Linzer_torte</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Coussin_de_Lyon</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Nazook</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Pan_dulce</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## If the json file contains 'bake', the recipe is automatically prepared. </span></span></span>
 <span class="r-in"><span><span class="va">json_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"test_bake.json"</span>, package <span class="op">=</span> <span class="st">"dar"</span><span class="op">)</span></span></span>
@@ -144,15 +144,15 @@ using future and furrr packages.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> maaslin__Prekmurska_gibanica <span style="color: #555555;">diff_taxa = 86</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> metagenomeseq__Cream_horn <span style="color: #555555;">diff_taxa = 69</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> deseq__Linzer_torte <span style="color: #555555;">diff_taxa = 53</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> maaslin__Coussin_de_Lyon <span style="color: #555555;">diff_taxa = 86</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> metagenomeseq__Nazook <span style="color: #555555;">diff_taxa = 69</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> deseq__Pan_dulce <span style="color: #555555;">diff_taxa = 53</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 46 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bakes:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> <span style="color: #0000BB; font-weight: bold;">1 -&gt;</span> <span style="color: #555555;">count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Beaver_Tail</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> <span style="color: #0000BB; font-weight: bold;">1 -&gt;</span> <span style="color: #555555;">count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Prekmurska_gibanica</span> </span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 46 × 2</span></span>

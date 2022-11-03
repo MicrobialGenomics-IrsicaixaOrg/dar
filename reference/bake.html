@@ -131,7 +131,7 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">bake</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 27 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 23 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella      </span>
@@ -144,14 +144,14 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 17 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 13 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## We can use the parameter `cout_cutoff` to for example select those OTUs</span></span></span>
 <span class="r-in"><span><span class="co">## shared with at least two methods</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">bake</span><span class="op">(</span><span class="va">rec</span>, count_cutoff <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 52 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 34 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella      </span>
@@ -164,15 +164,15 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 42 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 24 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Furthermore, we can exclude methods from the consensus strategy with the </span></span></span>
 <span class="r-in"><span><span class="co">## `exclude` parameter.</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">bake</span><span class="op">(</span><span class="va">rec</span>, exclude <span class="op">=</span> <span class="fu"><a href="steps_ids.html">steps_ids</a></span><span class="op">(</span><span class="va">rec</span>, <span class="st">"da"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Results from <span style="color: #0000BB;">maaslin__Prekmurska_gibanica</span> are excluded</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 27 × 2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Results from <span style="color: #0000BB;">maaslin__Coussin_de_Lyon</span> are excluded</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 23 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella      </span>
@@ -185,7 +185,7 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 17 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 13 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Finally, we can use the `weights` parameter to weigh each method.</span></span></span>
 <span class="r-in"><span><span class="va">weights</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span></span>
@@ -193,7 +193,7 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">bake</span><span class="op">(</span><span class="va">rec</span>, weights <span class="op">=</span> <span class="va">weights</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 52 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 34 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella      </span>
@@ -206,7 +206,7 @@ equal to <code>length(steps_ids(rec, "da")) - length(exclude)</code></p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 42 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 24 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

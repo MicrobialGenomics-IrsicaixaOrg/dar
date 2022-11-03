@@ -88,20 +88,20 @@
 <span class="r-in"><span><span class="co">## From a prep-recipe we can extract a tibble with all intersections</span></span></span>
 <span class="r-in"><span><span class="va">intersections</span> <span class="op">&lt;-</span> <span class="fu">find_intersections</span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">intersections</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 88 × 4</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            step_ids                                      sum_m…¹</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_45  Slackia         maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_78  Bacteroides     maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_82  Barnesiella     maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_88  Odoribacter     maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_94  Paraprevotella  maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella      maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes       maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides maaslin__Prekmurska_gibanica, metagenomeseq_…       3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 91 more rows, and abbreviated variable name ¹​sum_methods</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_45  Slackia         maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_78  Bacteroides     maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_82  Barnesiella     maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_88  Odoribacter     maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_94  Paraprevotella  maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella      maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes       maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides maaslin__Coussin_de_Lyon, metagenomeseq__Naz…       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 78 more rows, and abbreviated variable name ¹​sum_methods</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Additionally, we can exclude some methods form the table</span></span></span>
 <span class="r-in"><span><span class="va">intersections</span> <span class="op">&lt;-</span> <span class="fu">find_intersections</span><span class="op">(</span></span></span>
@@ -110,20 +110,20 @@
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">intersections</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 52 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            step_ids                                      sum_m…¹</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_45  Slackia         metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_78  Bacteroides     metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_82  Barnesiella     metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_88  Odoribacter     metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_94  Paraprevotella  metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella      metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes       metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides metagenomeseq__Cream_horn, deseq__Linzer_tor…       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 42 more rows, and abbreviated variable name ¹​sum_methods</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 36 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            step_ids                                sum_methods</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_34  Olsenella       metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_35  Collinsella     metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_45  Slackia         metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_78  Bacteroides     metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_82  Barnesiella     metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_88  Odoribacter     metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_94  Paraprevotella  metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_96  Prevotella      metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_119 Alistipes       metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_125 Parabacteroides metagenomeseq__Nazook, deseq__Pan_dulce           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 26 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

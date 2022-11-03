@@ -87,19 +87,19 @@
 <span class="r-in"><span><span class="co">## We can extract the step identifiers from a recipe with `step_ids`</span></span></span>
 <span class="r-in"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ids</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Beaver_Tail"     "filter_taxa__Schuxen"        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "maaslin__Prekmurska_gibanica" "metagenomeseq__Cream_horn"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "deseq__Linzer_torte"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Jalebi"      "filter_taxa__Palmier"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "maaslin__Coussin_de_Lyon" "metagenomeseq__Nazook"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "deseq__Pan_dulce"        </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## With the `type` parameter, extract the prepro and da steps separately.</span></span></span>
 <span class="r-in"><span><span class="va">da_ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"da"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">da_ids</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "maaslin__Prekmurska_gibanica" "metagenomeseq__Cream_horn"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "deseq__Linzer_torte"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "maaslin__Coussin_de_Lyon" "metagenomeseq__Nazook"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "deseq__Pan_dulce"        </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">prepro_ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"prepro"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">prepro_ids</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Beaver_Tail" "filter_taxa__Schuxen"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Jalebi"  "filter_taxa__Palmier"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
