@@ -1,9 +1,9 @@
 {
    "expr": "Kingdom %in% c(\"Bacteria\", \"Archaea\")",
-   "id": "subset_taxa__Beaver_Tail",
+   "id": "subset_taxa__Jalebi",
 } {
    ".f": "function(x) sum(x > 0) >= (0.3 * length(x))",
-   "id": "filter_taxa__Schuxen",
+   "id": "filter_taxa__Palmier",
 } {
    "min_abundance": 0,
    "min_prevalence": 0.1,
@@ -17,7 +17,7 @@
    "standardize": TRUE,
    "reference": ,
    "rarefy": FALSE,
-   "id": "maaslin__Prekmurska_gibanica",
+   "id": "maaslin__Coussin_de_Lyon",
 } {
    "zeroMod": ,
    "useCSSoffset": TRUE,
@@ -26,7 +26,7 @@
    "log2FC": 0,
    "rarefy": FALSE,
    "rm_zeros": 0.01,
-   "id": "metagenomeseq__Cream_horn",
+   "id": "metagenomeseq__Nazook",
 } {
    "test": "Wald",
    "fitType": "parametric",
@@ -35,10 +35,10 @@
    "max_significance": 0.05,
    "log2FC": 0,
    "rarefy": FALSE,
-   "id": "deseq__Linzer_torte",
+   "id": "deseq__Pan_dulce",
 } {
    "count_cutoff": ,
    "weights": ,
    "exclude": ,
-   "id": "bake__Beaver_Tail",
+   "id": "bake__Prekmurska_gibanica",
 }

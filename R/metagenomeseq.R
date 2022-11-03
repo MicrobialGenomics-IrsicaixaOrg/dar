@@ -214,7 +214,7 @@ run_metagenomeseq <- function(rec,
             useMixedModel = useMixedModel,
             control = metagenomeSeq::zigControl(
               verbose = FALSE,
-              maxit = 100, 
+              maxit = 100,
               dfMethod = "modified"
             )
           ) %>%
@@ -222,11 +222,17 @@ run_metagenomeseq <- function(rec,
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::rename(pvalue = .data$pvalues, padj = .data$adjPvalues) %>%
+            stats::setNames(
+              names(.) %>% stringr::str_replace_all("vct_var.*", "vct_var")
+            ) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var
             ) %>% 
-            dplyr::filter(.data$padj < max_significance)
+            dplyr::mutate(
+              effect = .data$vct_var,
+              signif = ifelse(.data$padj < max_significance, TRUE, FALSE)
+            )
         })
     })
 }

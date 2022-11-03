@@ -243,7 +243,10 @@ run_ancom <- function(rec,
               var = var
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::filter(.data$diff_abn == TRUE)
+            dplyr::mutate(
+              effect = .data$beta,
+              signif = .data$diff_abn
+            )
         })
     }) 
 }

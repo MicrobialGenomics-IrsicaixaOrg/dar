@@ -6,16 +6,18 @@
 \alias{corr_heatmap,prep_recipe-method}
 \title{Plot otuput of the \code{overlap_df} function as a heatmap.}
 \usage{
-corr_heatmap(rec, steps = steps_ids(rec, "da"))
+corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15)
 
-\S4method{corr_heatmap}{recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{corr_heatmap}{recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15)
 
-\S4method{corr_heatmap}{prep_recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{corr_heatmap}{prep_recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
+
+\item{font_size}{Size of the axis font.}
 }
 \value{
 heatmap
@@ -28,7 +30,6 @@ data(test_prep_rec)
 
 ## Running the function returns a UpSet plot ordered by frequency.
 corr_heatmap(test_prep_rec)
-
 
 ## If you want to exclude a method for the plot, you can remove it with the
 ## step parameter. In the following example we eliminate from the graph the

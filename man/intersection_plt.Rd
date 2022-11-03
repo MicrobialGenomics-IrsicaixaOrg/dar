@@ -9,15 +9,17 @@
 intersection_plt(
   rec,
   steps = steps_ids(rec, "da"),
-  ordered_by = c("freq", "degree")
+  ordered_by = c("freq", "degree"),
+  font_size = 2
 )
 
-\S4method{intersection_plt}{recipe}(rec, steps)
+\S4method{intersection_plt}{recipe}(rec, steps, font_size)
 
 \S4method{intersection_plt}{prep_recipe}(
   rec,
   steps = steps_ids(rec, "da"),
-  ordered_by = c("freq", "degree")
+  ordered_by = c("freq", "degree"),
+  font_size = 2
 )
 }
 \arguments{
@@ -28,6 +30,8 @@ intersection_plt(
 \item{ordered_by}{How the intersections in the matrix should be ordered by.
 Options include frequency (entered as "freq"), degree, or both in any
 order.}
+
+\item{font_size}{Size of the font.}
 }
 \value{
 UpSet plot
