@@ -222,7 +222,6 @@ run_lefse <-
               var = var,
               taxa = stringr::str_remove_all(.data$otu, ".*[|]"), 
               effect = .data$scores,
-              scale_effect = scales::rescale(.data$scores, to = c(-1, 1)),
               signif = ifelse(
                 .data$adjp < adjpval & abs(.data$scores) >= lda.threshold,
                 TRUE,

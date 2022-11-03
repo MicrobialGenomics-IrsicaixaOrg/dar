@@ -245,7 +245,6 @@ run_ancom <- function(rec,
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
               effect = .data$beta,
-              scale_effect = scales::rescale(.data$beta, to = c(-1, 1)), 
               signif = .data$diff_abn
             )
         })

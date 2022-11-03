@@ -193,7 +193,6 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
               effect = .data$effect, 
-              scale_effect = scales::rescale(.data$effect, to = c(-1, 1)), 
               signif = ifelse(.data$we.eBH < max_significance, TRUE, FALSE),
             )
         })

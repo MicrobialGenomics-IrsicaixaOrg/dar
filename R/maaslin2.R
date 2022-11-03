@@ -260,7 +260,6 @@ run_maaslin <- function(rec,
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>% 
             dplyr::mutate(
               effect = .data$coef,
-              scale_effect = scales::rescale(.data$coef, to = c(-1, 1)),
               signif = ifelse(.data$qval < max_significance, TRUE, FALSE)
             )
         })

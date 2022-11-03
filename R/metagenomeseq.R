@@ -231,7 +231,6 @@ run_metagenomeseq <- function(rec,
             ) %>% 
             dplyr::mutate(
               effect = .data$vct_var,
-              scale_effect = scales::rescale(.data$vct_var, to = c(-1, 1)),
               signif = ifelse(.data$padj < max_significance, TRUE, FALSE)
             )
         })

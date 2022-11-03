@@ -984,6 +984,7 @@ methods::setMethod(
 #'
 #' @param rec A `recipe` object.
 #' @param steps Character vector with step_ids to take in account.
+#' @param font_size Size of the axis font.
 #'
 #' @aliases corr_heatmap
 #' @importFrom heatmaply heatmaply_cor
@@ -994,7 +995,6 @@ methods::setMethod(
 #'
 #' ## Running the function returns a UpSet plot ordered by frequency.
 #' corr_heatmap(test_prep_rec)
-#'
 #'
 #' ## If you want to exclude a method for the plot, you can remove it with the
 #' ## step parameter. In the following example we eliminate from the graph the
@@ -1007,7 +1007,7 @@ methods::setMethod(
 #' \dontrun{df <- corr_heatmap(test_rec)}
 methods::setGeneric(
   name = "corr_heatmap",
-  def = function(rec, steps = steps_ids(rec, "da")) {
+  def = function(rec, steps = steps_ids(rec, "da"), font_size = 15) {
     standardGeneric("corr_heatmap")
   }
 )
@@ -1017,7 +1017,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "corr_heatmap",
   signature = "recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, font_size) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -1034,7 +1034,7 @@ methods::setMethod(
 methods::setMethod(
   f = "corr_heatmap",
   signature = "prep_recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, font_size) {
     overlap_df(rec, steps = steps) %>%
       heatmaply::heatmaply_cor(
         x = .,
@@ -1056,8 +1056,8 @@ methods::setMethod(
         node_type = "scatter",
         trace = "none",
         dist_method = "canberra", 
-        # fontsize_col = 15,
-        # fontsize_row = 15,
+        fontsize_col = font_size,
+        fontsize_row = font_size,
         heatmap_layers = theme(axis.text = element_text(colour = "black", family = 'Arial')),
         hclust_method = "complete"
       ) 
@@ -1073,6 +1073,7 @@ methods::setMethod(
 #' @param ordered_by How the intersections in the matrix should be ordered by.
 #'   Options include frequency (entered as "freq"), degree, or both in any
 #'   order.
+#' @param font_size Size of the font. 
 #'
 #' @aliases intersection_plt
 #' @return UpSet plot
@@ -1099,7 +1100,8 @@ methods::setGeneric(
   name = "intersection_plt",
   def = function(rec,
                  steps = steps_ids(rec, "da"),
-                 ordered_by = c("freq", "degree")) {
+                 ordered_by = c("freq", "degree"), 
+                 font_size = 2) {
     standardGeneric("intersection_plt")
   }
 )
@@ -1109,7 +1111,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "intersection_plt",
   signature = "recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, font_size) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -1126,12 +1128,13 @@ methods::setMethod(
 methods::setMethod(
   f = "intersection_plt",
   signature = "prep_recipe",
-  definition = function(rec, steps, ordered_by) {
+  definition = function(rec, steps, ordered_by, font_size) {
     UpSetR::upset(
       data = intersection_df(rec, steps),
       nsets = length(rec@results),
       sets.bar.color = "#56B4E9",
-      order.by = ordered_by
+      order.by = ordered_by, 
+      text.scale = font_size
     )
   }
 )

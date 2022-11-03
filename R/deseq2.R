@@ -234,7 +234,6 @@ run_deseq <- function(rec,
             ) %>%
             dplyr::mutate(
               effect = .data$log2FoldChange,
-              scale_effect = scales::rescale(.data$log2FoldChange, to = c(-1, 1)),
               signif = ifelse(
                 .data$padj < max_significance & abs(.data$log2FoldChange) >= log2FC,
                 TRUE,
