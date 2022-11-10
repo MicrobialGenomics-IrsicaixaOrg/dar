@@ -250,17 +250,17 @@ run_maaslin <- function(rec,
           ) %>%
             purrr::pluck("results") %>%
             tibble::as_tibble() %>%
-            dplyr::select(-.data$metadata, -.data$value) %>%
+            dplyr::select(-metadata, -value) %>%
             dplyr::mutate(
-              coef = .data$coef / log10(2),
+              coef = coef / log10(2),
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = !!var
             ) %>%
-            dplyr::rename(taxa_id = .data$feature) %>%
+            dplyr::rename(taxa_id = feature) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>% 
             dplyr::mutate(
-              effect = .data$coef,
-              signif = ifelse(.data$qval < max_significance, TRUE, FALSE)
+              effect = coef,
+              signif = ifelse(qval < max_significance, TRUE, FALSE)
             )
         })
     })

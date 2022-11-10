@@ -1,39 +1,65 @@
 #' ANCOM analysis
 #'
-#' This function performs an analysis of composition of microbiomes (ANCOM).
-#' ANCOM accounts for the underlying structure in the data and can be used for
-#' comparing the composition of microbiomes in two or more populations. ANCOM
-#' makes no distributional assumptions and can be implemented in a linear model
-#' framework to adjust for covariates as well as model longitudinal data.
+#' Determine taxa whose absolute abundances, per unit volume, of the ecosystem
+#' (e.g., gut) are significantly different with changes in the covariate of
+#' interest (e.g., group). The current version of ancombc2 function implements
+#' Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC2) in
+#' cross-sectional and repeated measurements data. In addition to the two-group
+#' comparison, ANCOM-BC2 also supports testing for continuous covariates and
+#' multi-group comparisons, including the global test, pairwise directional
+#' test, Dunnett's type of test, and trend test.
 #'
 #' @param rec A recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
-#' @param formula the character string expresses how the microbial absolute
-#'   abundances for each taxon depend on the variables in metadata.
-#' @param p_adj_method method to adjust p-values by. Default is "holm". Options
-#'   include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr",
-#'   "none". See p.adjust for more details.
-#' @param zero_cut a numerical fraction between 0 and 1. Taxa with proportion of
-#'   zeroes greater than zero_cut will be excluded in the analysis. Default is
-#'   0.90.
+#' @param fix_formula the character string expresses how the microbial absolute
+#'   abundances for each taxon depend on the fixed effects in metadata.
+#' @param rand_formula the character string expresses how the microbial absolute
+#'   abundances for each taxon depend on the random effects in metadata.
+#'   ANCOM-BC2 follows the lmerTest package in formulating the random effects.
+#'   See ?lmerTest::lmer for more details. Default is NULL.
+#' @param p_adj_method character. method to adjust p-values. Default is "holm".
+#'   Options include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
+#'   "fdr", "none". See ?stats::p.adjust for more details.
+#' @param pseudo numeric. Add pseudo-counts to the data. Default is 0 (no
+#'   pseudo-count addition).
+#' @param pseudo_sens ogical. Whether to perform the sensitivity analysis to the
+#'   pseudo-count addition. Default is TRUE. See Details for a more
+#'   comprehensive discussion on this sensitivity analysis.
+#' @param prv_cut a numerical fraction between 0 and 1. Taxa with prevalences
+#'   less than prv_cut will be excluded in the analysis. For instance, suppose
+#'   there are 100 samples, if a taxon has nonzero counts presented in less than
+#'   10 samples, it will not be further analyzed. Default is 0.10.
 #' @param lib_cut a numerical threshold for filtering samples based on library
 #'   sizes. Samples with library sizes less than lib_cut will be excluded in the
-#'   analysis. Default is 0, i.e. do not filter any sample.
-#' @param group the name of the group variable in metadata. Specifying group is
-#'   required for detecting structural zeros and performing global test.
-#' @param struc_zero whether to detect structural zeros. Default is FALSE.
-#' @param neg_lb whether to classify a taxon as a structural zero in the
-#'   corresponding study group using its asymptotic lower bound. Default is
-#'   FALSE.
-#' @param tol the iteration convergence tolerance for the E-M algorithm. Default
-#'   is 1e-05.
-#' @param max_iter the maximum number of iterations for the E-M algorithm.
-#'   Default is 100.
-#' @param conserve whether to use a conservative variance estimate of the test
-#'   statistic. It is recommended if the sample size is small and/or the number
-#'   of differentially abundant taxa is believed to be large. Default is FALSE.
-#' @param alpha level of significance. Default is 0.05.
-#' @param global whether to perform global test. Default is FALSE.
+#'   analysis. Default is 0, i.e. do not discard any sample.
+#' @param s0_perc a numerical fraction between 0 and 1. Inspired by Significance
+#'   Analysis of Microarrays (SAM) methodology, a small positive constant is
+#'   added to the denominator of ANCOM-BC2 test statistic corresponding to each
+#'   taxon to avoid the significance due to extremely small standard errors,
+#'   especially for rare taxa. This small positive constant is chosen as
+#'   s0_perc-th percentile of standard error values for each fixed effect.
+#'   Default is 0.05 (5th percentile).
+#' @param group character. The name of the group variable in metadata. group
+#'   should be discrete. Specifying group is required for detecting structural
+#'   zeros and performing multi-group comparisons (global test, pairwise
+#'   directional test, Dunnett's type of test, and trend test). Default is NULL.
+#'   If the group of interest contains only two categories, leave it as NULL.
+#' @param struc_zero logical. Whether to detect structural zeros based on group.
+#'   Default is FALSE. See Details for a more comprehensive discussion on
+#'   structural zeros.
+#' @param neg_lb logical. Whether to classify a taxon as a structural zero using
+#'   its asymptotic lower bound. Default is FALSE.
+#' @param alpha numeric. Level of significance. Default is 0.05.
+#' @param n_cl numeric. The number of nodes to be forked. For details, see
+#'   ?parallel::makeCluster. Default is 1 (no parallel computing).
+#' @param verbose logical. Whether to generate verbose output during the
+#'   ANCOM-BC2 fitting process. Default is FALSE.
+#' @param global logical. Whether to perform the global test. Default is FALSE.
+#' @param pairwise logical. Whether to perform the pairwise directional test.
+#'   Default is FALSE.
+#' @param dunnet logical. Whether to perform the Dunnett's type of test. Default
+#'   is FALSE.
+#' @param trend logical. Whether to perform trend test. Default is FALSE.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
 #'   rarefaction uses the standard R sample function to resample from the
 #'   abundance values in the otu_table component of the first argument, physeq.
@@ -48,45 +74,56 @@
 #' @aliases step_ancom
 #' @return An object of class `recipe`
 #' @export
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init recipe
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
-#' 
+#'
 #' rec
-#' 
+#'
 #' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_ancom(rec) %>% 
+#' rec <-
+#'   step_ancom(rec) %>%
 #'   prep(parallel = TRUE)
-#'   
+#'
 #' rec
-#' 
-#' ## Wearing rarefaction only for this step 
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'
+#' ## Wearing rarefaction only for this step
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_ancom(rec, rarefy = TRUE)
-#' 
+#'
 #' rec
 methods::setGeneric(
   name = "step_ancom",
   def = function(rec,
-                 formula = get_var(rec),
+                 fix_formula = get_var(rec)[[1]],
+                 rand_formula = NULL,
                  p_adj_method = "holm",
-                 zero_cut = 0.9,
+                 pseudo = 0,
+                 pseudo_sens = TRUE,
+                 prv_cut = 0.1,
                  lib_cut = 0,
+                 s0_perc = 0.05,
                  group = NULL,
                  struc_zero = FALSE,
                  neg_lb = FALSE,
-                 tol = 1e-05, 
-                 max_iter = 100, 
-                 conserve = FALSE, 
-                 alpha = 0.05, 
-                 global = FALSE, 
+                 alpha = 0.05,
+                 n_cl = 1,
+                 verbose = FALSE,
+                 global = FALSE,
+                 pairwise = FALSE,
+                 dunnet = FALSE,
+                 trend = FALSE,
+                 # iter_control = list(tol = 0.01, max_iter = 20, verbose = FALSE),
+                 # em_control = list(tol = 1e-05, max_iter = 100),
+                 # lme_control = lme4::lmerControl(),
+                 # mdfdr_control = list(fwer_ctrl_method = "holm", B = 100),
+                 # trend_control = list(contrast = NULL, node = NULL, solver = "ECOS", B = 100),
                  rarefy = FALSE, 
                  id = rand_id("ancom")) {
     standardGeneric("step_ancom")
@@ -99,18 +136,29 @@ methods::setMethod(
   f = "step_ancom",
   signature = c(rec = "recipe"),
   definition = function(rec,
-                        formula,
+                        fix_formula,
+                        rand_formula,
                         p_adj_method,
-                        zero_cut,
+                        pseudo,
+                        pseudo_sens,
+                        prv_cut,
                         lib_cut,
+                        s0_perc,
                         group,
                         struc_zero,
                         neg_lb,
-                        tol, 
-                        max_iter, 
-                        conserve, 
-                        alpha, 
-                        global, 
+                        alpha,
+                        n_cl,
+                        verbose,
+                        global,
+                        pairwise,
+                        dunnet,
+                        trend,
+                        # iter_control,
+                        # em_control,
+                        # lme_control,
+                        # mdfdr_control,
+                        # trend_control,
                         rarefy, 
                         id) {
 
@@ -118,18 +166,29 @@ methods::setMethod(
     add_step(
       rec,
       step_ancom_new(
-        formula = formula,
+        fix_formula = fix_formula,
+        rand_formula = rand_formula,
         p_adj_method = p_adj_method,
-        zero_cut = zero_cut,
+        pseudo = pseudo,
+        pseudo_sens = pseudo_sens,
+        prv_cut = prv_cut,
         lib_cut = lib_cut,
+        s0_perc = s0_perc,
         group = group,
         struc_zero = struc_zero,
         neg_lb = neg_lb,
-        tol = tol, 
-        max_iter = max_iter, 
-        conserve = conserve, 
-        alpha = alpha, 
-        global = global, 
+        alpha = alpha,
+        n_cl = n_cl,
+        verbose = verbose,
+        global = global,
+        pairwise = pairwise,
+        dunnet = dunnet,
+        trend = trend,
+        # iter_control = iter_control,
+        # em_control = em_control,
+        # lme_control = lme_control,
+        # mdfdr_control = mdfdr_control,
+        # trend_control = trend_control,
         rarefy = rarefy, 
         id = id
       )
@@ -140,34 +199,56 @@ methods::setMethod(
 #' @noRd
 #' @keywords internal
 step_ancom_new <-
-  function(formula,
+  function(fix_formula,
+           rand_formula,
            p_adj_method,
-           zero_cut,
+           pseudo,
+           pseudo_sens,
+           prv_cut,
            lib_cut,
+           s0_perc,
            group,
            struc_zero,
            neg_lb,
-           tol, 
-           max_iter, 
-           conserve, 
-           alpha, 
-           global, 
+           alpha,
+           n_cl,
+           verbose,
+           global,
+           pairwise,
+           dunnet,
+           trend,
+           # iter_control,
+           # em_control,
+           # lme_control,
+           # mdfdr_control,
+           # trend_control,
            rarefy, 
            id) {
     step(
       subclass = "ancom",
-      formula = formula,
+      fix_formula = fix_formula,
+      rand_formula = rand_formula,
       p_adj_method = p_adj_method,
-      zero_cut = zero_cut,
+      pseudo = pseudo,
+      pseudo_sens = pseudo_sens,
+      prv_cut = prv_cut,
       lib_cut = lib_cut,
+      s0_perc = s0_perc,
       group = group,
       struc_zero = struc_zero,
       neg_lb = neg_lb,
-      tol = tol, 
-      max_iter = max_iter, 
-      conserve = conserve, 
-      alpha = alpha, 
-      global = global, 
+      alpha = alpha,
+      n_cl = n_cl,
+      verbose = verbose,
+      global = global,
+      pairwise = pairwise,
+      dunnet = dunnet,
+      trend = trend,
+      # iter_control = iter_control,
+      # em_control = em_control,
+      # lme_control = lme_control,
+      # mdfdr_control = mdfdr_control,
+      # trend_control = trend_control,
       rarefy = rarefy, 
       id = id
     )
@@ -180,24 +261,35 @@ required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 #' @noRd
 #' @keywords internal
 run_ancom <- function(rec,
-                      formula,
+                      fix_formula,
+                      rand_formula,
                       p_adj_method,
-                      zero_cut,
+                      pseudo,
+                      pseudo_sens,
+                      prv_cut,
                       lib_cut,
+                      s0_perc,
                       group,
                       struc_zero,
                       neg_lb,
-                      tol, 
-                      max_iter, 
-                      conserve, 
-                      alpha, 
-                      global, 
+                      alpha,
+                      n_cl,
+                      verbose,
+                      global,
+                      pairwise,
+                      dunnet,
+                      trend,
+                      # iter_control,
+                      # em_control,
+                      # lme_control,
+                      # mdfdr_control,
+                      # trend_control,
                       rarefy, 
                       id) {
   
   phy <- get_phy(rec)
-  vars <- get_var(rec)
-  tax_level <- get_tax(rec)
+  vars <- get_var(rec)[[1]]
+  tax_level <- get_tax(rec)[[1]]
   if (rarefy) {
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
   }
@@ -216,36 +308,44 @@ run_ancom <- function(rec,
             parse(text = .) %>%
             eval()
           
-          res <- ANCOMBC::ancombc(
-            phyloseq = s_phy,
-            formula = var,
+          res <- ANCOMBC::ancombc2(
+            data = s_phy, 
+            tax_level = tax_level,
+            fix_formula = fix_formula,
+            rand_formula = rand_formula,
             p_adj_method = p_adj_method,
-            zero_cut = zero_cut,
+            pseudo = pseudo,
+            pseudo_sens = pseudo_sens,
+            prv_cut = prv_cut,
             lib_cut = lib_cut,
+            s0_perc = s0_perc,
             group = group,
             struc_zero = struc_zero,
             neg_lb = neg_lb,
-            tol = tol,
-            max_iter = max_iter,
-            conserve = conserve,
             alpha = alpha,
-            global = global
+            n_cl = n_cl,
+            verbose = verbose,
+            global = global,
+            pairwise = pairwise,
+            dunnet = dunnet,
+            trend = trend
+            # iter_control = iter_control,
+            # em_control = em_control,
+            # lme_control = lme_control,
+            # mdfdr_control = mdfdr_control,
+            # trend_control = trend_control
           )
           
+          
           res$res %>%
-            purrr::map2_dfc(names(res$res), ~ {
-              tibble::tibble(!!.y := .x[[1]])
-            }) %>%
+            tibble::as_tibble(rownames = "taxa_id") %>%
+            dplyr::select(taxa_id, dplyr::contains(!!var)) %>%
+            stats::setNames(stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))) %>% 
             dplyr::mutate(
-              taxa_id = rownames(res$res$beta),
-              .before = 1,
               comparison = stringr::str_c(comparison, collapse = "_"),
-              var = var
-            ) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::mutate(
-              effect = .data$beta,
-              signif = .data$diff_abn
+              var = var, 
+              effect = lfc, 
+              signif = diff
             )
         })
     }) 

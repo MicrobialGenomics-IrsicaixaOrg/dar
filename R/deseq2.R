@@ -233,9 +233,9 @@ run_deseq <- function(rec,
               comparison = stringr::str_c(x, "_", y), var = !!var
             ) %>%
             dplyr::mutate(
-              effect = .data$log2FoldChange,
+              effect = log2FoldChange,
               signif = ifelse(
-                .data$padj < max_significance & abs(.data$log2FoldChange) >= log2FC,
+                padj < max_significance & abs(log2FoldChange) >= log2FC,
                 TRUE,
                 FALSE
               )

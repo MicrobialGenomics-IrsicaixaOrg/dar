@@ -293,15 +293,15 @@ run_corncob <- function(rec,
               var = var
             ) %>%
             tidyr::separate(
-              .data$taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE
+              taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE
             ) %>%
             dplyr::mutate(
               taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")
             ) %>%
             dplyr::mutate(
-              effect = .data$log2FC, 
+              effect = log2FC, 
               signif = ifelse(
-                .data$padj < fdr_cutoff & abs(.data$log2FC) >= log2FC,
+                padj < fdr_cutoff & abs(log2FC) >= log2FC,
                 TRUE,
                 FALSE
               )

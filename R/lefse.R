@@ -211,25 +211,25 @@ run_lefse <-
           
           lefse_res %>%
             tibble::as_tibble() %>%
-            dplyr::rename(otu = .data$Names) %>%
-            dplyr::mutate(otu = stringr::str_remove_all(.data$otu, "\`")) %>%
+            dplyr::rename(otu = Names) %>%
+            dplyr::mutate(otu = stringr::str_remove_all(otu, "\`")) %>%
             dplyr::left_join(
               kruskal_test(se, sample_data[[var]]), by = "otu"
             ) %>%
-            dplyr::arrange(.data$pvalue, dplyr::desc(abs(.data$scores))) %>%
+            dplyr::arrange(pvalue, dplyr::desc(abs(scores))) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var,
-              taxa = stringr::str_remove_all(.data$otu, ".*[|]"), 
-              effect = .data$scores,
+              taxa = stringr::str_remove_all(otu, ".*[|]"), 
+              effect = scores,
               signif = ifelse(
-                .data$adjp < adjpval & abs(.data$scores) >= lda.threshold,
+                adjp < adjpval & abs(scores) >= lda.threshold,
                 TRUE,
                 FALSE
               )
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa") %>%
-            dplyr::rename(lefse_id = .data$otu)
+            dplyr::rename(lefse_id = otu)
         })
     })
 }
@@ -275,15 +275,15 @@ prepro_lefse <- function(rec, rarefy) {
       } else {
         tax_lev_names <-
           tax_lev_names %>%
-          tidyr::unite('name', .data$Kingdom:(!!tax), sep = "|") %>%
+          tidyr::unite('name', Kingdom:(!!tax), sep = "|") %>%
           dplyr::pull()
       }
       abundance_df <- abundance_df %>% dplyr::mutate(RTC = tax_lev_names)
     }) %>%
     dplyr::filter(
-      stringr::str_count(.data$RTC, "[|]") == match(tax_level, tax_otp) - 1
+      stringr::str_count(RTC, "[|]") == match(tax_level, tax_otp) - 1
     ) %>%
-    dplyr::arrange(.data$RTC) %>%
+    dplyr::arrange(RTC) %>%
     data.frame(row.names = 1, check.names = FALSE) %>%
     as.matrix()
 
@@ -299,6 +299,6 @@ kruskal_test <- function(se, levels, assay = 1L) {
     stats::kruskal.test(x ~ group)[["p.value"]]
   }) %>%
     tibble::as_tibble(rownames = "otu") %>%
-    dplyr::rename(pvalue = .data$value) %>%
-    dplyr::mutate(adjp = stats::p.adjust(.data$pvalue, method = "BH"))
+    dplyr::rename(pvalue = value) %>%
+    dplyr::mutate(adjp = stats::p.adjust(pvalue, method = "BH"))
 }

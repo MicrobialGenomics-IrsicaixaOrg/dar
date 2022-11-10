@@ -152,14 +152,14 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
       step_ids = 
-        purrr::map_chr(.data$name, ~ .x) %>% 
+        purrr::map_chr(name, ~ .x) %>% 
         stringr::str_c(collapse = ", "),
-      sum_methods = sum(.data$value)
+      sum_methods = sum(value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
-    dplyr::arrange(-.data$sum_methods) %>%
-    dplyr::filter(.data$sum_methods >= count_cutoff) %>%
-    dplyr::select(.data$taxa_id, .data$taxa)
+    dplyr::arrange(-sum_methods) %>%
+    dplyr::filter(sum_methods >= count_cutoff) %>%
+    dplyr::select(taxa_id, taxa)
 
   not_incl <- NULL
   if (!is.null(exclude)) {

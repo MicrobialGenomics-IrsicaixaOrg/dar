@@ -192,8 +192,8 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
-              effect = .data$effect, 
-              signif = ifelse(.data$we.eBH < max_significance, TRUE, FALSE),
+              effect = effect, 
+              signif = ifelse(we.eBH < max_significance, TRUE, FALSE),
             )
         })
     })

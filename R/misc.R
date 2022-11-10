@@ -30,7 +30,7 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
     phyloseq::sample_data(phy) %>%
     to_tibble("sample_id") %>%
     dplyr::count(!!dplyr::sym(var)) %>%
-    dplyr::filter(.data$n >= .env$n_cut) %>%
+    dplyr::filter(n >= .env$n_cut) %>%
     dplyr::pull(!!dplyr::sym(var)) %>%
     as.character() %>%
     sort() %>%
@@ -124,16 +124,16 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   intersection_df(rec, steps) %>%
     tibble::as_tibble() %>%
     tidyr::pivot_longer(cols = -1) %>%
-    dplyr::filter(.data$value == 1) %>%
+    dplyr::filter(value == 1) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
       step_ids = 
-        purrr::map_chr(.data$name, ~ .x) %>% 
+        purrr::map_chr(name, ~ .x) %>% 
         stringr::str_c(collapse = ", "),
-      sum_methods = sum(.data$value)
+      sum_methods = sum(value)
     ) %>%
     dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
-    dplyr::arrange(-.data$sum_methods)
+    dplyr::arrange(-sum_methods)
 }
 
 #' Get step_ids from recipe

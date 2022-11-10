@@ -605,7 +605,7 @@ methods::setMethod(
         n_taxa <-
           object@results[[.x]][[1]] %>%
           dplyr::filter(signif == TRUE) %>% 
-          dplyr::pull(.data$taxa_id) %>%
+          dplyr::pull(taxa_id) %>%
           unique() %>%
           length()
         
@@ -618,7 +618,7 @@ methods::setMethod(
       n_overlap <-
         find_intersections(object) %>%
         dplyr::filter(
-          .data$sum_methods == length(steps_ids(object, type = "da"))
+          sum_methods == length(steps_ids(object, type = "da"))
         ) %>%
         nrow()
       
@@ -1211,13 +1211,13 @@ methods::setMethod(
           dplyr::group_by(taxa_id) %>%
           dplyr::summarise(sum = sum(value)) %>%
           dplyr::count(sum) %>%
-          dplyr::mutate(method = .x, total = sum(.data$n))
+          dplyr::mutate(method = .x, total = sum(n))
       })
     
     df %>%
       ggplot(aes(
-        x = stats::reorder(.data$method, .data$total),
-        y = .data$n,
+        x = stats::reorder(method, total),
+        y = n,
         fill = factor(sum)
       )) +
       geom_bar(stat = "identity", alpha = 0.9) +

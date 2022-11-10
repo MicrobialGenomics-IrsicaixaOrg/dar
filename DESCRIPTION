@@ -78,7 +78,7 @@ Imports:
     tidyr,
     UpSetR
 Depends: 
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 LazyData: false
 Collate: 
     'recipe-class.R'
