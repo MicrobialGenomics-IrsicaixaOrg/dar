@@ -83,7 +83,7 @@ jobs:
 
       ## R is already included in the Bioconductor docker images
       - name: Setup R from r-lib
-        if: runner.os != 'Linux'
+        if: runner.os != 'Linux'`
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
@@ -119,7 +119,7 @@ jobs:
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
         run: |
-          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
+          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", c(remotes::system_requirements("ubuntu", "20.04"), "libicu66")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
 
@@ -157,7 +157,7 @@ jobs:
 
       - name: Set BiocVersion
         run: |
-          BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE, force = TRUE)
+          BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE)
         shell: Rscript {0}
 
       - name: Install dependencies pass 1
