@@ -18,6 +18,6 @@ project. Count reads were annotated with Metaphlan3.
 }
 \examples{
 data(metaHIV_phy)
-print(metaHIV_phy)
+metaHIV_phy
 }
 \keyword{data}
