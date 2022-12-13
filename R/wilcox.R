@@ -58,7 +58,7 @@ methods::setGeneric(
                  norm_method = "compositional",
                  max_significance = 0.05,
                  p_adj_method = "BH",
-                 rarefy = TRUE,
+                 rarefy = FALSE,
                  id = rand_id("wilcox")) {
     standardGeneric("step_wilcox")
   }
@@ -189,22 +189,28 @@ run_wilcox <- function(rec,
               })
           }
 
-          rstatix::wilcox_test(
+          res <- rstatix::wilcox_test(
             data = prep,
             formula = formula(paste(.x, "~", var)),
             comparisons = comparisons,
             p.adjust.method = p_adj_method,
             detailed = TRUE
           ) %>%
-            tidyr::unite("comparison", group1:group2, sep = "_") %>%
-            dplyr::rename(padj = p.adj, taxa_id = .y.) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id")
+            tidyr::unite("comparison", group1:group2, sep = "_") %>% 
+            dplyr::rename(taxa_id = .y.)
+          
+          if ("p.adj" %in% names(res)) {
+            res <- dplyr::rename(res, padj = p.adj)
+          } else {
+            res <- dplyr::rename(res, padj = p)
+          }
+         
+          res %>% dplyr::left_join(tax_table(rec), by = "taxa_id")
         }) %>% 
         dplyr::mutate(
           estimate = -estimate, 
           effect = estimate,
-          scale_effect = scales::rescale(.data$estimate, to = c(-1, 1)),
-          signif = ifelse(.data$padj < max_significance, TRUE, FALSE)
+          signif = ifelse(padj < max_significance, TRUE, FALSE)
         )
     })
 }

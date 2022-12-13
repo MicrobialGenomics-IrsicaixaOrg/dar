@@ -205,7 +205,7 @@ run_metagenomeseq <- function(rec,
           norm_factor <- log2(norm_factor / stats::median(norm_factor) + 1)
           
           model <- stats::model.matrix( ~ 1 + vct_var + norm_factor)
-          
+
           metagenomeSeq::fitZig(
             mr_obj,
             mod = model,
@@ -221,7 +221,7 @@ run_metagenomeseq <- function(rec,
             metagenomeSeq::MRfulltable(number = Inf, by = 2) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::rename(pvalue = .data$pvalues, padj = .data$adjPvalues) %>%
+            dplyr::rename(pvalue = pvalues, padj = adjPvalues) %>%
             stats::setNames(
               names(.) %>% stringr::str_replace_all("vct_var.*", "vct_var")
             ) %>%
@@ -230,8 +230,8 @@ run_metagenomeseq <- function(rec,
               var = var
             ) %>% 
             dplyr::mutate(
-              effect = .data$vct_var,
-              signif = ifelse(.data$padj < max_significance, TRUE, FALSE)
+              effect = vct_var,
+              signif = ifelse(padj < max_significance, TRUE, FALSE)
             )
         })
     })

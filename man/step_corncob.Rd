@@ -111,7 +111,16 @@ An object of class \code{recipe}
 \description{
 Corncob an individual taxon regression model that uses abundance tables and
 sample data. corncob is able to model differential abundance and differential
-variability, and addresses each of the challenges presented above.
+variability, and addresses each of the challenges presented below:
+}
+\details{
+\itemize{
+\item different sequencing depth
+\item excessive zeros from unobserved taxa
+\item high variability of empirical relative abundances (overdispersion)
+\item within-taxon correlation
+\item hypothesis testing with categorical and continuous covariates
+}
 }
 \examples{
 data(metaHIV_phy)

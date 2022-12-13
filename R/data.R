@@ -14,7 +14,7 @@
 #' @keywords data
 #' @examples
 #' data(metaHIV_phy)
-#' print(metaHIV_phy)
+#' metaHIV_phy
 NA
 
 #' Pastery data for step id generation

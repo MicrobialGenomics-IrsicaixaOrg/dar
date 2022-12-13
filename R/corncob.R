@@ -2,7 +2,13 @@
 #'
 #' Corncob an individual taxon regression model that uses abundance tables and
 #' sample data. corncob is able to model differential abundance and differential
-#' variability, and addresses each of the challenges presented above.
+#' variability, and addresses each of the challenges presented below:
+#' 
+#' * different sequencing depth
+#' * excessive zeros from unobserved taxa
+#' * high variability of empirical relative abundances (overdispersion)
+#' * within-taxon correlation
+#' * hypothesis testing with categorical and continuous covariates
 #'
 #' @param rec A recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
@@ -39,6 +45,7 @@
 #' @aliases step_corncob
 #' @return An object of class `recipe`
 #' @export
+#' @md
 #' @examples 
 #' data(metaHIV_phy)
 #' 
@@ -293,15 +300,15 @@ run_corncob <- function(rec,
               var = var
             ) %>%
             tidyr::separate(
-              .data$taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE
+              taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE
             ) %>%
             dplyr::mutate(
               taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")
             ) %>%
             dplyr::mutate(
-              effect = .data$log2FC, 
+              effect = log2FC, 
               signif = ifelse(
-                .data$padj < fdr_cutoff & abs(.data$log2FC) >= log2FC,
+                padj < fdr_cutoff & abs(log2FC) >= log2FC,
                 TRUE,
                 FALSE
               )

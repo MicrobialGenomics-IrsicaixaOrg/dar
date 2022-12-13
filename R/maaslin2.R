@@ -12,9 +12,12 @@
 #' @param min_prevalence The minimum percent of samples for which a feature is
 #'   detected at minimum abundance.
 #' @param min_variance Keep features with variance greater than.
-#' @param normalization The normalization method to apply.
-#' @param transform The transform to apply.
-#' @param analysis_method The transform to apply.
+#' @param normalization The normalization method to apply. Default: "TSS".
+#'   Choices: "TSS", "CLR", "CSS", "NONE", "TMM".
+#' @param transform The transform to apply. Default: "LOG". Choices: "LOG",
+#'   "LOGIT", "AST", "NONE".
+#' @param analysis_method The analysis method to apply. Default: "LM". Choices:
+#'   "LM", "CPLM", "ZICP", "NEGBIN", "ZINB".
 #' @param max_significance The q-value threshold for significance.
 #' @param random_effects The random effects for the model, comma-delimited for
 #'   multiple effects.
@@ -38,29 +41,29 @@
 #' @aliases step_maaslin
 #' @return An object of class `recipe`
 #' @export
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init recipe
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
-#' 
+#'
 #' rec
-#' 
+#'
 #' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_maaslin(rec) %>% 
+#' rec <-
+#'   step_maaslin(rec) %>%
 #'   prep(parallel = TRUE)
-#'   
+#'
 #' rec
-#' 
-#' ## Wearing rarefaction only for this step 
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'
+#' ## Wearing rarefaction only for this step
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_maaslin(rec, rarefy = TRUE)
-#' 
+#'
 #' rec
 methods::setGeneric(
   name = "step_maaslin",
@@ -250,17 +253,17 @@ run_maaslin <- function(rec,
           ) %>%
             purrr::pluck("results") %>%
             tibble::as_tibble() %>%
-            dplyr::select(-.data$metadata, -.data$value) %>%
+            dplyr::select(-metadata, -value) %>%
             dplyr::mutate(
-              coef = .data$coef / log10(2),
+              coef = coef / log10(2),
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = !!var
             ) %>%
-            dplyr::rename(taxa_id = .data$feature) %>%
+            dplyr::rename(taxa_id = feature) %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>% 
             dplyr::mutate(
-              effect = .data$coef,
-              signif = ifelse(.data$qval < max_significance, TRUE, FALSE)
+              effect = coef,
+              signif = ifelse(qval < max_significance, TRUE, FALSE)
             )
         })
     })
