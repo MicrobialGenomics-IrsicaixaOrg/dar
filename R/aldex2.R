@@ -182,8 +182,8 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
           )
 
           dplyr::bind_cols(
-            suppressMessages(ALDEx2::aldex.ttest(clr)),
-            suppressMessages(ALDEx2::aldex.effect(clr, CI = TRUE))
+            ALDEx2::aldex.ttest(clr, verbose = FALSE),
+            ALDEx2::aldex.effect(clr, CI = TRUE, verbose = FALSE)
           ) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"), 

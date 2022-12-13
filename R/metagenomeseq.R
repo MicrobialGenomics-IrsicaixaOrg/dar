@@ -205,7 +205,7 @@ run_metagenomeseq <- function(rec,
           norm_factor <- log2(norm_factor / stats::median(norm_factor) + 1)
           
           model <- stats::model.matrix( ~ 1 + vct_var + norm_factor)
-          
+
           metagenomeSeq::fitZig(
             mr_obj,
             mod = model,

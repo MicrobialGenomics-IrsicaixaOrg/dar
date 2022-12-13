@@ -68,11 +68,14 @@ detected at minimum abundance.}
 
 \item{min_variance}{Keep features with variance greater than.}
 
-\item{normalization}{The normalization method to apply.}
+\item{normalization}{The normalization method to apply. Default: "TSS".
+Choices: "TSS", "CLR", "CSS", "NONE", "TMM".}
 
-\item{transform}{The transform to apply.}
+\item{transform}{The transform to apply. Default: "LOG". Choices: "LOG",
+"LOGIT", "AST", "NONE".}
 
-\item{analysis_method}{The transform to apply.}
+\item{analysis_method}{The analysis method to apply. Default: "LM". Choices:
+"LM", "CPLM", "ZICP", "NEGBIN", "ZINB".}
 
 \item{max_significance}{The q-value threshold for significance.}
 
@@ -112,23 +115,23 @@ customize analysis for your specific study.
 data(metaHIV_phy)
 
 ## Init recipe
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+rec <-
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\%
   step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
 rec
 
 ## Define step with default parameters and prep
-rec <- 
-  step_maaslin(rec) \%>\% 
+rec <-
+  step_maaslin(rec) \%>\%
   prep(parallel = TRUE)
-  
+
 rec
 
-## Wearing rarefaction only for this step 
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+## Wearing rarefaction only for this step
+rec <-
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\%
   step_maaslin(rec, rarefy = TRUE)
 
 rec

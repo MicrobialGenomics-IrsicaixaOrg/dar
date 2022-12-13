@@ -11,7 +11,7 @@ step_wilcox(
   norm_method = "compositional",
   max_significance = 0.05,
   p_adj_method = "BH",
-  rarefy = TRUE,
+  rarefy = FALSE,
   id = rand_id("wilcox")
 )
 
@@ -20,7 +20,7 @@ step_wilcox(
   norm_method = "compositional",
   max_significance = 0.05,
   p_adj_method = "BH",
-  rarefy = TRUE,
+  rarefy = FALSE,
   id = rand_id("wilcox")
 )
 
@@ -29,7 +29,7 @@ step_wilcox(
   norm_method = "compositional",
   max_significance = 0.05,
   p_adj_method = "BH",
-  rarefy = TRUE,
+  rarefy = FALSE,
   id = rand_id("wilcox")
 )
 }

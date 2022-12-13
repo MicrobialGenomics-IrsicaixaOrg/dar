@@ -335,11 +335,12 @@ run_ancom <- function(rec,
             # mdfdr_control = mdfdr_control,
             # trend_control = trend_control
           )
-          
-          
+        
+          annot <- tax_table(rec)
           res$res %>%
-            tibble::as_tibble(rownames = "taxa_id") %>%
-            dplyr::select(taxa_id, dplyr::contains(!!var)) %>%
+            tibble::as_tibble(rownames = "taxa") %>%
+            dplyr::select(taxa, dplyr::contains(!!var)) %>%
+            dplyr::right_join(tax_table(rec), ., by = "taxa") %>% 
             stats::setNames(stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))) %>% 
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
