@@ -93,6 +93,7 @@ Collate:
     'maaslin2.R'
     'metagenomeseq.R'
     'misc.R'
+    'phyloseq_qc.R'
     'pkg_check.R'
     'rarefaction.R'
     'read_data.R'
