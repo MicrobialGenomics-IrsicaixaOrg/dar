@@ -28,7 +28,6 @@ all rows of the dataset (without splitting by categorical levels).
 \item count_mean: average of the mean counts per sample.
 \item count_min: average of the min counts per sample.
 \item count_max: average of the max counts per sample.
-\item count_iqr: average iqr of the counts per sample.
 }
 }
 \examples{

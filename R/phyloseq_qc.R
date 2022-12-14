@@ -14,7 +14,6 @@
 #' * count_mean: average of the mean counts per sample.
 #' * count_min: average of the min counts per sample.
 #' * count_max: average of the max counts per sample.
-#' * count_iqr: average iqr of the counts per sample.
 #'
 #' @param rec A recipe or recipe step.
 #'
@@ -95,7 +94,6 @@ methods::setMethod(
       count_mean = mean(value), 
       count_min = min(value),
       count_max = max(value),
-      count_iqr = IQR(value), 
       .groups = "drop_last", 
     ) %>% 
     dplyr::summarise(dplyr::across(where(is.numeric), ~ mean(.x)))
