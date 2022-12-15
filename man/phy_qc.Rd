@@ -2,9 +2,12 @@
 % Please edit documentation in R/phyloseq_qc.R
 \name{phy_qc}
 \alias{phy_qc}
+\alias{phy_qc,recipe-method}
 \title{Phyloseq Quality Control Metrics}
 \usage{
 phy_qc(rec)
+
+\S4method{phy_qc}{recipe}(rec)
 }
 \arguments{
 \item{rec}{A recipe or recipe step.}

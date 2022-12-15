@@ -28,7 +28,7 @@
 #' phy_qc(rec)
 methods::setGeneric("phy_qc", function(rec) standardGeneric("phy_qc"))
 
-#' @rdname tax_table
+#' @rdname phy_qc
 #' @export
 methods::setMethod(
   f = "phy_qc",

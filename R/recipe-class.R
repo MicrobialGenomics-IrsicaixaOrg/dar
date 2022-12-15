@@ -837,6 +837,7 @@ methods::setMethod(
 #'
 #' @param rec A `recipe` object.
 #' @param steps character vector with step_ids to take in account.
+#' @param tidy Boolan indicating if result must be in tidy format.
 #'
 #' @aliases intersection_df
 #' @return data.frame class object
@@ -853,7 +854,7 @@ methods::setMethod(
 #' \dontrun{df <- intersection_df(test_rec)}
 methods::setGeneric(
   name = "intersection_df",
-  def = function(rec, steps = steps_ids(rec, "da")) {
+  def = function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
     standardGeneric("intersection_df")
   }
 )
@@ -863,7 +864,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "intersection_df",
   signature = "recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, tidy) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -878,8 +879,8 @@ methods::setMethod(
 methods::setMethod(
   f = "intersection_df",
   signature = "prep_recipe",
-  definition = function(rec, steps) {
-    names(rec@results) %>%
+  definition = function(rec, steps, tidy) {
+    df <- names(rec@results) %>%
       purrr::keep(. %in% steps) %>%
       purrr::set_names() %>%
       purrr::map_dfc( ~ {
@@ -893,9 +894,11 @@ methods::setMethod(
           dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
           dplyr::select(!!.x)
       }) %>%
-      dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table),
-                    .before = 1) %>%
+      dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
       as.data.frame()
+    
+    if (tidy) { df <- tidyr::pivot_longer(df, -taxa_id) }
+    df
   }
 )
 
@@ -975,258 +978,6 @@ methods::setMethod(
           })
       }) %>%
       data.frame(row.names = names(df))
-  }
-)
-
-## correlation plot----
-
-#' Plot otuput of the `overlap_df` function as a heatmap. 
-#'
-#' @param rec A `recipe` object.
-#' @param steps Character vector with step_ids to take in account.
-#' @param font_size Size of the axis font.
-#'
-#' @aliases corr_heatmap
-#' @importFrom heatmaply heatmaply_cor
-#' @return heatmap
-#' @export
-#' @examples
-#' data(test_prep_rec)
-#'
-#' ## Running the function returns a UpSet plot ordered by frequency.
-#' corr_heatmap(test_prep_rec)
-#'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
-#' corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
-#' data(test_rec)
-#' \dontrun{df <- corr_heatmap(test_rec)}
-methods::setGeneric(
-  name = "corr_heatmap",
-  def = function(rec, steps = steps_ids(rec, "da"), font_size = 15) {
-    standardGeneric("corr_heatmap")
-  }
-)
-
-#' @rdname corr_heatmap
-#' @export
-methods::setMethod(
-  f = "corr_heatmap",
-  signature = "recipe",
-  definition = function(rec, steps, font_size) {
-    rlang::abort(c(
-      "This function needs a prep recipe!",
-      glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
-        "{crayon::bgMagenta('corr_heatmap()')}"
-      )
-    ))
-  }
-)
-
-#' @rdname corr_heatmap
-#' @export
-#' @importFrom UpSetR upset
-methods::setMethod(
-  f = "corr_heatmap",
-  signature = "prep_recipe",
-  definition = function(rec, steps, font_size) {
-    overlap_df(rec, steps = steps) %>%
-      heatmaply::heatmaply_cor(
-        x = .,
-        point_size_mat = .,
-        colors = c(
-          "#006837",
-          "#1A9850",
-          "#66BD63",
-          "#A6D96A",
-          "#D9EF8B",
-          "#FFFFBF",
-          "#FEE08B",
-          "#FDAE61",
-          "#F46D43",
-          "#D73027",
-          "#A50026"
-        ),
-        limits = c(0, 1),
-        node_type = "scatter",
-        trace = "none",
-        dist_method = "canberra", 
-        fontsize_col = font_size,
-        fontsize_row = font_size,
-        heatmap_layers = theme(axis.text = element_text(colour = "black", family = 'Arial')),
-        hclust_method = "complete"
-      ) 
-  }
-)
-
-## Intersection plot----
-
-#' Plot results using UpSet plot
-#'
-#' @param rec A `recipe` object.
-#' @param steps Character vector with step_ids to take in account.
-#' @param ordered_by How the intersections in the matrix should be ordered by.
-#'   Options include frequency (entered as "freq"), degree, or both in any
-#'   order.
-#' @param font_size Size of the font. 
-#'
-#' @aliases intersection_plt
-#' @return UpSet plot
-#' @export
-#' @examples
-#' data(test_prep_rec)
-#'
-#' ## Running the function returns a UpSet plot ordered by frequency.
-#' intersection_plt(test_prep_rec)
-#'
-#' ## Alternatively, you can order the plot by degree
-#' intersection_plt(test_prep_rec, ordered_by = "degree")
-#'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
-#' intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
-#' data(test_rec)
-#' \dontrun{df <- intersection_plt(test_rec)}
-methods::setGeneric(
-  name = "intersection_plt",
-  def = function(rec,
-                 steps = steps_ids(rec, "da"),
-                 ordered_by = c("freq", "degree"), 
-                 font_size = 2) {
-    standardGeneric("intersection_plt")
-  }
-)
-
-#' @rdname intersection_plt
-#' @export
-methods::setMethod(
-  f = "intersection_plt",
-  signature = "recipe",
-  definition = function(rec, steps, font_size) {
-    rlang::abort(c(
-      "This function needs a prep recipe!",
-      glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
-        "{crayon::bgMagenta('intersection_plt()')}"
-      )
-    ))
-  }
-)
-
-#' @rdname intersection_plt
-#' @export
-#' @importFrom UpSetR upset
-methods::setMethod(
-  f = "intersection_plt",
-  signature = "prep_recipe",
-  definition = function(rec, steps, ordered_by, font_size) {
-    UpSetR::upset(
-      data = intersection_df(rec, steps),
-      nsets = length(rec@results),
-      sets.bar.color = "#56B4E9",
-      order.by = ordered_by, 
-      text.scale = font_size
-    )
-  }
-)
-
-## Exclusion plot----
-
-#' Plot the number of shared DA OTUs between methods.
-#'
-#' @param rec A `recipe` object.
-#' @param steps Character vector with step_ids to take in account.
-#'
-#' @aliases exclusion_plt
-#' @return ggplot2-class object
-#' @export
-#' @examples
-#' data(test_prep_rec)
-#'
-#' ## Running the function returns a barplot plot,
-#' exclusion_plt(test_prep_rec)
-#'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
-#' exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
-#' data(test_rec)
-#' \dontrun{df <- exclusion_plt(test_rec)}
-methods::setGeneric(
-  name = "exclusion_plt",
-  def = function(rec, steps = steps_ids(rec, "da")) {
-    standardGeneric("exclusion_plt")
-  }
-)
-
-#' @rdname exclusion_plt
-#' @export
-methods::setMethod(
-  f = "exclusion_plt",
-  signature = "recipe",
-  definition = function(rec, steps) {
-    rlang::abort(c(
-      "This function needs a prep recipe!",
-      glue::glue(
-        "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
-        "{crayon::bgMagenta('exclusion_plt()')}"
-      )
-    ))
-  }
-)
-
-#' @rdname exclusion_plt
-#' @export
-#' @import ggplot2
-methods::setMethod(
-  f = "exclusion_plt",
-  signature = "prep_recipe",
-  definition = function(rec, steps) {
-    df <-
-      steps_ids(rec, "da") %>%
-      purrr::map_dfr(~ {
-        df <-
-          intersection_df(rec, steps = steps) %>%
-          tidyr::pivot_longer(cols = -1)
-        
-        to_retain <-
-          df %>%
-          dplyr::filter(name == .x & value == 1) %>%
-          dplyr::pull(taxa_id)
-        
-        df %>%
-          dplyr::filter(taxa_id %in% to_retain) %>%
-          dplyr::group_by(taxa_id) %>%
-          dplyr::summarise(sum = sum(value)) %>%
-          dplyr::count(sum) %>%
-          dplyr::mutate(method = .x, total = sum(n))
-      })
-    
-    df %>%
-      ggplot(aes(
-        x = stats::reorder(method, total),
-        y = n,
-        fill = factor(sum)
-      )) +
-      geom_bar(stat = "identity", alpha = 0.9) +
-      scale_fill_brewer(palette = "Spectral", direction = -1) +
-      coord_flip() +
-      theme_minimal() +
-      labs(y = "Total number of differentially Abundant OTUs",
-           x = "method identifier",
-           fill = "Shared")
   }
 )
 
