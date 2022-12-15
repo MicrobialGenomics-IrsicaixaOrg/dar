@@ -6,16 +6,18 @@
 \alias{intersection_df,prep_recipe-method}
 \title{Returns data.frame with OTU intersection between methods}
 \usage{
-intersection_df(rec, steps = steps_ids(rec, "da"))
+intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 
-\S4method{intersection_df}{recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{intersection_df}{recipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 
-\S4method{intersection_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{intersection_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
 \item{steps}{character vector with step_ids to take in account.}
+
+\item{tidy}{Boolan indicating if result must be in tidy format.}
 }
 \value{
 data.frame class object

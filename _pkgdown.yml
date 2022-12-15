@@ -27,11 +27,13 @@ reference:
   - step_wilcox
 - title: "Exploration"
   contents:
+  - abundance_plt
   - corr_heatmap
   - exclusion_plt
   - find_intersections
   - intersection_df
   - intersection_plt
+  - mutual_plt
   - overlap_df
 - title: "Recipe Getters and Adders"
   contents:
@@ -41,6 +43,7 @@ reference:
   - get_tax
   - get_var
   - otu_table
+  - phy_qc
   - sample_data
   - steps_ids
   - tax_table

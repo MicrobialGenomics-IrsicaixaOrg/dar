@@ -59,12 +59,14 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     cli,
+    ComplexHeatmap,
     crayon,
     data.table,
     dplyr,
     generics,
     ggplot2,
     glue,
+    gplots,
     heatmaply,
     magrittr,
     methods,
@@ -93,7 +95,9 @@ Collate:
     'maaslin2.R'
     'metagenomeseq.R'
     'misc.R'
+    'phyloseq_qc.R'
     'pkg_check.R'
+    'plot_methods.R'
     'rarefaction.R'
     'read_data.R'
     'steps_and_checks.R'
