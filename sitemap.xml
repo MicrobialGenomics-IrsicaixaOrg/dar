@@ -37,6 +37,9 @@
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/SummarizedExperiment2phyloseq.html</loc>
   </url>
   <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.html</loc>
+  </url>
+  <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_step.html</loc>
   </url>
   <url>
@@ -106,10 +109,16 @@
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.html</loc>
   </url>
   <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.html</loc>
+  </url>
+  <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.html</loc>
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.html</loc>
+  </url>
+  <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.html</loc>
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pipe.html</loc>

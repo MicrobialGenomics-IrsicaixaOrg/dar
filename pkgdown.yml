@@ -1,10 +1,10 @@
 pandoc: 2.19.2
-pkgdown: 2.0.6
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   dar: dar.html
   data_import: data_import.html
-last_built: 2022-12-13T19:27Z
+last_built: 2022-12-15T22:52Z
 urls:
   reference: https://microbialgenomics-irsicaixaorg.github.io/dar/reference
   article: https://microbialgenomics-irsicaixaorg.github.io/dar/articles

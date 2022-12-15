@@ -18,7 +18,7 @@
 <link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to dar">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to dar">
 <meta property="og:description" content="Start here if this is your first time usinc dar! You will learn about basic usage, steps, exploration and bakes.  
 ">
 <meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png">
@@ -177,8 +177,8 @@ least 3% of the samples have counts greater than 0.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Bahulu</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Shortcrust_pastry</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Viennoiserie</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Cronut</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span></code></pre></div>
 </div>
@@ -206,14 +206,14 @@ default parameters (those defined by the authors of each method).</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Bahulu</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Shortcrust_pastry</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Viennoiserie</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Cronut</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Kringle</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Suncake</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Karakudamono</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Cronut</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Bear_claw</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Rhubarb_tart</span></span></span></code></pre></div>
 <p>The ‘dar’ package includes more da steps than those defined above.
 Below is the full list:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -241,9 +241,9 @@ time using the <code>prep</code> function.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Kringle <span style="color: #555555;">diff_taxa = 53</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Suncake <span style="color: #555555;">diff_taxa = 69</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Karakudamono <span style="color: #555555;">diff_taxa = 86</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Cronut <span style="color: #555555;">diff_taxa = 53</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Bear_claw <span style="color: #555555;">diff_taxa = 69</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Rhubarb_tart <span style="color: #555555;">diff_taxa = 86</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 46 taxa are present in all tested methods</span></span></code></pre></div>
 <p>Note that the resulting object print shows information about the
@@ -298,7 +298,7 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  collate  C.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    C.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2022-12-13</span></span>
+<span><span class="co">#&gt;  date     2022-12-15</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
@@ -321,7 +321,7 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  codetools          0.2-18   <span style="color: #555555;">2020-11-04</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  colorspace         2.0-3    <span style="color: #555555;">2022-02-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  crayon             1.5.2    <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  dar              * 0.99.0   <span style="color: #555555;">2022-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  dar              * 0.99.0   <span style="color: #555555;">2022-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  data.table         1.14.6   <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  dendextend         1.16.0   <span style="color: #555555;">2022-07-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  desc               1.4.2    <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
@@ -338,7 +338,7 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  future             1.29.0   <span style="color: #555555;">2022-11-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  generics           0.1.3    <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  GenomeInfoDb       1.32.4   <span style="color: #555555;">2022-09-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  GenomeInfoDbData   1.2.8    <span style="color: #555555;">2022-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  GenomeInfoDbData   1.2.8    <span style="color: #555555;">2022-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  ggplot2            3.4.0    <span style="color: #555555;">2022-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  globals            0.16.2   <span style="color: #555555;">2022-11-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  glue               1.6.2    <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
@@ -346,8 +346,8 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  gtable             0.3.1    <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  heatmaply          1.4.0    <span style="color: #555555;">2022-10-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  htmltools          0.5.4    <span style="color: #555555;">2022-12-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets        1.5.4    <span style="color: #555555;">2021-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  httpuv             1.6.6    <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  htmlwidgets        1.6.0    <span style="color: #555555;">2022-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  httpuv             1.6.7    <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  httr               1.4.4    <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  igraph             1.3.5    <span style="color: #555555;">2022-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  IRanges            2.30.1   <span style="color: #555555;">2022-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
@@ -370,13 +370,13 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  multtest           2.52.0   <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  munsell            0.5.0    <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  nlme               3.1-160  <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  parallelly         1.32.1   <span style="color: #555555;">2022-07-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  parallelly         1.33.0   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  permute            0.9-7    <span style="color: #555555;">2022-01-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  phyloseq           1.40.0   <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  pillar             1.8.1    <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  pkgbuild           1.4.0    <span style="color: #555555;">2022-11-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  pkgconfig          2.0.3    <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  pkgdown            2.0.6    <span style="color: #555555;">2022-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  pkgdown            2.0.7    <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  pkgload            1.3.2    <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  plotly             4.10.1   <span style="color: #555555;">2022-11-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  plyr               1.8.8    <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
@@ -398,14 +398,14 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  rhdf5filters       1.8.0    <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  Rhdf5lib           1.18.2   <span style="color: #555555;">2022-05-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  rlang              1.0.6    <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  rmarkdown          2.18     <span style="color: #555555;">2022-11-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  rmarkdown          2.19     <span style="color: #555555;">2022-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  rprojroot          2.0.3    <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  S4Vectors          0.34.0   <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  sass               0.4.4    <span style="color: #555555;">2022-11-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  scales             1.2.1    <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  seriation          1.4.0    <span style="color: #555555;">2022-10-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  sessioninfo        1.2.2    <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  shiny              1.7.3    <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  shiny              1.7.4    <span style="color: #555555;">2022-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  stringi            1.7.8    <span style="color: #555555;">2022-07-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  stringr            1.5.0    <span style="color: #555555;">2022-12-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
 <span><span class="co">#&gt;  survival           3.4-0    <span style="color: #555555;">2022-08-09</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
@@ -451,7 +451,7 @@ detected as differentially abundant in the three methods used.</p>
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
     </footer>
