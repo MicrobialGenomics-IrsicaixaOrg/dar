@@ -93,7 +93,7 @@ Once the recipe has been defined, the next step is to execute all the steps defi
 
 ```{r}
 ## Execute in parallel
-da_results <- prep(rec, parallel = TRUE)
+da_results <- prep(rec, parallel = FALSE)
 da_results
 ```
 
