@@ -181,8 +181,7 @@ ids <-
   dplyr::pull(taxa_id) 
 
 ## Abundance plot as boxplot
-abundance_plt(da_results, taxa_ids = ids, type = "boxplot") + 
-  theme_minimal(base_size = 10)
+abundance_plt(da_results, taxa_ids = ids, type = "boxplot") 
 ```
 
 ## Session info
