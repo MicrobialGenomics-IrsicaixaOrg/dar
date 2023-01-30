@@ -10,6 +10,19 @@
 #' @param norm_method Transformation to apply. The options include:
 #'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
 #'   'hellinger', 'identity', 'clr', 'alr', or any method from the
+#' Wilcox analysis
+#'
+#'
+#' Performs a Wilcoxon test to determine features (be it Operational Taxonomic
+#' Unit (OTU), species, etc.) that are differentially abundant between two or more groups of multiple samples.
+#'
+#' @param rec A recipe object. The step will be added to the sequence of
+#'   operations for this recipe.
+#' @param norm_method Transformation to apply. The options include: 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr', or any method from the vegan::decostand function.
+#' @param p_adj_method Character. Specifying the method to adjust p-values for multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).
+#' @param max_significance The q-value threshold for significance. 
+#' @param rarefy Boolean indicating if OTU counts must be rarefied. This rarefaction uses the standard R sample function to resample from the abundance values in the otu_table component of the first argument, physeq. Often one of the major goals of this procedure is to achieve parity in total number of counts between samples, as an alternative to other formal normalization procedures, which is why a single value for the sample.size is expected.
+#' @param id A character string that is unique to this step to identify it.
 #'   vegan::decostand function.
 #' @param p_adj_method Character. Specifying the method to adjust p-values for
 #'   multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).

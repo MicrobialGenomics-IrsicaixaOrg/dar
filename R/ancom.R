@@ -336,10 +336,8 @@ run_ancom <- function(rec,
             # trend_control = trend_control
           )
         
-          annot <- tax_table(rec)
           res$res %>%
-            tibble::as_tibble(rownames = "taxa") %>%
-            dplyr::select(taxa, dplyr::contains(!!var)) %>%
+            dplyr::select(taxa = taxon, dplyr::contains(!!var)) %>%
             dplyr::right_join(tax_table(rec), ., by = "taxa") %>% 
             stats::setNames(stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))) %>% 
             dplyr::mutate(

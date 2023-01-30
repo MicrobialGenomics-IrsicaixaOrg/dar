@@ -347,7 +347,7 @@ methods::setMethod(
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
     ggplot(aes(taxa, value, fill = !!dplyr::sym(get_var(rec)[[1]]))) +
     geom_boxplot(alpha = 0.7) +
-    theme_minimal(base_size = 15) +
+    theme_minimal(base_size = 10) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
     labs(x = NULL, y = "Abundance (counts)")
 }
