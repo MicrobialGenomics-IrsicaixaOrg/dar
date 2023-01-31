@@ -38,7 +38,7 @@ env:
   run_covr: 'true'
   run_pkgdown: 'true'
   has_RUnit: 'false'
-  cache-version: 'cache-v4'
+  cache-version: 'cache-v1'
   run_docker: 'false'
 
 jobs:
@@ -177,7 +177,7 @@ jobs:
           gha_repos <- if(
               .Platform$OS.type == "unix" && Sys.info()["sysname"] != "Darwin"
           ) c(
-              "AnVIL" = "https://bioconductordocker.blob.core.windows.net/packages/3.14/bioc",
+              "AnVIL" = "https://bioconductordocker.blob.core.windows.net/packages/3.16/bioc",
               BiocManager::repositories()
               ) else BiocManager::repositories()
 
