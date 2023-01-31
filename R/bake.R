@@ -114,12 +114,14 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
   if (is.null(weights)) {
     ids %>%
       purrr::set_names() %>%
-      purrr::map_chr( ~ 1) %>%
+      purrr::map_chr( ~ as.character(1)) %>%
       as.numeric()
 
     weights <- rep(1, length(ids))
     names(weights) <- ids
   }
+  
+  df_weights <- tibble::enframe(weights, name = "method", value = "ponderation")
 
   not_weights <- ids[!ids %in% names(weights)]
   if (length(not_weights) > 0) {
@@ -139,27 +141,12 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
   }
 
   # weighted matrix
-  res <-
-    ids %>%
-    purrr::map2_dfc(seq_along(.), ~ {
-      intersection_df(rec, ids) %>%
-        tibble::as_tibble() %>%
-        dplyr::select(!!.x) %>%
-        dplyr::mutate(!!(.x) := (!!dplyr::sym(.x) * weights[.y]))
-    }) %>%
-    dplyr::bind_cols(intersection_df(rec, ids)[1], .) %>%
-    tidyr::pivot_longer(cols = -1) %>%
-    dplyr::group_by(taxa_id) %>%
-    dplyr::summarise(
-      step_ids = 
-        purrr::map_chr(name, ~ .x) %>% 
-        stringr::str_c(collapse = ", "),
-      sum_methods = sum(value)
-    ) %>%
-    dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
-    dplyr::arrange(-sum_methods) %>%
-    dplyr::filter(sum_methods >= count_cutoff) %>%
-    dplyr::select(taxa_id, taxa)
+  res <- .all_significant(rec) %>% 
+    dplyr::filter(method %in% ids) %>% 
+    dplyr::left_join(df_weights, by = "method") %>% 
+    dplyr::mutate(method_count = method_count * ponderation) %>% 
+    dplyr::filter(method_count >= count_cutoff) %>% 
+    dplyr::distinct(taxa_id, taxa)
 
   not_incl <- NULL
   if (!is.null(exclude)) {

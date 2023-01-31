@@ -62,11 +62,15 @@ required_pkgs_filter_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 #' @keywords internal
 run_filter_taxa <- function(rec, .f) {
   
-  rm_zeros <- rec@steps %>%
-    purrr::pluck(
-      which(stringr::str_detect(steps_ids(rec), "metagenomeseq")),
-      "rm_zeros"
-    )
+  rm_zeros <- NULL
+  if (any(stringr::str_detect(steps_ids(rec), "metagenomeseq"))) {
+    rm_zeros <- rec@steps %>%
+      purrr::pluck(
+        which(stringr::str_detect(steps_ids(rec), "metagenomeseq")),
+        "rm_zeros", 
+        .default = NULL
+      )
+  }
   
   is_metagenomeseq <- TRUE
   if (is.null(rm_zeros)) { 

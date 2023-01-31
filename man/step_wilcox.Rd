@@ -37,10 +37,7 @@ step_wilcox(
 \item{rec}{A recipe object. The step will be added to the sequence of
 operations for this recipe.}
 
-\item{norm_method}{Transformation to apply. The options include:
-'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
-'hellinger', 'identity', 'clr', 'alr', or any method from the
-vegan::decostand function.}
+\item{norm_method}{Transformation to apply. The options include: 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr', or any method from the vegan::decostand function.}
 
 \item{max_significance}{The q-value threshold for significance.}
 

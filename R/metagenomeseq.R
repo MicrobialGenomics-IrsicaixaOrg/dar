@@ -23,8 +23,8 @@
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected.
-#' @param rm_zeros Proportion of samples of the same level with more than 0 
-#'   counts.
+#' @param rm_zeros Proportion of samples of the same categorical level with more
+#'   than 0 counts.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -32,29 +32,29 @@
 #' @aliases step_metagenomeseq
 #' @return An object of class `recipe`
 #' @export
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init recipe
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))")
-#' 
+#'
 #' rec
-#' 
+#'
 #' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_metagenomeseq(rec, rm_zeros = 0.01) %>% 
+#' rec <-
+#'   step_metagenomeseq(rec, rm_zeros = 0.01) %>%
 #'   prep(parallel = TRUE)
-#'   
+#'
 #' rec
-#' 
-#' ## Wearing rarefaction only for this step 
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'
+#' ## Wearing rarefaction only for this step
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_metagenomeseq(rec, rarefy = TRUE)
-#' 
+#'
 #' rec
 methods::setGeneric(
   name = "step_metagenomeseq",

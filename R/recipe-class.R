@@ -1041,7 +1041,7 @@ methods::setMethod(
   signature = "prep_recipe",
   definition = function(rec, bake) {
     all_bakes <- rec@bakes
-    all_names <- all_bakes %>% purrr::map_chr(~ .x[["id"]])
+    all_names <- all_bakes %>% purrr::map_chr(~ as.character(.x[["id"]]))
     
     if (is.numeric(bake) & length(all_bakes) < bake) {
       rlang::abort(c(
