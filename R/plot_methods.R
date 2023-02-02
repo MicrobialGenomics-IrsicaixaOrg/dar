@@ -518,12 +518,16 @@ methods::setMethod(
     }
     
     df %>% 
+      dplyr::left_join(.all_stats(rec), by = c("taxa_id", "comparison", "method")) %>% 
       dplyr::mutate(method = stringr::str_remove_all(method, "[:alpha:]_[:alpha:].*")) %>% 
       tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
-      ggplot(aes(taxa, method, fill = effect)) +
-      geom_tile(width = 0.7, height = 0.8, alpha = 1) +
+      dplyr::group_by(method) %>% 
+      dplyr::mutate(zscore = (effect_v - mean(effect_v))/sd(effect_v)) %>% 
+      ggplot(aes(taxa, method, fill = effect, alpha = zscore)) +
+      geom_tile(aes(width = -log10(padj), height = -log10(padj))) +
       facet_wrap(~ comparison, ncol = 1, strip.position = "right") +
       theme_light() +
+      # scale_fill_gradientn(colours = RColorBrewer::brewer.pal(11, "Spectral")) +
       scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
       labs(x = NULL, y = NULL, fill = "DA")
