@@ -6,11 +6,29 @@
 \alias{abundance_plt,prep_recipe-method}
 \title{Abundance boxplot}
 \usage{
-abundance_plt(rec, taxa_ids = NULL, type = "boxplot")
+abundance_plt(
+  rec,
+  taxa_ids = NULL,
+  type = "boxplot",
+  transform = "compositional",
+  scale = 1
+)
 
-\S4method{abundance_plt}{recipe}(rec, taxa_ids = NULL, type = "boxplot")
+\S4method{abundance_plt}{recipe}(
+  rec,
+  taxa_ids = NULL,
+  type = "boxplot",
+  transform = "compositional",
+  scale = 1
+)
 
-\S4method{abundance_plt}{prep_recipe}(rec, taxa_ids = NULL, type = "boxplot")
+\S4method{abundance_plt}{prep_recipe}(
+  rec,
+  taxa_ids = NULL,
+  type = "boxplot",
+  transform = "compositional",
+  scale = 1
+)
 }
 \arguments{
 \item{rec}{A recipe or recipe step.}
@@ -21,6 +39,15 @@ be plotted.}
 
 \item{type}{Character vector indicating the type of the result. Options:
 c("boxoplot", "heatmap").}
+
+\item{transform}{Transformation to apply. The options include:
+'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+'hellinger', 'identity', 'clr', 'alr', or any method from the
+vegan::decostand function. If the value is NULL, no normalization is
+applied and works with the raw counts.}
+
+\item{scale}{Scaling constant for the abundance values when transform =
+"scale".}
 }
 \value{
 ggplot2
@@ -39,7 +66,7 @@ abundance_plt(test_prep_rec)
 abundance_plt(test_prep_rec, type = "heatmap")
 
 ## By default, those taxa significant in all methods are plotted. If you want
-## to graph some determined features, you can pass them as vector through the 
+## to graph some determined features, you can pass them as vector through the
 ## taxa_ids parameter.
 taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
 abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
