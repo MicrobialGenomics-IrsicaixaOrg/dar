@@ -560,3 +560,20 @@ methods::setMethod(
     by = "taxa_id"
   )
 }
+
+#' @noRd
+#' @keywords internal
+.all_stats <- function(rec) {
+  rec@results %>% 
+    names() %>% 
+    purrr::map_dfr(~ {
+      rec@results[[.x]][[1]] %>%
+        dplyr::select(taxa_id, comparison, effect_v = effect, dplyr::any_of(c(
+          "padj" = "pajd",
+          "padj" = "adjp",
+          "padj" = "padj"
+        ))) %>%
+        dplyr::mutate(method = .x)
+    })
+}
+
