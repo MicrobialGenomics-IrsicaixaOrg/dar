@@ -261,6 +261,13 @@ methods::setMethod(
 #'   be plotted.
 #' @param type Character vector indicating the type of the result. Options:
 #'   c("boxoplot", "heatmap").
+#' @param transform Transformation to apply. The options include:
+#'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+#'   'hellinger', 'identity', 'clr', 'alr', or any method from the
+#'   vegan::decostand function. If the value is NULL, no normalization is
+#'   applied and works with the raw counts.
+#' @param scale Scaling constant for the abundance values when transform =
+#'   "scale".
 #'
 #' @return ggplot2
 #' @export
@@ -275,7 +282,7 @@ methods::setMethod(
 #' abundance_plt(test_prep_rec, type = "heatmap")
 #'
 #' ## By default, those taxa significant in all methods are plotted. If you want
-#' ## to graph some determined features, you can pass them as vector through the 
+#' ## to graph some determined features, you can pass them as vector through the
 #' ## taxa_ids parameter.
 #' taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
 #' abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
@@ -287,7 +294,11 @@ methods::setMethod(
 #' \dontrun{df <- abundance_plt(test_rec)}
 methods::setGeneric(
   name = "abundance_plt",
-  def = function(rec, taxa_ids = NULL, type = "boxplot")  {
+  def = function(rec,
+                 taxa_ids = NULL,
+                 type = "boxplot",
+                 transform = "compositional",
+                 scale = 1)  {
     standardGeneric("abundance_plt")
   }
 )
@@ -297,7 +308,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "abundance_plt",
   signature = "recipe",
-  definition = function(rec, taxa_ids, type) {
+  definition = function(rec, taxa_ids, type, transform, scale) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -313,9 +324,9 @@ methods::setMethod(
 methods::setMethod(
   f = "abundance_plt",
   signature = "prep_recipe",
-  definition = function(rec, taxa_ids, type) {
-    if (type == "boxplot") { plt <- .abundance_boxplot(rec, taxa_ids) }
-    if (type == "heatmap") { plt <- .abundance_heatmap(rec, taxa_ids) }
+  definition = function(rec, taxa_ids, type, transform, scale) {
+    if (type == "boxplot") { plt <- .abundance_boxplot(rec, taxa_ids, transform, scale) }
+    if (type == "heatmap") { plt <- .abundance_heatmap(rec, taxa_ids, transform, scale) }
     if (!type %in% c("boxplot", "heatmap")) {
       rlang::abort("type must be boxplot or heatmap")
     }
@@ -334,7 +345,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
-.abundance_boxplot <- function(rec, taxa_ids) {
+.abundance_boxplot <- function(rec, taxa_ids, transform, scale) {
   if (is.null(taxa_ids)) {
     taxa_ids <- 
       .all_significant(rec) %>% 
@@ -342,19 +353,27 @@ methods::setMethod(
       dplyr::pull(taxa_id)
   }
   
-  .annotated_counts(rec) %>% 
+  t_rec <- rec
+  if (!is.null(transform)) {
+    t_rec@phyloseq <-
+      microbiome::transform(t_rec@phyloseq, transform = transform, scale = scale)
+  } else {
+    transform <- "raw counts"
+  }
+  
+  .annotated_counts(t_rec) %>% 
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
     ggplot(aes(taxa, value, fill = !!dplyr::sym(get_var(rec)[[1]]))) +
     geom_boxplot(alpha = 0.7) +
     theme_minimal(base_size = 10) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
-    labs(x = NULL, y = "Abundance (counts)")
+    labs(x = NULL, y = paste0("Abundance (", transform, ")"))
 }
 
 #' @noRd
 #' @keywords internal
-.abundance_heatmap <- function(rec, taxa_ids) {
+.abundance_heatmap <- function(rec, taxa_ids, transform, scale) {
   ComplexHeatmap::ht_opt(message = FALSE, COLUMN_ANNO_PADDING = unit(0.5, "cm"))
   
   if (is.null(taxa_ids)) {
@@ -364,8 +383,16 @@ methods::setMethod(
       dplyr::pull(taxa_id)
   }
   
+  t_rec <- rec
+  if (!is.null(transform)) {
+    t_rec@phyloseq <-
+      microbiome::transform(t_rec@phyloseq, transform = transform, scale = scale)
+  } else {
+    transform <- "raw counts"
+  }
+    
   df <- 
-    .annotated_counts(rec) %>% 
+    .annotated_counts(t_rec) %>% 
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|")
   
@@ -373,8 +400,7 @@ methods::setMethod(
     dplyr::select(df, taxa, value, sample_id) %>% 
     tidyr::pivot_wider(names_from = sample_id, values_from = value) %>% 
     data.frame(row.names = 1) %>% 
-    as.matrix() %>% 
-    sqrt(.)
+    as.matrix()
   
   annot <- 
     dplyr::select(df, sample_id, get_var(rec)[[1]]) %>% 
@@ -397,7 +423,7 @@ methods::setMethod(
     top_annotation = annot,
     row_names_gp = grid::gpar(fontsize = 8),
     show_column_names = FALSE,
-    name = 'sqrt(abundance)',
+    name = paste0("Abundance (", transform, ")"),
     show_heatmap_legend = ifelse(length(annot@anno_list) > 5, FALSE, TRUE)
   )
 }
