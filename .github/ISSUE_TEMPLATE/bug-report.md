@@ -1,7 +1,7 @@
 ---
-name: "[BUG] A short description of the bug"
+name: Bug Report
 about: Describe the bug in detail
-title: ''
+title: "[BUG] A short description of the bug"
 labels: bug
 assignees: ''
 
