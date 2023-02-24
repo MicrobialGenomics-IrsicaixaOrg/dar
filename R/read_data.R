@@ -330,20 +330,26 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
 #'
 #' @param dataset SummarizedExperiment
 #' @param assay_idx assay index
+#' @param new_names boolean indicating if new Otu_id mustbe created. 
 #'
 #' @return phyloseq
 #' @keywords internal
-SummarizedExperiment2phyloseq <- function(dataset, assay_idx = 1) {
+SummarizedExperiment2phyloseq <- function(dataset, assay_idx = 1, new_names = FALSE) {
   counts_df <-
     SummarizedExperiment::assay(dataset, i = assay_idx) %>%
     tibble::as_tibble(rownames = "otu_id")
+  
+  if (new_names) { counts_df <- dplyr::mutate(counts_df, otu_id = paste0("Otu_", 1:nrow(counts_df))) }
   
   validate_otu(counts_df)
   
   taxa_df <-
     SummarizedExperiment::rowData(dataset) %>%
-    tibble::as_tibble(rownames = "otu_id") %>%
-    validate_tax_table()
+    tibble::as_tibble(rownames = "otu_id")
+  
+  if (new_names) { taxa_df$otu_id <- counts_df$otu_id }
+  
+  taxa_df <- validate_tax_table(taxa_df)
   
   metadata_df <-
     SummarizedExperiment::colData(dataset) %>%

@@ -4,12 +4,14 @@
 \alias{SummarizedExperiment2phyloseq}
 \title{Converts SummarizedExperiment to a Phyloseq object}
 \usage{
-SummarizedExperiment2phyloseq(dataset, assay_idx = 1)
+SummarizedExperiment2phyloseq(dataset, assay_idx = 1, new_names = FALSE)
 }
 \arguments{
 \item{dataset}{SummarizedExperiment}
 
 \item{assay_idx}{assay index}
+
+\item{new_names}{boolean indicating if new Otu_id mustbe created.}
 }
 \value{
 phyloseq
