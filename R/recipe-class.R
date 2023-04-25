@@ -904,10 +904,12 @@ methods::setMethod(
 
 ## Overlap df ----
 
-#' Overlap of significant OTUs between tested methods. 
+#' Overlap of significant OTUs between tested methods.
 #'
 #' @param rec A `recipe` object.
 #' @param steps Character vector with step_ids to take in account.
+#' @param type Indicates whether to use all taxa ("all") or only those that are
+#'   differentially abundant in at least one method ("da"). Default as "all". 
 #'
 #' @aliases overlap_df
 #' @return df
@@ -930,7 +932,7 @@ methods::setMethod(
 #' \dontrun{df <- overlap_df(test_rec)}
 methods::setGeneric(
   name = "overlap_df",
-  def = function(rec, steps = steps_ids(rec, "da")) {
+  def = function(rec, steps = steps_ids(rec, "da"), type = "all") {
     standardGeneric("overlap_df")
   }
 )
@@ -940,7 +942,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "overlap_df",
   signature = "recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, type) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -956,19 +958,27 @@ methods::setMethod(
 methods::setMethod(
   f = "overlap_df",
   signature = "prep_recipe",
-  definition = function(rec, steps) {
+  definition = function(rec, steps, type) {
     df <- 
       intersection_df(rec) %>%  
       tibble::as_tibble() %>% 
       dplyr::select(dplyr::all_of(steps))
     
+    if (type == "da") {
+      df <- 
+        dplyr::rowwise(df) %>% 
+        dplyr::mutate(sum = sum(dplyr::across(dplyr::all_of(steps))), .before = 1) %>% 
+        dplyr::filter(sum != 0) %>% 
+        dplyr::select(dplyr::all_of(steps))
+    }
+      
     names(df) %>%
       purrr::map_dfr(~ {
         names(df) %>%
           purrr::map_dfc(function(.y) {
             res <- tibble::tibble(
-              var_1 = dplyr::select(df, .x),
-              var_2 = dplyr::select(df, .y),
+              var_1 = dplyr::pull(df, .x),
+              var_2 = dplyr::pull(df, .y),
               sum = var_1 - var_2
             )
             

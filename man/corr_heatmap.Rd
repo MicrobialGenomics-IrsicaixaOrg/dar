@@ -6,11 +6,11 @@
 \alias{corr_heatmap,prep_recipe-method}
 \title{Plot otuput of the \code{overlap_df} function as a heatmap.}
 \usage{
-corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15)
+corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 
-\S4method{corr_heatmap}{recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15)
+\S4method{corr_heatmap}{recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 
-\S4method{corr_heatmap}{prep_recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15)
+\S4method{corr_heatmap}{prep_recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
@@ -18,6 +18,9 @@ corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15)
 \item{steps}{Character vector with step_ids to take in account.}
 
 \item{font_size}{Size of the axis font.}
+
+\item{type}{Indicates whether to use all taxa ("all") or only those that are
+differentially abundant in at least one method ("da"). Default as "all".}
 }
 \value{
 heatmap
@@ -36,7 +39,7 @@ corr_heatmap(test_prep_rec)
 ## results of maaslin
 corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+## corr_heatmap function needs a prep-recipe. If you pass a a non-prep
 ## recipe the output is an error.
 data(test_rec)
 \dontrun{df <- corr_heatmap(test_rec)}

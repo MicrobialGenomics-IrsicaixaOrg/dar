@@ -10,21 +10,24 @@ mutual_plt(
   rec,
   count_cutoff = NULL,
   comparisons = NULL,
-  steps = steps_ids(rec, type = "da")
+  steps = steps_ids(rec, type = "da"),
+  top_n = 20
 )
 
 \S4method{mutual_plt}{recipe}(
   rec,
   count_cutoff = NULL,
   comparisons = NULL,
-  steps = steps_ids(rec, type = "da")
+  steps = steps_ids(rec, type = "da"),
+  top_n = 20
 )
 
 \S4method{mutual_plt}{prep_recipe}(
   rec,
   count_cutoff = NULL,
   comparisons = NULL,
-  steps = steps_ids(rec, type = "da")
+  steps = steps_ids(rec, type = "da"),
+  top_n = 20
 )
 }
 \arguments{
@@ -40,6 +43,8 @@ selected ones will be plotted.}
 
 \item{steps}{Character vector with step_ids to take in account. Default all
 "da" methods.}
+
+\item{top_n}{Maximum number of taxa to represent. Default: 20.}
 }
 \value{
 ggplot2

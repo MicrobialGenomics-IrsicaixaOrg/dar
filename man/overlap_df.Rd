@@ -6,16 +6,19 @@
 \alias{overlap_df,prep_recipe-method}
 \title{Overlap of significant OTUs between tested methods.}
 \usage{
-overlap_df(rec, steps = steps_ids(rec, "da"))
+overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
 
-\S4method{overlap_df}{recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{overlap_df}{recipe}(rec, steps = steps_ids(rec, "da"), type = "all")
 
-\S4method{overlap_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"))
+\S4method{overlap_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"), type = "all")
 }
 \arguments{
 \item{rec}{A \code{recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
+
+\item{type}{Indicates whether to use all taxa ("all") or only those that are
+differentially abundant in at least one method ("da"). Default as "all".}
 }
 \value{
 df

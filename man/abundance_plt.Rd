@@ -11,7 +11,8 @@ abundance_plt(
   taxa_ids = NULL,
   type = "boxplot",
   transform = "compositional",
-  scale = 1
+  scale = 1,
+  top_n = 20
 )
 
 \S4method{abundance_plt}{recipe}(
@@ -19,7 +20,8 @@ abundance_plt(
   taxa_ids = NULL,
   type = "boxplot",
   transform = "compositional",
-  scale = 1
+  scale = 1,
+  top_n = 20
 )
 
 \S4method{abundance_plt}{prep_recipe}(
@@ -27,7 +29,8 @@ abundance_plt(
   taxa_ids = NULL,
   type = "boxplot",
   transform = "compositional",
-  scale = 1
+  scale = 1,
+  top_n = 20
 )
 }
 \arguments{
@@ -48,6 +51,8 @@ applied and works with the raw counts.}
 
 \item{scale}{Scaling constant for the abundance values when transform =
 "scale".}
+
+\item{top_n}{Maximum number of taxa to represent. Default: 20.}
 }
 \value{
 ggplot2

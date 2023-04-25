@@ -5,6 +5,8 @@
 #' @param rec A `recipe` object.
 #' @param steps Character vector with step_ids to take in account.
 #' @param font_size Size of the axis font.
+#' @param type Indicates whether to use all taxa ("all") or only those that are
+#'   differentially abundant in at least one method ("da"). Default as "all". 
 #'
 #' @aliases corr_heatmap
 #' @importFrom heatmaply heatmaply_cor
@@ -21,13 +23,13 @@
 #' ## results of maaslin
 #' corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
+#' ## corr_heatmap function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
 #' \dontrun{df <- corr_heatmap(test_rec)}
 methods::setGeneric(
   name = "corr_heatmap",
-  def = function(rec, steps = steps_ids(rec, "da"), font_size = 15) {
+  def = function(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all") {
     standardGeneric("corr_heatmap")
   }
 )
@@ -37,7 +39,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "corr_heatmap",
   signature = "recipe",
-  definition = function(rec, steps, font_size) {
+  definition = function(rec, steps, font_size, type) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -54,8 +56,8 @@ methods::setMethod(
 methods::setMethod(
   f = "corr_heatmap",
   signature = "prep_recipe",
-  definition = function(rec, steps, font_size) {
-    plt <- overlap_df(rec, steps = steps) %>%
+  definition = function(rec, steps, font_size, type) {
+    plt <- overlap_df(rec, steps = steps, type = type) %>%
       heatmaply::heatmaply_cor(
         x = .,
         point_size_mat = .,
@@ -152,7 +154,7 @@ methods::setMethod(
   definition = function(rec, steps, ordered_by, font_size) {
     UpSetR::upset(
       data = intersection_df(rec, steps),
-      nsets = length(rec@results),
+      sets = steps,
       sets.bar.color = "#56B4E9",
       order.by = ordered_by, 
       text.scale = font_size
@@ -268,6 +270,7 @@ methods::setMethod(
 #'   applied and works with the raw counts.
 #' @param scale Scaling constant for the abundance values when transform =
 #'   "scale".
+#' @param top_n Maximum number of taxa to represent. Default: 20.
 #'
 #' @return ggplot2
 #' @export
@@ -298,7 +301,8 @@ methods::setGeneric(
                  taxa_ids = NULL,
                  type = "boxplot",
                  transform = "compositional",
-                 scale = 1)  {
+                 scale = 1, 
+                 top_n = 20)  {
     standardGeneric("abundance_plt")
   }
 )
@@ -308,7 +312,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "abundance_plt",
   signature = "recipe",
-  definition = function(rec, taxa_ids, type, transform, scale) {
+  definition = function(rec, taxa_ids, type, transform, scale, top_n) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -324,9 +328,9 @@ methods::setMethod(
 methods::setMethod(
   f = "abundance_plt",
   signature = "prep_recipe",
-  definition = function(rec, taxa_ids, type, transform, scale) {
-    if (type == "boxplot") { plt <- .abundance_boxplot(rec, taxa_ids, transform, scale) }
-    if (type == "heatmap") { plt <- .abundance_heatmap(rec, taxa_ids, transform, scale) }
+  definition = function(rec, taxa_ids, type, transform, scale, top_n) {
+    if (type == "boxplot") { plt <- .abundance_boxplot(rec, taxa_ids, transform, scale, top_n) }
+    if (type == "heatmap") { plt <- .abundance_heatmap(rec, taxa_ids, transform, scale, top_n) }
     if (!type %in% c("boxplot", "heatmap")) {
       rlang::abort("type must be boxplot or heatmap")
     }
@@ -345,12 +349,43 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
-.abundance_boxplot <- function(rec, taxa_ids, transform, scale) {
+.abundance_boxplot <- function(rec, taxa_ids, transform, scale, top_n = 20) {
   if (is.null(taxa_ids)) {
     taxa_ids <- 
       .all_significant(rec) %>% 
       dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
-      dplyr::pull(taxa_id)
+      dplyr::pull(taxa_id) %>% 
+      unique()
+    
+    if (length(taxa_ids) > top_n) {
+      rlang::inform(
+        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+     
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+    }
+    
+    if (length(taxa_ids) == 0) {
+      rlang::inform(
+        c("!" = "0 taxa are present in all tested methods",
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+      
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+    }
   }
   
   t_rec <- rec
@@ -373,14 +408,45 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
-.abundance_heatmap <- function(rec, taxa_ids, transform, scale) {
+.abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n) {
   ComplexHeatmap::ht_opt(message = FALSE, COLUMN_ANNO_PADDING = unit(0.5, "cm"))
   
   if (is.null(taxa_ids)) {
     taxa_ids <- 
       .all_significant(rec) %>% 
       dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
-      dplyr::pull(taxa_id)
+      dplyr::pull(taxa_id) %>% 
+      unique()
+    
+    if (length(taxa_ids) > top_n) {
+      rlang::inform(
+        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+      
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+    }
+    
+    if (length(taxa_ids) == 0) {
+      rlang::inform(
+        c("!" = "0 taxa are present in all tested methods",
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+      
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+    }
   }
   
   t_rec <- rec
@@ -445,6 +511,7 @@ methods::setMethod(
 #'   selected ones will be plotted.
 #' @param steps Character vector with step_ids to take in account. Default all
 #'   "da" methods.
+#' @param top_n Maximum number of taxa to represent. Default: 20.
 #'
 #' @return ggplot2
 #' @export
@@ -476,7 +543,8 @@ methods::setGeneric(
   def = function(rec,
                  count_cutoff = NULL,
                  comparisons = NULL,
-                 steps = steps_ids(rec, type = "da")) {
+                 steps = steps_ids(rec, type = "da"),
+                 top_n = 20) {
     standardGeneric("mutual_plt")
   }
 )
@@ -486,7 +554,7 @@ methods::setGeneric(
 methods::setMethod(
   f = "mutual_plt",
   signature = "recipe",
-  definition = function(rec, count_cutoff, comparisons, steps) {
+  definition = function(rec, count_cutoff, comparisons, steps, top_n) {
     rlang::abort(c(
       "This function needs a prep recipe!",
       glue::glue(
@@ -502,24 +570,65 @@ methods::setMethod(
 methods::setMethod(
   f = "mutual_plt",
   signature = "prep_recipe",
-  definition = function(rec, count_cutoff, comparisons, steps) {
+  definition = function(rec, count_cutoff, comparisons, steps, top_n) {
     
     if (is.null(count_cutoff)) {
       count_cutoff <- steps %>% length() * 2 / 3 
       count_cutoff <- round(count_cutoff, 0)
+      
+      rlang::inform(c("i" = glue::glue("count_cutoff set to {count_cutoff}")))
     }
     
     df <- 
       .all_significant(rec) %>% 
       dplyr::filter(method_count >= count_cutoff & method %in% steps)
     
+    if (nrow(df) > top_n) {
+      rlang::inform(
+        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+      
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::filter(method %in% steps) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+      
+      df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
+    }
+    
+    if (nrow(df) == 0) {
+      rlang::inform(
+        c("!" = glue::glue("0 taxa are present with count_cutoff = {count_cutoff}"),
+          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
+      )
+      
+      taxa_ids <- 
+        .all_significant(rec) %>% 
+        dplyr::filter(method %in% steps) %>% 
+        dplyr::group_by(taxa_id) %>% 
+        dplyr::summarise(method_count = max(method_count)) %>% 
+        dplyr::arrange(-method_count) %>% 
+        dplyr::pull(taxa_id) %>% 
+        .[1:top_n]
+      
+      df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
+    }
+    
     if (!is.null(comparisons)) {
       df <- df %>% dplyr::filter(comparison %in% comparisons)
     }
     
     df %>% 
+      dplyr::left_join(.all_stats(rec), by = c("taxa_id", "comparison", "method")) %>% 
       dplyr::mutate(method = stringr::str_remove_all(method, "[:alpha:]_[:alpha:].*")) %>% 
       tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
+      dplyr::group_by(method) %>% 
+      dplyr::mutate(zscore = scales::rescale(effect_v)) %>% 
       ggplot(aes(taxa, method, fill = effect)) +
       geom_tile(width = 0.7, height = 0.8, alpha = 1) +
       facet_wrap(~ comparison, ncol = 1, strip.position = "right") +
@@ -527,6 +636,15 @@ methods::setMethod(
       scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
       labs(x = NULL, y = NULL, fill = "DA")
+      
+      # ggplot(aes(taxa, method, fill = effect, alpha = zscore)) +
+      # geom_tile(aes(width = -log10(padj), height = -log10(padj))) +
+      # facet_wrap(~ comparison, ncol = 1, strip.position = "right") +
+      # theme_light() +
+      # # scale_fill_gradientn(colours = RColorBrewer::brewer.pal(11, "Spectral")) +
+      # scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
+      # theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
+      # labs(x = NULL, y = NULL, fill = "DA")
   }
 )
 
@@ -560,3 +678,20 @@ methods::setMethod(
     by = "taxa_id"
   )
 }
+
+#' @noRd
+#' @keywords internal
+.all_stats <- function(rec) {
+  rec@results %>% 
+    names() %>% 
+    purrr::map_dfr(~ {
+      rec@results[[.x]][[1]] %>%
+        dplyr::select(taxa_id, comparison, effect_v = effect, dplyr::any_of(c(
+          "padj" = "pajd",
+          "padj" = "adjp",
+          "padj" = "padj"
+        ))) %>%
+        dplyr::mutate(method = .x)
+    })
+}
+

@@ -58,7 +58,7 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #' }
 to_tibble <- function(df, id_name = "otu_id") {
   df %>%
-    data.frame() %>%
+    data.frame(check.names = FALSE) %>%
     tibble::as_tibble(rownames = id_name)
 }
 
