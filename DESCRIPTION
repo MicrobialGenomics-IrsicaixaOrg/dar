@@ -74,6 +74,7 @@ Imports:
     purrr,
     readr,
     rlang (>= 0.4.11),
+    scales,
     stringr,
     tibble,
     tidyr,

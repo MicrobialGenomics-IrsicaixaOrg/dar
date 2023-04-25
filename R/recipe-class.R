@@ -977,8 +977,8 @@ methods::setMethod(
         names(df) %>%
           purrr::map_dfc(function(.y) {
             res <- tibble::tibble(
-              var_1 = dplyr::select(df, .x),
-              var_2 = dplyr::select(df, .y),
+              var_1 = dplyr::pull(df, .x),
+              var_2 = dplyr::pull(df, .y),
               sum = var_1 - var_2
             )
             
