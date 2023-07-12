@@ -12,7 +12,9 @@
 #' @param rec A recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
 #' @param fix_formula the character string expresses how the microbial absolute
-#'   abundances for each taxon depend on the fixed effects in metadata.
+#'   abundances for each taxon depend on the fixed effects in metadata. When
+#'   specifying the fix_formula, make sure to include the group variable in the
+#'   formula if it is not NULL.
 #' @param rand_formula the character string expresses how the microbial absolute
 #'   abundances for each taxon depend on the random effects in metadata.
 #'   ANCOM-BC2 follows the lmerTest package in formulating the random effects.
@@ -20,11 +22,6 @@
 #' @param p_adj_method character. method to adjust p-values. Default is "holm".
 #'   Options include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
 #'   "fdr", "none". See ?stats::p.adjust for more details.
-#' @param pseudo numeric. Add pseudo-counts to the data. Default is 0 (no
-#'   pseudo-count addition).
-#' @param pseudo_sens ogical. Whether to perform the sensitivity analysis to the
-#'   pseudo-count addition. Default is TRUE. See Details for a more
-#'   comprehensive discussion on this sensitivity analysis.
 #' @param prv_cut a numerical fraction between 0 and 1. Taxa with prevalences
 #'   less than prv_cut will be excluded in the analysis. For instance, suppose
 #'   there are 100 samples, if a taxon has nonzero counts presented in less than
@@ -104,8 +101,6 @@ methods::setGeneric(
                  fix_formula = get_var(rec)[[1]],
                  rand_formula = NULL,
                  p_adj_method = "holm",
-                 pseudo = 0,
-                 pseudo_sens = TRUE,
                  prv_cut = 0.1,
                  lib_cut = 0,
                  s0_perc = 0.05,
@@ -119,11 +114,6 @@ methods::setGeneric(
                  pairwise = FALSE,
                  dunnet = FALSE,
                  trend = FALSE,
-                 # iter_control = list(tol = 0.01, max_iter = 20, verbose = FALSE),
-                 # em_control = list(tol = 1e-05, max_iter = 100),
-                 # lme_control = lme4::lmerControl(),
-                 # mdfdr_control = list(fwer_ctrl_method = "holm", B = 100),
-                 # trend_control = list(contrast = NULL, node = NULL, solver = "ECOS", B = 100),
                  rarefy = FALSE, 
                  id = rand_id("ancom")) {
     standardGeneric("step_ancom")
@@ -139,8 +129,6 @@ methods::setMethod(
                         fix_formula,
                         rand_formula,
                         p_adj_method,
-                        pseudo,
-                        pseudo_sens,
                         prv_cut,
                         lib_cut,
                         s0_perc,
@@ -154,11 +142,6 @@ methods::setMethod(
                         pairwise,
                         dunnet,
                         trend,
-                        # iter_control,
-                        # em_control,
-                        # lme_control,
-                        # mdfdr_control,
-                        # trend_control,
                         rarefy, 
                         id) {
 
@@ -169,8 +152,6 @@ methods::setMethod(
         fix_formula = fix_formula,
         rand_formula = rand_formula,
         p_adj_method = p_adj_method,
-        pseudo = pseudo,
-        pseudo_sens = pseudo_sens,
         prv_cut = prv_cut,
         lib_cut = lib_cut,
         s0_perc = s0_perc,
@@ -184,11 +165,6 @@ methods::setMethod(
         pairwise = pairwise,
         dunnet = dunnet,
         trend = trend,
-        # iter_control = iter_control,
-        # em_control = em_control,
-        # lme_control = lme_control,
-        # mdfdr_control = mdfdr_control,
-        # trend_control = trend_control,
         rarefy = rarefy, 
         id = id
       )
@@ -202,8 +178,6 @@ step_ancom_new <-
   function(fix_formula,
            rand_formula,
            p_adj_method,
-           pseudo,
-           pseudo_sens,
            prv_cut,
            lib_cut,
            s0_perc,
@@ -217,11 +191,6 @@ step_ancom_new <-
            pairwise,
            dunnet,
            trend,
-           # iter_control,
-           # em_control,
-           # lme_control,
-           # mdfdr_control,
-           # trend_control,
            rarefy, 
            id) {
     step(
@@ -229,8 +198,6 @@ step_ancom_new <-
       fix_formula = fix_formula,
       rand_formula = rand_formula,
       p_adj_method = p_adj_method,
-      pseudo = pseudo,
-      pseudo_sens = pseudo_sens,
       prv_cut = prv_cut,
       lib_cut = lib_cut,
       s0_perc = s0_perc,
@@ -244,11 +211,6 @@ step_ancom_new <-
       pairwise = pairwise,
       dunnet = dunnet,
       trend = trend,
-      # iter_control = iter_control,
-      # em_control = em_control,
-      # lme_control = lme_control,
-      # mdfdr_control = mdfdr_control,
-      # trend_control = trend_control,
       rarefy = rarefy, 
       id = id
     )
@@ -264,8 +226,6 @@ run_ancom <- function(rec,
                       fix_formula,
                       rand_formula,
                       p_adj_method,
-                      pseudo,
-                      pseudo_sens,
                       prv_cut,
                       lib_cut,
                       s0_perc,
@@ -279,11 +239,6 @@ run_ancom <- function(rec,
                       pairwise,
                       dunnet,
                       trend,
-                      # iter_control,
-                      # em_control,
-                      # lme_control,
-                      # mdfdr_control,
-                      # trend_control,
                       rarefy, 
                       id) {
   
@@ -308,14 +263,32 @@ run_ancom <- function(rec,
             parse(text = .) %>%
             eval()
           
+          ## Remove OTUs with zero variance
+          to_remove <- 
+            phyloseq::sample_data(s_phy) %>%
+            tibble::as_tibble(rownames = "sample_id") %>%
+            dplyr::group_split(!!dplyr::sym(vars)) %>% 
+            purrr::map_dfr(~ { 
+              .x %>% 
+                dplyr::pull(sample_id) %>% 
+                phyloseq::prune_samples(s_phy) %>% 
+                phyloseq::filter_taxa(function(x) var(x) > 0) %>% 
+                tibble::as_tibble(rownames = "otu_id")
+            }) %>% 
+            dplyr::filter(value == FALSE) %>% 
+            dplyr::pull(otu_id) 
+          
+          s_phy <- 
+            rownames(phyloseq::otu_table(s_phy)) %>% 
+            .[!. %in% to_remove] %>% 
+            phyloseq::prune_taxa(s_phy)
+          
           res <- ANCOMBC::ancombc2(
             data = s_phy, 
             tax_level = tax_level,
             fix_formula = fix_formula,
             rand_formula = rand_formula,
             p_adj_method = p_adj_method,
-            pseudo = pseudo,
-            pseudo_sens = pseudo_sens,
             prv_cut = prv_cut,
             lib_cut = lib_cut,
             s0_perc = s0_perc,
@@ -329,11 +302,6 @@ run_ancom <- function(rec,
             pairwise = pairwise,
             dunnet = dunnet,
             trend = trend
-            # iter_control = iter_control,
-            # em_control = em_control,
-            # lme_control = lme_control,
-            # mdfdr_control = mdfdr_control,
-            # trend_control = trend_control
           )
         
           res$res %>%
