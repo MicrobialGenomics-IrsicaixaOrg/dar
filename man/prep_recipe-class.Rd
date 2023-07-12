@@ -4,6 +4,9 @@
 \name{prep_recipe-class}
 \alias{prep_recipe-class}
 \title{prep_recipe-class object}
+\value{
+prep_recipe-class object
+}
 \description{
 A prep_recipe is recipe with the results corresponding to the steps defined
 in the recipe.

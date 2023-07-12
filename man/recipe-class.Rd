@@ -6,6 +6,9 @@
 \alias{tibble_or_NULL-class}
 \alias{recipe-class}
 \title{recipe-class object}
+\value{
+recipe-class object
+}
 \description{
 A recipe is a description of the steps to be applied to a data set in order
 to prepare it for data analysis.

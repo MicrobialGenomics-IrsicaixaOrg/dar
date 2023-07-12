@@ -12,6 +12,7 @@
 #' @aliases metaHIV_phy
 #' @docType data
 #' @keywords data
+#' @return The function does not return a value explicitly.
 #' @examples
 #' data(metaHIV_phy)
 #' metaHIV_phy
@@ -30,6 +31,7 @@ NA
 #' @aliases pastry_df
 #' @docType data
 #' @keywords data
+#' @return The function does not return a value explicitly.
 NA
 
 #' Recipe for metaHIV_phy data
@@ -43,6 +45,7 @@ NA
 #' @aliases test_rec
 #' @docType data
 #' @keywords data
+#' @return The function does not return a value explicitly.
 NA
 
 #' Prep-recipe for metaHIV_phy data
@@ -57,4 +60,5 @@ NA
 #' @aliases test_prep_rec
 #' @docType data
 #' @keywords data
+#' @return The function does not return a value explicitly.
 NA
