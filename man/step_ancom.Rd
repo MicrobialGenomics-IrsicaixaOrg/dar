@@ -10,8 +10,6 @@ step_ancom(
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
   p_adj_method = "holm",
-  pseudo = 0,
-  pseudo_sens = TRUE,
   prv_cut = 0.1,
   lib_cut = 0,
   s0_perc = 0.05,
@@ -34,8 +32,6 @@ step_ancom(
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
   p_adj_method = "holm",
-  pseudo = 0,
-  pseudo_sens = TRUE,
   prv_cut = 0.1,
   lib_cut = 0,
   s0_perc = 0.05,
@@ -58,7 +54,9 @@ step_ancom(
 operations for this recipe.}
 
 \item{fix_formula}{the character string expresses how the microbial absolute
-abundances for each taxon depend on the fixed effects in metadata.}
+abundances for each taxon depend on the fixed effects in metadata. When
+specifying the fix_formula, make sure to include the group variable in the
+formula if it is not NULL.}
 
 \item{rand_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the random effects in metadata.
@@ -68,13 +66,6 @@ See ?lmerTest::lmer for more details. Default is NULL.}
 \item{p_adj_method}{character. method to adjust p-values. Default is "holm".
 Options include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
 "fdr", "none". See ?stats::p.adjust for more details.}
-
-\item{pseudo}{numeric. Add pseudo-counts to the data. Default is 0 (no
-pseudo-count addition).}
-
-\item{pseudo_sens}{ogical. Whether to perform the sensitivity analysis to the
-pseudo-count addition. Default is TRUE. See Details for a more
-comprehensive discussion on this sensitivity analysis.}
 
 \item{prv_cut}{a numerical fraction between 0 and 1. Taxa with prevalences
 less than prv_cut will be excluded in the analysis. For instance, suppose
