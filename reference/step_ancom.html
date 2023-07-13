@@ -42,7 +42,7 @@ test, Dunnett's type of test, and trend test."><meta property="og:image" content
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/article.html">Workflow with real data</a>
-    <a class="dropdown-item" href="../articles/data_import.html">Data Import</a>
+    <a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
   </div>
 </li>
 <li class="nav-item">
@@ -87,8 +87,6 @@ test, Dunnett's type of test, and trend test.</p>
 <span>  fix_formula <span class="op">=</span> <span class="fu"><a href="get_var.html">get_var</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>  rand_formula <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adj_method <span class="op">=</span> <span class="st">"holm"</span>,</span>
-<span>  pseudo <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  pseudo_sens <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  prv_cut <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  lib_cut <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  s0_perc <span class="op">=</span> <span class="fl">0.05</span>,</span>
@@ -112,8 +110,6 @@ test, Dunnett's type of test, and trend test.</p>
 <span>  fix_formula <span class="op">=</span> <span class="fu"><a href="get_var.html">get_var</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>  rand_formula <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  p_adj_method <span class="op">=</span> <span class="st">"holm"</span>,</span>
-<span>  pseudo <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  pseudo_sens <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  prv_cut <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  lib_cut <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  s0_perc <span class="op">=</span> <span class="fl">0.05</span>,</span>
@@ -141,7 +137,9 @@ operations for this recipe.</p></dd>
 
 <dt>fix_formula</dt>
 <dd><p>the character string expresses how the microbial absolute
-abundances for each taxon depend on the fixed effects in metadata.</p></dd>
+abundances for each taxon depend on the fixed effects in metadata. When
+specifying the fix_formula, make sure to include the group variable in the
+formula if it is not NULL.</p></dd>
 
 
 <dt>rand_formula</dt>
@@ -155,17 +153,6 @@ See ?lmerTest::lmer for more details. Default is NULL.</p></dd>
 <dd><p>character. method to adjust p-values. Default is "holm".
 Options include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
 "fdr", "none". See ?stats::p.adjust for more details.</p></dd>
-
-
-<dt>pseudo</dt>
-<dd><p>numeric. Add pseudo-counts to the data. Default is 0 (no
-pseudo-count addition).</p></dd>
-
-
-<dt>pseudo_sens</dt>
-<dd><p>ogical. Whether to perform the sensitivity analysis to the
-pseudo-count addition. Default is TRUE. See Details for a more
-comprehensive discussion on this sensitivity analysis.</p></dd>
 
 
 <dt>prv_cut</dt>
@@ -296,8 +283,8 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Karakudamono</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Chou_à_la_crème</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Pot_pie</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Yurla</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -317,6 +304,7 @@ is expected.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     accumulate, when</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: rngtools</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Results</span> ─────────────────────────────────────────────────────────────────</span>
@@ -328,9 +316,9 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> ancom__Bierock <span style="color: #555555;">diff_taxa = 28</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> ancom__Spina_santa <span style="color: #555555;">diff_taxa = 35</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 28 taxa are present in all tested methods </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 35 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Wearing rarefaction only for this step</span></span></span>
@@ -351,7 +339,7 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_ancom() <span style="color: #555555;">id = ancom__Gujiya</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_ancom() <span style="color: #555555;">id = ancom__Knieküchle</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -363,7 +351,7 @@ is expected.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
 </div>
 
     </footer></div>
