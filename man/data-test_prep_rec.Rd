@@ -8,6 +8,9 @@
 \format{
 A prep-recipe object.
 }
+\value{
+The function does not return a value explicitly.
+}
 \description{
 A recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
 and "Genus" as a \code{tax_info}. Also includes \code{step_deseq}, \code{step_maaslin} and

@@ -104,6 +104,7 @@
 #' @importFrom rlang enquo enquos .data := as_name as_label .env
 #' @aliases enquo enquos .data := as_name as_label .env
 #' @export .data := .env
+#' @return The function does not return a value explicitly.
 #' @examples 
 #' # `enquo()` defuses the expression supplied by your user
 #' f <- function(arg) {

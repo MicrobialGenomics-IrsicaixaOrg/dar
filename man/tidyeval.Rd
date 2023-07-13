@@ -10,6 +10,9 @@
 \alias{as_label}
 \alias{.env}
 \title{Tidy eval helpers}
+\value{
+The function does not return a value explicitly.
+}
 \description{
 This page lists the tidy eval tools reexported in this package from
 rlang. To learn about using tidy eval in scripts and packages at a

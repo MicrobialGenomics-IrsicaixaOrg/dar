@@ -11,6 +11,9 @@ A tbl_df object with 228 unique pasteries.
 \source{
 https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
 }
+\value{
+The function does not return a value explicitly.
+}
 \description{
 Tibble contain
 }

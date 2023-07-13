@@ -25,6 +25,7 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 #' @name recipe-class
 #' @rdname recipe-class
 #' @exportClass recipe
+#' @return recipe-class object
 methods::setClass(
   Class = "recipe",
   slots = c(
@@ -497,6 +498,7 @@ methods::setMethod(
 #' @name prep_recipe-class
 #' @rdname prep_recipe-class
 #' @exportClass prep_recipe
+#' @return prep_recipe-class object
 methods::setClass(
   Class = "prep_recipe",
   contains = "recipe",
