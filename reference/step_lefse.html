@@ -212,8 +212,8 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Pâté_Chaud</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Bundevara</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Paper_wrapped_cake</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Birnbrot</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -222,11 +222,6 @@ is expected.</p></dd>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
 <span class="r-in"><span>  <span class="fu">step_lefse</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span>parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There was 1 warning in `dplyr::mutate()`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> ℹ In argument: `dplyr::across(...)`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> ! Using `across()` without supplying `.cols` was deprecated in dplyr 1.1.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> ℹ Please supply `.cols` instead.</span>
 <span class="r-in"><span>  </span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Results</span> ─────────────────────────────────────────────────────────────────</span>
@@ -238,7 +233,7 @@ is expected.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> lefse__Kifli <span style="color: #555555;">diff_taxa = 72</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> lefse__Spanakopita <span style="color: #555555;">diff_taxa = 72</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 72 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -252,7 +247,7 @@ is expected.</p></dd>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
 <span class="r-in"><span>  <span class="fu">step_lefse</span><span class="op">(</span><span class="va">rec</span>, rarefy <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run lefse without rarefaction is not recommended (<span style="color: #0000BB;">id = lefse__Taiyaki</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run lefse without rarefaction is not recommended (<span style="color: #0000BB;">id = lefse__Chou_à_la_crème</span>)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
