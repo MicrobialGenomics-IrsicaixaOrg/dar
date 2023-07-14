@@ -262,8 +262,8 @@ prepro_lefse <- function(rec, rarefy) {
         tibble::as_tibble() %>%
         dplyr::select(dplyr::all_of(seq_len(it))) %>%
         dplyr::mutate(dplyr::across(
-          .fns = function(x)
-            stringr::str_replace_all(x, " |[.]|-", "_")
+          dplyr::everything(),
+          .fns = function(x) stringr::str_replace_all(x, " |[.]|-", "_")
         )) 
         # dplyr::mutate(dplyr::across(
         #   .fns = function(x)
