@@ -246,7 +246,8 @@ prepro_lefse <- function(rec, rarefy) {
 
   # Defining iterating tax levels -------------------------------------------
   tax_otp <- 
-    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species") %>% 
+    .[. %in% colnames(phy@tax_table)]
   
   tax_lev_f <- tax_otp[seq_len(match(tax_level, tax_otp))]
 

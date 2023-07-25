@@ -112,6 +112,16 @@ recipe <-
   var_info <- tibble::tibble(vars = var_info)
   tax_info <- tibble::tibble(tax_lev = tax_info)
 
+  expected <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+  
+  if (!all(colnames(phyloseq@tax_table) %in% expected)) {
+    rlang::abort(c(
+      glue::glue("'rank' must be a value from {crayon::bgMagenta('taxonomyRanks()')}."),
+      "Rename the columns from the tax_table slot of your input phyloseq with standard names.", 
+      glue::glue("Standard names: {stringr::str_c(expected, collapse = ', ')}.")
+    ))
+  }
+  
   methods::new(
     Class = "recipe",
     phyloseq = phyloseq,
