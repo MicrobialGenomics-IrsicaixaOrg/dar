@@ -213,28 +213,6 @@ run_corncob <- function(rec,
                         fdr,
                         log2FC,
                         rarefy) {
-
-  
-  ## Temporal solution to https://github.com/bryandmartin/corncob/issues/141
-  # ver <- utils::packageVersion("detectseparation")
-  # if (ver != "0.2") {
-  #   rlang::abort(c(
-  #     "!" = glue::glue(
-  #       "Temporarily the version of the package ",
-  #       "{crayon::bgMagenta('detectseparation')} must be ",
-  #       "{crayon::blue('v0.2')}, but you have the version ",
-  #       "{crayon::blue(ver)} installed."
-  #     ),
-  #     "*" = glue::glue(
-  #       "Please first run {crayon::blue('remove.packages(\"detectseparation\")')}.",
-  #     ),
-  #     "*" = glue::glue(
-  #       "Finally install the necessary version with ",
-  #       "{crayon::blue('devtools::install_version(\"detectseparation\", version = 0.2)')}."
-  #     )
-  #   ),
-  #   use_cli_format = TRUE)
-  # }
   
   phy <- get_phy(rec)
   vars <- get_var(rec)
@@ -259,22 +237,41 @@ run_corncob <- function(rec,
             dplyr::pull(sample_id) %>% 
             phyloseq::prune_samples(phy)
 
-          corncob_res <- corncob::differentialTest(
-            formula = glue::glue("~ { var }") %>% stats::formula(),
-            data = f_phy,
-            phi.formula = phi.formula,
-            formula_null = formula_null,
-            phi.formula_null = phi.formula_null,
-            link = link,
-            phi.link = phi.link,
-            test = test,
-            boot = boot,
-            B = B,
-            filter_discriminant = filter_discriminant,
-            fdr_cutoff = Inf,
-            fdr = fdr
+          corncob_res <- rlang::catch_cnd(
+            corncob::differentialTest(
+              formula = glue::glue("~ { var }") %>% stats::formula(),
+              data = f_phy,
+              phi.formula = phi.formula,
+              formula_null = formula_null,
+              phi.formula_null = phi.formula_null,
+              link = link,
+              phi.link = phi.link,
+              test = test,
+              boot = boot,
+              B = 10e4,
+              filter_discriminant = filter_discriminant,
+              fdr_cutoff = Inf,
+              fdr = fdr
+            )
           )
-
+          
+          ## Skip error for no convergenc
+          if (is(corncob_res, "error")) {
+            if (stringr::str_detect(corncob_res$message, "failed to converge")) {
+              rlang::abort(c(
+                glue::glue("{crayon::bgMagenta('corncob')}: All models failed to converge!"),
+                glue::glue("{crayon::bgMagenta('corncob')}: If you are seeing this, it is likely that your model is overspecified. This occurs when your sample size is not large enough to estimate all the parameters of your model. This is most commonly due to categorical variables that include many categories."),
+                glue::glue("Please remove or edit the {crayon::bgMagenta('step_corncob()')} and rerun.")
+              ))
+            } else {
+              rlang::abort(c(
+                glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
+                glue::glue("Please remove or edit the {crayon::bgMagenta('step_corncob()')} and rerun."),
+                "Please report this bug on GitHub: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues"
+              ))
+            }
+          }
+         
           signif_taxa <- corncob::otu_to_taxonomy(
             OTU = corncob_res$significant_taxa,
             data = corncob_res$data,
