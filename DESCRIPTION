@@ -50,6 +50,7 @@ Suggests:
     limma,
     Maaslin2,
     metagenomeSeq,
+    mia,
     microbiome,
     rmarkdown,
     roxygen2,
