@@ -6,12 +6,7 @@ Authors@R:
              family = "Catala-Moll",
              role = c("aut", "cre"),
              email = "fcatala@irsicaixa.es",
-             comment = c(ORCID = "0000-0002-2354-8648")),
-      person(given = "Marc",
-             family = "Noguera-Julian",
-             role = c("aut"),
-             email = "mnoguera@irsicaixa.es",
-             comment = c(ORCID = "0000-0002-6194-1395"))
+             comment = c(ORCID = "0000-0002-2354-8648"))
     )
 Description: Differential abundance testing in microbiome data challenges both 
     parametric and non-parametric statistical methods, due to its sparsity, high 
