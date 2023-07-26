@@ -21,10 +21,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Francesc Catala-Moll \email{fcatala@irsicaixa.es} (\href{https://orcid.org/0000-0002-2354-8648}{ORCID})
 
-Authors:
-\itemize{
-  \item Marc Noguera-Julian \email{mnoguera@irsicaixa.es} (\href{https://orcid.org/0000-0002-6194-1395}{ORCID})
-}
-
 }
 \keyword{internal}

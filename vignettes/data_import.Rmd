@@ -77,7 +77,7 @@ phy
 # they can be chosen with assay.type.
 
 # Counts relative abundances table
-tse <- mia::transformFeatures(tse, method = "relabundance")
+tse <- mia::transformAssay(tse, method = "relabundance")
 phy2 <- mia::makePhyloseqFromTreeSummarizedExperiment(tse, assay.type = "relabundance")
 
 phy2
