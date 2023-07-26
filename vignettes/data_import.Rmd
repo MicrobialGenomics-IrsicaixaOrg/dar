@@ -31,7 +31,7 @@ rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
 
 # Import biom as a phyloseq-class object
-phy <- import_biom(rich_dense_biom,  parseFunction = parse_taxonomy_greengenes)
+phy <- phyloseq::import_biom(rich_dense_biom,  parseFunction = parse_taxonomy_greengenes)
 
 phy
 ```
@@ -77,7 +77,7 @@ phy
 # they can be chosen with assay.type.
 
 # Counts relative abundances table
-tse <- mia::transformCounts(tse, method = "relabundance")
+tse <- mia::transformFeatures(tse, method = "relabundance")
 phy2 <- mia::makePhyloseqFromTreeSummarizedExperiment(tse, assay.type = "relabundance")
 
 phy2
