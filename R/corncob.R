@@ -236,28 +236,29 @@ run_corncob <- function(rec,
             dplyr::filter(!!dplyr::sym(var) %in% comparison) %>% 
             dplyr::pull(sample_id) %>% 
             phyloseq::prune_samples(phy)
-
-          corncob_res <- rlang::catch_cnd(
-            corncob::differentialTest(
-              formula = glue::glue("~ { var }") %>% stats::formula(),
-              data = f_phy,
-              phi.formula = phi.formula,
-              formula_null = formula_null,
-              phi.formula_null = phi.formula_null,
-              link = link,
-              phi.link = phi.link,
-              test = test,
-              boot = boot,
-              B = 10e4,
-              filter_discriminant = filter_discriminant,
-              fdr_cutoff = Inf,
-              fdr = fdr
-            )
-          )
           
+          corncob_res <- 
+            tryCatch({
+              corncob::differentialTest(
+                formula = glue::glue("~ { var }") %>% stats::formula(),
+                data = f_phy,
+                phi.formula = phi.formula,
+                formula_null = formula_null,
+                phi.formula_null = phi.formula_null,
+                link = link,
+                phi.link = phi.link,
+                test = test,
+                boot = boot,
+                B = 10e4,
+                filter_discriminant = filter_discriminant,
+                fdr_cutoff = Inf,
+                fdr = fdr
+              )
+            }, error = function(e) { conditionMessage(e) })
+        
           ## Skip error for no convergenc
-          if (is(corncob_res, "error")) {
-            if (stringr::str_detect(corncob_res$message, "failed to converge")) {
+          if (!is(corncob_res, "differentialTest")) {
+            if (stringr::str_detect(corncob_res, "failed to converge")) {
               rlang::abort(c(
                 glue::glue("{crayon::bgMagenta('corncob')}: All models failed to converge!"),
                 glue::glue("{crayon::bgMagenta('corncob')}: If you are seeing this, it is likely that your model is overspecified. This occurs when your sample size is not large enough to estimate all the parameters of your model. This is most commonly due to categorical variables that include many categories."),
