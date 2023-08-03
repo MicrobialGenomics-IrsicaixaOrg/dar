@@ -9,7 +9,7 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar/branch/main/graph/badge.svg)](https://app.codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar?branch=main)
+coverage](https://codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar?branch=devel)
 [![PRs
 Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 [![GitHub
@@ -73,13 +73,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Sad_cake 
-#>      ◉ step_filter_taxa() id = filter_taxa__Malsouka 
+#>      ◉ step_subset_taxa() id = subset_taxa__Milhoja 
+#>      ◉ step_filter_taxa() id = filter_taxa__Papanași 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Moorkop 
-#>      ◉ step_maaslin() id = maaslin__Flaugnarde
+#>      ◉ step_metagenomeseq() id = metagenomeseq__Schaumrolle 
+#>      ◉ step_maaslin() id = maaslin__Punschkrapfen
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
@@ -93,10 +93,10 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Moorkop diff_taxa = 278 
-#>      ✔ maaslin__Flaugnarde diff_taxa = 205 
+#>      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 
+#>      ✔ maaslin__Punschkrapfen diff_taxa = 146 
 #> 
-#>      ℹ 205 taxa are present in all tested methods
+#>      ℹ 124 taxa are present in all tested methods
 
 ## Consensus strategy
 n_methods <- 2
@@ -111,47 +111,47 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Moorkop diff_taxa = 278 
-#>      ✔ maaslin__Flaugnarde diff_taxa = 205 
+#>      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 
+#>      ✔ maaslin__Punschkrapfen diff_taxa = 146 
 #> 
-#>      ℹ 205 taxa are present in all tested methods 
+#>      ℹ 124 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Curry_puff
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Belokranjska_povitica
 
 ## Results
 cool(da_results)
 #> ℹ Bake for count_cutoff = 2
-#> # A tibble: 205 × 2
-#>    taxa_id taxa                             
-#>    <chr>   <chr>                            
-#>  1 Otu_1   Methanobrevibacter_smithii       
-#>  2 Otu_2   Methanosphaera_stadtmanae        
-#>  3 Otu_10  Bifidobacterium_adolescentis     
-#>  4 Otu_12  Bifidobacterium_animalis         
-#>  5 Otu_13  Bifidobacterium_bifidum          
-#>  6 Otu_15  Bifidobacterium_catenulatum      
-#>  7 Otu_18  Bifidobacterium_longum           
-#>  8 Otu_19  Bifidobacterium_pseudocatenulatum
-#>  9 Otu_34  Olsenella_scatoligenes           
-#> 10 Otu_35  Collinsella_aerofaciens          
-#> # … with 195 more rows
+#> # A tibble: 124 × 2
+#>    taxa_id taxa                   
+#>    <chr>   <chr>                  
+#>  1 Otu_63  Bacteroides_plebeius   
+#>  2 Otu_216 Clostridium_sp_CAG_632 
+#>  3 Otu_441 Brachyspira_sp_CAG_700 
+#>  4 Otu_108 Prevotella_sp_CAG_520  
+#>  5 Otu_257 Butyrivibrio_sp_CAG_318
+#>  6 Otu_104 Prevotella_sp_CAG_1092 
+#>  7 Otu_69  Bacteroides_sp_CAG_530 
+#>  8 Otu_102 Prevotella_sp_AM42_24  
+#>  9 Otu_159 Lactobacillus_ruminis  
+#> 10 Otu_117 Alistipes_inops        
+#> # ℹ 114 more rows
 ```
 
 ## Contributing
 
--   If you think you have encountered a bug, please [submit an
-    issue](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues).
+- If you think you have encountered a bug, please [submit an
+  issue](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues).
 
--   Either way, learn how to create and share a
-    [reprex](https://reprex.tidyverse.org/articles/articles/learn-reprex.html)
-    (a minimal, reproducible example), to clearly communicate about your
-    code.
+- Either way, learn how to create and share a
+  [reprex](https://reprex.tidyverse.org/articles/articles/learn-reprex.html)
+  (a minimal, reproducible example), to clearly communicate about your
+  code.
 
--   Working on your first Pull Request? You can learn how from this
-    *free* series [How to Contribute to an Open Source Project on
-    GitHub](https://kcd.im/pull-request)
+- Working on your first Pull Request? You can learn how from this *free*
+  series [How to Contribute to an Open Source Project on
+  GitHub](https://kcd.im/pull-request)
 
 ## Code of Conduct
 
