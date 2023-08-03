@@ -128,13 +128,13 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Sad_cake </span></span>
-<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Malsouka </span></span>
+<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Milhoja </span></span>
+<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Papanași </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Moorkop </span></span>
-<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Flaugnarde</span></span>
+<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Schaumrolle </span></span>
+<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Punschkrapfen</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -148,10 +148,10 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Moorkop diff_taxa = 278 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Flaugnarde diff_taxa = 205 </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Punschkrapfen diff_taxa = 146 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 205 taxa are present in all tested methods</span></span>
+<span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods</span></span>
 <span></span>
 <span><span class="co">## Consensus strategy</span></span>
 <span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -166,32 +166,32 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Moorkop diff_taxa = 278 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Flaugnarde diff_taxa = 205 </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Punschkrapfen diff_taxa = 146 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 205 taxa are present in all tested methods </span></span>
+<span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Bakes:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Curry_puff</span></span>
+<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Belokranjska_povitica</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
 <span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Bake for count_cutoff = 2</span></span>
-<span><span class="co">#&gt; # A tibble: 205 × 2</span></span>
-<span><span class="co">#&gt;    taxa_id taxa                             </span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                            </span></span>
-<span><span class="co">#&gt;  1 Otu_1   Methanobrevibacter_smithii       </span></span>
-<span><span class="co">#&gt;  2 Otu_2   Methanosphaera_stadtmanae        </span></span>
-<span><span class="co">#&gt;  3 Otu_10  Bifidobacterium_adolescentis     </span></span>
-<span><span class="co">#&gt;  4 Otu_12  Bifidobacterium_animalis         </span></span>
-<span><span class="co">#&gt;  5 Otu_13  Bifidobacterium_bifidum          </span></span>
-<span><span class="co">#&gt;  6 Otu_15  Bifidobacterium_catenulatum      </span></span>
-<span><span class="co">#&gt;  7 Otu_18  Bifidobacterium_longum           </span></span>
-<span><span class="co">#&gt;  8 Otu_19  Bifidobacterium_pseudocatenulatum</span></span>
-<span><span class="co">#&gt;  9 Otu_34  Olsenella_scatoligenes           </span></span>
-<span><span class="co">#&gt; 10 Otu_35  Collinsella_aerofaciens          </span></span>
-<span><span class="co">#&gt; # … with 195 more rows</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 124 × 2</span></span>
+<span><span class="co">#&gt;    taxa_id taxa                   </span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                  </span></span>
+<span><span class="co">#&gt;  1 Otu_63  Bacteroides_plebeius   </span></span>
+<span><span class="co">#&gt;  2 Otu_216 Clostridium_sp_CAG_632 </span></span>
+<span><span class="co">#&gt;  3 Otu_441 Brachyspira_sp_CAG_700 </span></span>
+<span><span class="co">#&gt;  4 Otu_108 Prevotella_sp_CAG_520  </span></span>
+<span><span class="co">#&gt;  5 Otu_257 Butyrivibrio_sp_CAG_318</span></span>
+<span><span class="co">#&gt;  6 Otu_104 Prevotella_sp_CAG_1092 </span></span>
+<span><span class="co">#&gt;  7 Otu_69  Bacteroides_sp_CAG_530 </span></span>
+<span><span class="co">#&gt;  8 Otu_102 Prevotella_sp_AM42_24  </span></span>
+<span><span class="co">#&gt;  9 Otu_159 Lactobacillus_ruminis  </span></span>
+<span><span class="co">#&gt; 10 Otu_117 Alistipes_inops        </span></span>
+<span><span class="co">#&gt; # ℹ 114 more rows</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -251,7 +251,7 @@
 <ul class="list-unstyled">
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/actions" class="external-link"><img src="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/workflows/R-CMD-check-bioc/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar?branch=main" class="external-link"><img src="https://codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://app.codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar?branch=devel" class="external-link"><img src="https://codecov.io/gh/MicrobialGenomics-IrsicaixaOrg/dar/branch/devel/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://makeapullrequest.com" class="external-link"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"></a></li>
 <li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues" class="external-link"><img src="https://img.shields.io/github/issues/MicrobialGenomics-IrsicaixaOrg/dar" alt="GitHub issues"></a></li>
 <li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/pulls" class="external-link"><img src="https://img.shields.io/github/issues-pr/MicrobialGenomics-IrsicaixaOrg/dar" alt="GitHub pulls"></a></li>
