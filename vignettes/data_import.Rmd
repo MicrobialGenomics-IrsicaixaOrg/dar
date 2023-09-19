@@ -2,7 +2,7 @@
 title: "Converting Common Data Formats to Phyloseq"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data Import}
+  %\VignetteIndexEntry{Converting Common Data Formats to Phyloseq}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
