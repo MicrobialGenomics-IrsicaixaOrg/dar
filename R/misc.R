@@ -224,8 +224,14 @@ dot <- function() {
 #' ## Export to json file
 #' export_steps(rec, tempfile(fileext = ".json"))
 export_steps <- function(rec, file_name) {
+  
+  inp <- rec@steps
+  if (is(rec, "prep_recipe")) {
+    inp <- c(rec@steps, rec@bakes)
+  } 
+  
   to_cat <-
-    c(rec@steps, rec@bakes) %>%
+    inp %>%
     purrr::map_chr(~ {
       params <-
         names(.x) %>%

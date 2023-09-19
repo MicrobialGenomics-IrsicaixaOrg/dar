@@ -61,7 +61,7 @@ read_data <- function(data_path) {
     
     taxa_df <-
       files %>%
-      purrr::discard(~ setequal(.x, counts_df)) %>%
+      purrr::discard(~ waldo::compare(.x, counts_df) %>% length() == 0) %>%
       purrr::map_dfr(~ {
         if (all(counts_df[[1]] %in% .x[[1]])) {
           .x
@@ -71,8 +71,10 @@ read_data <- function(data_path) {
     
     metadata_df <-
       files %>%
-      purrr::discard(~ setequal(.x, counts_df) |
-                       setequal(.x, taxa_df)) %>%
+      purrr::discard(
+        ~ waldo::compare(.x, counts_df) %>% length() == 0 |
+          waldo::compare(.x, taxa_df) %>% length() == 0
+      ) %>%
       purrr::pluck(1) %>%
       validate_sample_data()
     
