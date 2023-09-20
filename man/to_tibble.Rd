@@ -19,8 +19,11 @@ tibble
 Wrapper to convert phyloseq slots to tibble
 }
 \examples{
-\dontrun{
-to_tibble(phyloseq::otu_table(metaHIV_phy))
-}
+data(test_rec)
+otu_table <- 
+  get_phy(test_rec) \%>\% 
+  phyloseq::otu_table()
+
+dar:::to_tibble(otu_table)
 }
 \keyword{internal}

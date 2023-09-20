@@ -22,9 +22,10 @@ rand_id <- function(prefix = "step") {
 #'
 #' @return tibble or list
 #' @keywords internal
-#' @examples \dontrun{
-#' get_comparisons("RiskGroup2", metaHIV_phy)
-#' }
+#' @examples 
+#' data(test_rec)
+#' get_phy(test_rec) %>% 
+#'   dar:::get_comparisons("RiskGroup2", .)
 get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
   dat <-
     phyloseq::sample_data(phy) %>%
@@ -53,9 +54,13 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #'
 #' @return tibble
 #' @keywords internal
-#' @examples \dontrun{
-#' to_tibble(phyloseq::otu_table(metaHIV_phy))
-#' }
+#' @examples
+#' data(test_rec)
+#' otu_table <- 
+#'   get_phy(test_rec) %>% 
+#'   phyloseq::otu_table()
+#' 
+#' dar:::to_tibble(otu_table)
 to_tibble <- function(df, id_name = "otu_id") {
   df %>%
     data.frame(check.names = FALSE) %>%

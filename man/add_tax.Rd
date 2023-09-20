@@ -36,8 +36,10 @@ rec <- add_tax(rec, tax_info = "Species")
 rec
 
 ## add tax info to a prep-recipe returns an error
-\dontrun{
 data(test_prep_rec)
-rec <- add_tax(test_prep_rec, tax_info = "Species")
-}
+err <- testthat::expect_error(
+  add_tax(test_prep_rec, tax_info = "Species")
+)
+
+err
 }

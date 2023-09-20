@@ -112,7 +112,8 @@ recipe <-
   var_info <- tibble::tibble(vars = var_info)
   tax_info <- tibble::tibble(tax_lev = tax_info)
 
-  expected <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
+  expected <- c("Kingdom", "Phylum", "Class", "Order", 
+                "Family", "Genus", "Species")
   
   if (!all(colnames(phyloseq@tax_table) %in% expected)) {
     rlang::abort(
@@ -124,7 +125,9 @@ recipe <-
           "Rename the columns from the tax_table slot of your input phyloseq ",
           "with standard names.",
         ),
-        glue::glue("Standard names: {stringr::str_c(expected, collapse = ', ')}.")
+        glue::glue(
+          "Standard names: {stringr::str_c(expected, collapse = ', ')}."
+        )
       )
     )
   }
@@ -341,18 +344,19 @@ methods::setMethod(
 #' data(metaHIV_phy)
 #'
 #' ## Define recipe
-#' rec <-
-#'   recipe(metaHIV_phy)
+#' rec <- recipe(metaHIV_phy)
 #'
 #' ## add var info
 #' rec <- add_var(rec, var_info = "RiskGroup2")
 #' rec
 #'
 #' ## add var info to a prep-recipe returns an error
-#' \dontrun{
 #' data(test_prep_rec)
-#' rec <- add_var(test_prep_rec, var_info = "RiskGroup2")
-#' }
+#' err <- testthat::expect_error(
+#'   add_var(test_prep_rec, var_info = "RiskGroup2")
+#' )
+#' 
+#' err
 methods::setGeneric("add_var", function(rec, var_info)
   standardGeneric("add_var"))
 
@@ -390,10 +394,12 @@ methods::setMethod(
 #' rec
 #'
 #' ## add tax info to a prep-recipe returns an error
-#' \dontrun{
 #' data(test_prep_rec)
-#' rec <- add_tax(test_prep_rec, tax_info = "Species")
-#' }
+#' err <- testthat::expect_error(
+#'   add_tax(test_prep_rec, tax_info = "Species")
+#' )
+#' 
+#' err
 methods::setGeneric("add_tax", function(rec, tax_info)
   standardGeneric("add_tax"))
 
@@ -748,8 +754,9 @@ methods::setMethod(
 #'
 #' ## If you try to run prep on an object of class prep_recipe it returns an 
 #' ## error.
-#' \dontrun{prep(da_results)}
-#'
+#' err <- testthat::expect_error(prep(da_results))
+#' err
+#' 
 #' ## You can force the overwrite with:
 #' prep(rec, force = TRUE)
 #'
@@ -786,8 +793,8 @@ methods::setMethod(
       rlang::abort(c(
         "Not all necessary dependencies are installed.",
         i = glue::glue(
-          "Use {crayon::bgMagenta('required_deps(rec)')} to see how to install ", 
-          "them."
+          "Use {crayon::bgMagenta('required_deps(rec)')} to see how to ", 
+          "install them."
         )
       ))
     }
@@ -871,7 +878,8 @@ methods::setMethod(
 #' ## intersection_df function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- intersection_df(test_rec)}
+#' err <- testthat::expect_error(intersection_df(test_rec))
+#' err
 methods::setGeneric(
   name = "intersection_df",
   def = function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
@@ -949,7 +957,8 @@ methods::setMethod(
 #' ## overlap_df function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- overlap_df(test_rec)}
+#' err <- testthat::expect_error(overlap_df(test_rec))
+#' err
 methods::setGeneric(
   name = "overlap_df",
   def = function(rec, steps = steps_ids(rec, "da"), type = "all") {
@@ -1014,7 +1023,7 @@ methods::setMethod(
   }
 )
 
-## Cool: Extract results from defined bake ----
+## Cool: Extract results from defined  <-  ----
 
 #' Extract results from defined bake
 #'
@@ -1034,16 +1043,15 @@ methods::setMethod(
 #' cool(rec)
 #'
 #' ## By default cool extracts the results of the first bake. If we have more
-#' ## bakes we can extract the one that you want with the bake paramter.
+#' ## bakes we can extract the one that you want with the bake parameter.
 #' rec <- bake(rec, count_cutoff = 1)
 #' cool(rec, 2)
 #'
-#' ## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe 
+#' ## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
 #' ## the output is an error.
 #' data(test_rec)
-#' \dontrun{
-#' bake(test_rec) %>% cool()
-#' }
+#' err <- testthat::expect_error(cool(test_rec))
+#' err
 methods::setGeneric(
   name = "cool",
   def = function(rec, bake = 1) {

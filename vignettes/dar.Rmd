@@ -2,12 +2,18 @@
 title: "Introduction to dar"
 output: rmarkdown::html_vignette
 description: |
-  Start here if this is your first time usinc dar! You will learn about basic usage, steps, exploration and bakes.  
+  Start here if this is your first time usinc dar! You will learn about basic 
+  usage, steps, exploration and bakes.  
 vignette: >
   %\VignetteIndexEntry{Introduction to dar}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+<style>
+body {
+text-align: justify}
+</style>
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -21,7 +27,12 @@ options(digits = 3)
 
 ## An Example 
 
-The package contains a data set from [Noguera-Julian, M., et al. 2016](https://doi.org/10.1016/j.ebiom.2016.01.032) used to find the differential abundant microbial species among men who have sex with men (MSM) and non-MSM (hts). The data is stored inside an object of class `phyloseq`, the standard input format for creating recipes with dar. We will first load the data and inspect it:
+The package contains a data set from 
+[Noguera-Julian, M., et al. 2016](https://doi.org/10.1016/j.ebiom.2016.01.032) 
+used to find the differential abundant microbial species among men who have sex 
+with men (MSM) and non-MSM (hts). The data is stored inside an object of class 
+`phyloseq`, the standard input format for creating recipes with dar. We will 
+first load the data and inspect it:
 
 ```{r data}
 library(dar)
@@ -33,9 +44,11 @@ metaHIV_phy
 
 ## An Initial Recipe
 
-First, we will create a recipe object from the original data and then specify the processing and differential analysis steps.
+First, we will create a recipe object from the original data and then specify 
+the processing and differential analysis steps.
 
-Recipes can be created manually by sequentially adding roles to variables in a data set.
+Recipes can be created manually by sequentially adding roles to variables in a 
+data set.
 
 The easiest way to create the initial recipe is:
 
@@ -44,11 +57,14 @@ rec_obj <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 rec_obj
 ```
 
-The `var_info` argument corresponds to the variable to be considered in the modeling process and `tax_info` indicates the taxonomic level that will be used for the analyses.
+The `var_info` argument corresponds to the variable to be considered in the 
+modeling process and `tax_info` indicates the taxonomic level that will be used 
+for the analyses.
 
 ## Preprocessing Steps
 
-From here, preprocessing steps for some step X can be added sequentially in one of two ways:
+From here, preprocessing steps for some step X can be added sequentially in one 
+of two ways:
 
 ```{r step_code, eval=FALSE}
 rec_obj <- step_{X}(rec_obj, arguments)   
@@ -56,19 +72,28 @@ rec_obj <- step_{X}(rec_obj, arguments)
 rec_obj <- rec_obj %>% step_{X}(arguments)
 ```
 
-Note that all `step_ancom` and the other functions will always return updated recipes. 
+Note that all `step_ancom` and the other functions will always return updated 
+recipes. 
 
-We have two types of steps, those in charge of processing (prepro) and those destined to define the methods of differential analysis (da). 
+We have two types of steps, those in charge of processing (prepro) and those 
+destined to define the methods of differential analysis (da). 
 
-The prepro steps are used to modify the data loaded into the recipe which will then be used for the da steps. The 'dar' package include 3 main preprocessing functionalities.
+The prepro steps are used to modify the data loaded into the recipe which will 
+then be used for the da steps. The 'dar' package include 3 main preprocessing 
+functionalities.
 
-- `step_subset_taxa`: Is used for subsetting the columns and values within the tax_table.
+- `step_subset_taxa`: Is used for subsetting the columns and values within the 
+tax_table.
 
 - `step_filter_taxa`: Is used for filtering OTUs from recipe objects. 
 
-- `step_rarefaction`: Is used to resample an OTU table such that all samples have the same library size.
+- `step_rarefaction`: Is used to resample an OTU table such that all samples 
+have the same library size.
 
-For our data, we can add an operation to preprocessing the data stored in the initial recpie. First, we will use `step_subset_taxa` to retain only Bacteria and Archaea OTUs from the Kingdom taxonomic level. We will then filter out OTUs where at least 3% of the samples have counts greater than 0. 
+For our data, we can add an operation to preprocessing the data stored in the 
+initial recpie. First, we will use `step_subset_taxa` to retain only Bacteria 
+and Archaea OTUs from the Kingdom taxonomic level. We will then filter out OTUs
+where at least 3% of the samples have counts greater than 0. 
 
 ```{r prepro_steps}
 rec_obj <- rec_obj %>% 
@@ -80,7 +105,10 @@ rec_obj
 
 ## Differential Analysis
 
-Now that we have defined the preprocessing of the input data for all the da methods that will be used, we need to define them. For this introduction we will use __metagenomeSeq__, __maaslin2__ and __DESeq2__ methods with default parameters (those defined by the authors of each method).
+Now that we have defined the preprocessing of the input data for all the da 
+methods that will be used, we need to define them. For this introduction we 
+will use __metagenomeSeq__, __maaslin2__ and __DESeq2__ methods with default 
+parameters (those defined by the authors of each method).
 
 ```{r da_steps}
 rec_obj <- rec_obj %>% 
@@ -91,7 +119,8 @@ rec_obj <- rec_obj %>%
 rec_obj
 ```
 
-The 'dar' package includes more da steps than those defined above. Below is the full list:
+The 'dar' package includes more da steps than those defined above. Below is the 
+full list:
 
 ```{r da_steps_list}
 grep("^step_", ls("package:dar"), value = TRUE) %>% 
@@ -100,18 +129,25 @@ grep("^step_", ls("package:dar"), value = TRUE) %>%
 
 ## Prep 
 
-To ensure the reproducibility and consistency of the generated results, all the steps defined in the recipe are executed at the same time using the `prep` function.
+To ensure the reproducibility and consistency of the generated results, all the 
+steps defined in the recipe are executed at the same time using the `prep` 
+function.
 
 ```{r prep}
 da_results <- prep(rec_obj, parallel = TRUE)
 da_results
 ```
 
-Note that the resulting object print shows information about the amount of differentially abundant OTUs in each of the methods, as well as the number of OTUs that have been detected by all methods (consensus).
+Note that the resulting object print shows information about the amount of 
+differentially abundant OTUs in each of the methods, as well as the number of 
+OTUs that have been detected by all methods (consensus).
 
 ## Bake and cool 
 
-Now that we have the results we need to extract them, however for this we first need to define a consensus strategy with the `bake`. For this example we are only interested in those OTUs detected as differentially abundant in the three methods used.
+Now that we have the results we need to extract them, however for this we first 
+need to define a consensus strategy with the `bake`. For this example we are 
+only interested in those OTUs detected as differentially abundant in the three 
+methods used.
 
 ```{r bake}
 ## Number of used methods

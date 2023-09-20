@@ -63,7 +63,8 @@ mutual_plt(test_prep_rec)
 ## The count_cutoff indicates the minimum number of methods in which an OTU
 ## must be present. By default the value is equal to
 ## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
-mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, "da")))
+mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, 
+"da")))
 
 ## A single comparisons can be plotted through the comparison parameter.
 mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
@@ -76,5 +77,6 @@ mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 ## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe
 ## the output is an error.
 data(test_rec)
-\dontrun{df <- mutual_plt(test_rec)}
+err <- testthat::expect_error(mutual_plt(test_rec))
+err
 }

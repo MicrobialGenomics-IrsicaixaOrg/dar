@@ -28,16 +28,17 @@ Adds variable of interest to the recipe
 data(metaHIV_phy)
 
 ## Define recipe
-rec <-
-  recipe(metaHIV_phy)
+rec <- recipe(metaHIV_phy)
 
 ## add var info
 rec <- add_var(rec, var_info = "RiskGroup2")
 rec
 
 ## add var info to a prep-recipe returns an error
-\dontrun{
 data(test_prep_rec)
-rec <- add_var(test_prep_rec, var_info = "RiskGroup2")
-}
+err <- testthat::expect_error(
+  add_var(test_prep_rec, var_info = "RiskGroup2")
+)
+
+err
 }

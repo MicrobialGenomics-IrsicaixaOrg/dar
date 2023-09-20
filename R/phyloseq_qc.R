@@ -2,12 +2,12 @@
 #'
 #' phy_qc() returns a tibble. It will have information about some important
 #' metrics about the sparsity of the count matrix. The content of the table is
-#' as follows: 
+#' as follows:
 #' * var_levels: levels of the categorical variable of interest. "all" refers to 
-#' all rows of the dataset (without splitting by categorical levels). 
-#' * n: total number of values in the count matrix. 
-#' * n_zero: number of zeros in the count matrix. 
-#' * pct_zero: percentage of zeros in the count matrix. 
+#' all rows of the dataset (without splitting by categorical levels).
+#' * n: total number of values in the count matrix.
+#' * n_zero: number of zeros in the count matrix.
+#' * pct_zero: percentage of zeros in the count matrix.
 #' * pct_all_zero: percentage of taxa with zero counts in all samples.
 #' * pct_singletons: percentage of taxa with counts in a single sample.
 #' * pct_doubletons: percentage of taxa with counts in two samples.

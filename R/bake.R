@@ -25,6 +25,12 @@
 #' res <- bake(rec)
 #' cool(res)
 #' 
+#' ## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
+#' ## the output is an error.
+#' data(test_rec)
+#' err <- testthat::expect_error(bake(test_rec))
+#' err
+#' 
 #' ## We can use the parameter `cout_cutoff` to for example select those OTUs
 #' ## shared with at least two methods
 #' res <- bake(rec, count_cutoff = 2)
@@ -128,8 +134,10 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
     not_weights <- not_weights %>% stringr::str_c(collapse = ", ")
     text_1 <-
       "Please include a value for this/these step/s in the vector of weights."
-    text_2 <-
-      "Alternatively, explicitly exclude the method/s via the exclude parameter."
+    text_2 <- glue::glue(
+      "Alternatively, explicitly exclude the method/s via the ", 
+      "exclude parameter."
+    )
     rlang::abort(c(
       glue::glue(
         "Some non-excluded methods are not present in the weights vector ",

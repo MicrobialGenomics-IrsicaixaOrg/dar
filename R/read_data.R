@@ -346,7 +346,10 @@ SummarizedExperiment2phyloseq <- function(dataset,
   
   if (new_names) { 
     counts_df <- 
-      dplyr::mutate(counts_df, otu_id = paste0("Otu_", seq_len(nrow(counts_df)))) 
+      dplyr::mutate(
+        counts_df, 
+        otu_id = paste0("Otu_", seq_len(nrow(counts_df)))
+      ) 
   }
   
   validate_otu(counts_df)

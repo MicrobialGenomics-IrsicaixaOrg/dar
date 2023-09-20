@@ -59,6 +59,12 @@ rec <- test_prep_rec
 res <- bake(rec)
 cool(res)
 
+## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
+## the output is an error.
+data(test_rec)
+err <- testthat::expect_error(bake(test_rec))
+err
+
 ## We can use the parameter `cout_cutoff` to for example select those OTUs
 ## shared with at least two methods
 res <- bake(rec, count_cutoff = 2)

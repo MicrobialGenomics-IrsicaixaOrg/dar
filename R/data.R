@@ -25,7 +25,7 @@ NA
 #' @format A tbl_df object with 228 unique pasteries.
 #'
 #' @source
-#'   https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
+#' https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
 #'
 #' @name data-pastry_df
 #' @aliases pastry_df

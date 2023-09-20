@@ -261,7 +261,8 @@ run_corncob <- function(rec,
             if (stringr::str_detect(corncob_res, "failed to converge")) {
               rlang::abort(c(
                 glue::glue(
-                  "{crayon::bgMagenta('corncob')}: All models failed to converge!"
+                  "{crayon::bgMagenta('corncob')}: All models failed to ", 
+                  "converge!"
                 ),
                 glue::glue(
                   "{crayon::bgMagenta('corncob')}: If you are seeing this, it ", 
@@ -285,7 +286,8 @@ run_corncob <- function(rec,
                   ),
                   glue::glue(
                     "Please report this bug on GitHub: ", 
-                    "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues" 
+                    "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/", 
+                    "issues" 
                   )
                 )
               )

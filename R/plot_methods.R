@@ -26,7 +26,8 @@
 #' ## corr_heatmap function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- corr_heatmap(test_rec)}
+#' err <- testthat::expect_error(corr_heatmap(test_rec))
+#' err
 methods::setGeneric(
   name = "corr_heatmap",
   def = function(rec,
@@ -123,7 +124,8 @@ methods::setMethod(
 #' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- intersection_plt(test_rec)}
+#' err <- testthat::expect_error(intersection_plt(test_rec))
+#' err
 methods::setGeneric(
   name = "intersection_plt",
   def = function(rec,
@@ -191,7 +193,8 @@ methods::setMethod(
 #' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- exclusion_plt(test_rec)}
+#' err <- testthat::expect_error(exclusion_plt(test_rec))
+#' err
 methods::setGeneric(
   name = "exclusion_plt",
   def = function(rec, steps = steps_ids(rec, "da")) {
@@ -299,7 +302,8 @@ methods::setMethod(
 #' ## abundance_plt function needs a prep-recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- abundance_plt(test_rec)}
+#' err <- testthat::expect_error(abundance_plt(test_rec))
+#' err
 methods::setGeneric(
   name = "abundance_plt",
   def = function(rec,
@@ -369,7 +373,8 @@ methods::setMethod(
     if (length(taxa_ids) > top_n) {
       rlang::inform(c(
         "!" = glue::glue(
-          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+          "Taxa present in all methods are greater than the cutoff top_n = ", 
+          "{top_n}"
         ),
         "i" = glue::glue(
           "The top {top_n} significant taxa with the greatest overlap between ", 
@@ -441,7 +446,8 @@ methods::setMethod(
     if (length(taxa_ids) > top_n) {
       rlang::inform(c(
         "!" = glue::glue(
-          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+          "Taxa present in all methods are greater than the cutoff top_n = ", 
+          "{top_n}"
         ),
         "i" = glue::glue(
           "The top {top_n} significant taxa with the greatest overlap between ", 
@@ -480,7 +486,11 @@ methods::setMethod(
   t_rec <- rec
   if (!is.null(transform)) {
     t_rec@phyloseq <-
-      microbiome::transform(t_rec@phyloseq, transform = transform, scale = scale)
+      microbiome::transform(
+        t_rec@phyloseq, 
+        transform = transform, 
+        scale = scale
+      )
   } else {
     transform <- "raw counts"
   }
@@ -552,7 +562,8 @@ methods::setMethod(
 #' ## The count_cutoff indicates the minimum number of methods in which an OTU
 #' ## must be present. By default the value is equal to
 #' ## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
-#' mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, "da")))
+#' mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, 
+#' "da")))
 #'
 #' ## A single comparisons can be plotted through the comparison parameter.
 #' mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
@@ -565,7 +576,8 @@ methods::setMethod(
 #' ## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe
 #' ## the output is an error.
 #' data(test_rec)
-#' \dontrun{df <- mutual_plt(test_rec)}
+#' err <- testthat::expect_error(mutual_plt(test_rec))
+#' err
 methods::setGeneric(
   name = "mutual_plt",
   def = function(rec,
@@ -614,7 +626,8 @@ methods::setMethod(
     if (nrow(df) > top_n) {
       rlang::inform(c(
         "!" = glue::glue(
-          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+          "Taxa present in all methods are greater than the cutoff top_n = ", 
+          "{top_n}"
         ),
         "i" = glue::glue(
           "The top {top_n} significant taxa with the greatest overlap between ", 
@@ -636,7 +649,9 @@ methods::setMethod(
     
     if (nrow(df) == 0) {
       rlang::inform(c(
-        "!" = glue::glue("0 taxa are present with count_cutoff = {count_cutoff}"),
+        "!" = glue::glue(
+          "0 taxa are present with count_cutoff = {count_cutoff}"
+        ),
         "i" = glue::glue(
           "The top {top_n} significant taxa with the greatest overlap between ", 
           "methods will be used"
@@ -676,15 +691,6 @@ methods::setMethod(
       scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
       labs(x = NULL, y = NULL, fill = "DA")
-      
-      # ggplot(aes(taxa, method, fill = effect, alpha = zscore)) +
-      # geom_tile(aes(width = -log10(padj), height = -log10(padj))) +
-      # facet_wrap(~ comparison, ncol = 1, strip.position = "right") +
-      # theme_light() +
-      # # scale_fill_gradientn(colours = RColorBrewer::brewer.pal(11, "Spectral")) +
-      # scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
-      # theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
-      # labs(x = NULL, y = NULL, fill = "DA")
   }
 )
 

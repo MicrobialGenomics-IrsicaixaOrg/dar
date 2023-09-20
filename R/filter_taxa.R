@@ -120,6 +120,14 @@ run_filter_taxa <- function(rec, .f) {
 #' @aliases zero_otu
 #' @return character vector
 #' @export
+#' @examples
+#' data(metaHIV_phy)
+#' 
+#' ## Init recipe
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' 
+#' ## Extract outs with all 0 values
+#' zero_otu(rec)
 methods::setGeneric(
   name = "zero_otu",
   def = function(obj, var = NULL, pct_cutoff = 0) {

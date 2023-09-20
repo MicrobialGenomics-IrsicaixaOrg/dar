@@ -2,10 +2,15 @@
 title: "Converting Common Data Formats to Phyloseq"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Converting Common Data Formats to Phyloseq}
+  %\VignetteIndexEntry{Data Import}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+<style>
+body {
+text-align: justify}
+</style>
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -17,11 +22,20 @@ knitr::opts_chunk$set(
 options(digits = 3)
 ```
 
-The "dar" package's recipe class relies on a phyloseq object as its input, which might pose a challenge for users who have their data stored in formats other than phyloseq. To address this issue, this vignette serves as a comprehensive guide, outlining the step-by-step process of converting commonly used data formats, including "biome" and "TreeSummarizedExperiment," into the phyloseq format. With these instructions, users can easily take advantage of the powerful features of the "dar" package to perform differential abundance analysis, regardless of their original data format.
+The "dar" package's recipe class relies on a phyloseq object as its input, 
+which might pose a challenge for users who have their data stored in formats 
+other than phyloseq. To address this issue, this vignette serves as a 
+comprehensive guide, outlining the step-by-step process of converting commonly 
+used data formats, including "biome" and "TreeSummarizedExperiment," into the 
+phyloseq format. With these instructions, users can easily take advantage of 
+the powerful features of the "dar" package to perform differential abundance 
+analysis, regardless of their original data format.
 
 ## Converting Data in "biome" Format to Phyloseq
 
-To convert data in "biome" format to phyloseq format, we can use the `phyloseq::import_biom()` function. Here's a step-by-step example of how to perform this conversion:
+To convert data in "biome" format to phyloseq format, we can use the 
+`phyloseq::import_biom()` function. Here's a step-by-step example of how to 
+perform this conversion:
 
 ```{r}
 library(phyloseq)
@@ -31,14 +45,22 @@ rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
 
 # Import biom as a phyloseq-class object
-phy <- phyloseq::import_biom(rich_dense_biom,  parseFunction = parse_taxonomy_greengenes)
+phy <- phyloseq::import_biom(
+  rich_dense_biom,  
+  parseFunction = parse_taxonomy_greengenes
+)
 
 phy
 ```
 
-In this example, the `read_biom()` function is used to read data in "biome" format from a file, and then `import_biom()` is used to convert it to phyloseq format. You may need to adjust the parameters according to the specific details of your data.
+In this example, the `read_biom()` function is used to read data in "biome" 
+format from a file, and then `import_biom()` is used to convert it to phyloseq 
+format. You may need to adjust the parameters according to the specific details 
+of your data.
 
-Once the conversion is complete, it is important to inspect the phyloseq object to identify the variable of interest and the taxonomic level for initializing the recipe.
+Once the conversion is complete, it is important to inspect the phyloseq object 
+to identify the variable of interest and the taxonomic level for initializing 
+the recipe.
 
 ```{r}
 # Print sample_data
@@ -53,13 +75,20 @@ rec <- dar::recipe(phy, var_info = "BODY_SITE", tax_info = "Genus")
 rec
 ```
 
-In the provided code snippet, the sample_data() and tax_table() functions allow you to inspect the sample metadata and taxonomic information, respectively, within the phyloseq object. This inspection aids in selecting the appropriate variables for initializing the recipe.
+In the provided code snippet, the sample_data() and tax_table() functions allow 
+you to inspect the sample metadata and taxonomic information, respectively, 
+within the phyloseq object. This inspection aids in selecting the appropriate 
+variables for initializing the recipe.
 
-By following these steps, you will have successfully converted your data from "biome" format to phyloseq format and initialized the recipe for further differential abundance analysis.
+By following these steps, you will have successfully converted your data from 
+"biome" format to phyloseq format and initialized the recipe for further 
+differential abundance analysis.
 
 ## Converting Data in the Form of a "TreeSummarizedExperiment" to Phyloseq
 
-When dealing with data in the form of a "TreeSummarizedExperiment", the `makePhyloseqFromTreeSummarizedExperiment()` function from the "mia" package can be used for conversion. Here's an example of how to do it:
+When dealing with data in the form of a "TreeSummarizedExperiment", the 
+`makePhyloseqFromTreeSummarizedExperiment()` function from the "mia" package 
+can be used for conversion. Here's an example of how to do it:
 
 ```{r}
 library(mia)
@@ -78,20 +107,37 @@ phy
 
 # Counts relative abundances table
 tse <- mia::transformAssay(tse, method = "relabundance")
-phy2 <- mia::makePhyloseqFromTreeSummarizedExperiment(tse, assay.type = "relabundance")
+phy2 <- mia::makePhyloseqFromTreeSummarizedExperiment(
+  tse,
+  assay.type = "relabundance"
+)
 
 phy2
 ```
 
-In this example, we first load the necessary packages and obtain a "TreeSummarizedExperiment" object called tse. We then use the makePhyloseqFromTreeSummarizedExperiment() function to convert tse into a phyloseq object, which is stored in the variable phy. The resulting phyloseq object can be printed to inspect its structure and contents.
+In this example, we first load the necessary packages and obtain a 
+"TreeSummarizedExperiment" object called tse. We then use the 
+makePhyloseqFromTreeSummarizedExperiment() function to convert tse into a 
+phyloseq object, which is stored in the variable phy. The resulting phyloseq 
+object can be printed to inspect its structure and contents.
 
-Additionally, if there are other tables available within the "TreeSummarizedExperiment" object, such as relative abundances, you can choose them using the assay.type parameter. In the code snippet, we demonstrate how to create a phyloseq object with a relative abundance table by transforming the counts using the transformCounts() function before performing the conversion.
+Additionally, if there are other tables available within the 
+"TreeSummarizedExperiment" object, such as relative abundances, you can choose 
+them using the assay.type parameter. In the code snippet, we demonstrate how to 
+create a phyloseq object with a relative abundance table by transforming the 
+counts using the transformCounts() function before performing the conversion.
 
-By following these steps, you can successfully convert data in the form of a "TreeSummarizedExperiment" to phyloseq format, allowing you to leverage the rich functionalities of the phyloseq package for further analysis.
+By following these steps, you can successfully convert data in the form of a 
+"TreeSummarizedExperiment" to phyloseq format, allowing you to leverage the 
+rich functionalities of the phyloseq package for further analysis.
 
 ## Conclusions
 
-This vignette has presented the process of converting data in "biome" format or in the form of a "TreeSummarizedExperiment" to phyloseq format. By providing users with the ability to convert their data to the required format for differential abundance analysis, it promotes the integration of different data sources and facilitates comparative analysis of microbiomes.
+This vignette has presented the process of converting data in "biome" format or 
+in the form of a "TreeSummarizedExperiment" to phyloseq format. By providing 
+users with the ability to convert their data to the required format for 
+differential abundance analysis, it promotes the integration of different data 
+sources and facilitates comparative analysis of microbiomes.
 
 ## Session info
 

@@ -56,5 +56,6 @@ intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
 ## recipe the output is an error.
 data(test_rec)
-\dontrun{df <- intersection_plt(test_rec)}
+err <- testthat::expect_error(intersection_plt(test_rec))
+err
 }

@@ -49,7 +49,8 @@ da_results
 
 ## If you try to run prep on an object of class prep_recipe it returns an 
 ## error.
-\dontrun{prep(da_results)}
+err <- testthat::expect_error(prep(da_results))
+err
 
 ## You can force the overwrite with:
 prep(rec, force = TRUE)

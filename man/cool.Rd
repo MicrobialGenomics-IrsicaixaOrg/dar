@@ -33,14 +33,13 @@ rec <- bake(test_prep_rec)
 cool(rec)
 
 ## By default cool extracts the results of the first bake. If we have more
-## bakes we can extract the one that you want with the bake paramter.
+## bakes we can extract the one that you want with the bake parameter.
 rec <- bake(rec, count_cutoff = 1)
 cool(rec, 2)
 
-## bake and cool methods needs a prep-recipe. If you pass a a non-prep recipe 
+## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
 ## the output is an error.
 data(test_rec)
-\dontrun{
-bake(test_rec) \%>\% cool()
-}
+err <- testthat::expect_error(cool(test_rec))
+err
 }

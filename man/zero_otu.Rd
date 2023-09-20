@@ -25,3 +25,12 @@ character vector
 \description{
 Extract outs with all 0 values in at least on level of the variable
 }
+\examples{
+data(metaHIV_phy)
+
+## Init recipe
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+
+## Extract outs with all 0 values
+zero_otu(rec)
+}
