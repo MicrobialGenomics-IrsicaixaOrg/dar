@@ -1,18 +1,17 @@
 #' Tidy eval helpers
 #'
-#' @description
-#' This page lists the tidy eval tools reexported in this package from
-#' rlang. To learn about using tidy eval in scripts and packages at a
-#' high level, see the [dplyr programming
-#' vignette](https://dplyr.tidyverse.org/articles/programming.html)
-#' and the [ggplot2 in packages
+#' @description This page lists the tidy eval tools reexported in this package
+#' from rlang. To learn about using tidy eval in scripts and packages at a high
+#' level, see the [dplyr programming
+#' vignette](https://dplyr.tidyverse.org/articles/programming.html) and the
+#' [ggplot2 in packages
 #' vignette](https://ggplot2.tidyverse.org/articles/ggplot2-in-packages.html).
-#' The [Metaprogramming
-#' section](https://adv-r.hadley.nz/metaprogramming.html) of [Advanced
-#' R](https://adv-r.hadley.nz) may also be useful for a deeper dive.
+#' The [Metaprogramming section](https://adv-r.hadley.nz/metaprogramming.html)
+#' of [Advanced R](https://adv-r.hadley.nz) may also be useful for a deeper
+#' dive.
 #'
 #' * The tidy eval operators `{{`, `!!`, and `!!!` are syntactic
-#'   constructs which are specially interpreted by tidy eval functions.
+#' constructs which are specially interpreted by tidy eval functions.
 #'   You will mostly need `{{`, as `!!` and `!!!` are more advanced
 #'   operators which you should not have to use in simple cases.
 #'
@@ -105,47 +104,47 @@
 #' @aliases enquo enquos .data := as_name as_label .env
 #' @export .data := .env
 #' @return The function does not return a value explicitly.
-#' @examples 
+#' @examples
 #' # `enquo()` defuses the expression supplied by your user
 #' f <- function(arg) {
 #'   rlang::enquo(arg)
 #' }
-#' 
+#'
 #' f(1 + 1)
-#' 
+#'
 #' # `enquos()` works with arguments and dots. It returns a list of
 #' # expressions
 #' f <- function(...) {
 #'   rlang::enquos(...)
 #' }
-#' 
+#'
 #' f(1 + 1, 2 * 10)
-#' 
+#'
 #' # Let's create some symbols:
 #' foo <- quote(foo)
 #' bar <- rlang::sym("bar")
-#' 
+#'
 #' # as_name() converts symbols to strings:
 #' foo
-#' 
+#'
 #' rlang::as_name(foo)
-#' 
+#'
 #' typeof(bar)
-#' 
+#'
 #' typeof(rlang::as_name(bar))
-#' 
+#'
 #' # as_name() unwraps quosured symbols automatically:
 #' rlang::as_name(rlang::quo(foo))
-#' 
+#'
 #' # as_label() is useful with quoted expressions:
 #' rlang::as_label(rlang::expr(foo(bar)))
-#' 
+#'
 #' rlang::as_label(rlang::expr(foobar))
-#' 
+#'
 #' # It works with any R object. This is also useful for quoted
 #' # arguments because the user might unquote constant objects:
 #' rlang::as_label(1:3)
-#' 
+#'
 #' rlang::as_label(base::list)
 NULL
 

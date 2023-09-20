@@ -306,12 +306,14 @@ run_ancom <- function(rec,
         
           res$res %>%
             dplyr::select(taxa = taxon, dplyr::contains(!!var)) %>%
-            dplyr::right_join(tax_table(rec), ., by = "taxa") %>% 
-            stats::setNames(stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))) %>% 
+            dplyr::right_join(tax_table(rec), ., by = "taxa") %>%
+            stats::setNames(
+              stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
+            ) %>%
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
-              var = var, 
-              effect = lfc, 
+              var = var,
+              effect = lfc,
               signif = diff
             )
         })

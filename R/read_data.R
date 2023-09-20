@@ -336,12 +336,18 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
 #'
 #' @return phyloseq
 #' @keywords internal
-SummarizedExperiment2phyloseq <- function(dataset, assay_idx = 1, new_names = FALSE) {
+SummarizedExperiment2phyloseq <- function(dataset, 
+                                          assay_idx = 1, 
+                                          new_names = FALSE) {
+  
   counts_df <-
     SummarizedExperiment::assay(dataset, i = assay_idx) %>%
     tibble::as_tibble(rownames = "otu_id")
   
-  if (new_names) { counts_df <- dplyr::mutate(counts_df, otu_id = paste0("Otu_", 1:nrow(counts_df))) }
+  if (new_names) { 
+    counts_df <- 
+      dplyr::mutate(counts_df, otu_id = paste0("Otu_", seq_len(nrow(counts_df)))) 
+  }
   
   validate_otu(counts_df)
   

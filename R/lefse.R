@@ -207,7 +207,8 @@ run_lefse <-
             trim.names = trim.names
           )
           
-          adjpval <- ifelse(is.null(blockCol), kruskal.threshold, wilcox.threshold)
+          adjpval <-
+            ifelse(is.null(blockCol), kruskal.threshold, wilcox.threshold)
           
           lefse_res %>%
             tibble::as_tibble() %>%

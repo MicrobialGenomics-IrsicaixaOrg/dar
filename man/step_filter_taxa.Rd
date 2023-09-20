@@ -39,7 +39,8 @@ rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 
 ## Define filter taxa step with default parameters
-rec <-  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+rec <- 
+  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
 rec
 }
 \seealso{

@@ -260,16 +260,35 @@ run_corncob <- function(rec,
           if (!is(corncob_res, "differentialTest")) {
             if (stringr::str_detect(corncob_res, "failed to converge")) {
               rlang::abort(c(
-                glue::glue("{crayon::bgMagenta('corncob')}: All models failed to converge!"),
-                glue::glue("{crayon::bgMagenta('corncob')}: If you are seeing this, it is likely that your model is overspecified. This occurs when your sample size is not large enough to estimate all the parameters of your model. This is most commonly due to categorical variables that include many categories."),
-                glue::glue("Please remove or edit the {crayon::bgMagenta('step_corncob()')} and rerun.")
+                glue::glue(
+                  "{crayon::bgMagenta('corncob')}: All models failed to converge!"
+                ),
+                glue::glue(
+                  "{crayon::bgMagenta('corncob')}: If you are seeing this, it ", 
+                  "is likely that your model is overspecified. This occurs ", 
+                  "when your sample size is not large enough to estimate all ", 
+                  "the parameters of your model. This is most commonly due to ", 
+                  "categorical variables that include many categories."
+                ),
+                glue::glue(
+                  "Please remove or edit the ", 
+                  "{crayon::bgMagenta('step_corncob()')} and rerun."
+                )
               ))
             } else {
-              rlang::abort(c(
-                glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
-                glue::glue("Please remove or edit the {crayon::bgMagenta('step_corncob()')} and rerun."),
-                "Please report this bug on GitHub: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues"
-              ))
+              rlang::abort(
+                c(
+                  glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
+                  glue::glue(
+                    "Please remove or edit the ", 
+                    "{crayon::bgMagenta('step_corncob()')} and rerun."
+                  ),
+                  glue::glue(
+                    "Please report this bug on GitHub: ", 
+                    "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues" 
+                  )
+                )
+              )
             }
           }
          

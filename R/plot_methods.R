@@ -29,7 +29,10 @@
 #' \dontrun{df <- corr_heatmap(test_rec)}
 methods::setGeneric(
   name = "corr_heatmap",
-  def = function(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all") {
+  def = function(rec,
+                 steps = steps_ids(rec, "da"),
+                 font_size = 15,
+                 type = "all") {
     standardGeneric("corr_heatmap")
   }
 )
@@ -80,7 +83,9 @@ methods::setMethod(
         dist_method = "canberra", 
         fontsize_col = font_size,
         fontsize_row = font_size,
-        heatmap_layers = theme(axis.text = element_text(colour = "black", family = 'Arial')),
+        heatmap_layers = theme(axis.text = element_text(
+          colour = "black", family = 'Arial')
+        ), 
         hclust_method = "complete"
       ) 
     plt
@@ -329,8 +334,12 @@ methods::setMethod(
   f = "abundance_plt",
   signature = "prep_recipe",
   definition = function(rec, taxa_ids, type, transform, scale, top_n) {
-    if (type == "boxplot") { plt <- .abundance_boxplot(rec, taxa_ids, transform, scale, top_n) }
-    if (type == "heatmap") { plt <- .abundance_heatmap(rec, taxa_ids, transform, scale, top_n) }
+    if (type == "boxplot") { 
+      plt <- .abundance_boxplot(rec, taxa_ids, transform, scale, top_n) 
+    }
+    if (type == "heatmap") { 
+      plt <- .abundance_heatmap(rec, taxa_ids, transform, scale, top_n) 
+    }
     if (!type %in% c("boxplot", "heatmap")) {
       rlang::abort("type must be boxplot or heatmap")
     }
@@ -358,10 +367,15 @@ methods::setMethod(
       unique()
     
     if (length(taxa_ids) > top_n) {
-      rlang::inform(
-        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = glue::glue(
+          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+        ),
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ", 
+          "methods will be used"
+        )
+      ))
      
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -369,14 +383,17 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
     }
     
     if (length(taxa_ids) == 0) {
-      rlang::inform(
-        c("!" = "0 taxa are present in all tested methods",
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = "0 taxa are present in all tested methods",
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ",  
+          "methods will be used"
+        )
+      ))
       
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -384,14 +401,17 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
     }
   }
   
   t_rec <- rec
   if (!is.null(transform)) {
-    t_rec@phyloseq <-
-      microbiome::transform(t_rec@phyloseq, transform = transform, scale = scale)
+    t_rec@phyloseq <- microbiome::transform(
+      t_rec@phyloseq, 
+      transform = transform, 
+      scale = scale
+    )
   } else {
     transform <- "raw counts"
   }
@@ -419,10 +439,15 @@ methods::setMethod(
       unique()
     
     if (length(taxa_ids) > top_n) {
-      rlang::inform(
-        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = glue::glue(
+          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+        ),
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ", 
+          "methods will be used"
+        )
+      ))
       
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -430,14 +455,17 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
     }
     
     if (length(taxa_ids) == 0) {
-      rlang::inform(
-        c("!" = "0 taxa are present in all tested methods",
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = "0 taxa are present in all tested methods",
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ", 
+          "methods will be used"
+        )
+      ))
       
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -445,7 +473,7 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
     }
   }
   
@@ -520,21 +548,21 @@ methods::setMethod(
 #'
 #' ## Running the function returns a tile plot,
 #' mutual_plt(test_prep_rec)
-#' 
+#'
 #' ## The count_cutoff indicates the minimum number of methods in which an OTU
-#' ## must be present. By default the value is equal to 
+#' ## must be present. By default the value is equal to
 #' ## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
 #' mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, "da")))
-#' 
+#'
 #' ## A single comparisons can be plotted through the comparison parameter.
 #' mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
-#' 
+#'
 #' ## If you want to exclude a method for the plot, you can remove it with the
 #' ## step parameter. In the following example we eliminate from the graph the
 #' ## results of maaslin.
 #' mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#' 
-#' ## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe 
+#'
+#' ## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe
 #' ## the output is an error.
 #' data(test_rec)
 #' \dontrun{df <- mutual_plt(test_rec)}
@@ -584,10 +612,15 @@ methods::setMethod(
       dplyr::filter(method_count >= count_cutoff & method %in% steps)
     
     if (nrow(df) > top_n) {
-      rlang::inform(
-        c("!" = glue::glue("Taxa present in all methods are greater than the cutoff top_n = {top_n}"),
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = glue::glue(
+          "Taxa present in all methods are greater than the cutoff top_n = {top_n}"
+        ),
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ", 
+          "methods will be used"
+        )
+      ))
       
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -596,16 +629,19 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
       
       df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
     }
     
     if (nrow(df) == 0) {
-      rlang::inform(
-        c("!" = glue::glue("0 taxa are present with count_cutoff = {count_cutoff}"),
-          "i" = glue::glue("The top {top_n} significant taxa with the greatest overlap between methods will be used"))
-      )
+      rlang::inform(c(
+        "!" = glue::glue("0 taxa are present with count_cutoff = {count_cutoff}"),
+        "i" = glue::glue(
+          "The top {top_n} significant taxa with the greatest overlap between ", 
+          "methods will be used"
+        )
+      ))
       
       taxa_ids <- 
         .all_significant(rec) %>% 
@@ -614,7 +650,7 @@ methods::setMethod(
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
         dplyr::pull(taxa_id) %>% 
-        .[1:top_n]
+        .[seq_len(top_n)]
       
       df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
     }
@@ -624,8 +660,12 @@ methods::setMethod(
     }
     
     df %>% 
-      dplyr::left_join(.all_stats(rec), by = c("taxa_id", "comparison", "method")) %>% 
-      dplyr::mutate(method = stringr::str_remove_all(method, "[:alpha:]_[:alpha:].*")) %>% 
+      dplyr::left_join(
+        .all_stats(rec), by = c("taxa_id", "comparison", "method")
+      ) %>% 
+      dplyr::mutate(
+        method = stringr::str_remove_all(method, "[:alpha:]_[:alpha:].*")
+      ) %>% 
       tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
       dplyr::group_by(method) %>% 
       dplyr::mutate(zscore = scales::rescale(effect_v)) %>% 
@@ -664,7 +704,10 @@ methods::setMethod(
       rec@results %>% 
         purrr::pluck(.x, 1) %>% 
         dplyr::filter(signif == TRUE) %>% 
-        dplyr::mutate(effect = dplyr::if_else(effect > 0, "up", "down"), method = .x) %>% 
+        dplyr::mutate(
+          effect = dplyr::if_else(effect > 0, "up", "down"), 
+          method = .x
+        ) %>% 
         dplyr::select(taxa_id, taxa, comparison, effect, method)
     }) 
 }
@@ -694,4 +737,3 @@ methods::setMethod(
         dplyr::mutate(method = .x)
     })
 }
-

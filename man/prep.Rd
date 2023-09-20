@@ -47,7 +47,8 @@ n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
 da_results
 
-## If you try to run prep on an object of class prep_recipe it returns an error.
+## If you try to run prep on an object of class prep_recipe it returns an 
+## error.
 \dontrun{prep(da_results)}
 
 ## You can force the overwrite with:

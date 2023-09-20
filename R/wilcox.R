@@ -9,19 +9,30 @@
 #'   operations for this recipe.
 #' @param norm_method Transformation to apply. The options include:
 #'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
-#'   'hellinger', 'identity', 'clr', 'alr', or any method from the
-#' Wilcox analysis
+#'   'hellinger', 'identity', 'clr', 'alr', or any method from the Wilcox
+#'   analysis
 #'
 #'
-#' Performs a Wilcoxon test to determine features (be it Operational Taxonomic
-#' Unit (OTU), species, etc.) that are differentially abundant between two or more groups of multiple samples.
+#'   Performs a Wilcoxon test to determine features (be it Operational Taxonomic
+#'   Unit (OTU), species, etc.) that are differentially abundant between two or
+#'   more groups of multiple samples.
 #'
 #' @param rec A recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
-#' @param norm_method Transformation to apply. The options include: 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr', or any method from the vegan::decostand function.
-#' @param p_adj_method Character. Specifying the method to adjust p-values for multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).
-#' @param max_significance The q-value threshold for significance. 
-#' @param rarefy Boolean indicating if OTU counts must be rarefied. This rarefaction uses the standard R sample function to resample from the abundance values in the otu_table component of the first argument, physeq. Often one of the major goals of this procedure is to achieve parity in total number of counts between samples, as an alternative to other formal normalization procedures, which is why a single value for the sample.size is expected.
+#' @param norm_method Transformation to apply. The options include:
+#'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+#'   'hellinger', 'identity', 'clr', 'alr', or any method from the
+#'   vegan::decostand function.
+#' @param p_adj_method Character. Specifying the method to adjust p-values for
+#'   multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).
+#' @param max_significance The q-value threshold for significance.
+#' @param rarefy Boolean indicating if OTU counts must be rarefied. This
+#'   rarefaction uses the standard R sample function to resample from the
+#'   abundance values in the otu_table component of the first argument, physeq.
+#'   Often one of the major goals of this procedure is to achieve parity in
+#'   total number of counts between samples, as an alternative to other formal
+#'   normalization procedures, which is why a single value for the sample.size
+#'   is expected.
 #' @param id A character string that is unique to this step to identify it.
 #'   vegan::decostand function.
 #' @param p_adj_method Character. Specifying the method to adjust p-values for
@@ -41,29 +52,29 @@
 #' @aliases step_wilcox
 #' @return An object of class `recipe`
 #' @export
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init recipe
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
-#' 
+#'
 #' rec
-#' 
+#'
 #' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_wilcox(rec) %>% 
+#' rec <-
+#'   step_wilcox(rec) %>%
 #'   prep(parallel = TRUE)
-#'   
+#'
 #' rec
-#' 
-#' ## Wearing rarefaction only for this step 
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'
+#' ## Wearing rarefaction only for this step
+#' rec <-
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
 #'   step_wilcox(rec, rarefy = TRUE)
-#' 
+#'
 #' rec
 methods::setGeneric(
   name = "step_wilcox",

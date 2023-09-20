@@ -115,11 +115,18 @@ recipe <-
   expected <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
   
   if (!all(colnames(phyloseq@tax_table) %in% expected)) {
-    rlang::abort(c(
-      glue::glue("'rank' must be a value from {crayon::bgMagenta('taxonomyRanks()')}."),
-      "Rename the columns from the tax_table slot of your input phyloseq with standard names.", 
-      glue::glue("Standard names: {stringr::str_c(expected, collapse = ', ')}.")
-    ))
+    rlang::abort(
+      c(
+        glue::glue(
+          "'rank' must be a value from {crayon::bgMagenta('taxonomyRanks()')}."
+        ),
+        glue::glue(
+          "Rename the columns from the tax_table slot of your input phyloseq ",
+          "with standard names.",
+        ),
+        glue::glue("Standard names: {stringr::str_c(expected, collapse = ', ')}.")
+      )
+    )
   }
   
   methods::new(
@@ -651,7 +658,7 @@ methods::setMethod(
             .x %>%
             purrr::map2_chr(names(.), ~ {
               if (is.null(.x)) {
-                .x = "NULL"
+                .x <- "NULL"
               }
               glue::glue("{.y}: {.x}")
             }) %>% stringr::str_c(collapse = ", ")
@@ -669,7 +676,7 @@ methods::setMethod(
 )
 
 
-# METHODS PREP_RECIPE -----------------------------------------------------------------------
+# METHODS PREP_RECIPE ----------------------------------------------------------
 
 #' @noRd
 #' @keywords internal
@@ -739,7 +746,8 @@ methods::setMethod(
 #' da_results <- bake(da_results, count_cutoff = n_methods)
 #' da_results
 #'
-#' ## If you try to run prep on an object of class prep_recipe it returns an error.
+#' ## If you try to run prep on an object of class prep_recipe it returns an 
+#' ## error.
 #' \dontrun{prep(da_results)}
 #'
 #' ## You can force the overwrite with:
@@ -979,7 +987,10 @@ methods::setMethod(
     if (type == "da") {
       df <- 
         dplyr::rowwise(df) %>% 
-        dplyr::mutate(sum = sum(dplyr::across(dplyr::all_of(steps))), .before = 1) %>% 
+        dplyr::mutate(
+          sum = sum(dplyr::across(dplyr::all_of(steps))),
+          .before = 1
+        ) %>% 
         dplyr::filter(sum != 0) %>% 
         dplyr::select(dplyr::all_of(steps))
     }

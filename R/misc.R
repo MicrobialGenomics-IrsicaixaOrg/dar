@@ -289,46 +289,34 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
   id_idx <-  which(stringr::str_detect(lines, "id"))
   for (i in seq_along(id_idx)) {
     low_idx <- 1
-    if (i != 1) {
-      low_idx <- id_idx[i - 1] + 1
-    }
-
+    if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
     if (stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
-
-    fun_name <-
-      lines[id_idx[i]] %>%
+    fun_name <- lines[id_idx[i]] %>%
       stringr::str_remove_all(".*: |,|\\\"") %>%
       stringr::str_remove_all("__.*")
 
     lines[low_idx:id_idx[i]] %>%
       purrr::map_chr(function(.x) {
-        params <-
-          .x %>%
+        params <- .x %>%
           stringr::str_squish() %>%
           stringr::str_split(pattern = ": ") %>%
           unlist()
 
-        param <-
-          params[[1]] %>%
+        param <- params[[1]] %>%
           stringr::str_remove_all("\\\"")
 
-        value <-
-          params[[2]] %>%
+        value <- params[[2]] %>%
           stringr::str_squish() %>%
           stringr::str_remove_all(",$")
 
         if (stringr::str_detect(value, "%in%")) {
-          value <-
-            stringr::str_remove_all(value, "\\\"") %>%
+          value <- stringr::str_remove_all(value, "\\\"") %>%
             stringr::str_replace_all("\\\\", "\\\"")
 
           value <- encodeString(value, quote = "'")
         }
 
-        if (stringr::str_count(value) == 0) {
-          value = expression(NULL)
-        }
-
+        if (stringr::str_count(value) == 0) { value <- expression(NULL) }
         stringr::str_c(param, " = ", paste0(value, sep = ""))
 
       }) %>% stringr::str_c(collapse = ", ") %>%
@@ -344,51 +332,37 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
     ))
 
     rec <- prep(rec, parallel = parallel, workers = workers)
-
     for (i in seq_along(id_idx)) {
       low_idx <- 1
-      if (i != 1) {
-        low_idx <- id_idx[i - 1] + 1
-      }
-
+      if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
       if (!stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
-
-      fun_name <-
-        lines[id_idx[i]] %>%
+      fun_name <- lines[id_idx[i]] %>%
         stringr::str_remove_all(".*: |,|\\\"") %>%
         stringr::str_remove_all("__.*")
 
       lines[low_idx:id_idx[i]] %>%
         purrr::map_chr(function(.x) {
-          params <-
-            .x %>%
+          params <- .x %>%
             stringr::str_squish() %>%
             stringr::str_split(pattern = ": ") %>%
             unlist()
 
-          param <-
-            params[[1]] %>%
+          param <- params[[1]] %>%
             stringr::str_remove_all("\\\"")
 
-          value <-
-            params[[2]] %>%
+          value <- params[[2]] %>%
             stringr::str_squish() %>%
             stringr::str_remove_all(",$")
 
           if (stringr::str_detect(value, "%in%")) {
-            value <-
-              stringr::str_remove_all(value, "\\\"") %>%
+            value <- stringr::str_remove_all(value, "\\\"") %>%
               stringr::str_replace_all("\\\\", "\\\"")
 
             value <- encodeString(value, quote = "'")
           }
 
-          if (stringr::str_count(value) == 0) {
-            value = expression(NULL)
-          }
-
+          if (stringr::str_count(value) == 0) { value <- expression(NULL) }
           stringr::str_c(param, " = ", paste0(value, sep = ""))
-
         }) %>% stringr::str_c(collapse = ", ") %>%
         stringr::str_c("rec <<- ", fun_name, "(rec, ", ., ")") %>%
         parse(text = .) %>%

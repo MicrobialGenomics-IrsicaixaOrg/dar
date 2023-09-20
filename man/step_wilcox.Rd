@@ -37,7 +37,10 @@ step_wilcox(
 \item{rec}{A recipe object. The step will be added to the sequence of
 operations for this recipe.}
 
-\item{norm_method}{Transformation to apply. The options include: 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p', 'hellinger', 'identity', 'clr', 'alr', or any method from the vegan::decostand function.}
+\item{norm_method}{Transformation to apply. The options include:
+'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
+'hellinger', 'identity', 'clr', 'alr', or any method from the
+vegan::decostand function.}
 
 \item{max_significance}{The q-value threshold for significance.}
 
@@ -66,23 +69,23 @@ more groups of multiple samples.
 data(metaHIV_phy)
 
 ## Init recipe
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+rec <-
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\%
   step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
 rec
 
 ## Define step with default parameters and prep
-rec <- 
-  step_wilcox(rec) \%>\% 
+rec <-
+  step_wilcox(rec) \%>\%
   prep(parallel = TRUE)
-  
+
 rec
 
-## Wearing rarefaction only for this step 
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+## Wearing rarefaction only for this step
+rec <-
+  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\%
   step_wilcox(rec, rarefy = TRUE)
 
 rec
