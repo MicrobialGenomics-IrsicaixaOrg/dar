@@ -377,8 +377,8 @@ methods::setMethod(
           "{top_n}"
         ),
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ", 
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap between", 
+          " methods will be used"
         )
       ))
      
@@ -395,8 +395,8 @@ methods::setMethod(
       rlang::inform(c(
         "!" = "0 taxa are present in all tested methods",
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ",  
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap ", 
+          "between methods will be used"
         )
       ))
       
@@ -434,7 +434,10 @@ methods::setMethod(
 #' @noRd
 #' @keywords internal
 .abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n) {
-  ComplexHeatmap::ht_opt(message = FALSE, COLUMN_ANNO_PADDING = unit(0.5, "cm"))
+  ComplexHeatmap::ht_opt(
+    message = FALSE, 
+    COLUMN_ANNO_PADDING = unit(0.5, "cm")
+  )
   
   if (is.null(taxa_ids)) {
     taxa_ids <- 
@@ -450,8 +453,8 @@ methods::setMethod(
           "{top_n}"
         ),
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ", 
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap between", 
+          " methods will be used"
         )
       ))
       
@@ -468,8 +471,8 @@ methods::setMethod(
       rlang::inform(c(
         "!" = "0 taxa are present in all tested methods",
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ", 
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap between", 
+          " methods will be used"
         )
       ))
       
@@ -630,8 +633,8 @@ methods::setMethod(
           "{top_n}"
         ),
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ", 
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap between", 
+          " methods will be used"
         )
       ))
       
@@ -653,8 +656,8 @@ methods::setMethod(
           "0 taxa are present with count_cutoff = {count_cutoff}"
         ),
         "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between ", 
-          "methods will be used"
+          "The top {top_n} significant taxa with the greatest overlap between", 
+          " methods will be used"
         )
       ))
       

@@ -265,11 +265,11 @@ run_corncob <- function(rec,
                   "converge!"
                 ),
                 glue::glue(
-                  "{crayon::bgMagenta('corncob')}: If you are seeing this, it ", 
-                  "is likely that your model is overspecified. This occurs ", 
+                  "{crayon::bgMagenta('corncob')}: If you are seeing this, it",
+                  " is likely that your model is overspecified. This occurs ", 
                   "when your sample size is not large enough to estimate all ", 
-                  "the parameters of your model. This is most commonly due to ", 
-                  "categorical variables that include many categories."
+                  "the parameters of your model. This is most commonly due to", 
+                  " categorical variables that include many categories."
                 ),
                 glue::glue(
                   "Please remove or edit the ", 

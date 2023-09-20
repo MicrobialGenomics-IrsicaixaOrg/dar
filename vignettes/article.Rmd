@@ -27,15 +27,15 @@ options(digits = 3)
 ```
 
 To illustrate the functionality of the 'dar' package, this study will use the 
-data set from (Noguera-Julian, M., et al. 2016). The authors of this study found 
-that men who have sex with men (MSM) predominantly belonged to the 
+data set from (Noguera-Julian, M., et al. 2016). The authors of this study 
+found that men who have sex with men (MSM) predominantly belonged to the 
 Prevotella-rich enterotype whereas most non-MSM subjects were enriched in 
-Bacteroides, independently of HIV-1 status. This result highlights the potential 
-impact of sexual orientation on the gut microbiome and emphasizes the importance 
-of controlling for such variables in microbiome research. Using the 'dar' 
-package, we will conduct a differential abundance analysis to further explore 
-this finding and uncover potential microbial biomarkers associated with this 
-specific population.
+Bacteroides, independently of HIV-1 status. This result highlights the 
+potential impact of sexual orientation on the gut microbiome and emphasizes the 
+importance of controlling for such variables in microbiome research. Using the 
+'dar' package, we will conduct a differential abundance analysis to further 
+explore this finding and uncover potential microbial biomarkers associated with 
+this specific population.
 
 ## Load dar package and data
 
@@ -56,10 +56,10 @@ abundance analysis. The initialization of the recipe object is done through the
 function recipe(), which takes as inputs a phyloseq object, the name of the
 categorical variable of interest and the taxonomic level at which the 
 differential abundance analyses are to be performed. As previously mentioned, 
-we will use the data set from (Noguera-Julian, M., et al. 2016) and the variable 
-of interest "RiskGroup2" containing the categories: men who have sex with men 
-(msm), non-MSM (hts) and people who inject drugs (pwid) and we will perform the 
-analysis at the species level.
+we will use the data set from (Noguera-Julian, M., et al. 2016) and the 
+variable of interest "RiskGroup2" containing the categories: men who have sex 
+with men (msm), non-MSM (hts) and people who inject drugs (pwid) and we will 
+perform the analysis at the species level.
 
 ```{r}
 ## Recipe initialization
@@ -215,16 +215,19 @@ corr_heat
 ```
 
 Finally, 'dar' also includes the function mutual_plt(), which plots the number 
-of differential abundant features mutually found by a defined number of methods, 
-colored by the differential abundance direction and separated by comparison. 
-The resulting graph allows us to see that the features detected correspond 
-mainly to the comparisons between hts vs msm and msm vs pwid. Additionally, the 
-graph also allows us to observe the direction of the effect; whether a specific 
-OTU is enriched or depleted for each comparison.
+of differential abundant features mutually found by a defined number of 
+methods, colored by the differential abundance direction and separated by 
+comparison. The resulting graph allows us to see that the features detected 
+correspond mainly to the comparisons between hts vs msm and msm vs pwid. 
+Additionally, the graph also allows us to observe the direction of the effect; 
+whether a specific OTU is enriched or depleted for each comparison.
 
 ```{r, fig.height=6}
 ## Mutual plot
-mutual_plt(da_results, count_cutoff = length(steps_ids(da_results, type = "da")))
+mutual_plt(
+  da_results, 
+  count_cutoff = length(steps_ids(da_results, type = "da"))
+)
 ```
 
 ## Define a consesus strategy using bake

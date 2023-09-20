@@ -82,8 +82,9 @@ In this example, an empty recipe is initialized, and then the steps are
 imported from a JSON file using the `import_steps` function. The imported steps 
 are added to the existing recipe.
 
-Once the recipe is imported, we can choose to add more steps or execute the code 
-using the `prep` function. In this case, we choose to execute `prep` directly.
+Once the recipe is imported, we can choose to add more steps or execute the 
+code using the `prep` function. In this case, we choose to execute `prep` 
+directly.
 
 ```{r}
 ## Execute

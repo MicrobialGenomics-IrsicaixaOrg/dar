@@ -90,10 +90,10 @@ run_filter_taxa <- function(rec, .f) {
   if (val > 0 & rm_zeros == 0 & is_metagenomeseq) {
     rlang::abort(c(
       "!" = glue::glue(
-        "{crayon::bgMagenta('step_filter_taxa()')} returns a phyloseq object ", 
-        "that contains taxa with values of 0 in all samples of a level within ",
-        "the variable of interest. This can cause errors during the execution ", 
-        "of metagenomeseq method!"
+        "{crayon::bgMagenta('step_filter_taxa()')} returns a phyloseq ", 
+        "object that contains taxa with values of 0 in all samples of a ", 
+        "level within the variable of interest. This can cause errors during ",
+        "the execution of metagenomeseq method!"
       ),
       "*" = "Please create a new recipe using a stricter filter expression.", 
       "*" = glue::glue(

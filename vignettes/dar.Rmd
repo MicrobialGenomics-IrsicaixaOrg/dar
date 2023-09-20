@@ -124,7 +124,9 @@ full list:
 
 ```{r da_steps_list}
 grep("^step_", ls("package:dar"), value = TRUE) %>% 
-  grep("_new|_to_expr|filter|subset|rarefaction", ., value = TRUE, invert = TRUE)
+  grep(
+    "_new|_to_expr|filter|subset|rarefaction", ., value = TRUE, invert = TRUE
+  )
 ```
 
 ## Prep 

@@ -3,8 +3,8 @@
 #' phy_qc() returns a tibble. It will have information about some important
 #' metrics about the sparsity of the count matrix. The content of the table is
 #' as follows:
-#' * var_levels: levels of the categorical variable of interest. "all" refers to 
-#' all rows of the dataset (without splitting by categorical levels).
+#' * var_levels: levels of the categorical variable of interest. "all" refers 
+#' to all rows of the dataset (without splitting by categorical levels).
 #' * n: total number of values in the count matrix.
 #' * n_zero: number of zeros in the count matrix.
 #' * pct_zero: percentage of zeros in the count matrix.
