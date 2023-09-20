@@ -53,7 +53,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/article.html">Workflow with real data</a>
     <a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
-    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility with dar</a>
+    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a>
   </div>
 </li>
 <li class="nav-item">
@@ -92,6 +92,10 @@
 
     
     
+<style>
+body {
+text-align: justify}
+</style>
 <p>The “dar” package’s recipe class relies on a phyloseq object as its
 input, which might pose a challenge for users who have their data stored
 in formats other than phyloseq. To address this issue, this vignette
@@ -115,7 +119,10 @@ example of how to perform this conversion:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>,  package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Import biom as a phyloseq-class object</span></span>
-<span><span class="va">phy</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">import_biom</a></span><span class="op">(</span><span class="va">rich_dense_biom</span>,  parseFunction <span class="op">=</span> <span class="va">parse_taxonomy_greengenes</span><span class="op">)</span></span>
+<span><span class="va">phy</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">import_biom</a></span><span class="op">(</span></span>
+<span>  <span class="va">rich_dense_biom</span>,  </span>
+<span>  parseFunction <span class="op">=</span> <span class="va">parse_taxonomy_greengenes</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">phy</span></span>
 <span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>
@@ -206,7 +213,10 @@ how to do it:</p>
 <span></span>
 <span><span class="co"># Counts relative abundances table</span></span>
 <span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mia/man/transformAssay.html" class="external-link">transformAssay</a></span><span class="op">(</span><span class="va">tse</span>, method <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
-<span><span class="va">phy2</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mia/man/makePhyloseqFromTreeSE.html" class="external-link">makePhyloseqFromTreeSummarizedExperiment</a></span><span class="op">(</span><span class="va">tse</span>, assay.type <span class="op">=</span> <span class="st">"relabundance"</span><span class="op">)</span></span>
+<span><span class="va">phy2</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mia/man/makePhyloseqFromTreeSE.html" class="external-link">makePhyloseqFromTreeSummarizedExperiment</a></span><span class="op">(</span></span>
+<span>  <span class="va">tse</span>,</span>
+<span>  assay.type <span class="op">=</span> <span class="st">"relabundance"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">phy2</span></span>
 <span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>

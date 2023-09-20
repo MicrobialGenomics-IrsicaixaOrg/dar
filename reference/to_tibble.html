@@ -29,7 +29,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/article.html">Workflow with real data</a>
     <a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
-    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility with dar</a>
+    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a>
   </div>
 </li>
 <li class="nav-item">
@@ -85,9 +85,32 @@ functions.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="fu">to_tibble</span><span class="op">(</span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">otu_table</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">otu_table</span> <span class="op">&lt;-</span> </span></span>
+<span class="r-in"><span>  <span class="fu"><a href="get_phy.html">get_phy</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> </span></span>
+<span class="r-in"><span>  <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/otu_table-methods.html" class="external-link">otu_table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">dar</span><span class="fu">:::</span><span class="fu">to_tibble</span><span class="op">(</span><span class="va">otu_table</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 451 × 157</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    otu_id Sample_186 Sample_185 Sample_184 Sample_182 Sample_181 Sample_170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_1        <span style="text-decoration: underline;">2</span>538          0       <span style="text-decoration: underline;">9</span>026      <span style="text-decoration: underline;">12</span>049      <span style="text-decoration: underline;">22</span>126      <span style="text-decoration: underline;">15</span>374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_2           0          0          0        609       <span style="text-decoration: underline;">2</span>543        988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_3           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_4           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_5           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_6           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_7           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_8           0          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_9           0          0          0          0          0        351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_10          0          0      <span style="text-decoration: underline;">10</span>575      <span style="text-decoration: underline;">10</span>764        504          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 441 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 150 more variables: Sample_169 &lt;dbl&gt;, Sample_168 &lt;dbl&gt;, Sample_167 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sample_166 &lt;dbl&gt;, Sample_165 &lt;dbl&gt;, Sample_164 &lt;dbl&gt;, Sample_163 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sample_162 &lt;dbl&gt;, Sample_160 &lt;dbl&gt;, Sample_159 &lt;dbl&gt;, Sample_158 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sample_157 &lt;dbl&gt;, Sample_156 &lt;dbl&gt;, Sample_155 &lt;dbl&gt;, Sample_153 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sample_152 &lt;dbl&gt;, Sample_151 &lt;dbl&gt;, Sample_150 &lt;dbl&gt;, Sample_149 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sample_148 &lt;dbl&gt;, Sample_147 &lt;dbl&gt;, Sample_146 &lt;dbl&gt;, Sample_145 &lt;dbl&gt;, …</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

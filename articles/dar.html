@@ -5,7 +5,8 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="Start here if this is your first time usinc dar! You will learn about basic usage, steps, exploration and bakes.  
+<meta name="description" content="Start here if this is your first time usinc dar! You will learn about basic 
+usage, steps, exploration and bakes.  
 ">
 <title>Introduction to dar • dar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -19,7 +20,8 @@
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to dar">
-<meta property="og:description" content="Start here if this is your first time usinc dar! You will learn about basic usage, steps, exploration and bakes.  
+<meta property="og:description" content="Start here if this is your first time usinc dar! You will learn about basic 
+usage, steps, exploration and bakes.  
 ">
 <meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -55,7 +57,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/article.html">Workflow with real data</a>
     <a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
-    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility with dar</a>
+    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a>
   </div>
 </li>
 <li class="nav-item">
@@ -94,6 +96,10 @@
 
     
     
+<style>
+body {
+text-align: justify}
+</style>
 <div class="section level2">
 <h2 id="an-example">An Example<a class="anchor" aria-label="anchor" href="#an-example"></a>
 </h2>
@@ -179,8 +185,8 @@ least 3% of the samples have counts greater than 0.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Welsh_cake</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Makroudh</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Linzer_torte</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Tortell</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span></code></pre></div>
 </div>
@@ -208,19 +214,21 @@ default parameters (those defined by the authors of each method).</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Welsh_cake</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Makroudh</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Linzer_torte</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Tortell</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Kalács</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Pastizz</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Marry_girl_cake</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Papanași</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Belekoy</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Gözleme</span></span></span></code></pre></div>
 <p>The ‘dar’ package includes more da steps than those defined above.
 Below is the full list:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^step_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="st">"package:dar"</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"_new|_to_expr|filter|subset|rarefaction"</span>, <span class="va">.</span>, value <span class="op">=</span> <span class="cn">TRUE</span>, invert <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span></span>
+<span>    <span class="st">"_new|_to_expr|filter|subset|rarefaction"</span>, <span class="va">.</span>, value <span class="op">=</span> <span class="cn">TRUE</span>, invert <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "step_aldex"         "step_ancom"         "step_corncob"      </span></span>
 <span><span class="co">#&gt; [4] "step_deseq"         "step_lefse"         "step_maaslin"      </span></span>
 <span><span class="co">#&gt; [7] "step_metagenomeseq" "step_wilcox"</span></span></code></pre></div>
@@ -243,9 +251,9 @@ time using the <code>prep</code> function.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Kalács <span style="color: #555555;">diff_taxa = 53</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Pastizz <span style="color: #555555;">diff_taxa = 69</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Marry_girl_cake <span style="color: #555555;">diff_taxa = 86</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Papanași <span style="color: #555555;">diff_taxa = 53</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Belekoy <span style="color: #555555;">diff_taxa = 69</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Gözleme <span style="color: #555555;">diff_taxa = 86</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 46 taxa are present in all tested methods</span></span></code></pre></div>
 <p>Note that the resulting object print shows information about the

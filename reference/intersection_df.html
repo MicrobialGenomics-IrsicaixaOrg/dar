@@ -29,7 +29,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/article.html">Workflow with real data</a>
     <a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
-    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility with dar</a>
+    <a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a>
   </div>
 </li>
 <li class="nav-item">
@@ -109,7 +109,52 @@
 <span class="r-in"><span><span class="co">## intersection_df function needs a prep-recipe. If you pass a a non-prep</span></span></span>
 <span class="r-in"><span><span class="co">## recipe the output is an error.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">intersection_df</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">err</span> <span class="op">&lt;-</span> <span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/expect_error.html" class="external-link">expect_error</a></span><span class="op">(</span><span class="fu">intersection_df</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">err</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">&lt;error/rlang_error&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in </span><span style="color: #5555FF; font-weight: bold;">`intersection_df()`</span><span style="font-weight: bold;">:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This function needs a prep recipe!</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Run <span style="background-color: #BB00BB;">prep(rec)</span> and then retry last command.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">     </span>▆</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  1. </span>└─<span style="font-weight: bold;">pkgdown</span>::build_site_github_pages(new_process = FALSE, install = FALSE)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  2. </span>  └─pkgdown::build_site(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  3. </span>    └─pkgdown:::build_site_local(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  4. </span>      └─pkgdown::build_reference(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  5. </span>        └─<span style="font-weight: bold;">purrr</span>::map(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  6. </span>          └─purrr:::map_("list", .x, .f, ..., .progress = .progress)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  7. </span>            ├<span style="color: #949494;">─purrr:::with_indexed_errors(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  8. </span>            │ <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  9. </span>            ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">purrr</span><span style="color: #949494;">:::call_with_cleanup(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 10. </span>            └─<span style="font-weight: bold;">pkgdown</span> (local) .f(.x[[i]], ...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 11. </span>              ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 12. </span>              └─<span style="font-weight: bold;">pkgdown</span>:::data_reference_topic(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 13. </span>                └─pkgdown:::run_examples(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 14. </span>                  └─pkgdown:::highlight_examples(code, topic, env = env)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 15. </span>                    └─<span style="font-weight: bold;">downlit</span>::evaluate_and_highlight(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 16. </span>                      └─<span style="font-weight: bold;">evaluate</span>::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 17. </span>                        └─evaluate:::evaluate_call(...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 18. </span>                          ├<span style="color: #949494;">─evaluate (local) timing_fn(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 19. </span>                          ├<span style="color: #949494;">─evaluate (local) handle(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 20. </span>                          │ <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::try(f, silent = TRUE)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 21. </span>                          │   <span style="color: #949494;">└─base::tryCatch(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 22. </span>                          │     <span style="color: #949494;">└─base (local) tryCatchList(expr, classes, parentenv, handlers)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 23. </span>                          │       <span style="color: #949494;">└─base (local) tryCatchOne(expr, names, parentenv, handlers[[1L]])</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 24. </span>                          │         <span style="color: #949494;">└─base (local) doTryCatch(return(expr), name, parentenv, handler)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 25. </span>                          ├<span style="color: #949494;">─base::withCallingHandlers(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 26. </span>                          ├<span style="color: #949494;">─base::withVisible(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 27. </span>                          └─<span style="font-weight: bold;">evaluate</span>:::eval_with_user_handlers(expr, envir, enclos, user_handlers)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 28. </span>                            └─<span style="font-weight: bold;">base</span>::eval(expr, envir, enclos)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 29. </span>                              └─base::eval(expr, envir, enclos)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 30. </span>                                ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">testthat</span><span style="color: #949494;">::expect_error(intersection_df(test_rec))</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 31. </span>                                │ <span style="color: #949494;">└─testthat:::expect_condition_matching(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 32. </span>                                │   <span style="color: #949494;">└─testthat:::quasi_capture(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 33. </span>                                │     <span style="color: #949494;">├─testthat (local) .capture(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 34. </span>                                │     <span style="color: #949494;">│ └─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 35. </span>                                │     <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">rlang</span><span style="color: #949494;">::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 36. </span>                                ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">dar</span><span style="color: #949494;">::intersection_df(test_rec)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 37. </span>                                └─<span style="color: #5555FF; font-weight: bold;">dar::intersection_df(</span>test_rec<span style="color: #5555FF; font-weight: bold;">)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
