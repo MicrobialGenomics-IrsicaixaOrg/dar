@@ -372,10 +372,6 @@ validate_phyloseq <- function(phy, slots = c("sample_data", "tax_table")) {
 
 #' @rdname read_data
 #' @keywords internal
-#' @examples
-#' phy <-
-#'   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
-#'   read_phyloseq()
 read_phyloseq <- function(file_path) {
   check_1 <- NULL
   if (!file.exists(file_path)) {
