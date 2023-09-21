@@ -5,7 +5,8 @@
 ^CODE_OF_CONDUCT\.md$
 ^\.github$
 ^data-raw$
-^dev/
+^dev$
+^man/images$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
