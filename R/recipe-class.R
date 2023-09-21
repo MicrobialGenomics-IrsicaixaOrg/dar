@@ -589,6 +589,8 @@ methods::setValidity(
 
 ## printing ----
 
+#' @param object A recipe object.
+#' 
 #' @rdname recipe
 #' @autoglobal
 methods::setMethod(

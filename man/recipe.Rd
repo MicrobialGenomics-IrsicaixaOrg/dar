@@ -19,6 +19,8 @@ that will be used in any context.}
 any context.}
 
 \item{steps}{list with steps.}
+
+\item{object}{A recipe object.}
 }
 \value{
 An object of class \code{recipe} with sub-objects: \item{phyloseq}{object
