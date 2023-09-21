@@ -16,6 +16,16 @@
 #' @aliases bake
 #' @return An object of class `prep_recipe`
 #' @export
+#' @tests testthat
+#' data(test_prep_rec)
+#' 
+#' ## Test internal check
+#' rec <- test_prep_rec
+#' weights <- c(2, 1)
+#' names(weights) <- steps_ids(rec, "da")[1:2]
+#' res <- bake(rec, weights = weights)
+#' expect_error(cool(res))
+#' 
 #' @examples 
 #' data(test_prep_rec)
 #' rec <- test_prep_rec

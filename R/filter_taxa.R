@@ -20,6 +20,15 @@
 #' @aliases step_filter_taxa
 #' @return An object of class `recipe`
 #' @export
+#' @tests testthat
+#' data(metaHIV_phy)
+#' rec <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") %>% 
+#'   step_metagenomeseq(rm_zeros = 0)
+#'   
+#' expect_error(prep(rec))
+#'   
 #' @examples
 #' data(metaHIV_phy)
 #' 

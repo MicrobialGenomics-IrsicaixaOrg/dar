@@ -65,6 +65,14 @@ methods::setClass(
 #'
 #' @aliases recipe
 #' @export
+#' @tests testthat
+#' data(metaHIV_phy)
+#' colnames(metaHIV_phy@tax_table) <- 
+#'   c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")
+#' expect_error(
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+#' ) 
+#' 
 #' @examples
 #' data(metaHIV_phy)
 #'

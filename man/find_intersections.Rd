@@ -18,7 +18,6 @@ tibble
 Finds common OTU between method results
 }
 \examples{
-
 data(test_prep_rec)
 
 ## From a prep-recipe we can extract a tibble with all intersections

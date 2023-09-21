@@ -12,6 +12,35 @@
 #' @return a phylseq-class object
 #' @export
 #'
+#' @tests testthat
+#' 
+#' ## read phyloseq from rds file
+#' good_file <- system.file("extdata", "metaHIV_phy.rds", package = "dar")
+#' bad_file <- system.file("extdata", "invented_file.rds", package = "dar")
+#' expect_s4_class(read_data(good_file), "phyloseq")
+#' expect_error(read_data(bad_file))
+#' 
+#' ## read phyloseq from multiple files
+#' good_files <- c(
+#'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_taxas.txt", package = "dar")
+#' )
+#' expect_s4_class(read_data(good_files), "phyloseq")
+#' 
+#' only_two_files <- c(
+#'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_metadata.txt", package = "dar")
+#' )
+#' expect_error(read_data(only_otu_phy))
+#' 
+#' duplicated_files <- c(
+#'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
+#'   system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
+#' system.file("extdata", "metaHIV_metadata.txt", package = "dar")
+#' )
+#' expect_error(read_data(duplicated_files))
+#' 
 #' @examples
 #' # From a phyloseq object saved with .rds extension.
 #' system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
@@ -95,6 +124,22 @@ read_data <- function(data_path) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @tests testthat
+#' df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
+#' 
+#' expect_invisible(validate_otu(df))
+#' expect_error(validate_otu(dplyr::select(df, -1)))
+#' expect_error(validate_otu(dplyr::mutate(
+#'   df, otu_id = ifelse(otu_id == "Otu_1", NA_character_, otu_id)
+#' )))
+#' expect_error(validate_otu(dplyr::mutate(
+#'   df, otu_id = ifelse(otu_id == "Otu_1", "Otu_2", otu_id)
+#' )))
+#' expect_error(validate_otu(dplyr::mutate(df, dplyr::across(2, as.character))))
+#' expect_error(validate_otu(dplyr::mutate(df, dplyr::across(
+#'  2, ~ ifelse(.x == 0, NA_integer_, .x)
+#' ))))
+#' expect_error(validate_otu(dplyr::mutate(df, dplyr::across(2, ~ .x * -1))))
 validate_otu <- function(otu) {
   ids <- otu %>% dplyr::pull(1)
   
@@ -163,6 +208,19 @@ validate_otu <- function(otu) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @tests testthat
+#' df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
+#' 
+#' expect_s3_class(validate_sample_data(df), c("tbl_df", "tbl", "data.frame"))
+#' expect_equal(dim(df), c(156, 4))
+#' expect_error(validate_sample_data(dplyr::select(df, -1)))
+#' expect_error(validate_sample_data(dplyr::mutate(
+#'   df, sample_id = ifelse(sample_id == "Sample_169", NA_character_, sample_id)
+#' )))
+#' expect_error(validate_sample_data(dplyr::mutate(
+#'   df, sample_id = ifelse(sample_id == "Sample_169", "Sample_162", sample_id)
+#' )))
+#' expect_error(validate_sample_data(dplyr::mutate(df, sample_id = 1:nrow(df))))
 validate_sample_data <- function(sample_data) {
   ids <- sample_data %>% dplyr::pull(1)
   
@@ -196,6 +254,20 @@ validate_sample_data <- function(sample_data) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @tests testthat
+#' df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar"))
+#' 
+#' expect_s3_class(validate_tax_table(df), c("tbl_df", "tbl", "data.frame"))
+#' expect_equal(dim(df), c(451, 8))
+#' expect_error(validate_tax_table(dplyr::select(df, -1)))
+#' expect_error(validate_tax_table(dplyr::mutate(
+#'   df, otu_id = ifelse(otu_id == "Otu_1", NA_character_, otu_id)
+#' )))
+#' expect_error(validate_tax_table(dplyr::mutate(
+#'   df, otu_id = ifelse(otu_id == "Otu_1", "Otu_2", otu_id)
+#' )))
+#' expect_error(validate_tax_table(dplyr::mutate(df, dplyr::across(2, as.factor))))
+#' expect_error(validate_tax_table(dplyr::mutate(df, otu_id = 1:nrow(df))))
 validate_tax_table <- function(tax_table) {
   ids <- tax_table %>% dplyr::pull(1)
   
@@ -230,56 +302,80 @@ validate_tax_table <- function(tax_table) {
   if (!is.null(check)) {
     rlang::abort(c("Prblem while validating taxonomic anntation table.", check))
   }
-  
   tax_table
 }
 
 #' @rdname read_data
 #' @keywords internal
-validate_phyloseq <-
-  function(phy, slots = c("sample_data", "tax_table")) {
-    check_1 <- NULL
-    if (!isS4(phy) & "phyloseq" %not_in% methods::is(phy)) {
-      check_1 <- c("The file is not a Phyloseq object.")
-    }
-    
-    check_2 <- NULL
-    test <- try(phyloseq::sample_data(phy), silent = TRUE)
-    if ("sample_data" %in% slots) {
-      if (inherits(test, "try-error")) {
-        check_2 <-
-          c("x" = "The phyloseq object does not contain the sample_data slot.")
-      } else {
-        phyloseq::sample_data(phy) %>%
-          tibble::as_tibble(rownames = "sample_id") %>%
-          validate_sample_data()
-      }
-    }
-    
-    check_3 <- NULL
-    test <- try(phyloseq::tax_table(phy), silent = TRUE)
-    if ("tax_table" %in% slots) {
-      if (inherits(test, "try-error")) {
-        check_3 <-
-          c("x" = "The phyloseq object does not contain the tax_table slot.")
-      } else {
-        phyloseq::tax_table(phy) %>%
-          as.data.frame() %>%
-          tibble::as_tibble(rownames = "otu_id") %>%
-          validate_tax_table()
-      }
-    }
-    
-    check <- c(check_1, check_2, check_3)
-    if (!is.null(check)) {
-      rlang::abort(c("Prblem while validating phyloseq object.", check))
-    }
-    
-    phy
+#' @tests testthat
+#' ## phyloseq validation
+#' phy <-
+#'   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
+#'   read_phyloseq()
+#' 
+#' no_tax_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
+#' no_sam_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::tax_table(phy))
+#' only_otu_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy))
+#' 
+#' expect_error(validate_phyloseq(
+#'   read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar")), 
+#'   slots = ""
+#' ))
+#' expect_s4_class(validate_phyloseq(phy), "phyloseq")
+#' expect_s4_class(validate_phyloseq(no_sam_phy, "tax_table"), "phyloseq")
+#' expect_s4_class(validate_phyloseq(no_tax_phy, "sample_data"), "phyloseq")
+#' expect_s4_class(validate_phyloseq(only_otu_phy, ""), "otu_table")
+#' expect_error(validate_phyloseq(no_tax_phy))
+#' expect_error(validate_phyloseq(no_sam_phy))
+#' expect_error(validate_phyloseq(only_otu_phy))
+#' expect_error(validate_phyloseq(no_tax_phy, "tax_table"))
+#' expect_error(validate_phyloseq(no_sam_phy, "sample_data"))
+validate_phyloseq <- function(phy, slots = c("sample_data", "tax_table")) {
+  check_1 <- NULL
+  if (!isS4(phy) & "phyloseq" %not_in% methods::is(phy)) {
+    check_1 <- c("x" = "The file is not a Phyloseq object.")
   }
+  
+  check_2 <- NULL
+  if ("sample_data" %in% slots) {
+    test <- try(phyloseq::sample_data(phy), silent = TRUE)
+    if (inherits(test, "try-error")) {
+      check_2 <-
+        c("x" = "The phyloseq object does not contain the sample_data slot.")
+    } else {
+      phyloseq::sample_data(phy) %>%
+        tibble::as_tibble(rownames = "sample_id") %>%
+        validate_sample_data()
+    }
+  }
+    
+  check_3 <- NULL
+  if ("tax_table" %in% slots) {
+    test <- try(phyloseq::tax_table(phy), silent = TRUE)
+    if (inherits(test, "try-error")) {
+      check_3 <-
+        c("x" = "The phyloseq object does not contain the tax_table slot.")
+    } else {
+      phyloseq::tax_table(phy) %>%
+        as.data.frame() %>%
+        tibble::as_tibble(rownames = "otu_id") %>%
+        validate_tax_table()
+    }
+  }
+    
+  check <- c(check_1, check_2, check_3)
+  if (!is.null(check)) {
+    rlang::abort(c("Prblem while validating phyloseq object.", check))
+  }
+  phy
+}
 
 #' @rdname read_data
 #' @keywords internal
+#' @examples
+#' phy <-
+#'   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
+#'   read_phyloseq()
 read_phyloseq <- function(file_path) {
   check_1 <- NULL
   if (!file.exists(file_path)) {
@@ -289,7 +385,9 @@ read_phyloseq <- function(file_path) {
   
   check_2 <- NULL
   if (!stringr::str_ends(stringr::str_to_lower(file_path), pattern = ".rds")) {
-    check_2 <- c("x" = "The file must end with .rds extensions.")
+    check_2 <- c("x" = glue::glue(
+      "The file must end with { crayon::red('.rds') } extensions.")
+    )
   }
   
   check <- c(check_1, check_2)
@@ -307,6 +405,9 @@ read_phyloseq <- function(file_path) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @tests testthat
+#' ## File no exists and bad file extension
+#' expect_error(read_file("asdfas.tx"))
 read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
   check_1 <- NULL
   if (!file.exists(file_path)) {
@@ -317,7 +418,10 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
   check_2 <- NULL
   if (!stringr::str_ends(file_path, pattern = ext)) {
     check_2 <-
-      c("i" = "The file must end with .txt, .csv or .tsv extensions.")
+      c("x" = glue::glue(
+        "The file must end with", 
+        " {crayon::red(c('.txt, .csv or .tsv'))} extensions."
+      ))
   }
   
   check <- c(check_1, check_2)
@@ -326,58 +430,4 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
   }
   
   data.table::fread(file_path) %>% tibble::as_tibble()
-}
-
-#' Converts SummarizedExperiment to a Phyloseq object
-#'
-#' @param dataset SummarizedExperiment
-#' @param assay_idx assay index
-#' @param new_names boolean indicating if new Otu_id mustbe created. 
-#'
-#' @return phyloseq
-#' @keywords internal
-SummarizedExperiment2phyloseq <- function(dataset, 
-                                          assay_idx = 1, 
-                                          new_names = FALSE) {
-  
-  counts_df <-
-    SummarizedExperiment::assay(dataset, i = assay_idx) %>%
-    tibble::as_tibble(rownames = "otu_id")
-  
-  if (new_names) { 
-    counts_df <- 
-      dplyr::mutate(
-        counts_df, 
-        otu_id = paste0("Otu_", seq_len(nrow(counts_df)))
-      ) 
-  }
-  
-  validate_otu(counts_df)
-  
-  taxa_df <-
-    SummarizedExperiment::rowData(dataset) %>%
-    tibble::as_tibble(rownames = "otu_id")
-  
-  if (new_names) { taxa_df$otu_id <- counts_df$otu_id }
-  
-  taxa_df <- validate_tax_table(taxa_df)
-  
-  metadata_df <-
-    SummarizedExperiment::colData(dataset) %>%
-    tibble::as_tibble(rownames = "sample_id") %>%
-    validate_sample_data()
-  
-  phy <-
-    phyloseq::phyloseq(
-      data.frame(counts_df, row.names = 1, check.names = FALSE) %>% 
-        phyloseq::otu_table(taxa_are_rows = TRUE),
-      data.frame(taxa_df, row.names = 1) %>% 
-        as.matrix() %>% 
-        phyloseq::tax_table(),
-      data.frame(metadata_df, row.names = 1) %>% 
-        phyloseq::sample_data()
-    ) %>%
-    validate_phyloseq()
-  
-  phy
 }

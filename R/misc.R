@@ -6,6 +6,10 @@
 #'
 #' @export
 #' @return character vector
+#' @tests testthat
+#' set.seed(123)
+#' expect_equal(rand_id(), "step__Filo")
+#' 
 #' @examples
 #' rand_id("step")
 rand_id <- function(prefix = "step") {
@@ -22,6 +26,22 @@ rand_id <- function(prefix = "step") {
 #'
 #' @return tibble or list
 #' @keywords internal
+#' 
+#' @tests testthat
+#' data("metaHIV_phy")
+#' phy <- metaHIV_phy
+#' var <- "RiskGroup2"
+#' 
+#' is_list <- get_comparisons(var, phy)
+#' is_tibb <- get_comparisons(var, phy, as_list = FALSE)
+#' filtered <- get_comparisons(var, phy, n_cut = 30)
+#' 
+#' expect_equal(class(is_list), "list")
+#' expect_s3_class(is_tibb, "tbl_df")
+#' expect_length(is_list, 3)
+#' expect_equal(nrow(is_tibb), 3)
+#' expect_length(filtered, 1)
+#' 
 #' @examples 
 #' data(test_rec)
 #' get_phy(test_rec) %>% 
@@ -54,6 +74,21 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #'
 #' @return tibble
 #' @keywords internal
+#' 
+#' @tests testthat
+#' data("metaHIV_phy")
+#' phy <- metaHIV_phy
+#' df <- phyloseq::otu_table(phy)
+#' 
+#' test_1 <- to_tibble(df)
+#' test_2 <- to_tibble(df, id_name = "random_id")
+#' 
+#' expect_length(test_1, 157)
+#' expect_s3_class(test_1, "tbl_df")
+#' expect_s3_class(test_2, "tbl_df")
+#' expect_equal(names(test_1)[1], "otu_id")
+#' expect_equal(names(test_2)[1], "random_id")
+#' 
 #' @examples
 #' data(test_rec)
 #' otu_table <- 
@@ -74,6 +109,11 @@ to_tibble <- function(df, id_name = "otu_id") {
 #'
 #' @return character vector
 #' @keywords internal
+#' @tests testthat
+#' data(test_prep_rec)
+#' exprs <- test_prep_rec@steps %>% purrr::map_chr(step_to_expr)
+#' expect_length(exprs, 5)
+#' expect_true(all(stringr::str_detect(exprs, "dar:::run_")))
 step_to_expr <- function(step) {
   params <-
     step %>%
@@ -110,8 +150,19 @@ step_to_expr <- function(step) {
 #'
 #' @return tibble
 #' @export
-#' @examples 
 #' 
+#' @tests testthat
+#' data(test_prep_rec)
+#' res_1 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da"))
+#' res_2 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-1])
+#' res_3 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2])
+#' 
+#' expect_equal(nrow(res_1), 88)
+#' expect_equal(nrow(res_2), 36)
+#' expect_equal(nrow(res_3), 86)
+#' expect_s3_class(res_1, "tbl_df")
+#' 
+#' @examples 
 #' data(test_prep_rec)
 #' 
 #' ## From a prep-recipe we can extract a tibble with all intersections
@@ -149,6 +200,29 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #'
 #' @return character vector
 #' @export
+#' @tests testthat
+#' data(test_prep_rec)
+#' rec <- test_prep_rec
+#' expect_equal(
+#'   steps_ids(rec), 
+#'   c("subset_taxa__Jalebi",
+#'     "filter_taxa__Palmier", 
+#'     "maaslin__Coussin_de_Lyon", 
+#'     "metagenomeseq__Nazook", 
+#'     "deseq__Pan_dulce"    
+#'    )
+#' )
+#' expect_equal(
+#'   steps_ids(rec, "da"), 
+#'   c("maaslin__Coussin_de_Lyon", "metagenomeseq__Nazook", "deseq__Pan_dulce")
+#' )
+#' expect_equal(
+#'   steps_ids(rec, "prepro"), 
+#'   c("subset_taxa__Jalebi", "filter_taxa__Palmier")
+#' )
+#' expect_error(steps_ids(rec, "das"))
+#' expect_type(steps_ids(rec), "character")
+#' 
 #' @examples 
 #' data(test_rec)
 #' 

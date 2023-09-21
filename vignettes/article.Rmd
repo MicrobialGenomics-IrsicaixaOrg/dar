@@ -41,7 +41,7 @@ this specific population.
 
 ```{r setup}
 library(dar)
-suppressPackageStartupMessages(library(plotly))
+# suppressPackageStartupMessages(library(plotly))
 data("metaHIV_phy")
 
 metaHIV_phy

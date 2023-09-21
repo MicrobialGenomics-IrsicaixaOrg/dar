@@ -46,12 +46,16 @@
 #' @return An object of class `recipe`
 #' @export
 #' @md
+#' @tests testthat
+#' data(test_prep_rec)
+#' expect_error(step_corncob(test_prep_rec, rarefy = TRUE))
+#' 
 #' @examples 
 #' data(metaHIV_phy)
 #' 
 #' ## Init recipe
 #' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Class") %>% 
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 #' 

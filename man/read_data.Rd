@@ -51,5 +51,8 @@ data_path <- c(
 )
 
 read_data(data_path)
+phy <-
+  system.file("extdata", "metaHIV_phy.rds", package = "dar") \%>\%
+  read_phyloseq()
 }
 \keyword{internal}
