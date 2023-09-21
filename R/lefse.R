@@ -37,6 +37,7 @@
 #' @aliases step_lefse
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples 
 #' data(metaHIV_phy)
 #' 
@@ -81,6 +82,7 @@ methods::setGeneric(
 
 #' @rdname step_lefse
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_lefse",
   signature = c(rec = "recipe"),
@@ -122,6 +124,7 @@ methods::setMethod(
 
 #' @rdname step_lefse
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_lefse",
   signature = c(rec = "prep_recipe"),
@@ -140,6 +143,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_lefse_new <-
   function(kruskal.threshold,
            wilcox.threshold,
@@ -164,12 +168,14 @@ step_lefse_new <-
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_lefse <- function(x, ...) { 
   c("bioc::lefser", "bioc::SummarizedExperiment") 
 }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_lefse <-
   function(rec,
            kruskal.threshold = kruskal.threshold,
@@ -237,6 +243,7 @@ run_lefse <-
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 prepro_lefse <- function(rec, rarefy) {
 
   tax_level <- get_tax(rec)
@@ -294,6 +301,7 @@ prepro_lefse <- function(rec, rarefy) {
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 kruskal_test <- function(se, levels, assay = 1L) {
   group <- levels %>% as.factor() %>% as.numeric()
   expr <- SummarizedExperiment::assay(se, i = assay)

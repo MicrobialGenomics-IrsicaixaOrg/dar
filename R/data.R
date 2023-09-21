@@ -13,6 +13,7 @@
 #' @docType data
 #' @keywords data
 #' @return The function does not return a value explicitly.
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #' metaHIV_phy
@@ -31,6 +32,7 @@ NA
 #' @aliases pastry_df
 #' @docType data
 #' @keywords data
+#' @autoglobal
 #' @return The function does not return a value explicitly.
 NA
 
@@ -45,6 +47,7 @@ NA
 #' @aliases test_rec
 #' @docType data
 #' @keywords data
+#' @autoglobal
 #' @return The function does not return a value explicitly.
 NA
 
@@ -60,5 +63,6 @@ NA
 #' @aliases test_prep_rec
 #' @docType data
 #' @keywords data
+#' @autoglobal
 #' @return The function does not return a value explicitly.
 NA

@@ -57,6 +57,7 @@
 #' @aliases step_aldex
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples 
 #' data(metaHIV_phy)
 #' 
@@ -95,6 +96,7 @@ methods::setGeneric(
 
 #' @rdname step_aldex
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_aldex",
   signature = c(rec = "recipe"),
@@ -115,6 +117,7 @@ methods::setMethod(
 
 #' @rdname step_aldex
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_aldex",
   signature = c(rec = "prep_recipe"),
@@ -125,6 +128,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_aldex_new <- function(out_cut,
                            max_significance,
                            mc.samples,
@@ -143,10 +147,12 @@ step_aldex_new <- function(out_cut,
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
 
   phy <- get_phy(rec)

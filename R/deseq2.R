@@ -44,6 +44,7 @@
 #' @aliases step_deseq
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -85,6 +86,7 @@ methods::setGeneric(
 
 #' @rdname step_deseq
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_deseq",
   signature = c(rec = "recipe"),
@@ -122,6 +124,7 @@ methods::setMethod(
 
 #' @rdname step_deseq
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_deseq",
   signature = c(rec = "prep_recipe"),
@@ -140,6 +143,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_deseq_new <-
   function(rec,
            test,
@@ -166,12 +170,14 @@ step_deseq_new <-
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_deseq <- function(x, ...) {
   c("bioc::DESeq2", "bioc::apeglm", "ashr")
 }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_deseq <- function(rec,
                       test,
                       fitType,

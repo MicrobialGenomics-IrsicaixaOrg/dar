@@ -20,6 +20,7 @@
 #' @aliases step_filter_taxa
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @tests testthat
 #' data(metaHIV_phy)
 #' rec <- 
@@ -49,6 +50,7 @@ methods::setGeneric(
 
 #' @rdname step_filter_taxa
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_filter_taxa",
   signature = c(rec = "recipe"),
@@ -60,16 +62,19 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_filter_taxa_new <- function(.f, id) {
   step(subclass = "filter_taxa", .f = .f, id = id)
 }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_filter_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_filter_taxa <- function(rec, .f) {
   
   rm_zeros <- NULL
@@ -129,6 +134,7 @@ run_filter_taxa <- function(rec, .f) {
 #' @aliases zero_otu
 #' @return character vector
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #' 
@@ -146,6 +152,7 @@ methods::setGeneric(
 
 #' @rdname zero_otu
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "zero_otu", 
   signature = "recipe", 
@@ -169,6 +176,7 @@ methods::setMethod(
 
 #' @rdname zero_otu
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "zero_otu",
   signature = "phyloseq",

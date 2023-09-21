@@ -5,6 +5,7 @@
 #'   and underscore.
 #'
 #' @export
+#' @autoglobal
 #' @return character vector
 #' @tests testthat
 #' set.seed(123)
@@ -26,6 +27,7 @@ rand_id <- function(prefix = "step") {
 #'
 #' @return tibble or list
 #' @keywords internal
+#' @autoglobal
 #' 
 #' @tests testthat
 #' data("metaHIV_phy")
@@ -74,6 +76,7 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #'
 #' @return tibble
 #' @keywords internal
+#' @autoglobal
 #' 
 #' @tests testthat
 #' data("metaHIV_phy")
@@ -109,6 +112,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #'
 #' @return character vector
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' data(test_prep_rec)
 #' exprs <- test_prep_rec@steps %>% purrr::map_chr(step_to_expr)
@@ -150,6 +154,7 @@ step_to_expr <- function(step) {
 #'
 #' @return tibble
 #' @export
+#' @autoglobal
 #' 
 #' @tests testthat
 #' data(test_prep_rec)
@@ -200,6 +205,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #'
 #' @return character vector
 #' @export
+#' @autoglobal
 #' @tests testthat
 #' data(test_prep_rec)
 #' rec <- test_prep_rec
@@ -260,21 +266,25 @@ steps_ids <- function(rec, type = "all") {
 }
 
 #' @keywords internal
+#' @autoglobal
 tick <- function() {
   crayon::green(cli::symbol$tick)
 }
 
 #' @keywords internal
+#' @autoglobal
 cross <- function() {
   crayon::red(cli::symbol$cross)
 }
 
 #' @keywords internal
+#' @autoglobal
 info <- function() {
   crayon::blue(cli::symbol$info)
 }
 
 #' @keywords internal
+#' @autoglobal
 dot <- function() {
   crayon::blue(cli::symbol$circle_filled)
 }
@@ -287,6 +297,7 @@ dot <- function() {
 #' @importFrom glue double_quote
 #' @return invisible
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #' 
@@ -305,7 +316,7 @@ dot <- function() {
 export_steps <- function(rec, file_name) {
   
   inp <- rec@steps
-  if (is(rec, "prep_recipe")) {
+  if (methods::is(rec, "prep_recipe")) {
     inp <- c(rec@steps, rec@bakes)
   } 
   
@@ -341,6 +352,7 @@ export_steps <- function(rec, file_name) {
 #'
 #' @return recipe-class object
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -457,6 +469,7 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
 #'   operations for this recipe.
 #'
 #' @export
+#' @autoglobal
 #' @return boolean
 #' @examples
 #' data(GlobalPatterns, package = "phyloseq")
@@ -469,7 +482,7 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
 #'
 #' contains_rarefaction(rec)
 contains_rarefaction <- function(rec) {
-  dar::steps_ids(rec) %>%
+  steps_ids(rec) %>%
     stringr::str_detect("^rarefaction_") %>%
     any()
 }

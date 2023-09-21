@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in recipe-class.R:68 (file:line)
+# Test found in recipe-class.R:70 (file:line)
   
 data(metaHIV_phy)
 colnames(metaHIV_phy@tax_table) <- 

@@ -2,9 +2,12 @@
 % Please edit documentation in R/recipe-class.R
 \name{recipe}
 \alias{recipe}
+\alias{show,prep_recipe-method}
 \title{Create a recipe for preprocessing data}
 \usage{
 recipe(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list())
+
+\S4method{show}{prep_recipe}(object)
 }
 \arguments{
 \item{phyloseq}{Phyloseq-class object.}

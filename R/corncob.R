@@ -45,6 +45,7 @@
 #' @aliases step_corncob
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @md
 #' @tests testthat
 #' data(test_prep_rec)
@@ -97,6 +98,7 @@ methods::setGeneric(
 
 #' @rdname step_corncob
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_corncob",
   signature = c(rec = "recipe"),
@@ -140,6 +142,7 @@ methods::setMethod(
 
 #' @rdname step_corncob
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_corncob",
   signature = c(rec = "prep_recipe"),
@@ -164,6 +167,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_corncob_new <- function(phi.formula,
                              formula_null,
                              phi.formula_null,
@@ -199,10 +203,12 @@ step_corncob_new <- function(phi.formula,
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_corncob <- function(x, ...) { c("corncob") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_corncob <- function(rec,
                         phi.formula,
                         formula_null,
@@ -261,7 +267,7 @@ run_corncob <- function(rec,
             }, error = function(e) { conditionMessage(e) })
         
           ## Skip error for no convergenc
-          if (!is(corncob_res, "differentialTest")) {
+          if (!methods::is(corncob_res, "differentialTest")) {
             if (stringr::str_detect(corncob_res, "failed to converge")) {
               rlang::abort(c(
                 glue::glue(

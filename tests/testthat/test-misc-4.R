@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in misc.R:154 (file:line)
+# Test found in misc.R:159 (file:line)
   
 data(test_prep_rec)
 res_1 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da"))

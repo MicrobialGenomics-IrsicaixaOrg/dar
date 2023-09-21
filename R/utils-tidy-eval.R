@@ -104,6 +104,7 @@
 #' @aliases enquo enquos .data := as_name as_label .env
 #' @export .data := .env
 #' @return The function does not return a value explicitly.
+#' @autoglobal
 #' @examples
 #' # `enquo()` defuses the expression supplied by your user
 #' f <- function(arg) {
@@ -147,5 +148,3 @@
 #'
 #' rlang::as_label(base::list)
 NULL
-
-utils::globalVariables(c(".", "sample_id", "taxa_id"))

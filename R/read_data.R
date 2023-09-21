@@ -11,6 +11,7 @@
 #'
 #' @return a phylseq-class object
 #' @export
+#' @autoglobal
 #'
 #' @tests testthat
 #' 
@@ -124,6 +125,7 @@ read_data <- function(data_path) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
 #' 
@@ -208,6 +210,7 @@ validate_otu <- function(otu) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
 #' 
@@ -254,6 +257,7 @@ validate_sample_data <- function(sample_data) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar"))
 #' 
@@ -307,6 +311,7 @@ validate_tax_table <- function(tax_table) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' ## phyloseq validation
 #' phy <-
@@ -372,6 +377,7 @@ validate_phyloseq <- function(phy, slots = c("sample_data", "tax_table")) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 read_phyloseq <- function(file_path) {
   check_1 <- NULL
   if (!file.exists(file_path)) {
@@ -401,6 +407,7 @@ read_phyloseq <- function(file_path) {
 
 #' @rdname read_data
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' ## File no exists and bad file extension
 #' expect_error(read_file("asdfas.tx"))

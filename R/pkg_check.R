@@ -8,6 +8,7 @@
 #' @return Nothing is returned but a message is printed to the console about
 #'   which packages (if any) should be installed along with code to do so.
 #' @keywords internal
+#' @autoglobal
 #' @tests testthat
 #' expected <-
 #'   glue::glue("1 package is needed for step_aldex() and is not installed: ", 
@@ -29,7 +30,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   for (i in seq(along.with = pkg)) {
     x <- stringr::str_remove_all(pkg[i], ".*[/]|.*[:]")
     tested <- try(find.package(x), silent = TRUE)
-    if (is(tested, "try-error")) {
+    if (methods::is(tested, "try-error")) {
       good[i] <- FALSE
     }
   }
@@ -55,6 +56,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 
 #' Returns required pakcages for recipe object
@@ -64,6 +66,7 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 #' @aliases required_deps
 #' @return character
 #' @export
+#' @autoglobal
 #' @examples 
 #' data(test_rec)
 #' 
@@ -79,6 +82,7 @@ methods::setGeneric("required_deps", function(rec)
 
 #' @rdname required_deps
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "required_deps",
   signature = "recipe",

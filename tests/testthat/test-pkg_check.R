@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in pkg_check.R:11 (file:line)
+# Test found in pkg_check.R:12 (file:line)
   
 expected <-
   glue::glue("1 package is needed for step_aldex() and is not installed: ", 

@@ -71,6 +71,7 @@
 #' @aliases step_ancom
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -122,6 +123,7 @@ methods::setGeneric(
 
 #' @rdname step_ancom
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_ancom",
   signature = c(rec = "recipe"),
@@ -174,6 +176,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_ancom_new <-
   function(fix_formula,
            rand_formula,
@@ -218,10 +221,12 @@ step_ancom_new <-
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_ancom <- function(rec,
                       fix_formula,
                       rand_formula,

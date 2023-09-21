@@ -3,6 +3,7 @@
 #' `browseVignettes(package = "dar")`
 #'
 #' @keywords internal
+#' @autoglobal
 #' @importClassesFrom phyloseq phyloseq
 #' @importClassesFrom tibble tbl_df
 #' @import dplyr

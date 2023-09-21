@@ -22,6 +22,7 @@
 #' @aliases step_subset_taxa
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #' 
@@ -41,6 +42,7 @@ methods::setGeneric(
 
 #' @rdname step_subset_taxa
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_subset_taxa",
   signature = c(rec = "recipe"),
@@ -52,16 +54,19 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_subset_taxa_new <- function(expr, id) {
   step(subclass = "subset_taxa", expr = expr, id = id)
 }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_subset_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_subset_taxa <- function(rec, expr) {
   rec@phyloseq <-
     glue::glue("phyloseq::subset_taxa(get_phy(rec), {expr})") %>%

@@ -19,6 +19,7 @@
 #'
 #' @return A tibble
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -30,6 +31,7 @@ methods::setGeneric("phy_qc", function(rec) standardGeneric("phy_qc"))
 
 #' @rdname phy_qc
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "phy_qc",
   signature = "recipe",
@@ -43,6 +45,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .zero_prepro <- function(rec) {
   var <- get_var(rec)[[1]]
   otu_table(rec) %>%
@@ -53,6 +56,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .zero_stats <- function(rec) {
   var <- get_var(rec)[[1]]
   .zero_prepro(rec) %>%
@@ -66,6 +70,7 @@ methods::setMethod(
   
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .zero_groups <- function(rec) {
   var <- get_var(rec)[[1]]
   .zero_prepro(rec) %>% 
@@ -87,6 +92,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .count_summary <- function(rec) {
   .zero_prepro(rec) %>% 
     dplyr::group_by(!!dplyr::sym(get_var(rec)[[1]]), sample_id) %>% 

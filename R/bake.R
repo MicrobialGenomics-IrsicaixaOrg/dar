@@ -16,6 +16,7 @@
 #' @aliases bake
 #' @return An object of class `prep_recipe`
 #' @export
+#' @autoglobal
 #' @tests testthat
 #' data(test_prep_rec)
 #' 
@@ -69,6 +70,7 @@ methods::setGeneric(
 
 #' @rdname bake
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "bake",
   signature = c(rec = "prep_recipe"),
@@ -88,6 +90,7 @@ methods::setMethod(
 
 #' @rdname bake
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "bake",
   signature = "recipe",
@@ -104,6 +107,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 bake_new <- function(count_cutoff, weights, exclude, id) {
   step(
     subclass = "bake",
@@ -116,10 +120,12 @@ bake_new <- function(count_cutoff, weights, exclude, id) {
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_bake <- function(x, ...) { c() }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_bake <- function(rec, count_cutoff, weights, exclude, id) {
 
   ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]

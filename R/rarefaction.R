@@ -30,6 +30,7 @@
 #' @aliases step_rarefaction
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples 
 #' data(metaHIV_phy)
 #' 
@@ -54,6 +55,7 @@ methods::setGeneric(
 
 #' @rdname step_rarefaction
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_rarefaction",
   signature = c(rec = "recipe"),
@@ -65,6 +67,7 @@ methods::setMethod(
 
 #' @rdname step_rarefaction
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_rarefaction",
   signature = c(rec = "prep_recipe"),
@@ -76,16 +79,19 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_rarefaction_new <- function(id) {
   step(subclass = "rarefaction", id = id)
 }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_rarefaction <- function(x, ...) {  c("bioc::phyloseq") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_rarefaction <- function(rec) {
   rec@phyloseq <- 
     phyloseq::rarefy_even_depth(get_phy(rec), rngseed = 1234, verbose = FALSE)

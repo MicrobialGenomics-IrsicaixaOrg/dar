@@ -12,6 +12,7 @@
 #' @importFrom heatmaply heatmaply_cor
 #' @return heatmap
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -56,6 +57,7 @@ methods::setMethod(
 
 #' @rdname corr_heatmap
 #' @export
+#' @autoglobal
 #' @importFrom UpSetR upset
 methods::setMethod(
   f = "corr_heatmap",
@@ -107,6 +109,7 @@ methods::setMethod(
 #' @aliases intersection_plt
 #' @return UpSet plot
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -154,6 +157,7 @@ methods::setMethod(
 
 #' @rdname intersection_plt
 #' @export
+#' @autoglobal
 #' @importFrom UpSetR upset
 methods::setMethod(
   f = "intersection_plt",
@@ -179,6 +183,7 @@ methods::setMethod(
 #' @aliases exclusion_plt
 #' @return ggplot2-class object
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -204,6 +209,7 @@ methods::setGeneric(
 
 #' @rdname exclusion_plt
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "exclusion_plt",
   signature = "recipe",
@@ -220,6 +226,7 @@ methods::setMethod(
 
 #' @rdname exclusion_plt
 #' @export
+#' @autoglobal
 #' @import ggplot2
 methods::setMethod(
   f = "exclusion_plt",
@@ -282,6 +289,7 @@ methods::setMethod(
 #'
 #' @return ggplot2
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -318,6 +326,7 @@ methods::setGeneric(
 
 #' @rdname abundance_plt
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "abundance_plt",
   signature = "recipe",
@@ -334,6 +343,7 @@ methods::setMethod(
 
 #' @rdname abundance_plt
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "abundance_plt",
   signature = "prep_recipe",
@@ -353,6 +363,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .annotated_counts <- function(rec) {
   otu_table(rec) %>% 
     tidyr::pivot_longer(-1, names_to = "sample_id") %>%
@@ -362,6 +373,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .abundance_boxplot <- function(rec, taxa_ids, transform, scale, top_n = 20) {
   if (is.null(taxa_ids)) {
     taxa_ids <- 
@@ -433,6 +445,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n) {
   ComplexHeatmap::ht_opt(
     message = FALSE, 
@@ -556,6 +569,7 @@ methods::setMethod(
 #'
 #' @return ggplot2
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -610,6 +624,7 @@ methods::setMethod(
 
 #' @rdname mutual_plt
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "mutual_plt",
   signature = "prep_recipe",
@@ -699,6 +714,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .otu_method_count <- function(rec) {
   intersection_df(rec, tidy = TRUE) %>%
     dplyr::group_by(taxa_id) %>%
@@ -707,6 +723,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .otu_effect_direction <- function(rec) {
   names(rec@results) %>% 
     purrr::map_dfr( ~ {
@@ -723,6 +740,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .all_significant <- function(rec) {
   dplyr::left_join(
     .otu_effect_direction(rec), 
@@ -733,6 +751,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 .all_stats <- function(rec) {
   rec@results %>% 
     names() %>% 

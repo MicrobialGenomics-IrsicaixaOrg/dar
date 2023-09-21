@@ -41,6 +41,7 @@
 #' @aliases step_maaslin
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -87,6 +88,7 @@ methods::setGeneric(
 
 #' @rdname step_maaslin
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_maaslin",
   signature = c(rec = "recipe"),
@@ -129,6 +131,7 @@ methods::setMethod(
 
 #' @rdname step_maaslin
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_maaslin",
   signature = c(rec = "prep_recipe"),
@@ -152,6 +155,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_maaslin_new <- function(rec,
                              min_abundance,
                              min_prevalence,
@@ -186,10 +190,12 @@ step_maaslin_new <- function(rec,
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_maaslin <- function(x, ...) { c("bioc::Maaslin2") }
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_maaslin <- function(rec,
                         min_abundance,
                         min_prevalence,
@@ -273,6 +279,7 @@ run_maaslin <- function(rec,
 #'
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 maaslin2_quietly <- function(input_data,
                              input_metadata,
                              output,

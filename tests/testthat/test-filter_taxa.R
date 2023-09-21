@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in filter_taxa.R:23 (file:line)
+# Test found in filter_taxa.R:24 (file:line)
   
 data(metaHIV_phy)
 rec <- 

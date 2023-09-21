@@ -52,6 +52,7 @@
 #' @aliases step_wilcox
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -166,6 +167,7 @@ required_pkgs_wilcox <-
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_wilcox <- function(rec,
                        norm_method,
                        max_significance,

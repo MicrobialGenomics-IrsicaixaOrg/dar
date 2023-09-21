@@ -32,6 +32,7 @@
 #' @aliases step_metagenomeseq
 #' @return An object of class `recipe`
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -73,6 +74,7 @@ methods::setGeneric(
 
 #' @rdname step_metagenomeseq
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_metagenomeseq",
   signature = c(rec = "recipe"),
@@ -105,6 +107,7 @@ methods::setMethod(
 
 #' @rdname step_metagenomeseq
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "step_metagenomeseq",
   signature = c(rec = "prep_recipe"),
@@ -124,6 +127,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 step_metagenomeseq_new <- function(rec,
                                    zeroMod,
                                    useCSSoffset,
@@ -148,12 +152,14 @@ step_metagenomeseq_new <- function(rec,
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_metagenomeseq <-
   function(x, ...) {
     c("bioc::metagenomeSeq", "bioc::limma", "bioc::Biobase")
   }
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 run_metagenomeseq <- function(rec,
                               zeroMod,
                               useCSSoffset,
@@ -245,6 +251,7 @@ run_metagenomeseq <- function(rec,
 #'
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 phyloseq_to_MRexperiment <- function(phy) {
   counts <- phyloseq::otu_table(phy) %>% data.frame(check.names = FALSE)
 

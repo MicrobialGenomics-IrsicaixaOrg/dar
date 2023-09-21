@@ -26,6 +26,7 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 #' @rdname recipe-class
 #' @exportClass recipe
 #' @return recipe-class object
+#' @autoglobal
 methods::setClass(
   Class = "recipe",
   slots = c(
@@ -65,6 +66,7 @@ methods::setClass(
 #'
 #' @aliases recipe
 #' @export
+#' @autoglobal
 #' @tests testthat
 #' data(metaHIV_phy)
 #' colnames(metaHIV_phy@tax_table) <- 
@@ -262,6 +264,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
 #' @aliases get_var
 #' @return Tibble containing `var_info`.
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -290,6 +293,7 @@ methods::setMethod(
 #' @aliases get_tax
 #' @return Tibble containing `tax_info`.
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -303,6 +307,7 @@ methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
 
 #' @rdname get_tax
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "get_tax",
   signature = "recipe",
@@ -318,6 +323,7 @@ methods::setMethod(
 #' @aliases get_phy
 #' @return Phyloseq class object
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -331,6 +337,7 @@ methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
 
 #' @rdname get_phy
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "get_phy",
   signature = "recipe",
@@ -348,6 +355,7 @@ methods::setMethod(
 #' @aliases add_var
 #' @return A `recipe` object.
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -370,6 +378,7 @@ methods::setGeneric("add_var", function(rec, var_info)
 
 #' @rdname add_var
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "add_var",
   signature = "recipe",
@@ -390,6 +399,7 @@ methods::setMethod(
 #' @aliases add_tax
 #' @return A `recipe` object.
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -413,6 +423,7 @@ methods::setGeneric("add_tax", function(rec, tax_info)
 
 #' @rdname add_tax
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "add_tax",
   signature = "recipe",
@@ -432,6 +443,7 @@ methods::setMethod(
 #'
 #' @return A tibble
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -445,6 +457,7 @@ methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
 
 #' @rdname tax_table
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "tax_table",
   signature = "recipe",
@@ -461,6 +474,7 @@ methods::setMethod(
 #'
 #' @return A tibble
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -474,6 +488,7 @@ methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
 
 #' @rdname sample_data
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "sample_data",
   signature = "recipe",
@@ -491,6 +506,7 @@ methods::setMethod(
 #'
 #' @return A tibble
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -504,6 +520,7 @@ methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
 
 #' @rdname otu_table
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "otu_table",
   signature = "recipe",
@@ -530,6 +547,7 @@ methods::setMethod(
 #' @rdname prep_recipe-class
 #' @exportClass prep_recipe
 #' @return prep_recipe-class object
+#' @autoglobal
 methods::setClass(
   Class = "prep_recipe",
   contains = "recipe",
@@ -548,6 +566,7 @@ methods::setClass(
 #' @param bakes list with saved bakes
 #'
 #' @return An object of class `prep_recipe`.
+#' @autoglobal
 #' @keywords internal
 #' @aliases prep_recipe
 prep_recipe <- function(rec, results, bakes) {
@@ -570,6 +589,8 @@ methods::setValidity(
 
 ## printing ----
 
+#' @rdname recipe
+#' @autoglobal
 methods::setMethod(
   "show",
   signature = "prep_recipe",
@@ -590,6 +611,11 @@ methods::setMethod(
     )
     
     ## Variable
+    var <- NULL
+    if (nrow(get_var(object)) > 0) {
+      var <- get_var(object) %>% dplyr::pull(vars)
+    }
+    
     if (is.null(var)) {
       cat(
         glue::glue(
@@ -615,6 +641,11 @@ methods::setMethod(
     }
     
     ## Taxa
+    var <- NULL
+    if (nrow(get_tax(object)) > 0) {
+      var <- get_tax(object) %>% dplyr::pull(tax_lev)
+    }
+    
     if (is.null(var)) {
       cat(
         glue::glue(
@@ -694,6 +725,7 @@ methods::setMethod(
 
 #' @noRd
 #' @keywords internal
+#' @autoglobal
 required_pkgs_prep <- function(x, ...) {
   c("furrr", "future")
 }
@@ -703,6 +735,7 @@ required_pkgs_prep <- function(x, ...) {
 
 #' @rdname add_var
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "add_var",
   signature = "prep_recipe",
@@ -715,6 +748,7 @@ methods::setMethod(
 
 #' @rdname add_tax
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "add_tax",
   signature = "prep_recipe",
@@ -740,6 +774,7 @@ methods::setMethod(
 #' @aliases prep
 #' @return A `prep_recipe` object.
 #' @export
+#' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -877,6 +912,7 @@ methods::setMethod(
 #' @aliases intersection_df
 #' @return data.frame class object
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -897,6 +933,7 @@ methods::setGeneric(
 
 #' @rdname intersection_df
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "intersection_df",
   signature = "recipe",
@@ -912,6 +949,7 @@ methods::setMethod(
 
 #' @rdname intersection_df
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "intersection_df",
   signature = "prep_recipe",
@@ -950,6 +988,7 @@ methods::setMethod(
 #' @aliases overlap_df
 #' @return df
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -976,6 +1015,7 @@ methods::setGeneric(
 
 #' @rdname overlap_df
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "overlap_df",
   signature = "recipe",
@@ -992,6 +1032,7 @@ methods::setMethod(
 
 #' @rdname overlap_df
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "overlap_df",
   signature = "prep_recipe",
@@ -1041,6 +1082,7 @@ methods::setMethod(
 #' @aliases cool
 #' @return tbl_df
 #' @export
+#' @autoglobal
 #' @examples
 #' data(test_prep_rec)
 #'
@@ -1069,6 +1111,7 @@ methods::setGeneric(
 
 #' @rdname cool
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "cool",
   signature = "recipe",
@@ -1085,6 +1128,7 @@ methods::setMethod(
 
 #' @rdname cool
 #' @export
+#' @autoglobal
 methods::setMethod(
   f = "cool",
   signature = "prep_recipe",
