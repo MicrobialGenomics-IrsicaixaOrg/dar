@@ -65,7 +65,7 @@
 #' ## Define step with default parameters and prep
 #' rec <- 
 #'   step_corncob(rec) %>% 
-#'   prep(parallel = TRUE)
+#'   prep(parallel = FALSE)
 #'   
 #' rec
 #' 

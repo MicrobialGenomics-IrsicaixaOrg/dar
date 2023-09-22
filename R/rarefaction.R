@@ -36,14 +36,16 @@
 #' 
 #' ## Init recipe
 #' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species")
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") %>%
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
 #' 
 #' rec
 #' 
 #' ## Define step with default parameters and prep
 #' rec <- 
 #'   step_rarefaction(rec) %>% 
-#'   prep(parallel = TRUE)
+#'   prep(parallel = FALSE)
 #'   
 #' rec
 methods::setGeneric(
