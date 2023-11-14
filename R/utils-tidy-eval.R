@@ -102,7 +102,6 @@
 #' @keywords internal
 #' @importFrom rlang enquo enquos .data := as_name as_label .env
 #' @aliases enquo enquos .data := as_name as_label .env
-#' @export .data := .env
 #' @return The function does not return a value explicitly.
 #' @autoglobal
 #' @examples
