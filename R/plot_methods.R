@@ -501,12 +501,8 @@ methods::setMethod(
   
   t_rec <- rec
   if (!is.null(transform)) {
-    t_rec@phyloseq <-
-      microbiome::transform(
-        t_rec@phyloseq, 
-        transform = transform, 
-        scale = scale
-      )
+    t_rec@phyloseq <- 
+      microbiome::transform(t_rec@phyloseq, transform, scale = scale)
   } else {
     transform <- "raw counts"
   }

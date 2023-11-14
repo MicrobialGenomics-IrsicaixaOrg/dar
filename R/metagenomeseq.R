@@ -199,12 +199,9 @@ run_metagenomeseq <- function(rec,
             unique() %>%
             phyloseq::prune_taxa(phy2)
           
-          suppressMessages(
-            mr_obj <- 
-              phy2 %>%
-              phyloseq_to_MRexperiment() %>%
-              metagenomeSeq::cumNorm(p = metagenomeSeq::cumNormStat(.))
-          )
+          mr_exp <- phyloseq_to_MRexperiment(phy2)
+          p <- suppressMessages(metagenomeSeq::cumNormStat(mr_exp))
+          mr_obj <- metagenomeSeq::cumNorm(mr_exp, p = p)
           
           vct_var <- phyloseq::sample_data(phy2)[[var]]
           norm_factor <- metagenomeSeq::normFactors(mr_obj)

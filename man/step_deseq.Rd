@@ -9,7 +9,7 @@
 step_deseq(
   rec,
   test = "Wald",
-  fitType = "parametric",
+  fitType = "local",
   betaPrior = FALSE,
   type = "ashr",
   max_significance = 0.05,
@@ -21,7 +21,7 @@ step_deseq(
 \S4method{step_deseq}{recipe}(
   rec,
   test = "Wald",
-  fitType = "parametric",
+  fitType = "local",
   betaPrior = FALSE,
   type = "ashr",
   max_significance = 0.05,
@@ -33,7 +33,7 @@ step_deseq(
 \S4method{step_deseq}{prep_recipe}(
   rec,
   test = "Wald",
-  fitType = "parametric",
+  fitType = "local",
   betaPrior = FALSE,
   type = "ashr",
   max_significance = 0.05,

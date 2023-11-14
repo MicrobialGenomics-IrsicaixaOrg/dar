@@ -345,7 +345,7 @@ export_steps <- function(rec, file_name) {
       stringr::str_c("{\n", params, "\n}")
     })
 
-  cat(to_cat, file = file_name)
+  writeLines(to_cat, file_name)
 }
 
 #' Import steps from json file
@@ -392,31 +392,8 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
       stringr::str_remove_all(".*: |,|\\\"") %>%
       stringr::str_remove_all("__.*")
 
-    lines[low_idx:id_idx[i]] %>%
-      purrr::map_chr(function(.x) {
-        params <- .x %>%
-          stringr::str_squish() %>%
-          stringr::str_split(pattern = ": ") %>%
-          unlist()
-
-        param <- params[[1]] %>%
-          stringr::str_remove_all("\\\"")
-
-        value <- params[[2]] %>%
-          stringr::str_squish() %>%
-          stringr::str_remove_all(",$")
-
-        if (stringr::str_detect(value, "%in%")) {
-          value <- stringr::str_remove_all(value, "\\\"") %>%
-            stringr::str_replace_all("\\\\", "\\\"")
-
-          value <- encodeString(value, quote = "'")
-        }
-
-        if (stringr::str_count(value) == 0) { value <- expression(NULL) }
-        stringr::str_c(param, " = ", paste0(value, sep = ""))
-
-      }) %>% stringr::str_c(collapse = ", ") %>%
+    extract_instructions(lines[low_idx:id_idx[i]]) %>% 
+      stringr::str_c(collapse = ", ") %>%
       stringr::str_c("rec <<- step_", fun_name, "(rec, ", ., ")") %>%
       parse(text = .) %>%
       eval()
@@ -437,36 +414,44 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
         stringr::str_remove_all(".*: |,|\\\"") %>%
         stringr::str_remove_all("__.*")
 
-      lines[low_idx:id_idx[i]] %>%
-        purrr::map_chr(function(.x) {
-          params <- .x %>%
-            stringr::str_squish() %>%
-            stringr::str_split(pattern = ": ") %>%
-            unlist()
-
-          param <- params[[1]] %>%
-            stringr::str_remove_all("\\\"")
-
-          value <- params[[2]] %>%
-            stringr::str_squish() %>%
-            stringr::str_remove_all(",$")
-
-          if (stringr::str_detect(value, "%in%")) {
-            value <- stringr::str_remove_all(value, "\\\"") %>%
-              stringr::str_replace_all("\\\\", "\\\"")
-
-            value <- encodeString(value, quote = "'")
-          }
-
-          if (stringr::str_count(value) == 0) { value <- expression(NULL) }
-          stringr::str_c(param, " = ", paste0(value, sep = ""))
-        }) %>% stringr::str_c(collapse = ", ") %>%
+      extract_instructions(lines[low_idx:id_idx[i]]) %>%
+        stringr::str_c(collapse = ", ") %>%
         stringr::str_c("rec <<- ", fun_name, "(rec, ", ., ")") %>%
         parse(text = .) %>%
         eval()
     }
   }
   rec
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+extract_instructions <- function(lines) {
+  lines %>%
+    purrr::map_chr(function(.x) {
+      params <- .x %>%
+        stringr::str_squish() %>%
+        stringr::str_split(pattern = ": ") %>%
+        unlist()
+      
+      param <- params[[1]] %>%
+        stringr::str_remove_all("\\\"")
+      
+      value <- params[[2]] %>%
+        stringr::str_squish() %>%
+        stringr::str_remove_all(",$")
+      
+      if (stringr::str_detect(value, "%in%")) {
+        value <- stringr::str_remove_all(value, "\\\"") %>%
+          stringr::str_replace_all("\\\\", "\\\"")
+        
+        value <- encodeString(value, quote = "'")
+      }
+      
+      if (stringr::str_count(value) == 0) { value <- expression(NULL) }
+      stringr::str_c(param, " = ", paste0(value, sep = ""))
+    }) 
 }
 
 #' Checks if recipe contains a rarefaction step

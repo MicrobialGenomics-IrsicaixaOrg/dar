@@ -5,6 +5,7 @@ utils::globalVariables(c(
   # <intersection_df>
   # <cool>
   # <run_ancom>
+  # <ancom_stats_tbl>
   # <run_bake>
   # <run_deseq>
   # <prepro_lefse>
@@ -39,7 +40,7 @@ utils::globalVariables(c(
   "feature",
   # <prepro_lefse>
   "Kingdom",
-  # <run_ancom>
+  # <ancom_stats_tbl>
   "lfc",
   # <run_deseq>
   "log2FoldChange",
@@ -66,9 +67,9 @@ utils::globalVariables(c(
   "no_zero",
   # <run_lefse>
   "otu",
-  # <run_ancom>
+  # <rm_zero_variance>
   "otu_id",
-  # <run_corncob>
+  # <corncob_stats_tbl>
   # <run_deseq>
   # <run_metagenomeseq>
   # <run_wilcox>
@@ -103,7 +104,7 @@ utils::globalVariables(c(
   # <recipe>
   "tax_lev",
   # <run_bake>
-  # <run_corncob>
+  # <corncob_stats_tbl>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <mutual_plt>
@@ -112,7 +113,7 @@ utils::globalVariables(c(
   # <intersection_df>
   # <run_aldex>
   # <run_bake>
-  # <run_corncob>
+  # <corncob_stats_tbl>
   # <zero_otu>
   # <zero_otu>
   # <run_maaslin>
@@ -124,13 +125,13 @@ utils::globalVariables(c(
   # <mutual_plt>
   # <.otu_method_count>
   "taxa_id",
-  # <run_ancom>
+  # <ancom_stats_tbl>
   "taxon",
   # <zero_otu>
   # <zero_otu>
   # <exclusion_plt>
   "total",
-  # <run_ancom>
+  # <rm_zero_variance>
   # <zero_otu>
   # <zero_otu>
   # <kruskal_test>

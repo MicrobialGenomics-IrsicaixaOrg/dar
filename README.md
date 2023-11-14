@@ -73,13 +73,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Milhoja 
-#>      ◉ step_filter_taxa() id = filter_taxa__Papanași 
+#>      ◉ step_subset_taxa() id = subset_taxa__Suncake 
+#>      ◉ step_filter_taxa() id = filter_taxa__Hot_water_crust_pastry 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Schaumrolle 
-#>      ◉ step_maaslin() id = maaslin__Punschkrapfen
+#>      ◉ step_metagenomeseq() id = metagenomeseq__Crocetta_of_Caltanissetta 
+#>      ◉ step_maaslin() id = maaslin__Tortita_negra
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
@@ -93,8 +93,8 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 
-#>      ✔ maaslin__Punschkrapfen diff_taxa = 146 
+#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
+#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
 #> 
 #>      ℹ 124 taxa are present in all tested methods
 
@@ -111,14 +111,14 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 
-#>      ✔ maaslin__Punschkrapfen diff_taxa = 146 
+#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
+#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
 #> 
 #>      ℹ 124 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Belokranjska_povitica
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Kürtőskalács
 
 ## Results
 cool(da_results)

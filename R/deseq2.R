@@ -73,7 +73,7 @@ methods::setGeneric(
   name = "step_deseq",
   def = function(rec,
                  test = "Wald",
-                 fitType = "parametric",
+                 fitType = "local",
                  betaPrior = FALSE,
                  type = "ashr",
                  max_significance = 0.05,
@@ -194,32 +194,37 @@ run_deseq <- function(rec,
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) 
   }
   
-  phy <-  phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-
+  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+  phyloseq::sample_data(phy) <-  
+    to_tibble(phyloseq::sample_data(phy), "sample_id") %>% 
+    dplyr::mutate(dplyr::across(where(is.character), as.factor)) %>% 
+    data.frame(row.names = 1) %>% 
+    phyloseq::sample_data() 
+    
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      dds <-
-        suppressWarnings(
-          suppressMessages(
-            phy %>%
-              phyloseq::phyloseq_to_deseq2(
-                design = stats::as.formula(stringr::str_c("~", var))
-              ) %>%
-              DESeq2::estimateSizeFactors(geoMeans = apply(
-                X = DESeq2::counts(.),
-                MARGIN = 1,
-                FUN = function(x) {
-                  exp(sum(log(x[x > 0]), na.rm = TRUE) / length(x))
-                }
-              )) %>%
-              DESeq2::DESeq(
-                fitType = fitType,
-                test = test,
-                betaPrior = betaPrior,
-                quiet = TRUE
-              )
+      dds <- suppressMessages(
+        phy %>%
+          phyloseq::phyloseq_to_deseq2(
+            design = stats::as.formula(stringr::str_c("~", var))
           )
+      )
+      
+      dds <-
+        dds %>%
+        DESeq2::estimateSizeFactors(geoMeans = apply(
+          X = DESeq2::counts(.),
+          MARGIN = 1,
+          FUN = function(x) {
+            exp(sum(log(x[x > 0]), na.rm = TRUE) / length(x))
+          }
+        )) %>%
+        DESeq2::DESeq(
+          fitType = fitType,
+          test = test,
+          betaPrior = betaPrior,
+          quiet = TRUE
         )
 
       contrasts_df <- get_comparisons(var, phy, as_list = FALSE, n_cut = 1)

@@ -269,19 +269,7 @@ run_ancom <- function(rec,
             eval()
           
           ## Remove OTUs with zero variance
-          to_remove <- 
-            phyloseq::sample_data(s_phy) %>%
-            tibble::as_tibble(rownames = "sample_id") %>%
-            dplyr::group_split(!!dplyr::sym(vars)) %>% 
-            purrr::map_dfr(~ { 
-              .x %>% 
-                dplyr::pull(sample_id) %>% 
-                phyloseq::prune_samples(s_phy) %>% 
-                phyloseq::filter_taxa(function(x) var(x) > 0) %>% 
-                tibble::as_tibble(rownames = "otu_id")
-            }) %>% 
-            dplyr::filter(value == FALSE) %>% 
-            dplyr::pull(otu_id) 
+          to_remove <- rm_zero_variance(s_phy, vars)
           
           s_phy <- 
             rownames(phyloseq::otu_table(s_phy)) %>% 
@@ -309,18 +297,43 @@ run_ancom <- function(rec,
             trend = trend
           )
         
-          res$res %>%
-            dplyr::select(taxa = taxon, dplyr::contains(!!var)) %>%
-            dplyr::right_join(tax_table(rec), ., by = "taxa") %>%
-            stats::setNames(
-              stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
-            ) %>%
-            dplyr::mutate(
-              comparison = stringr::str_c(comparison, collapse = "_"),
-              var = var,
-              effect = lfc,
-              signif = diff
-            )
+          ancom_stats_tbl(res$res, var, rec, comparison)
         })
     }) 
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+ancom_stats_tbl <- function(ancom_res, var, rec, comparison) {
+  ancom_res %>%
+    dplyr::select(taxa = taxon, dplyr::contains(!!var)) %>%
+    dplyr::right_join(tax_table(rec), ., by = "taxa") %>%
+    stats::setNames(
+      stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
+    ) %>%
+    dplyr::mutate(
+      comparison = stringr::str_c(comparison, collapse = "_"),
+      var = var,
+      effect = lfc,
+      signif = diff
+    )
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+rm_zero_variance <- function(phy, vars) {
+  phyloseq::sample_data(phy) %>%
+    tibble::as_tibble(rownames = "sample_id") %>%
+    dplyr::group_split(!!dplyr::sym(vars)) %>% 
+    purrr::map_dfr(~ { 
+      .x %>% 
+        dplyr::pull(sample_id) %>% 
+        phyloseq::prune_samples(phy) %>% 
+        phyloseq::filter_taxa(function(x) var(x) > 0) %>% 
+        tibble::as_tibble(rownames = "otu_id")
+    }) %>% 
+    dplyr::filter(value == FALSE) %>% 
+    dplyr::pull(otu_id) 
 }

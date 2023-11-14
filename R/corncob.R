@@ -266,43 +266,8 @@ run_corncob <- function(rec,
               )
             }, error = function(e) { conditionMessage(e) })
         
-          ## Skip error for no convergenc
-          if (!methods::is(corncob_res, "differentialTest")) {
-            if (stringr::str_detect(corncob_res, "failed to converge")) {
-              rlang::abort(c(
-                glue::glue(
-                  "{crayon::bgMagenta('corncob')}: All models failed to ", 
-                  "converge!"
-                ),
-                glue::glue(
-                  "{crayon::bgMagenta('corncob')}: If you are seeing this, it",
-                  " is likely that your model is overspecified. This occurs ", 
-                  "when your sample size is not large enough to estimate all ", 
-                  "the parameters of your model. This is most commonly due to", 
-                  " categorical variables that include many categories."
-                ),
-                glue::glue(
-                  "Please remove or edit the ", 
-                  "{crayon::bgMagenta('step_corncob()')} and rerun."
-                )
-              ))
-            } else {
-              rlang::abort(
-                c(
-                  glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
-                  glue::glue(
-                    "Please remove or edit the ", 
-                    "{crayon::bgMagenta('step_corncob()')} and rerun."
-                  ),
-                  glue::glue(
-                    "Please report this bug on GitHub: ", 
-                    "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/", 
-                    "issues" 
-                  )
-                )
-              )
-            }
-          }
+          ## Skip error for no convergence
+          check_non_convergence(corncob_res)
          
           signif_taxa <- corncob::otu_to_taxonomy(
             OTU = corncob_res$significant_taxa,
@@ -310,38 +275,90 @@ run_corncob <- function(rec,
             level = tax_level %>% dplyr::pull()
           ) %>% stringr::str_c(" (", corncob_res$significant_taxa, ")")
 
-          qval <- stats::qnorm(.975)
-          corncob_res$significant_models %>%
-            purrr::map2_dfr(stats::na.omit(corncob_res$p_fdr), function(m, p) {
-              coefs_mu <- m$coefficients[seq_len(m$np.mu), , drop = FALSE]
-              coefs_mu <- coefs_mu[2, , drop = FALSE]
-              
-              tibble::tibble(
-                log2FC = coefs_mu[1, 1],
-                log2FC_min = coefs_mu[1, 1] - qval * coefs_mu[1, 2],
-                log2FC_xmax = coefs_mu[1, 1] + qval * coefs_mu[1, 2],
-                padj = p
-              )
-            }) %>% 
-            dplyr::mutate(
-              taxa = signif_taxa,
-              comparison = stringr::str_c(comparison, collapse = "_"),
-              var = var
-            ) %>%
-            tidyr::separate(
-              taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE
-            ) %>%
-            dplyr::mutate(
-              taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")
-            ) %>%
-            dplyr::mutate(
-              effect = log2FC, 
-              signif = ifelse(
-                padj < fdr_cutoff & abs(log2FC) >= log2FC,
-                TRUE,
-                FALSE
-              )
-            )
+          corncob_stats_tbl(
+            corncob_res,
+            signif_taxa,
+            comparison,
+            var,
+            log2FC,
+            fdr_cutoff
+          )
         })
     })
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+corncob_stats_tbl <- function(corncob_res,
+                              signif_taxa,
+                              comparison,
+                              var,
+                              log2FC,
+                              fdr_cutoff) {
+    
+  qval <- stats::qnorm(0.975)
+  corncob_res$significant_models %>%
+    purrr::map2_dfr(stats::na.omit(corncob_res$p_fdr), function(m, p) {
+      coefs_mu <- m$coefficients[seq_len(m$np.mu), , drop = FALSE]
+      coefs_mu <- coefs_mu[2, , drop = FALSE]
+      tibble::tibble(
+        log2FC = coefs_mu[1, 1],
+        log2FC_min = coefs_mu[1, 1] - qval * coefs_mu[1, 2],
+        log2FC_xmax = coefs_mu[1, 1] + qval * coefs_mu[1, 2],
+        padj = p
+      )
+    }) %>%
+    dplyr::mutate(
+      taxa = signif_taxa,
+      comparison = stringr::str_c(comparison, collapse = "_"),
+      var = var
+    ) %>%
+    tidyr::separate(taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
+    dplyr::mutate(taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")) %>%
+    dplyr::mutate(
+      effect = log2FC,
+      signif = ifelse(padj < fdr_cutoff & abs(log2FC) >= log2FC, TRUE, FALSE)
+    )
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+check_non_convergence <- function(corncob_res) {
+  if (!methods::is(corncob_res, "differentialTest")) {
+    if (stringr::str_detect(corncob_res, "failed to converge")) {
+      rlang::abort(c(
+        glue::glue(
+          "{crayon::bgMagenta('corncob')}: All models failed to converge!"
+        ),
+        glue::glue(
+          "{crayon::bgMagenta('corncob')}: If you are seeing this, it",
+          " is likely that your model is overspecified. This occurs ", 
+          "when your sample size is not large enough to estimate all ", 
+          "the parameters of your model. This is most commonly due to", 
+          " categorical variables that include many categories."
+        ),
+        glue::glue(
+          "Please remove or edit the ", 
+          "{crayon::bgMagenta('step_corncob()')} and rerun."
+        )
+      ))
+    } else {
+      rlang::abort(
+        c(
+          glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
+          glue::glue(
+            "Please remove or edit the ", 
+            "{crayon::bgMagenta('step_corncob()')} and rerun."
+          ),
+          glue::glue(
+            "Please report this bug on GitHub: ", 
+            "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/", 
+            "issues" 
+          )
+        )
+      )
+    }
+  }
 }
