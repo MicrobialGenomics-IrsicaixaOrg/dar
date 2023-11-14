@@ -2,7 +2,8 @@
 
 # Test found in read_data.R:129 (file:line)
   
-df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
+df <- 
+  read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
 
 expect_invisible(validate_otu(df))
 expect_error(validate_otu(dplyr::select(df, -1)))

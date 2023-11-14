@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in read_data.R:261 (file:line)
+# Test found in read_data.R:263 (file:line)
   
 df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar"))
 
@@ -13,5 +13,7 @@ expect_error(validate_tax_table(dplyr::mutate(
 expect_error(validate_tax_table(dplyr::mutate(
   df, otu_id = ifelse(otu_id == "Otu_1", "Otu_2", otu_id)
 )))
-expect_error(validate_tax_table(dplyr::mutate(df, dplyr::across(2, as.factor))))
+expect_error(validate_tax_table(
+  dplyr::mutate(df, dplyr::across(2, as.factor))
+))
 expect_error(validate_tax_table(dplyr::mutate(df, otu_id = 1:nrow(df))))

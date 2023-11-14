@@ -3,9 +3,15 @@
 # Test found in misc.R:159 (file:line)
   
 data(test_prep_rec)
-res_1 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da"))
-res_2 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-1])
-res_3 <- find_intersections(test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2])
+res_1 <- find_intersections(
+  test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
+)
+res_2 <- find_intersections(
+  test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-1]
+)
+res_3 <- find_intersections(
+  test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2]
+)
 
 expect_equal(nrow(res_1), 88)
 expect_equal(nrow(res_2), 36)

@@ -127,7 +127,8 @@ read_data <- function(data_path) {
 #' @keywords internal
 #' @autoglobal
 #' @tests testthat
-#' df <- read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
+#' df <- 
+#'   read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
 #' 
 #' expect_invisible(validate_otu(df))
 #' expect_error(validate_otu(dplyr::select(df, -1)))
@@ -212,7 +213,8 @@ validate_otu <- function(otu) {
 #' @keywords internal
 #' @autoglobal
 #' @tests testthat
-#' df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
+#' df <- 
+#'   read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
 #' 
 #' expect_s3_class(validate_sample_data(df), c("tbl_df", "tbl", "data.frame"))
 #' expect_equal(dim(df), c(156, 4))
@@ -270,7 +272,9 @@ validate_sample_data <- function(sample_data) {
 #' expect_error(validate_tax_table(dplyr::mutate(
 #'   df, otu_id = ifelse(otu_id == "Otu_1", "Otu_2", otu_id)
 #' )))
-#' expect_error(validate_tax_table(dplyr::mutate(df, dplyr::across(2, as.factor))))
+#' expect_error(validate_tax_table(
+#'   dplyr::mutate(df, dplyr::across(2, as.factor))
+#' ))
 #' expect_error(validate_tax_table(dplyr::mutate(df, otu_id = 1:nrow(df))))
 validate_tax_table <- function(tax_table) {
   ids <- tax_table %>% dplyr::pull(1)
@@ -318,8 +322,10 @@ validate_tax_table <- function(tax_table) {
 #'   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
 #'   read_phyloseq()
 #' 
-#' no_tax_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
-#' no_sam_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::tax_table(phy))
+#' no_tax_phy <- 
+#'   phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
+#' no_sam_phy <- 
+#'   phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::tax_table(phy))
 #' only_otu_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy))
 #' 
 #' expect_error(validate_phyloseq(

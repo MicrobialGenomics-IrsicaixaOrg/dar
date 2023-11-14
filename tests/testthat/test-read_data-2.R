@@ -1,8 +1,9 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in read_data.R:214 (file:line)
+# Test found in read_data.R:215 (file:line)
   
-df <- read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
+df <- 
+  read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
 
 expect_s3_class(validate_sample_data(df), c("tbl_df", "tbl", "data.frame"))
 expect_equal(dim(df), c(156, 4))

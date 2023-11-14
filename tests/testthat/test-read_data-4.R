@@ -1,14 +1,16 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in read_data.R:315 (file:line)
+# Test found in read_data.R:319 (file:line)
   
 ## phyloseq validation
 phy <-
   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
   read_phyloseq()
 
-no_tax_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
-no_sam_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::tax_table(phy))
+no_tax_phy <- 
+  phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::sample_data(phy))
+no_sam_phy <- 
+  phyloseq::phyloseq(phyloseq::otu_table(phy), phyloseq::tax_table(phy))
 only_otu_phy <- phyloseq::phyloseq(phyloseq::otu_table(phy))
 
 expect_error(validate_phyloseq(
