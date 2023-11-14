@@ -80,7 +80,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
-    R (>= 4.2.0)
+    R (>= 4.4.0)
 LazyData: false
 Collate: 
     'recipe-class.R'
