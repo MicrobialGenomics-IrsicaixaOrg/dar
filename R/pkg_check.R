@@ -65,23 +65,23 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 #'
 #' @aliases required_deps
 #' @return character
-#' @export
+#' @keywords internal
 #' @autoglobal
 #' @examples 
 #' data(test_rec)
 #' 
 #' ## The function returns instructions to install any uninstalled dependencies 
 #' ## needed to run the recipe steps
-#' required_deps(test_rec)
+#' dar:::required_deps(test_rec)
 #' 
 #' ## The function also works with prep_recipe-class objects
 #' data(test_prep_rec)
-#' required_deps(test_prep_rec)
+#' dar:::required_deps(test_prep_rec)
 methods::setGeneric("required_deps", function(rec)
   standardGeneric("required_deps"))
 
 #' @rdname required_deps
-#' @export
+#' @keywords internal
 #' @autoglobal
 methods::setMethod(
   f = "required_deps",

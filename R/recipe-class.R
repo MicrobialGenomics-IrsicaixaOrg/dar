@@ -876,10 +876,15 @@ methods::setMethod(
         purrr::discard(
           stringr::str_detect(., "run_subset|run_filter|run_rarefaction")
         ) %>%
-        furrr::future_map(~ {
+        furrr::future_map( ~ {
           rec <- rec
           eval(parse(text = .x))
-        }, .options = furrr::furrr_options(seed = TRUE))
+        },
+        .options = furrr::furrr_options(
+          seed = TRUE,
+          packages = "dar",
+          conditions = structure("condition", exclude = "message")
+        ))
       
       names(res) <- names
     }
