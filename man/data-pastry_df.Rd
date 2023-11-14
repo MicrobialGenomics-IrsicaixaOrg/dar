@@ -18,3 +18,4 @@ The function does not return a value explicitly.
 Tibble contain
 }
 \keyword{data}
+\keyword{internal}

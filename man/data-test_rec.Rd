@@ -8,6 +8,9 @@
 \format{
 A recipe object.
 }
+\usage{
+test_rec
+}
 \value{
 The function does not return a value explicitly.
 }

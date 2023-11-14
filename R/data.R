@@ -17,7 +17,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #' metaHIV_phy
-NA
+"metaHIV_phy"
 
 #' Pastery data for step id generation
 #'
@@ -31,10 +31,10 @@ NA
 #' @name data-pastry_df
 #' @aliases pastry_df
 #' @docType data
-#' @keywords data
+#' @keywords data internal
 #' @autoglobal
 #' @return The function does not return a value explicitly.
-NA
+NULL
 
 #' Recipe for metaHIV_phy data
 #'
@@ -49,7 +49,7 @@ NA
 #' @keywords data
 #' @autoglobal
 #' @return The function does not return a value explicitly.
-NA
+"test_rec"
 
 #' Prep-recipe for metaHIV_phy data
 #'
@@ -65,4 +65,4 @@ NA
 #' @keywords data
 #' @autoglobal
 #' @return The function does not return a value explicitly.
-NA
+"test_prep_rec"

@@ -8,6 +8,9 @@
 \format{
 A prep-recipe object.
 }
+\usage{
+test_prep_rec
+}
 \value{
 The function does not return a value explicitly.
 }
