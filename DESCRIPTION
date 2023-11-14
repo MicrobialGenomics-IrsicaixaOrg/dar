@@ -34,7 +34,6 @@ Imports:
     cli,
     ComplexHeatmap,
     crayon,
-    data.table,
     dplyr,
     generics,
     ggplot2,

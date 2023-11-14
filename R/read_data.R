@@ -438,5 +438,5 @@ read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {
     rlang::abort(c("Prblem while reading text file.", check))
   }
   
-  data.table::fread(file_path) %>% tibble::as_tibble()
+  readr::read_csv(file_path)
 }

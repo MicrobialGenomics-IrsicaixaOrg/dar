@@ -5,7 +5,6 @@
 ## DEPENDENCIES
 usethis::use_pipe()
 usethis::use_package("phyloseq")
-usethis::use_package("data.table")
 usethis::use_package("dplyr")
 usethis::use_package("glue")
 usethis::use_package("methods")
