@@ -14,6 +14,7 @@ utils::globalVariables(c(
   # <find_intersections>
   # <import_steps>
   # <.zero_prepro>
+  # <recipes_pkg_check>
   # <corr_heatmap>
   # <.abundance_boxplot>
   # <.abundance_heatmap>

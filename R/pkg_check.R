@@ -10,10 +10,11 @@
 #' @keywords internal
 #' @autoglobal
 #' @tests testthat
-#' expected <-
+#' expected <- capture.output(
 #'   glue::glue("1 package is needed for step_aldex() and is not installed: ", 
-#'   "(randompackage). Start a clean R session then run: ", 
-#'   "pak::pkg_install(c(\"bioc::randompackage\")) ")
+#'   "(randompackage). \n Start a clean R session then run: ", 
+#'   "BiocManager::install(c(\"randompackage\")) ") %>% print()
+#' )
 #'   
 #' res <- capture.output(
 #'   dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()")
@@ -39,14 +40,36 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
     pkList <- paste(
       stringr::str_remove_all(pkg[!good], ".*[/]|.*[:]") , collapse = ", "
     )
-    inst <- stringr::str_c(pkg[!good], collapse = '", "')
-    inst <- glue::glue('pak::pkg_install(c("{inst}"))')
+    
+    inst_bioc <- 
+      pkg[!good] %>% 
+      .[stringr::str_starts(., "bioc::")] %>% 
+      stringr::str_remove_all("bioc::") %>% 
+      paste("\"", ., "\"", sep = "", collapse = ", ")
+    
+    inst_cran <- 
+      pkg[!good] %>% 
+      .[!stringr::str_starts(., "bioc::")] %>% 
+      paste("\"", ., "\"", sep = "", collapse = ", ")
+     
+    msg_bioc <- NULL
+    if (stringr::str_count(inst_bioc) > 2) {
+      msg_bioc <- glue::glue('BiocManager::install(c({inst_bioc}))')
+    }
+    
+    msg_cran <- NULL
+    if (stringr::str_count(inst_cran) > 2) {
+      msg_cran <- glue::glue('install.packages(c("{inst_cran}"))')
+    }
+    
+    inst <- stringr::str_c(c(msg_bioc, msg_cran), collapse = " & ")
+      
     msg <- glue::glue(
       '{sum(!good)} {ifelse(sum(!good) > 1, "packages are", "package is")} ',
       'needed for {crayon::blue(step_name)} and ',
       '{ifelse(sum(!good) > 1, "are", "is")} not installed: ',
-      '({crayon::blue(pkList)}). Start a clean R session then run: ',
-      '{crayon::blue(inst)}'
+      '({crayon::blue(pkList)}). \n Start a clean R session then run: ',
+      '{crayon::blue(inst)}' 
     )
     cat(c(msg, "\n"))
   }
