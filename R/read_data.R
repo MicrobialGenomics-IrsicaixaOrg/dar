@@ -44,7 +44,7 @@
 #' 
 #' @examples
 #' # From a phyloseq object saved with .rds extension.
-#' system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
+#' system.file("extdata", "metaHIV_phy.rds", package = "dar") |>
 #'   read_data()
 #'
 #' # From the three components of a phyloseq object saved as a plain text.
@@ -319,7 +319,7 @@ validate_tax_table <- function(tax_table) {
 #' @tests testthat
 #' ## phyloseq validation
 #' phy <-
-#'   system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
+#'   system.file("extdata", "metaHIV_phy.rds", package = "dar") |>
 #'   read_phyloseq()
 #' 
 #' no_tax_phy <- 

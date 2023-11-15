@@ -575,8 +575,10 @@ methods::setMethod(
 #' ## The count_cutoff indicates the minimum number of methods in which an OTU
 #' ## must be present. By default the value is equal to
 #' ## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
-#' mutual_plt(test_prep_rec, count_cutoff = length(steps_ids(test_prep_rec, 
-#' "da")))
+#' mutual_plt(
+#'   test_prep_rec, 
+#'   count_cutoff = length(steps_ids(test_prep_rec, "da"))
+#' )
 #'
 #' ## A single comparisons can be plotted through the comparison parameter.
 #' mutual_plt(test_prep_rec, comparisons = c("hts_msm"))

@@ -77,23 +77,23 @@
 #'
 #' ## Init recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Class") %>%
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+#'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
 #' rec
 #'
 #' ## Define step with default parameters and prep
 #' rec <-
-#'   step_ancom(rec) %>%
+#'   step_ancom(rec) |>
 #'   prep(parallel = FALSE)
 #'
 #' rec
 #'
 #' ## Wearing rarefaction only for this step
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>%
-#'   step_ancom(rec, rarefy = TRUE)
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   step_ancom(rarefy = TRUE)
 #'
 #' rec
 methods::setGeneric(

@@ -69,7 +69,7 @@ of two ways:
 ```{r step_code, eval=FALSE}
 rec_obj <- step_{X}(rec_obj, arguments)   
 ## or
-rec_obj <- rec_obj %>% step_{X}(arguments)
+rec_obj <- rec_obj |> step_{X}(arguments)
 ```
 
 Note that all `step_ancom` and the other functions will always return updated 
@@ -96,8 +96,8 @@ and Archaea OTUs from the Kingdom taxonomic level. We will then filter out OTUs
 where at least 3% of the samples have counts greater than 0. 
 
 ```{r prepro_steps}
-rec_obj <- rec_obj %>% 
-  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>% 
+rec_obj <- rec_obj |>
+  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
   
 rec_obj
@@ -111,9 +111,9 @@ will use __metagenomeSeq__, __maaslin2__ and __DESeq2__ methods with default
 parameters (those defined by the authors of each method).
 
 ```{r da_steps}
-rec_obj <- rec_obj %>% 
-  step_deseq() %>% 
-  step_metagenomeseq(rm_zeros = 0.01) %>% 
+rec_obj <- rec_obj |>
+  step_deseq() |>
+  step_metagenomeseq(rm_zeros = 0.01) |>
   step_maaslin()
 
 rec_obj
@@ -123,10 +123,12 @@ The 'dar' package includes more da steps than those defined above. Below is the
 full list:
 
 ```{r da_steps_list}
-grep("^step_", ls("package:dar"), value = TRUE) %>% 
-  grep(
-    "_new|_to_expr|filter|subset|rarefaction", ., value = TRUE, invert = TRUE
-  )
+grep(
+  "_new|_to_expr|filter|subset|rarefaction",
+  grep("^step_", ls("package:dar"), value = TRUE),
+  value = TRUE,
+  invert = TRUE
+)
 ```
 
 ## Prep 
@@ -153,7 +155,7 @@ methods used.
 
 ```{r bake}
 ## Number of used methods
-count <- steps_ids(da_results, type = "da") %>% length()
+count <- steps_ids(da_results, type = "da") |> length()
 
 ## Define the bake 
 da_results <- bake(da_results, count_cutoff = count)

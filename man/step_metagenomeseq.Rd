@@ -87,23 +87,23 @@ data(metaHIV_phy)
 
 ## Init recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Class") \%>\%
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
+  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.02 * length(x))")
 
 rec
 
 ## Define step with default parameters and prep
 rec <-
-  step_metagenomeseq(rec, rm_zeros = 0.01) \%>\%
+  step_metagenomeseq(rec, rm_zeros = 0.01) |>
   prep(parallel = FALSE)
 
 rec
 
 ## Wearing rarefaction only for this step
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\%
-  step_metagenomeseq(rec, rarefy = TRUE)
+  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  step_metagenomeseq(rarefy = TRUE)
 
 rec
 }

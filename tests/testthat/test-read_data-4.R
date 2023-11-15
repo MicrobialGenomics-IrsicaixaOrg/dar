@@ -4,7 +4,7 @@
   
 ## phyloseq validation
 phy <-
-  system.file("extdata", "metaHIV_phy.rds", package = "dar") %>%
+  system.file("extdata", "metaHIV_phy.rds", package = "dar") |>
   read_phyloseq()
 
 no_tax_phy <- 

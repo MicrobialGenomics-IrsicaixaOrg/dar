@@ -40,7 +40,7 @@ annotation with sample_id in the first column.
 }
 \examples{
 # From a phyloseq object saved with .rds extension.
-system.file("extdata", "metaHIV_phy.rds", package = "dar") \%>\%
+system.file("extdata", "metaHIV_phy.rds", package = "dar") |>
   read_data()
 
 # From the three components of a phyloseq object saved as a plain text.

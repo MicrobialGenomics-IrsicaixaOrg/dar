@@ -80,10 +80,10 @@ methods::setClass(
 #'
 #' ## Define recipe
 #' rec <-
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") %>%
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
-#'   step_metagenomeseq(rm_zeros = 0.01) %>%
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+#'   step_metagenomeseq(rm_zeros = 0.01) |>
 #'   step_maaslin()
 #'
 #' ## Prep recipe
@@ -102,8 +102,8 @@ methods::setClass(
 #' rec
 #' 
 #' ## And define them later
-#' rec <- rec %>%
-#'   add_var("RiskGroup2") %>%
+#' rec <- rec |>
+#'   add_var("RiskGroup2") |>
 #'   add_tax("Genus")
 #'
 #' rec
@@ -782,9 +782,9 @@ methods::setMethod(
 #'
 #' ## Define recipe
 #' rec <-
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") %>%
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
 #'   step_maaslin()
 #'
 #' ## Prep recipe

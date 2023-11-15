@@ -46,8 +46,7 @@ rand_id <- function(prefix = "step") {
 #' 
 #' @examples 
 #' data(test_rec)
-#' get_phy(test_rec) %>% 
-#'   dar:::get_comparisons("RiskGroup2", .)
+#' dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
 get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
   dat <-
     phyloseq::sample_data(phy) %>%
@@ -95,7 +94,7 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #' @examples
 #' data(test_rec)
 #' otu_table <- 
-#'   get_phy(test_rec) %>% 
+#'   get_phy(test_rec) |>
 #'   phyloseq::otu_table()
 #' 
 #' dar:::to_tibble(otu_table)
@@ -115,7 +114,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' @autoglobal
 #' @tests testthat
 #' data(test_prep_rec)
-#' exprs <- test_prep_rec@steps %>% purrr::map_chr(step_to_expr)
+#' exprs <- test_prep_rec@steps |> purrr::map_chr(step_to_expr)
 #' expect_length(exprs, 5)
 #' expect_true(all(stringr::str_detect(exprs, "run_")))
 step_to_expr <- function(step) {
@@ -309,9 +308,9 @@ dot <- function() {
 #' 
 #' ## Create a recipe with steps
 #' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
 #'   step_maaslin()
 #'  
 #' ## Prep recipe   
@@ -373,7 +372,8 @@ export_steps <- function(rec, file_name) {
 #' 
 #' ## If the json file contains 'bake', the recipe is automatically prepared. 
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") %>% 
+#' rec <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   import_steps(json_file)
 #'   
 #' rec
@@ -467,8 +467,8 @@ extract_instructions <- function(lines) {
 #' rec <-
 #'   phyloseq::subset_samples(
 #'     GlobalPatterns, SampleType %in% c("Soil", "Skin")
-#'   ) %>%
-#'   recipe(var_info  = "SampleType", tax_info = "Genus") %>%
+#'   ) |>
+#'   recipe(var_info  = "SampleType", tax_info = "Genus") |>
 #'   step_rarefaction()
 #'
 #' contains_rarefaction(rec)

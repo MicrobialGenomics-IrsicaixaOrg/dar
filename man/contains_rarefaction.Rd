@@ -21,8 +21,8 @@ data(GlobalPatterns, package = "phyloseq")
 rec <-
   phyloseq::subset_samples(
     GlobalPatterns, SampleType \%in\% c("Soil", "Skin")
-  ) \%>\%
-  recipe(var_info  = "SampleType", tax_info = "Genus") \%>\%
+  ) |>
+  recipe(var_info  = "SampleType", tax_info = "Genus") |>
   step_rarefaction()
 
 contains_rarefaction(rec)

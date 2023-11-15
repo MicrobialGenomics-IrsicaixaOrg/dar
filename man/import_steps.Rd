@@ -36,7 +36,8 @@ rec
 
 ## If the json file contains 'bake', the recipe is automatically prepared. 
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") \%>\% 
+rec <- 
+  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   import_steps(json_file)
   
 rec

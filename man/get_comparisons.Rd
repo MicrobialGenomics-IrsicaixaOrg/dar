@@ -23,7 +23,6 @@ Generate all unique contrasts between levels of a categorical variable.
 }
 \examples{
 data(test_rec)
-get_phy(test_rec) \%>\% 
-  dar:::get_comparisons("RiskGroup2", .)
+dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
 }
 \keyword{internal}

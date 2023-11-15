@@ -39,10 +39,10 @@ data(metaHIV_phy)
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") \%>\%
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') \%>\%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") \%>\%
-  step_metagenomeseq(rm_zeros = 0.01) \%>\%
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') |>
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+  step_metagenomeseq(rm_zeros = 0.01) |>
   step_maaslin()
 
 ## Prep recipe
@@ -61,8 +61,8 @@ rec <- recipe(metaHIV_phy)
 rec
 
 ## And define them later
-rec <- rec \%>\%
-  add_var("RiskGroup2") \%>\%
+rec <- rec |>
+  add_var("RiskGroup2") |>
   add_tax("Genus")
 
 rec

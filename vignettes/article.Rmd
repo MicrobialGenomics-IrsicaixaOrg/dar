@@ -99,8 +99,8 @@ phy_qc(rec)
 
 ## Adding prepro steps
 rec <- 
-  rec %>% 
-  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>% 
+  rec |>
+  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.1 * length(x))")
 
 rec
@@ -122,14 +122,14 @@ methods and that the results were interpretable.
 
 ```{r}
 ## DA steps definition
-rec <- rec %>% 
-  step_ancom() %>%
-  step_aldex() %>%
-  step_deseq() %>%
-  step_corncob(filter_discriminant = FALSE) %>%
-  step_metagenomeseq(rm_zeros = 0.01) %>%
-  step_maaslin(min_prevalence = 0) %>%
-  step_lefse() %>% 
+rec <- rec |> 
+  step_ancom() |> 
+  step_aldex() |> 
+  step_deseq() |> 
+  step_corncob(filter_discriminant = FALSE) |> 
+  step_metagenomeseq(rm_zeros = 0.01) |> 
+  step_maaslin(min_prevalence = 0) |> 
+  step_lefse() |> 
   step_wilcox()
 
 rec
@@ -163,7 +163,7 @@ extract the results.
 ```{r}
 ## Default DA taxa results
 results <- 
-  bake(da_results) %>% 
+  bake(da_results) |> 
   cool()
 
 results
@@ -248,8 +248,10 @@ these parameters are not used in this example.
 ```{r}
 ## Extract id for deseq step
 to_exclude <- 
-  steps_ids(da_results, type = "da") %>% 
-  .[stringr::str_detect(., "deseq")]
+  steps_ids(da_results, type = "da") |> 
+  stringr::str_detect("deseq")
+
+to_exclude <- steps_ids(da_results, type = "da")[to_exclude]
 
 ## Define consensus strategy
 da_results <- bake(da_results, exclude = to_exclude, )
@@ -276,8 +278,8 @@ to visualize the differences in abundance of the differential abundant taxa.
 ```{r, fig.height=6}
 ## Ids for Bacteroide and Provotella species 
 ids <- 
-  f_results %>% 
-  dplyr::filter(stringr::str_detect(taxa, "Bacteroi.*|Prevote.*")) %>% 
+  f_results |>
+  dplyr::filter(stringr::str_detect(taxa, "Bacteroi.*|Prevote.*")) |>
   dplyr::pull(taxa_id) 
 
 ## Abundance plot as boxplot
