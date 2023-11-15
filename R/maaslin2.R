@@ -33,7 +33,7 @@
 #'   Often one of the major goals of this procedure is to achieve parity in
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
-#'   is expected.
+#'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -212,12 +212,11 @@ run_maaslin <- function(rec,
 
   output <- glue::glue("{tempdir()}/maaslin_output")
 
-  phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  if (rarefy) { 
-    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE) 
-  }
+  phy <- 
+    get_phy(rec) %>% 
+    use_rarefy(rarefy)
   
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
 

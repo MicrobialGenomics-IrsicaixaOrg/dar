@@ -49,7 +49,7 @@
 #'   Often one of the major goals of this procedure is to achieve parity in
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
-#'   is expected.
+#'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -58,29 +58,29 @@
 #' @return An object of class `recipe`
 #' @export
 #' @autoglobal
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init recipe
-#' rec <- 
+#' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
-#' 
+#'
 #' rec
-#' 
+#'
 #' ## Define ALDEX step with default parameters and prep
-#' rec <- 
+#' rec <-
 #'   step_aldex(rec) |>
 #'   prep(parallel = FALSE)
-#'   
+#'
 #' rec
-#' 
-#' ## Wearing rarefaction only for this step 
-#' rec <- 
+#'
+#' ## Wearing rarefaction only for this step
+#' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   step_aldex(rarefy = TRUE)
-#' 
+#'
 #' rec
 methods::setGeneric(
   name = "step_aldex",
@@ -155,14 +155,12 @@ required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
 #' @autoglobal
 run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
 
-  phy <- get_phy(rec)
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-
-  if (rarefy) {
-    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
-  }
-
+  phy <- 
+    get_phy(rec) %>% 
+    use_rarefy(rarefy)
+  
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
     purrr::set_names() %>%

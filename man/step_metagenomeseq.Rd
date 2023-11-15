@@ -65,7 +65,7 @@ abundance values in the otu_table component of the first argument, physeq.
 Often one of the major goals of this procedure is to achieve parity in
 total number of counts between samples, as an alternative to other formal
 normalization procedures, which is why a single value for the sample.size
-is expected.}
+is expected. If 'no_seed', rarefaction is performed without a set seed.}
 
 \item{rm_zeros}{Proportion of samples of the same categorical level with more
 than 0 counts.}

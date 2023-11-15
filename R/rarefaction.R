@@ -96,6 +96,8 @@ required_pkgs_rarefaction <- function(x, ...) {  c("bioc::phyloseq") }
 #' @autoglobal
 run_rarefaction <- function(rec) {
   rec@phyloseq <- 
-    phyloseq::rarefy_even_depth(get_phy(rec), rngseed = 1234, verbose = FALSE)
+    get_phy(rec) %>% 
+    use_rarefy(TRUE)
+    
   rec
 }

@@ -477,3 +477,63 @@ contains_rarefaction <- function(rec) {
     stringr::str_detect("^rarefaction_") %>%
     any()
 }
+
+
+#' Perform Rarefaction on Phyloseq Object
+#'
+#' This function performs rarefaction on a phyloseq object if the `rarefy`
+#' parameter is set to TRUE. Rarefaction is a process that randomly subsamples
+#' the data to a specified depth. This is done to account for differences in
+#' sequencing depth between samples. However, this process is not without
+#' controversy. Rarefaction can lead to loss of information and can also lead to
+#' false positives in differential abundance testing. For more information, see
+#' https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2
+#'
+#' @param phy A phyloseq object.
+#' @param rarefy A logical value indicating whether to perform rarefaction. If
+#'   'no_seed', rarefaction is performed without a set seed. If FALSE, no
+#'   rarefaction is performed.
+#'
+#' @return A phyloseq object after rarefaction if `rarefy` is TRUE or "no_seed",
+#'   otherwise the original phyloseq object is returned.
+#' @keywords internal
+#' @examples
+#' data(metaHIV_phy)
+#' 
+#' ## With seed
+#' phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
+#' 
+#' ## Witout seed
+#' phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
+use_rarefy <- function(phy, rarefy) {
+  info_rarefy <- "Rarefaction is a process that randomly subsamples the data to a specified depth. This is done to account for differences in sequencing depth between samples. However, this process is not without controversy. Rarefaction can lead to loss of information and can also lead to false positives in differential abundance testing. For more information, see https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2"
+  
+  if (isTRUE(rarefy)) {
+    rlang::inform(
+      c(
+        "!" = "Rarefaction is enabled",
+        i = "Rarefaction is being performed with a set seed. This will ensure that the results are reproducible, but will not allow for randomness in the subsampling process.",
+        i = info_rarefy
+      ), use_cli_format = TRUE
+    )
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
+  } 
+  
+  if (rarefy == "no_seed") {
+    rlang::inform(
+      c(
+        "!" = "Rarefaction is enabled",
+        i = "Rarefaction is being performed without a set seed. This will ensure that the results are not reproducible, but will allow for more randomness in the subsampling process.",
+        i = info_rarefy
+      ), use_cli_format = TRUE
+    )
+    phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE)
+  }
+  phy
+}
+
+
+
+
+
+
