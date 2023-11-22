@@ -15,7 +15,7 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 #' A recipe is a description of the steps to be applied to a data set in order
 #' to prepare it for data analysis.
 #'
-#' @slot phyloseq Phyloseq-class object
+#' @slot phyloseq Phyloseq-class object.
 #' @slot var_info A tibble that contains the current set of terms in the data
 #'   set. This initially defaults to the same data contained in `var_info`.
 #' @slot tax_info A tibble that contains the current set of taxonomic levels
@@ -50,7 +50,8 @@ methods::setClass(
 #' A recipe is a description of the steps to be applied to a data set in order
 #' to prepare it for data analysis.
 #'
-#' @param phyloseq Phyloseq-class object.
+#' @param microbiome_object Phyloseq-class object or
+#'   TreeSummarizedExperiment-class object.
 #' @param var_info A character string of column names corresponding to variables
 #'   that will be used in any context.
 #' @param tax_info A character string of taxonomic levels that will be used in
@@ -67,13 +68,17 @@ methods::setClass(
 #' @aliases recipe
 #' @export
 #' @autoglobal
-#' @tests testthat
-#' data(metaHIV_phy)
-#' colnames(metaHIV_phy@tax_table) <- 
+#' @tests testthat 
+#' data(metaHIV_phy) 
+#' colnames(metaHIV_phy@tax_table) <-
 #'   c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")
-#' expect_error(
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-#' ) 
+#'   
+#' expect_error( 
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") 
+#' )
+#' 
+#' data(GlobalPatterns, package = "mia")
+#' expect_s4_class(recipe(GlobalPatterns), "recipe")
 #' 
 #' @examples
 #' data(metaHIV_phy)
@@ -100,24 +105,26 @@ methods::setClass(
 #' rec <- recipe(metaHIV_phy)
 #'
 #' rec
-#' 
+#'
 #' ## And define them later
 #' rec <- rec |>
 #'   add_var("RiskGroup2") |>
 #'   add_tax("Genus")
 #'
 #' rec
-#' 
-#' ## When trying to add an identical step to an existing one, the system 
+#'
+#' ## When trying to add an identical step to an existing one, the system
 #' ## returns an information message.
 #' rec <- step_ancom(rec)
 #' rec <- step_ancom(rec)
-#' 
+#'
 #' ## The same with bake
 #' da_results <- bake(da_results)
 #' da_results <- bake(da_results)
-recipe <- 
-  function(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list()) {
+recipe <- function(microbiome_object = NULL, 
+                   var_info = NULL, 
+                   tax_info = NULL, 
+                   steps = list()) {
 
   var_info <- tibble::tibble(vars = var_info)
   tax_info <- tibble::tibble(tax_lev = tax_info)
@@ -125,7 +132,12 @@ recipe <-
   expected <- c("Kingdom", "Phylum", "Class", "Order", 
                 "Family", "Genus", "Species")
   
-  if (!all(colnames(phyloseq@tax_table) %in% expected)) {
+  if (is(microbiome_object, "TreeSummarizedExperiment")) {
+    microbiome_object <- 
+      mia::makePhyloseqFromTreeSummarizedExperiment(microbiome_object)
+  }
+  
+  if (!all(colnames(microbiome_object@tax_table) %in% expected)) {
     rlang::abort(
       c(
         glue::glue(
@@ -144,7 +156,7 @@ recipe <-
   
   methods::new(
     Class = "recipe",
-    phyloseq = phyloseq,
+    phyloseq = microbiome_object,
     var_info = var_info,
     tax_info = tax_info,
     steps = steps
@@ -184,7 +196,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     cat(
       glue::glue(
         "     {cross()} undefined variable of interest. Use ",
-        "{crayon::bgMagenta('add_var()')} to add to recipe!"
+        "{crayon::bgMagenta('add_var()')} to add it to recipe!"
       ),
       "\n"
     )
@@ -210,7 +222,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     cat(
       glue::glue(
         "     {cross()} undefined taxonomic level. Use ",
-        "{crayon::bgMagenta('add_tax()')} to add to recipe!"
+        "{crayon::bgMagenta('add_tax()')} to add it to recipe!"
       ),
       "\n"
     )
@@ -622,7 +634,7 @@ methods::setMethod(
       cat(
         glue::glue(
           "     {cross()} undefined variable of interest. Use ", 
-          "{crayon::bgMagenta('add_var()')} to add to recipe!"
+          "{crayon::bgMagenta('add_var()')} to add it to recipe!"
         ),
         "\n"
       )
@@ -652,7 +664,7 @@ methods::setMethod(
       cat(
         glue::glue(
           "     {cross()} undefined taxonomic level. Use ", 
-          "{crayon::bgMagenta('add_tax()')} to add to recipe!"
+          "{crayon::bgMagenta('add_tax()')} to add it to recipe!"
         ),
         "\n"
       )

@@ -1,5 +1,5 @@
 ---
-title: "Converting Common Data Formats to Phyloseq"
+title: "Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Data Import}
@@ -8,8 +8,7 @@ vignette: >
 ---
 
 <style>
-body {
-text-align: justify}
+body {text-align: justify}
 </style>
 
 ```{r, include = FALSE}
@@ -22,24 +21,35 @@ knitr::opts_chunk$set(
 options(digits = 3)
 ```
 
-The "dar" package's recipe class relies on a phyloseq object as its input, 
-which might pose a challenge for users who have their data stored in formats 
-other than phyloseq. To address this issue, this vignette serves as a 
-comprehensive guide, outlining the step-by-step process of converting commonly 
-used data formats, including "biome" and "TreeSummarizedExperiment," into the 
-phyloseq format. With these instructions, users can easily take advantage of 
-the powerful features of the "dar" package to perform differential abundance 
-analysis, regardless of their original data format.
+The "dar" package is a versatile and user-friendly tool designed to accept 
+inputs in a variety of formats. It primarily utilizes the `phyloseq` format but 
+also supports the `TreeSummarizedExperiment` format. This flexibility allows 
+users to conduct differential abundance analysis smoothly, irrespective of 
+their initial data format. To facilitate this, a detailed guide is available 
+to aid users in converting other prevalent data formats, such as `biome`, 
+`mothur`, `metaphlan`, and more, into the necessary `phyloseq` or 
+`TreeSummarizedExperiment` formats. 
 
-## Converting Data in "biome" Format to Phyloseq
+```{r}
+suppressPackageStartupMessages(library(phyloseq))
+suppressPackageStartupMessages(library(mia))
 
-To convert data in "biome" format to phyloseq format, we can use the 
-`phyloseq::import_biom()` function. Here's a step-by-step example of how to 
+```
+
+## Importing Data from `biome` Format
+
+The `biome` format is a commonly used format in bioinformatics to represent 
+microbiome sequencing data. Here's how you can import data in `biome` format to 
+both `phyloseq` and `TreeSummarizedExperiment.`
+
+
+### To Phyloseq
+
+To convert data from the `biome` format to the `phyloseq` format, you can use 
+the `phyloseq::import_biom()` function. Here's a step-by-step example of how to 
 perform this conversion:
 
 ```{r}
-library(phyloseq)
-
 # Example of a rich dense biom file
 rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
@@ -51,18 +61,7 @@ phy <- phyloseq::import_biom(
 )
 
 phy
-```
 
-In this example, the `read_biom()` function is used to read data in "biome" 
-format from a file, and then `import_biom()` is used to convert it to phyloseq 
-format. You may need to adjust the parameters according to the specific details 
-of your data.
-
-Once the conversion is complete, it is important to inspect the phyloseq object 
-to identify the variable of interest and the taxonomic level for initializing 
-the recipe.
-
-```{r}
 # Print sample_data
 phyloseq::sample_data(phy)
 
@@ -75,69 +74,223 @@ rec <- dar::recipe(phy, var_info = "BODY_SITE", tax_info = "Genus")
 rec
 ```
 
-In the provided code snippet, the sample_data() and tax_table() functions allow 
-you to inspect the sample metadata and taxonomic information, respectively, 
-within the phyloseq object. This inspection aids in selecting the appropriate 
-variables for initializing the recipe.
 
-By following these steps, you will have successfully converted your data from 
-"biome" format to phyloseq format and initialized the recipe for further 
-differential abundance analysis.
+### To TreeSummarizedExperiment
 
-## Converting Data in the Form of a "TreeSummarizedExperiment" to Phyloseq
-
-When dealing with data in the form of a "TreeSummarizedExperiment", the 
-`makePhyloseqFromTreeSummarizedExperiment()` function from the "mia" package 
-can be used for conversion. Here's an example of how to do it:
+To convert data from the `biome` format to the `TreeSummarizedExperiment` format, 
+you can use the `mia::loadFromBiom()` function. Here's a step-by-step example 
+of how to perform this conversion:
 
 ```{r}
-library(mia)
+# Example of a rich dense biom file
+rich_dense_biom  <-
+  system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
 
-# Get tse object
-data(GlobalPatterns)
-tse <- GlobalPatterns
+# Import biom as a phyloseq-class object
+tse <- mia::loadFromBiom(rich_dense_biom)
 
-# Create a phyloseq object from it
-phy <- mia::makePhyloseqFromTreeSummarizedExperiment(tse)
+tse
 
-phy
+# Print sample_data
+colData(tse)
 
-# By default the chosen table is counts, but if there are other tables,
-# they can be chosen with assay.type.
+# Print tax_table
+rowData(tse)
 
-# Counts relative abundances table
-tse <- mia::transformAssay(tse, method = "relabundance")
-phy2 <- mia::makePhyloseqFromTreeSummarizedExperiment(
-  tse,
-  assay.type = "relabundance"
-)
+# Change the column names of the tax_table
+colnames(rowData(tse)) <- 
+  c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
 
-phy2
+rowData(tse)
+
+# Recipe init
+rec <- dar::recipe(tse, var_info = "BODY_SITE", tax_info = "Genus")
+
+rec
 ```
 
-In this example, we first load the necessary packages and obtain a 
-"TreeSummarizedExperiment" object called tse. We then use the 
-makePhyloseqFromTreeSummarizedExperiment() function to convert tse into a 
-phyloseq object, which is stored in the variable phy. The resulting phyloseq 
-object can be printed to inspect its structure and contents.
 
-Additionally, if there are other tables available within the 
-"TreeSummarizedExperiment" object, such as relative abundances, you can choose 
-them using the assay.type parameter. In the code snippet, we demonstrate how to 
-create a phyloseq object with a relative abundance table by transforming the 
-counts using the transformCounts() function before performing the conversion.
+## Importing Data from `qiime` Format
 
-By following these steps, you can successfully convert data in the form of a 
-"TreeSummarizedExperiment" to phyloseq format, allowing you to leverage the 
-rich functionalities of the phyloseq package for further analysis.
+The `qiime` format is another commonly used format in bioinformatics for 
+microbiome sequencing data. Here's how you can import data in `qiime` format to
+both `Phyloseq` and `TreeSummarizedExperiment.`
 
-## Conclusions
 
-This vignette has presented the process of converting data in "biome" format or 
-in the form of a "TreeSummarizedExperiment" to phyloseq format. By providing 
-users with the ability to convert their data to the required format for 
-differential abundance analysis, it promotes the integration of different data 
-sources and facilitates comparative analysis of microbiomes.
+### To Phyloseq
+
+To convert data from the `qiime` format to the `Phyloseq` format, you can use 
+the `phyloseq::import_qiime()` function. Here's a step-by-step example of how 
+to perform this conversion:
+
+```{r}
+# Import QIIME data
+phy_qiime <- phyloseq::import_qiime(
+  otufilename = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package = "phyloseq"),
+  mapfilename = system.file("extdata", "master_map.txt", package = "phyloseq"),
+  treefilename = system.file("extdata", "GP_tree_rand_short.newick.gz", package = "phyloseq")
+)
+
+phy_qiime
+
+# Recipe init
+rec <- dar::recipe(phy_qiime, var_info = "SampleType", tax_info = "Genus")
+
+rec
+```
+
+
+### To TreeSummarizedExperiment
+
+To convert data from the `qiime` format to the `TreeSummarizedExperiment` format, 
+you can use the `mia::loadFromQIIME2()` function. Here's a step-by-step example 
+of how to perform this conversion:
+
+```{r}
+# Import QIIME data to tse
+tse_qiime <- mia::loadFromQIIME2(
+  featureTableFile = system.file("extdata", "table.qza", package = "mia"),
+  taxonomyTableFile = system.file("extdata", "taxonomy.qza", package = "mia"),
+  sampleMetaFile = system.file("extdata", "sample-metadata.tsv", package = "mia"),
+  refSeqFile = system.file("extdata", "refseq.qza", package = "mia"),
+  phyTreeFile = system.file("extdata", "tree.qza", package = "mia")
+)
+
+tse_qiime
+
+# Recipe init
+rec <- dar::recipe(tse_qiime, var_info = "body.site", tax_info = "Genus")
+
+rec
+```
+
+
+## Importing Data from `mothur` Format
+
+The `mothur` format is another commonly used format in bioinformatics for 
+microbiome sequencing data. Here's how you can import data in `mothur` format 
+to both `Phyloseq` and `TreeSummarizedExperiment.`
+
+
+### To Phyloseq
+
+To convert data from the `mothur` format to the `Phyloseq` format, you can use 
+the `phyloseq::import_mothur()` function. Here's a step-by-step example of how 
+to perform this conversion:
+
+```{r}
+# Import Mothur data
+phy_mothur <- phyloseq::import_mothur(
+  mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package = "phyloseq"),
+  mothur_group_file = system.file("extdata", "esophagus.good.groups.gz", package = "phyloseq"),
+  mothur_tree_file = system.file("extdata", "esophagus.tree.gz", package = "phyloseq")
+)
+
+phy_mothur
+
+# Recipe init
+rec <- dar::recipe(phy_mothur)
+
+rec
+```
+
+
+### To TreeSummarizedExperiment
+
+To convert data from the `mothur` format to the `TreeSummarizedExperiment` 
+format, you can use the `mia::loadFromMothur()` function. Here's a step-by-step 
+example of how to perform this conversion:
+
+```{r}
+# Import Mothur data to TreeSummarizedExperiment
+tse_mothur <- mia::loadFromMothur(
+  sharedFile = system.file("extdata", "mothur_example.shared", package = "mia"),
+  taxonomyFile = system.file("extdata", "mothur_example.cons.taxonomy", package = "mia"),
+  designFile = system.file("extdata", "mothur_example.design", package = "mia")
+) |> methods::as("TreeSummarizedExperiment")
+
+tse_mothur
+
+# Recipe init
+rec <- dar::recipe(tse_mothur, var_info = "drug", tax_info = "Genus")
+
+rec
+```
+
+
+## Importing Data from `metaphlan` Format
+
+The `metaphlan` format is another commonly used format in bioinformatics for 
+microbiome sequencing data. Here's how you can import data in `metaphlan` 
+format to `TreeSummarizedExperiment.`
+
+
+### To TreeSummarizedExperiment
+
+To convert data from the `metaphlan` format to the `TreeSummarizedExperiment` 
+format, you can use the `mia::loadFromMetaphlan()` function. Here's a 
+step-by-step example of how to perform this conversion:
+
+```{r}
+# Importing data from Metaphlan
+tse_metaphlan <- mia::loadFromMetaphlan(
+  file = system.file("extdata", "merged_abundance_table.txt", package = "mia"),
+)
+
+tse_metaphlan
+
+# Recipe init
+rec <- dar::recipe(tse_metaphlan)
+
+rec
+```
+
+
+## Importing Data from `humann` Format
+
+The `humann` format is another commonly used format in bioinformatics for 
+microbiome sequencing data. Here's how you can import data in `humann` format 
+to `TreeSummarizedExperiment.`
+
+
+### To TreeSummarizedExperiment
+
+To convert data from the `humann` format to the `TreeSummarizedExperiment`
+format, you can use the `mia::loadFromHumann()` function. Here's a step-by-step 
+example of how to perform this conversion:
+
+```{r}
+# Importing data from HUMAnN
+tse_humann <- mia::loadFromHumann(
+  file = system.file("extdata", "humann_output.tsv", package = "mia")
+)
+
+tse_humann
+
+# Recipe init
+rec <- dar::recipe(tse_humann)
+
+rec
+```
+
+
+## Conclusion
+
+In this guide, we have explored various methods for importing microbiome 
+sequencing data from different formats into `Phyloseq` and 
+`TreeSummarizedExperiment.` We've covered the `biome`, `qiime`, `mothur`, 
+`metaphlan`, and `humann` formats, providing step-by-step examples for each.
+
+The flexibility of these tools allows for a smooth transition between different
+data formats, making it easier to conduct your analysis irrespective of the
+initial data format. By following the steps outlined in this guide, you should 
+be able to successfully convert your data and carry out further differential 
+abundance analysis.
+
+Remember, the specific details of your data may require you to adjust the 
+parameters in the import functions. Always inspect your data after conversion 
+to ensure it has been imported correctly.
+
 
 ## Session info
 

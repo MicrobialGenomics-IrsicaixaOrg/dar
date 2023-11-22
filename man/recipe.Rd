@@ -5,12 +5,18 @@
 \alias{show,prep_recipe-method}
 \title{Create a recipe for preprocessing data}
 \usage{
-recipe(phyloseq = NULL, var_info = NULL, tax_info = NULL, steps = list())
+recipe(
+  microbiome_object = NULL,
+  var_info = NULL,
+  tax_info = NULL,
+  steps = list()
+)
 
 \S4method{show}{prep_recipe}(object)
 }
 \arguments{
-\item{phyloseq}{Phyloseq-class object.}
+\item{microbiome_object}{Phyloseq-class object or
+TreeSummarizedExperiment-class object.}
 
 \item{var_info}{A character string of column names corresponding to variables
 that will be used in any context.}
@@ -67,7 +73,7 @@ rec <- rec |>
 
 rec
 
-## When trying to add an identical step to an existing one, the system 
+## When trying to add an identical step to an existing one, the system
 ## returns an information message.
 rec <- step_ancom(rec)
 rec <- step_ancom(rec)

@@ -16,7 +16,7 @@ to prepare it for data analysis.
 \section{Slots}{
 
 \describe{
-\item{\code{phyloseq}}{Phyloseq-class object}
+\item{\code{phyloseq}}{Phyloseq-class object.}
 
 \item{\code{var_info}}{A tibble that contains the current set of terms in the data
 set. This initially defaults to the same data contained in \code{var_info}.}
