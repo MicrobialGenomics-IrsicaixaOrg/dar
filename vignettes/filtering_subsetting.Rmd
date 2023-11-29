@@ -1,0 +1,134 @@
+---
+title: "Filtering and Subsetting"
+output: rmarkdown::html_vignette
+description: |
+  This vignette provides a comprehensive guide to using the `filter_taxa` and 
+  `subset_taxa` functions, as well as their convenience wrappers.  
+vignette: >
+  %\VignetteIndexEntry{Filtering and Subsetting}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>"
+)
+options(digits = 3)
+```
+
+The `step_filter_taxa` function is a general function that allows for flexible 
+filtering of OTUs based on across-sample abundance criteria. The other 
+functions, `step_filter_by_prevalence`, `step_filter_by_variance`, 
+`step_filter_by_abundance`, and `step_filter_by_rarity`, are convenience 
+wrappers around `step_filter_taxa`, each designed to filter OTUs based on a 
+specific criterion: prevalence, variance, abundance, and rarity, respectively.
+
+The `step_subset_taxa` function is used to subset taxa based on their taxonomic 
+level.
+
+The phyloseq or TSE used as input can be pre-filtered using methods that are 
+most convenient to the user. However, the `dar` package provides several 
+functions to perform this filtering directly on the recipe object.
+
+## step_filter_taxa
+
+The `step_filter_taxa` function applies an arbitrary set of functions to OTUs as 
+across-sample criteria. It takes a phyloseq object as input and returns a 
+logical vector indicating whether each OTU passed the criteria. If the "prune" 
+option is set to FALSE, it returns the already-trimmed version of the phyloseq 
+object.
+
+```{r step_filter_taxa}
+library(dar)
+data("metaHIV_phy")
+
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
+  prep()
+```
+
+## Convenience Wrappers
+
+### step_filter_by_abundance
+
+This function filters OTUs based on their abundance. The taxa retained in the
+dataset are those where the sum of their abundance is greater than the product 
+of the total abundance and the provided threshold.
+
+```{r step_filter_by_abundance}
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  step_filter_by_rel_abundance(rec, threshold = 0.01) |> 
+  prep()
+```
+
+### step_filter_by_prevalence
+
+This function filters OTUs based on their prevalence. The taxa retained in the
+dataset are those where the prevalence is greater than the provided threshold.
+
+```{r step_filter_by_prevalence}
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  step_filter_by_prevalence(rec, threshold = 0.01) |> 
+  prep()
+```
+
+### step_filter_by_rarity
+
+This function filters OTUs based on their rarity. The taxa retained in the
+dataset are those where the sum of their rarity is less than the provided 
+threshold.
+
+```{r step_filter_by_rarity}
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  step_filter_by_rarity(rec, threshold = 0.01) |> 
+  prep()
+```
+
+### step_filter_by_variance
+
+This function filters OTUs based on their variance. The taxa retained in the 
+dataset are those where the variance of their abundance is greater than the 
+provided threshold.
+
+```{r step_filter_by_variance}
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- 
+  step_filter_by_variance(rec, threshold = 0.01) |> 
+  prep()
+```
+
+## subset_taxa
+
+The `subset_taxa` function subsets taxa based on their taxonomic level. The 
+taxa retained in the dataset are those where the taxonomic level matches the 
+provided taxa.
+
+```{r subset_taxa}
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <-
+  step_subset_taxa(rec, tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+  prep()
+```
+
+## Conclusion
+
+These functions provide a powerful and flexible way to filter and subset OTUs 
+in phyloseq objects contained within a recipe object, making it easier 
+to work with complex experimental data. By understanding how to use these 
+functions effectively, you can streamline your data analysis workflow and focus 
+on the aspects of your data that are most relevant to your research questions. 
+The `dar` package offers the added convenience of performing these operations 
+directly on the recipe object.

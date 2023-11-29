@@ -23,8 +23,9 @@ data(metaHIV_phy)
 ## Create a recipe with steps
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+  step_filter_by_prevalence(0.4) |>
   step_maaslin()
  
 ## Prep recipe   

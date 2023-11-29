@@ -2,7 +2,7 @@
 title: "Introduction to dar"
 output: rmarkdown::html_vignette
 description: |
-  Start here if this is your first time usinc dar! You will learn about basic 
+  Start here if this is your first time using dar! You will learn about basic 
   usage, steps, exploration and bakes.  
 vignette: >
   %\VignetteIndexEntry{Introduction to dar}
@@ -97,7 +97,7 @@ where at least 3% of the samples have counts greater than 0.
 
 ```{r prepro_steps}
 rec_obj <- rec_obj |>
-  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
   
 rec_obj

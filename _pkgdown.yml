@@ -13,6 +13,10 @@ reference:
 - title: "Step Functions - Data Preprocessing"
   contents:
   - step_filter_taxa
+  - step_filter_by_prevalence
+  - step_filter_by_abundance
+  - step_filter_by_rarity
+  - step_filter_by_variance
   - step_subset_taxa
   - step_rarefaction
 - title: "Step Functions - Differential Abundance Methods"

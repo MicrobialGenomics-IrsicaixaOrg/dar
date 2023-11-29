@@ -122,8 +122,11 @@ step_to_expr <- function(step) {
     step %>%
     purrr::discard(names(.) == "id") %>%
     purrr::map2_chr(names(.), ~ {
-      if (is.null(.x)) { return(  glue::glue("{.y} = NULL"))}
-      if (is.character(.x)) { return(glue::glue("{.y} = '{.x}'")) }
+      if (is.null(.x)) { return(glue::glue("{.y} = NULL"))}
+      if (is.character(.x)) { 
+        .x <- stringr::str_c("'", .x, "'", collapse = ", ")
+        return(glue::glue("{.y} = c({.x})"))
+      }
       if (inherits(.x, "formula")) { 
         return(paste0(.y, " = ", paste0(.x, collapse = ""))) 
       }
@@ -216,20 +219,20 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
-#'   c("subset_taxa__Jalebi",
-#'     "filter_taxa__Palmier", 
-#'     "maaslin__Coussin_de_Lyon", 
-#'     "metagenomeseq__Nazook", 
-#'     "deseq__Pan_dulce"    
+#'   c("subset_taxa__Semla",
+#'     "filter_taxa__Danish_pastry", 
+#'     "maaslin__Tortell", 
+#'     "metagenomeseq__Pogača", 
+#'     "deseq__Tortita_negra"    
 #'    )
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "da"), 
-#'   c("maaslin__Coussin_de_Lyon", "metagenomeseq__Nazook", "deseq__Pan_dulce")
+#'   c("maaslin__Tortell", "metagenomeseq__Pogača", "deseq__Tortita_negra")
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "prepro"), 
-#'   c("subset_taxa__Jalebi", "filter_taxa__Palmier")
+#'   c("subset_taxa__Semla", "filter_taxa__Danish_pastry")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")
@@ -309,8 +312,9 @@ dot <- function() {
 #' ## Create a recipe with steps
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+#'   step_filter_by_prevalence(0.4) |>
 #'   step_maaslin()
 #'  
 #' ## Prep recipe   
@@ -319,7 +323,6 @@ dot <- function() {
 #' ## Export to json file
 #' export_steps(rec, tempfile(fileext = ".json"))
 export_steps <- function(rec, file_name) {
-  
   inp <- rec@steps
   if (methods::is(rec, "prep_recipe")) {
     inp <- c(rec@steps, rec@bakes)
@@ -333,7 +336,10 @@ export_steps <- function(rec, file_name) {
         purrr::map_chr(function(.y) {
           msg <- .x[[.y]]
           if (is.character(.x[[.y]]) | is.factor(.x[[.y]])) {
-            msg <- double_quote(.x[[.y]])
+            msg <- 
+              double_quote(.x[[.y]]) %>% 
+              stringr::str_c(collapse = ", ") %>%
+              stringr::str_c("[c(", ., ")]")
           }
           stringr::str_c(
             "   ", double_quote(.y), ": ", paste0(msg, collapse = ""), ","
@@ -390,9 +396,11 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
     if (stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
     fun_name <- lines[id_idx[i]] %>%
       stringr::str_remove_all(".*: |,|\\\"") %>%
-      stringr::str_remove_all("__.*")
+      stringr::str_remove_all("__.*") %>%
+      stringr::str_replace_all("\\[|\\]|c\\(", "")
 
     extract_instructions(lines[low_idx:id_idx[i]]) %>% 
+      stringr::str_replace_all("\\[|\\]", "") %>%
       stringr::str_c(collapse = ", ") %>%
       stringr::str_c("rec <<- step_", fun_name, "(rec, ", ., ")") %>%
       parse(text = .) %>%
@@ -412,9 +420,11 @@ import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
       if (!stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
       fun_name <- lines[id_idx[i]] %>%
         stringr::str_remove_all(".*: |,|\\\"") %>%
-        stringr::str_remove_all("__.*")
+        stringr::str_remove_all("__.*") %>%
+        stringr::str_replace_all("\\[|\\]|c\\(", "")
 
       extract_instructions(lines[low_idx:id_idx[i]]) %>%
+        stringr::str_replace_all("\\[|\\]", "") %>%
         stringr::str_c(collapse = ", ") %>%
         stringr::str_c("rec <<- ", fun_name, "(rec, ", ., ")") %>%
         parse(text = .) %>%

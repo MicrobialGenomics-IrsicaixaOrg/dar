@@ -86,7 +86,7 @@ methods::setClass(
 #' ## Define recipe
 #' rec <-
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
 #'   step_metagenomeseq(rm_zeros = 0.01) |>
 #'   step_maaslin()
@@ -131,6 +131,15 @@ recipe <- function(microbiome_object = NULL,
 
   expected <- c("Kingdom", "Phylum", "Class", "Order", 
                 "Family", "Genus", "Species")
+  
+  if (!is(microbiome_object, "phyloseq") && 
+      !is(microbiome_object, "TreeSummarizedExperiment")) {
+    rlang::abort(
+      c(
+        "The input object must be a phyloseq or TreeSummarizedExperiment object."
+      )
+    )
+  }
   
   if (is(microbiome_object, "TreeSummarizedExperiment")) {
     microbiome_object <- 
@@ -795,7 +804,7 @@ methods::setMethod(
 #' ## Define recipe
 #' rec <-
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
 #'   step_maaslin()
 #'

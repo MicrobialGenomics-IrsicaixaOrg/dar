@@ -78,7 +78,7 @@
 #' ## Init recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-#'   step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') |>
+#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
 #' rec
@@ -171,6 +171,35 @@ methods::setMethod(
         id = id
       )
     )
+  }
+)
+
+#' @rdname step_ancom
+#' @export
+#' @autoglobal
+methods::setMethod(
+  f = "step_ancom",
+  signature = c(rec = "prep_recipe"),
+  definition = function(rec,
+                        fix_formula,
+                        rand_formula,
+                        p_adj_method,
+                        prv_cut,
+                        lib_cut,
+                        s0_perc,
+                        group,
+                        struc_zero,
+                        neg_lb,
+                        alpha,
+                        n_cl,
+                        verbose,
+                        global,
+                        pairwise,
+                        dunnet,
+                        trend,
+                        rarefy, 
+                        id) {
+    rlang::abort("This function needs a non-prep recipe!")
   }
 )
 

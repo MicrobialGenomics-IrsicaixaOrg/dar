@@ -3,6 +3,7 @@
 \name{step_ancom}
 \alias{step_ancom}
 \alias{step_ancom,recipe-method}
+\alias{step_ancom,prep_recipe-method}
 \title{ANCOM analysis}
 \usage{
 step_ancom(
@@ -28,6 +29,28 @@ step_ancom(
 )
 
 \S4method{step_ancom}{recipe}(
+  rec,
+  fix_formula = get_var(rec)[[1]],
+  rand_formula = NULL,
+  p_adj_method = "holm",
+  prv_cut = 0.1,
+  lib_cut = 0,
+  s0_perc = 0.05,
+  group = NULL,
+  struc_zero = FALSE,
+  neg_lb = FALSE,
+  alpha = 0.05,
+  n_cl = 1,
+  verbose = FALSE,
+  global = FALSE,
+  pairwise = FALSE,
+  dunnet = FALSE,
+  trend = FALSE,
+  rarefy = FALSE,
+  id = rand_id("ancom")
+)
+
+\S4method{step_ancom}{prep_recipe}(
   rec,
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
@@ -144,7 +167,7 @@ data(metaHIV_phy)
 ## Init recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-  step_subset_taxa(expr = 'Kingdom \%in\% c("Bacteria", "Archaea")') |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
 rec
