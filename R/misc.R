@@ -516,9 +516,21 @@ contains_rarefaction <- function(rec) {
 #' ## Witout seed
 #' phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
 use_rarefy <- function(phy, rarefy) {
-  info_rarefy <- "Rarefaction is a process that randomly subsamples the data to a specified depth. This is done to account for differences in sequencing depth between samples. However, this process is not without controversy. Rarefaction can lead to loss of information and can also lead to false positives in differential abundance testing. For more information, see https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2"
-  
   if (isTRUE(rarefy)) {
+    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
+  } 
+  if (rarefy == "no_seed") {
+    phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE)
+  }
+  phy
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+rarefy_msg <- function(steps) {
+  info_rarefy <- "Rarefaction is a process that randomly subsamples the data to a specified depth. This is done to account for differences in sequencing depth between samples. However, this process is not without controversy. Rarefaction can lead to loss of information and can also lead to false positives in differential abundance testing. For more information, see https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2"
+  if (any(stringr::str_detect(steps, "rarefy = T"))) {
     rlang::inform(
       c(
         "!" = "Rarefaction is enabled",
@@ -526,10 +538,9 @@ use_rarefy <- function(phy, rarefy) {
         i = info_rarefy
       ), use_cli_format = TRUE
     )
-    phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
-  } 
+  }
   
-  if (rarefy == "no_seed") {
+  if (any(stringr::str_detect(steps, "rarefy = 'no_seed'"))) {
     rlang::inform(
       c(
         "!" = "Rarefaction is enabled",
@@ -537,13 +548,8 @@ use_rarefy <- function(phy, rarefy) {
         i = info_rarefy
       ), use_cli_format = TRUE
     )
-    phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE)
   }
-  phy
+  steps
 }
-
-
-
-
 
 

@@ -894,6 +894,7 @@ methods::setMethod(
       res <-
         rec@steps %>%
         purrr::map_chr(step_to_expr) %>%
+        rarefy_msg() %>%
         purrr::discard(
           stringr::str_detect(., "run_subset|run_filter|run_rarefaction")
         ) %>%
@@ -914,6 +915,7 @@ methods::setMethod(
       res <-
         rec@steps %>%
         purrr::map(step_to_expr) %>%
+        rarefy_msg() %>%
         purrr::discard(
           stringr::str_detect(., "run_subset|run_filter|run_rarefaction")
         ) %>%
