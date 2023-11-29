@@ -8,8 +8,8 @@
 #' OTU passed the criteria. Alternatively, if the "prune" option is set to
 #' FALSE, it returns the already-trimmed version of the phyloseq object.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param .f A function or list of functions that take a vector of abundance
 #'   values and return a logical. Some canned useful function types are included
 #'   in the genefilter-package.
@@ -18,7 +18,7 @@
 #' @include recipe-class.R
 #' @family filter phy steps
 #' @aliases step_filter_taxa
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @tests testthat
@@ -33,7 +33,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #' 
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #' 
@@ -53,7 +53,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_taxa",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, .f, id) {
     recipes_pkg_check(required_pkgs_filter_taxa(), "step_filter_taxa()")
     add_step(rec, step_filter_taxa_new(.f = .f, id = id))
@@ -109,7 +109,7 @@ run_filter_taxa <- function(rec, .f) {
         "level within the variable of interest. This can cause errors during ",
         "the execution of metagenomeseq method!"
       ),
-      "*" = "Please create a new recipe using a stricter filter expression.", 
+      "*" = "Please create a new Recipe using a stricter filter expression.", 
       "*" = glue::glue(
         "Alternatively, you can increase the rm_zeros value ", 
         "{crayon::bgMagenta('step_metagenomeseq(rm_zeros = 0.01)')}. This ", 
@@ -127,7 +127,7 @@ run_filter_taxa <- function(rec, .f) {
 
 #' Extract outs with all 0 values in at least on level of the variable 
 #'
-#' @param obj A `recipe` or `phyloseq` object.
+#' @param obj A `Recipe` or `phyloseq` object.
 #' @param var Variable of interest. Must be present in the metadata.
 #' @param pct_cutoff Minimum of pct counts samples with counts for each taxa. 
 #'
@@ -138,7 +138,7 @@ run_filter_taxa <- function(rec, .f) {
 #' @examples
 #' data(metaHIV_phy)
 #' 
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' 
 #' ## Extract outs with all 0 values
@@ -155,7 +155,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "zero_otu", 
-  signature = "recipe", 
+  signature = "Recipe", 
   definition = function(obj, var, pct_cutoff) {
     var <- get_var(obj)[[1]]
     otu_table(obj) %>% 

@@ -9,8 +9,8 @@
 #' multi-group comparisons, including the global test, pairwise directional
 #' test, Dunnett's type of test, and trend test.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param fix_formula the character string expresses how the microbial absolute
 #'   abundances for each taxon depend on the fixed effects in metadata. When
 #'   specifying the fix_formula, make sure to include the group variable in the
@@ -69,13 +69,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_ancom
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -126,7 +126,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_ancom",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         fix_formula,
                         rand_formula,
@@ -179,7 +179,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_ancom",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         fix_formula,
                         rand_formula,
@@ -199,7 +199,7 @@ methods::setMethod(
                         trend,
                         rarefy, 
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

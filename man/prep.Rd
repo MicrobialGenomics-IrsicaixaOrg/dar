@@ -2,15 +2,15 @@
 % Please edit documentation in R/recipe-class.R
 \name{prep}
 \alias{prep}
-\alias{prep,recipe-method}
-\title{Performs all the steps defined in a recipe}
+\alias{prep,Recipe-method}
+\title{Performs all the steps defined in a Recipe}
 \usage{
 prep(rec, parallel = TRUE, workers = 8, force = FALSE)
 
-\S4method{prep}{recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
+\S4method{prep}{Recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
 }
 \arguments{
-\item{rec}{A \code{recipe} object. and furrr packages.}
+\item{rec}{A \code{Recipe} object. and furrr packages.}
 
 \item{parallel}{if FALSE, no palatalization. if TRUE, parallel execution
 using future and furrr packages.}
@@ -21,23 +21,23 @@ using future and furrr packages.}
 results.}
 }
 \value{
-A \code{prep_recipe} object.
+A \code{PrepRecipe} object.
 }
 \description{
-For a recipe with at least one preprocessing or DA operation run the steps in
+For a Recipe with at least one preprocessing or DA operation run the steps in
 a convenient order.
 }
 \examples{
 data(metaHIV_phy)
 
-## Define recipe
+## Define Recipe
 rec <-
   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
   step_maaslin()
 
-## Prep recipe
+## Prep Recipe
 da_results <- prep(rec)
 
 ## If you try
@@ -47,7 +47,7 @@ n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
 da_results
 
-## If you try to run prep on an object of class prep_recipe it returns an 
+## If you try to run prep on an object of class PrepRecipe it returns an 
 ## error.
 err <- testthat::expect_error(prep(da_results))
 err

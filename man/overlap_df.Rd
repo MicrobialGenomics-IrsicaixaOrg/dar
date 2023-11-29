@@ -2,18 +2,18 @@
 % Please edit documentation in R/recipe-class.R
 \name{overlap_df}
 \alias{overlap_df}
-\alias{overlap_df,recipe-method}
-\alias{overlap_df,prep_recipe-method}
+\alias{overlap_df,Recipe-method}
+\alias{overlap_df,PrepRecipe-method}
 \title{Overlap of significant OTUs between tested methods.}
 \usage{
 overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
 
-\S4method{overlap_df}{recipe}(rec, steps = steps_ids(rec, "da"), type = "all")
+\S4method{overlap_df}{Recipe}(rec, steps = steps_ids(rec, "da"), type = "all")
 
-\S4method{overlap_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"), type = "all")
+\S4method{overlap_df}{PrepRecipe}(rec, steps = steps_ids(rec, "da"), type = "all")
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 
@@ -38,8 +38,8 @@ head(df)
 ## results of maaslin
 overlap_df(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## overlap_df function needs a prep-recipe. If you pass a a non-prep
-## recipe the output is an error.
+## overlap_df function needs a prep-Recipe. If you pass a a non-prep
+## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(overlap_df(test_rec))
 err

@@ -2,9 +2,9 @@
 % Please edit documentation in R/bake.R
 \name{bake}
 \alias{bake}
-\alias{bake,prep_recipe-method}
-\alias{bake,recipe-method}
-\title{Define consensus strategies from a recipe}
+\alias{bake,PrepRecipe-method}
+\alias{bake,Recipe-method}
+\title{Define consensus strategies from a Recipe}
 \usage{
 bake(
   rec,
@@ -14,7 +14,7 @@ bake(
   id = rand_id("bake")
 )
 
-\S4method{bake}{prep_recipe}(
+\S4method{bake}{PrepRecipe}(
   rec,
   count_cutoff = NULL,
   weights = NULL,
@@ -22,7 +22,7 @@ bake(
   id = rand_id("bake")
 )
 
-\S4method{bake}{recipe}(
+\S4method{bake}{Recipe}(
   rec,
   count_cutoff = NULL,
   weights = NULL,
@@ -31,8 +31,8 @@ bake(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{count_cutoff}{Indicates the minimum number of methods in which an OTU
 must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
@@ -45,21 +45,21 @@ equal to \code{length(steps_ids(rec, "da")) - length(exclude)}}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{prep_recipe}
+An object of class \code{PrepRecipe}
 }
 \description{
-For a prep recipe adds a consensus strategies to use for result extraction.
+For a prep Recipe adds a consensus strategies to use for result extraction.
 }
 \examples{
 data(test_prep_rec)
 rec <- test_prep_rec
 
 ## Default bake extracts common OTUs in all DA tested methods 
-## (In this case the recipe contains 3 methods)
+## (In this case the Recipe contains 3 methods)
 res <- bake(rec)
 cool(res)
 
-## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
+## bake and cool methods needs a PrepRecipe. If you pass a non-PrepRecipe
 ## the output is an error.
 data(test_rec)
 err <- testthat::expect_error(bake(test_rec))

@@ -2,8 +2,8 @@
 % Please edit documentation in R/maaslin2.R
 \name{step_maaslin}
 \alias{step_maaslin}
-\alias{step_maaslin,recipe-method}
-\alias{step_maaslin,prep_recipe-method}
+\alias{step_maaslin,Recipe-method}
+\alias{step_maaslin,PrepRecipe-method}
 \title{MaAsLin2 analysis}
 \usage{
 step_maaslin(
@@ -23,7 +23,7 @@ step_maaslin(
   id = rand_id("maaslin")
 )
 
-\S4method{step_maaslin}{recipe}(
+\S4method{step_maaslin}{Recipe}(
   rec,
   min_abundance = 0,
   min_prevalence = 0.1,
@@ -40,7 +40,7 @@ step_maaslin(
   id = rand_id("maaslin")
 )
 
-\S4method{step_maaslin}{prep_recipe}(
+\S4method{step_maaslin}{PrepRecipe}(
   rec,
   min_abundance = 0,
   min_prevalence = 0.1,
@@ -58,8 +58,8 @@ step_maaslin(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{min_abundance}{The minimum abundance for each feature.}
 
@@ -102,7 +102,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 MaAsLin2 finds associations between microbiome meta-omics features and
@@ -114,7 +114,7 @@ customize analysis for your specific study.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

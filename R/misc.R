@@ -151,7 +151,7 @@ step_to_expr <- function(step) {
 
 #' Finds common OTU between method results
 #'
-#' @param rec A recipe object.
+#' @param rec A Recipe object.
 #' @param steps character vector with step ids to take in account
 #'
 #' @return tibble
@@ -178,7 +178,7 @@ step_to_expr <- function(step) {
 #' @examples 
 #' data(test_prep_rec)
 #' 
-#' ## From a prep-recipe we can extract a tibble with all intersections
+#' ## From a PrepRecipe we can extract a tibble with all intersections
 #' intersections <- find_intersections(test_prep_rec)
 #' intersections
 #' 
@@ -207,7 +207,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 
 #' Get step_ids from recipe
 #'
-#' @param rec A recipe object.
+#' @param rec A Recipe object.
 #' @param type character vector indicating the type class. Options `c("all",
 #'   "da", "prepro")`.
 #'
@@ -219,20 +219,20 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
-#'   c("subset_taxa__Semla",
-#'     "filter_taxa__Danish_pastry", 
-#'     "maaslin__Tortell", 
-#'     "metagenomeseq__Pogača", 
-#'     "deseq__Tortita_negra"    
+#'   c("subset_taxa__Boyoz",
+#'     "filter_taxa__Charlotte", 
+#'     "maaslin__ChaSan", 
+#'     "metagenomeseq__Zlebia", 
+#'     "deseq__Linzer_torte"    
 #'    )
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "da"), 
-#'   c("maaslin__Tortell", "metagenomeseq__Pogača", "deseq__Tortita_negra")
+#'   c("maaslin__ChaSan", "metagenomeseq__Zlebia", "deseq__Linzer_torte")
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "prepro"), 
-#'   c("subset_taxa__Semla", "filter_taxa__Danish_pastry")
+#'   c("subset_taxa__Boyoz", "filter_taxa__Charlotte")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")
@@ -240,7 +240,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' @examples 
 #' data(test_rec)
 #' 
-#' ## We can extract the step identifiers from a recipe with `step_ids`
+#' ## We can extract the step identifiers from a Recipe with `step_ids`
 #' ids <- steps_ids(test_rec)
 #' ids
 #' 
@@ -299,7 +299,7 @@ dot <- function() {
 
 #' Export step parameters as json.
 #'
-#' @param rec A recipe object.
+#' @param rec A Recipe object.
 #' @param file_name The path and file name of the optout file.
 #'
 #' @importFrom glue double_quote
@@ -309,7 +309,7 @@ dot <- function() {
 #' @examples
 #' data(metaHIV_phy)
 #' 
-#' ## Create a recipe with steps
+#' ## Create a Recipe with steps
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -317,14 +317,14 @@ dot <- function() {
 #'   step_filter_by_prevalence(0.4) |>
 #'   step_maaslin()
 #'  
-#' ## Prep recipe   
+#' ## Prep Recipe   
 #' rec <- prep(rec, parallel = TRUE)
 #' 
 #' ## Export to json file
 #' export_steps(rec, tempfile(fileext = ".json"))
 export_steps <- function(rec, file_name) {
   inp <- rec@steps
-  if (methods::is(rec, "prep_recipe")) {
+  if (methods::is(rec, "PrepRecipe")) {
     inp <- c(rec@steps, rec@bakes)
   } 
   
@@ -355,7 +355,7 @@ export_steps <- function(rec, file_name) {
 
 #' Import steps from json file
 #'
-#' @param rec A recipe object.
+#' @param rec A Recipe object.
 #' @param file Path to the input file.
 #' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
 #'   using future and furrr packages.
@@ -367,7 +367,7 @@ export_steps <- function(rec, file_name) {
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Initialize the recipe with a phyloseq object
+#' ## Initialize the Recipe with a phyloseq object
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
@@ -376,7 +376,7 @@ export_steps <- function(rec, file_name) {
 #' rec <- import_steps(rec, json_file)
 #' rec
 #' 
-#' ## If the json file contains 'bake', the recipe is automatically prepared. 
+#' ## If the json file contains 'bake', the Recipe is automatically prepared. 
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
@@ -464,9 +464,9 @@ extract_instructions <- function(lines) {
     }) 
 }
 
-#' Checks if recipe contains a rarefaction step
+#' Checks if Recipe contains a rarefaction step
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
+#' @param rec A Recipe object. The step will be added to the sequence of
 #'   operations for this recipe.
 #'
 #' @export

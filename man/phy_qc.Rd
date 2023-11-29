@@ -2,15 +2,15 @@
 % Please edit documentation in R/phyloseq_qc.R
 \name{phy_qc}
 \alias{phy_qc}
-\alias{phy_qc,recipe-method}
+\alias{phy_qc,Recipe-method}
 \title{Phyloseq Quality Control Metrics}
 \usage{
 phy_qc(rec)
 
-\S4method{phy_qc}{recipe}(rec)
+\S4method{phy_qc}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 }
 \value{
 A tibble
@@ -36,7 +36,7 @@ to all rows of the dataset (without splitting by categorical levels).
 \examples{
 data(metaHIV_phy)
 
-## Define recipe
+## Define Recipe
 rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 
 phy_qc(rec)

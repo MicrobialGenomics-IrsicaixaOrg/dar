@@ -2,18 +2,18 @@
 % Please edit documentation in R/filter_taxa.R
 \name{zero_otu}
 \alias{zero_otu}
-\alias{zero_otu,recipe-method}
+\alias{zero_otu,Recipe-method}
 \alias{zero_otu,phyloseq-method}
 \title{Extract outs with all 0 values in at least on level of the variable}
 \usage{
 zero_otu(obj, var = NULL, pct_cutoff = 0)
 
-\S4method{zero_otu}{recipe}(obj, var = NULL, pct_cutoff = 0)
+\S4method{zero_otu}{Recipe}(obj, var = NULL, pct_cutoff = 0)
 
 \S4method{zero_otu}{phyloseq}(obj, var = NULL, pct_cutoff = 0)
 }
 \arguments{
-\item{obj}{A \code{recipe} or \code{phyloseq} object.}
+\item{obj}{A \code{Recipe} or \code{phyloseq} object.}
 
 \item{var}{Variable of interest. Must be present in the metadata.}
 
@@ -28,7 +28,7 @@ Extract outs with all 0 values in at least on level of the variable
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 
 ## Extract outs with all 0 values

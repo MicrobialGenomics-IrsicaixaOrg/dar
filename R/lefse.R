@@ -9,8 +9,8 @@
 #' differentially expressed microorganism. Subclasses of classes can also be
 #' assigned and used within the analysis.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param kruskal.threshold numeric(1) The p-value for the Kruskal-Wallis Rank
 #'   Sum Test (default 0.05).
 #' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test
@@ -35,13 +35,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_lefse
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples 
 #' data(metaHIV_phy)
 #' 
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -82,7 +82,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_lefse",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         kruskal.threshold,
                         wilcox.threshold,
@@ -124,7 +124,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_lefse",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         kruskal.threshold,
                         wilcox.threshold,
@@ -134,7 +134,7 @@ methods::setMethod(
                         trim.names,
                         rarefy,
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

@@ -7,7 +7,7 @@
 find_intersections(rec, steps = steps_ids(rec, "da"))
 }
 \arguments{
-\item{rec}{A recipe object.}
+\item{rec}{A Recipe object.}
 
 \item{steps}{character vector with step ids to take in account}
 }
@@ -20,7 +20,7 @@ Finds common OTU between method results
 \examples{
 data(test_prep_rec)
 
-## From a prep-recipe we can extract a tibble with all intersections
+## From a PrepRecipe we can extract a tibble with all intersections
 intersections <- find_intersections(test_prep_rec)
 intersections
 

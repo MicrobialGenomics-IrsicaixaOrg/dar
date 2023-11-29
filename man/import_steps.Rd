@@ -7,7 +7,7 @@
 import_steps(rec, file, parallel = TRUE, workers = 8)
 }
 \arguments{
-\item{rec}{A recipe object.}
+\item{rec}{A Recipe object.}
 
 \item{file}{Path to the input file.}
 
@@ -25,7 +25,7 @@ Import steps from json file
 \examples{
 data(metaHIV_phy)
 
-## Initialize the recipe with a phyloseq object
+## Initialize the Recipe with a phyloseq object
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 
@@ -34,7 +34,7 @@ json_file <- system.file("extdata", "test.json", package = "dar")
 rec <- import_steps(rec, json_file)
 rec
 
-## If the json file contains 'bake', the recipe is automatically prepared. 
+## If the json file contains 'bake', the Recipe is automatically prepared. 
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>

@@ -15,7 +15,7 @@
 #' * count_min: average of the min counts per sample.
 #' * count_max: average of the max counts per sample.
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #'
 #' @return A tibble
 #' @export
@@ -23,7 +23,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Define recipe
+#' ## Define Recipe
 #' rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 #'
 #' phy_qc(rec)
@@ -34,7 +34,7 @@ methods::setGeneric("phy_qc", function(rec) standardGeneric("phy_qc"))
 #' @autoglobal
 methods::setMethod(
   f = "phy_qc",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) {
     .zero_stats(rec) %>% 
       dplyr::left_join(.zero_groups(rec), by = get_var(rec)[[1]]) %>% 

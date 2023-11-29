@@ -2,7 +2,7 @@
 
 #' Plot otuput of the `overlap_df` function as a heatmap. 
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param steps Character vector with step_ids to take in account.
 #' @param font_size Size of the axis font.
 #' @param type Indicates whether to use all taxa ("all") or only those that are
@@ -24,8 +24,8 @@
 #' ## results of maaslin
 #' corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## corr_heatmap function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
+#' ## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
+#' ## Recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(corr_heatmap(test_rec))
 #' err
@@ -43,10 +43,10 @@ methods::setGeneric(
 #' @export
 methods::setMethod(
   f = "corr_heatmap",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, steps, font_size, type) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('corr_heatmap()')}"
@@ -61,7 +61,7 @@ methods::setMethod(
 #' @importFrom UpSetR upset
 methods::setMethod(
   f = "corr_heatmap",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, steps, font_size, type) {
     plt <- overlap_df(rec, steps = steps, type = type) %>%
       heatmaply::heatmaply_cor(
@@ -99,7 +99,7 @@ methods::setMethod(
 
 #' Plot results using UpSet plot
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param steps Character vector with step_ids to take in account.
 #' @param ordered_by How the intersections in the matrix should be ordered by.
 #'   Options include frequency (entered as "freq"), degree, or both in any
@@ -124,8 +124,8 @@ methods::setMethod(
 #' ## results of maaslin
 #' intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
+#' ## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
+#' ## Recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(intersection_plt(test_rec))
 #' err
@@ -143,10 +143,10 @@ methods::setGeneric(
 #' @export
 methods::setMethod(
   f = "intersection_plt",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, steps, font_size) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('intersection_plt()')}"
@@ -161,7 +161,7 @@ methods::setMethod(
 #' @importFrom UpSetR upset
 methods::setMethod(
   f = "intersection_plt",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, steps, ordered_by, font_size) {
     UpSetR::upset(
       data = intersection_df(rec, steps),
@@ -177,7 +177,7 @@ methods::setMethod(
 
 #' Plot the number of shared DA OTUs between methods.
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param steps Character vector with step_ids to take in account.
 #'
 #' @aliases exclusion_plt
@@ -195,8 +195,8 @@ methods::setMethod(
 #' ## results of maaslin
 #' exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
+#' ## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
+#' ## Recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(exclusion_plt(test_rec))
 #' err
@@ -212,10 +212,10 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "exclusion_plt",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, steps) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('exclusion_plt()')}"
@@ -230,7 +230,7 @@ methods::setMethod(
 #' @import ggplot2
 methods::setMethod(
   f = "exclusion_plt",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, steps) {
     df <-
       steps_ids(rec, "da") %>%
@@ -272,7 +272,7 @@ methods::setMethod(
 
 #' Abundance boxplot
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #' @param taxa_ids Character vector with taxa_ids to plot. If taxa_ids is NULL
 #'   the significant characteristics present in all of the executed methods will
 #'   be plotted.
@@ -307,8 +307,8 @@ methods::setMethod(
 #' abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
 #' abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
 #'
-#' ## abundance_plt function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
+#' ## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
+#' ## Recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(abundance_plt(test_rec))
 #' err
@@ -329,10 +329,10 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "abundance_plt",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, taxa_ids, type, transform, scale, top_n) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('abundance_plt()')}"
@@ -346,7 +346,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "abundance_plt",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, taxa_ids, type, transform, scale, top_n) {
     if (type == "boxplot") { 
       plt <- .abundance_boxplot(rec, taxa_ids, transform, scale, top_n) 
@@ -552,7 +552,7 @@ methods::setMethod(
 #' number of methods, colored by the differential abundance direction and
 #' separated by comparison.
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #' @param count_cutoff Indicates the minimum number of methods in which an OTU
 #'   must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
 #'   equal to `length(steps_ids(rec, "da")) * 2 / 3`.
@@ -588,7 +588,7 @@ methods::setMethod(
 #' ## results of maaslin.
 #' mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe
+#' ## mutual_plt function needs a PrepRecipe. If you pass a a non-PrepRecipe
 #' ## the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(mutual_plt(test_rec))
@@ -608,10 +608,10 @@ methods::setGeneric(
 #' @export
 methods::setMethod(
   f = "mutual_plt",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, count_cutoff, comparisons, steps, top_n) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('mutual_plt()')}"
@@ -625,7 +625,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "mutual_plt",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, count_cutoff, comparisons, steps, top_n) {
     
     if (is.null(count_cutoff)) {

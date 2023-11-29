@@ -6,8 +6,8 @@
 #' the variance of each taxon. The taxa retained in the dataset are those where
 #' the variance of their abundance is greater than the provided threshold.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param threshold The variance threshold for filtering taxa. The default value
 #'   is 0.01.
 #' @param id A character string that is unique to this step to identify it.
@@ -18,7 +18,7 @@
 #'   object. It then compares this variance to the variance of each individual
 #'   taxon. If a taxon's variance is less than the threshold, that taxon is
 #'   removed from the phyloseq object.
-#' @return A recipe object that has been filtered based on variance.
+#' @return A Recipe object that has been filtered based on variance.
 #' @seealso \code{\link[phyloseq]{filter_taxa}}
 #' @include recipe-class.R
 #' @family filter phy steps
@@ -28,7 +28,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
@@ -49,7 +49,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_variance",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, threshold = 0.01, id) {
     recipes_pkg_check(
       required_pkgs_filter_by_variance(),
@@ -67,9 +67,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_variance",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

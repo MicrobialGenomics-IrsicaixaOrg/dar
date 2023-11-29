@@ -6,8 +6,8 @@
 #' and repeated measures), filtering, normalization, and transform options to
 #' customize analysis for your specific study.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param min_abundance The minimum abundance for each feature.
 #' @param min_prevalence The minimum percent of samples for which a feature is
 #'   detected at minimum abundance.
@@ -39,13 +39,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_maaslin
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -91,7 +91,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_maaslin",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         min_abundance,
                         min_prevalence,
@@ -134,7 +134,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_maaslin",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         min_abundance,
                         min_prevalence,
@@ -149,7 +149,7 @@ methods::setMethod(
                         reference,
                         rarefy,
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

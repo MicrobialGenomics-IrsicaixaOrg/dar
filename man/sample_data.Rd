@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{sample_data}
 \alias{sample_data}
-\alias{sample_data,recipe-method}
-\title{Extracts sample_data from phyloseq inside a recipe}
+\alias{sample_data,Recipe-method}
+\title{Extracts sample_data from phyloseq inside a Recipe}
 \usage{
 sample_data(rec)
 
-\S4method{sample_data}{recipe}(rec)
+\S4method{sample_data}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 }
 \value{
 A tibble
 }
 \description{
-Extracts sample_data from phyloseq inside a recipe
+Extracts sample_data from phyloseq inside a Recipe
 }
 \examples{
 data(metaHIV_phy)

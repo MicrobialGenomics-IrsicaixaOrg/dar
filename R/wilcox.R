@@ -5,8 +5,8 @@
 #' Unit (OTU), species, etc.) that are differentially abundant between two or
 #' more groups of multiple samples.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param norm_method Transformation to apply. The options include:
 #'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
 #'   'hellinger', 'identity', 'clr', 'alr', or any method from the
@@ -26,13 +26,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_wilcox
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -69,7 +69,7 @@ methods::setGeneric(
 #' @export
 methods::setMethod(
   f = "step_wilcox",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         norm_method,
                         max_significance,
@@ -104,14 +104,14 @@ methods::setMethod(
 #' @export
 methods::setMethod(
   f = "step_wilcox",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         norm_method,
                         max_significance,
                         p_adj_method,
                         rarefy,
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

@@ -2,8 +2,8 @@
 % Please edit documentation in R/wilcox.R
 \name{step_wilcox}
 \alias{step_wilcox}
-\alias{step_wilcox,recipe-method}
-\alias{step_wilcox,prep_recipe-method}
+\alias{step_wilcox,Recipe-method}
+\alias{step_wilcox,PrepRecipe-method}
 \title{Wilcox analysis}
 \usage{
 step_wilcox(
@@ -15,7 +15,7 @@ step_wilcox(
   id = rand_id("wilcox")
 )
 
-\S4method{step_wilcox}{recipe}(
+\S4method{step_wilcox}{Recipe}(
   rec,
   norm_method = "compositional",
   max_significance = 0.05,
@@ -24,7 +24,7 @@ step_wilcox(
   id = rand_id("wilcox")
 )
 
-\S4method{step_wilcox}{prep_recipe}(
+\S4method{step_wilcox}{PrepRecipe}(
   rec,
   norm_method = "compositional",
   max_significance = 0.05,
@@ -34,8 +34,8 @@ step_wilcox(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{norm_method}{Transformation to apply. The options include:
 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
@@ -58,7 +58,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Performs a wilcox test to determine features (be it Operational Taxanomic
@@ -68,7 +68,7 @@ more groups of multiple samples.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

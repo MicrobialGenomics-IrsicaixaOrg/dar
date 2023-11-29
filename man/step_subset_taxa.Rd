@@ -2,19 +2,19 @@
 % Please edit documentation in R/subset_taxa.R
 \name{step_subset_taxa}
 \alias{step_subset_taxa}
-\alias{step_subset_taxa,recipe-method}
-\alias{step_subset_taxa,prep_recipe-method}
+\alias{step_subset_taxa,Recipe-method}
+\alias{step_subset_taxa,PrepRecipe-method}
 \title{Subset taxa by taxonomic level}
 \usage{
 step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
 
-\S4method{step_subset_taxa}{recipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
+\S4method{step_subset_taxa}{Recipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
 
-\S4method{step_subset_taxa}{prep_recipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
+\S4method{step_subset_taxa}{PrepRecipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{tax_level}{The taxonomic level for subsetting taxa.}
 
@@ -23,7 +23,7 @@ operations for this recipe.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-A recipe object that has been subsetted based on taxonomic level.
+A Recipe object that has been subsetted based on taxonomic level.
 }
 \description{
 This is a convenience function around the subset_taxa function from the
@@ -45,7 +45,7 @@ This function modifies \code{rec} in place, you might want to make a copy of
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 

@@ -2,19 +2,19 @@
 % Please edit documentation in R/misc.R
 \name{contains_rarefaction}
 \alias{contains_rarefaction}
-\title{Checks if recipe contains a rarefaction step}
+\title{Checks if Recipe contains a rarefaction step}
 \usage{
 contains_rarefaction(rec)
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
+\item{rec}{A Recipe object. The step will be added to the sequence of
 operations for this recipe.}
 }
 \value{
 boolean
 }
 \description{
-Checks if recipe contains a rarefaction step
+Checks if Recipe contains a rarefaction step
 }
 \examples{
 data(GlobalPatterns, package = "phyloseq")

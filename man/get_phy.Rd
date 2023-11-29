@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{get_phy}
 \alias{get_phy}
-\alias{get_phy,recipe-method}
-\title{Returns phyloseq from recipe-class object}
+\alias{get_phy,Recipe-method}
+\title{Returns phyloseq from Recipe-class object}
 \usage{
 get_phy(rec)
 
-\S4method{get_phy}{recipe}(rec)
+\S4method{get_phy}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A \code{recipe} object}
+\item{rec}{A \code{Recipe} object}
 }
 \value{
 Phyloseq class object
 }
 \description{
-Returns phyloseq from recipe-class object
+Returns phyloseq from Recipe-class object
 }
 \examples{
 data(metaHIV_phy)

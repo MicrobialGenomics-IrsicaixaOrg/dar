@@ -2,8 +2,8 @@
 % Please edit documentation in R/ancom.R
 \name{step_ancom}
 \alias{step_ancom}
-\alias{step_ancom,recipe-method}
-\alias{step_ancom,prep_recipe-method}
+\alias{step_ancom,Recipe-method}
+\alias{step_ancom,PrepRecipe-method}
 \title{ANCOM analysis}
 \usage{
 step_ancom(
@@ -28,7 +28,7 @@ step_ancom(
   id = rand_id("ancom")
 )
 
-\S4method{step_ancom}{recipe}(
+\S4method{step_ancom}{Recipe}(
   rec,
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
@@ -50,7 +50,7 @@ step_ancom(
   id = rand_id("ancom")
 )
 
-\S4method{step_ancom}{prep_recipe}(
+\S4method{step_ancom}{PrepRecipe}(
   rec,
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
@@ -73,8 +73,8 @@ step_ancom(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{fix_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the fixed effects in metadata. When
@@ -149,7 +149,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Determine taxa whose absolute abundances, per unit volume, of the ecosystem
@@ -164,7 +164,7 @@ test, Dunnett's type of test, and trend test.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

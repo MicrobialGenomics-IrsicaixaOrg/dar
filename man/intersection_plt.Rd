@@ -2,8 +2,8 @@
 % Please edit documentation in R/plot_methods.R
 \name{intersection_plt}
 \alias{intersection_plt}
-\alias{intersection_plt,recipe-method}
-\alias{intersection_plt,prep_recipe-method}
+\alias{intersection_plt,Recipe-method}
+\alias{intersection_plt,PrepRecipe-method}
 \title{Plot results using UpSet plot}
 \usage{
 intersection_plt(
@@ -13,9 +13,9 @@ intersection_plt(
   font_size = 2
 )
 
-\S4method{intersection_plt}{recipe}(rec, steps, font_size)
+\S4method{intersection_plt}{Recipe}(rec, steps, font_size)
 
-\S4method{intersection_plt}{prep_recipe}(
+\S4method{intersection_plt}{PrepRecipe}(
   rec,
   steps = steps_ids(rec, "da"),
   ordered_by = c("freq", "degree"),
@@ -23,7 +23,7 @@ intersection_plt(
 )
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 
@@ -53,8 +53,8 @@ intersection_plt(test_prep_rec, ordered_by = "degree")
 ## results of maaslin
 intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## intersection_plt function needs a prep-recipe. If you pass a a non-prep
-## recipe the output is an error.
+## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
+## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(intersection_plt(test_rec))
 err

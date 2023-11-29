@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{otu_table}
 \alias{otu_table}
-\alias{otu_table,recipe-method}
-\title{Extracts otu_table from phyloseq inside a recipe}
+\alias{otu_table,Recipe-method}
+\title{Extracts otu_table from phyloseq inside a Recipe}
 \usage{
 otu_table(rec)
 
-\S4method{otu_table}{recipe}(rec)
+\S4method{otu_table}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 }
 \value{
 A tibble
 }
 \description{
-Extracts otu_table from phyloseq inside a recipe
+Extracts otu_table from phyloseq inside a Recipe
 }
 \examples{
 data(metaHIV_phy)

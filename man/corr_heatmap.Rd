@@ -2,18 +2,18 @@
 % Please edit documentation in R/plot_methods.R
 \name{corr_heatmap}
 \alias{corr_heatmap}
-\alias{corr_heatmap,recipe-method}
-\alias{corr_heatmap,prep_recipe-method}
+\alias{corr_heatmap,Recipe-method}
+\alias{corr_heatmap,PrepRecipe-method}
 \title{Plot otuput of the \code{overlap_df} function as a heatmap.}
 \usage{
 corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 
-\S4method{corr_heatmap}{recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
+\S4method{corr_heatmap}{Recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 
-\S4method{corr_heatmap}{prep_recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
+\S4method{corr_heatmap}{PrepRecipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 
@@ -39,8 +39,8 @@ corr_heatmap(test_prep_rec)
 ## results of maaslin
 corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## corr_heatmap function needs a prep-recipe. If you pass a a non-prep
-## recipe the output is an error.
+## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
+## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(corr_heatmap(test_rec))
 err

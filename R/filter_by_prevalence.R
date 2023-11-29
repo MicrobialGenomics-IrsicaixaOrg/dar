@@ -6,8 +6,8 @@
 #' the prevalence of each taxon. The taxa retained in the dataset are those
 #' where the prevalence is greater than the provided threshold.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param threshold The prevalence threshold for filtering taxa, expressed as a
 #'   proportion of the total number of samples. For example, a threshold of 0.01
 #'   means that a taxon must be present in at least 1% of the samples to be
@@ -20,7 +20,7 @@
 #'   object as the proportion of samples in which they are present. It then
 #'   compares this prevalence to the threshold. If a taxon's prevalence is less
 #'   than the threshold, that taxon is removed from the phyloseq object.
-#' @return A recipe object that has been filtered based on prevalence.
+#' @return A Recipe object that has been filtered based on prevalence.
 #' @seealso \code{\link[phyloseq]{filter_taxa}}
 #' @include recipe-class.R
 #' @family filter phy steps
@@ -30,7 +30,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
@@ -51,7 +51,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_prevalence",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, threshold = 0.01, id) {
     recipes_pkg_check(
       required_pkgs_filter_by_prevalence(),
@@ -69,9 +69,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_prevalence",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

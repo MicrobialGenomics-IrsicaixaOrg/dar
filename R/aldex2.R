@@ -19,8 +19,8 @@
 #'   t, Wilcoxon) test. This function also estimates effect size for two sample
 #'   analyses.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param max_significance Benjamini-Hochberg corrected P value of Welch’s t
 #'   test cutoff.
 #' @param mc.samples The number of Monte Carlo instances to use to estimate the
@@ -55,13 +55,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_aldex
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -99,7 +99,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_aldex",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
     recipes_pkg_check(required_pkgs_aldex(), "step_aldex()")
     add_step(
@@ -120,9 +120,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_aldex",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

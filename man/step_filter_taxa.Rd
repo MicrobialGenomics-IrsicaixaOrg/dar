@@ -2,16 +2,16 @@
 % Please edit documentation in R/filter_taxa.R
 \name{step_filter_taxa}
 \alias{step_filter_taxa}
-\alias{step_filter_taxa,recipe-method}
+\alias{step_filter_taxa,Recipe-method}
 \title{Filter taxa based on across-sample OTU abundance criteria}
 \usage{
 step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
 
-\S4method{step_filter_taxa}{recipe}(rec, .f, id = rand_id("filter_taxa"))
+\S4method{step_filter_taxa}{Recipe}(rec, .f, id = rand_id("filter_taxa"))
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{.f}{A function or list of functions that take a vector of abundance
 values and return a logical. Some canned useful function types are included
@@ -20,7 +20,7 @@ in the genefilter-package.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 This function is directly analogous to the genefilter function for microarray
@@ -34,7 +34,7 @@ FALSE, it returns the already-trimmed version of the phyloseq object.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 

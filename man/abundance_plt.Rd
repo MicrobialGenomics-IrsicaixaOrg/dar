@@ -2,8 +2,8 @@
 % Please edit documentation in R/plot_methods.R
 \name{abundance_plt}
 \alias{abundance_plt}
-\alias{abundance_plt,recipe-method}
-\alias{abundance_plt,prep_recipe-method}
+\alias{abundance_plt,Recipe-method}
+\alias{abundance_plt,PrepRecipe-method}
 \title{Abundance boxplot}
 \usage{
 abundance_plt(
@@ -15,7 +15,7 @@ abundance_plt(
   top_n = 20
 )
 
-\S4method{abundance_plt}{recipe}(
+\S4method{abundance_plt}{Recipe}(
   rec,
   taxa_ids = NULL,
   type = "boxplot",
@@ -24,7 +24,7 @@ abundance_plt(
   top_n = 20
 )
 
-\S4method{abundance_plt}{prep_recipe}(
+\S4method{abundance_plt}{PrepRecipe}(
   rec,
   taxa_ids = NULL,
   type = "boxplot",
@@ -34,7 +34,7 @@ abundance_plt(
 )
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 
 \item{taxa_ids}{Character vector with taxa_ids to plot. If taxa_ids is NULL
 the significant characteristics present in all of the executed methods will
@@ -77,8 +77,8 @@ taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
 abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
 abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
 
-## abundance_plt function needs a prep-recipe. If you pass a a non-prep
-## recipe the output is an error.
+## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
+## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(abundance_plt(test_rec))
 err

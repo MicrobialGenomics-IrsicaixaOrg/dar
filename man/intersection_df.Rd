@@ -2,18 +2,18 @@
 % Please edit documentation in R/recipe-class.R
 \name{intersection_df}
 \alias{intersection_df}
-\alias{intersection_df,recipe-method}
-\alias{intersection_df,prep_recipe-method}
+\alias{intersection_df,Recipe-method}
+\alias{intersection_df,PrepRecipe-method}
 \title{Returns data.frame with OTU intersection between methods}
 \usage{
 intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 
-\S4method{intersection_df}{recipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
+\S4method{intersection_df}{Recipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 
-\S4method{intersection_df}{prep_recipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
+\S4method{intersection_df}{PrepRecipe}(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{Recipe} object.}
 
 \item{steps}{character vector with step_ids to take in account.}
 
@@ -31,7 +31,7 @@ data(test_prep_rec)
 df <- intersection_df(test_prep_rec)
 head(df)
 
-## intersection_df function needs a prep-recipe. If you pass a a non-prep
+## intersection_df function needs a prep-Recipe. If you pass a a non-prep
 ## recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(intersection_df(test_rec))

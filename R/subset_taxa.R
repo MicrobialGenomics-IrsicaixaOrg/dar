@@ -7,8 +7,8 @@
 #' retained in the dataset are those where the taxonomic level matches the
 #' provided taxa.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param tax_level The taxonomic level for subsetting taxa.
 #' @param taxa The taxa to be retained in the dataset.
 #' @param id A character string that is unique to this step to identify it.
@@ -18,7 +18,7 @@
 #' @details The function subsets the taxa in the phyloseq object based on the
 #'   provided taxonomic level and taxa. Only the taxa that match the provided
 #'   taxa at the given taxonomic level are retained in the phyloseq object.
-#' @return A recipe object that has been subsetted based on taxonomic level.
+#' @return A Recipe object that has been subsetted based on taxonomic level.
 #' @seealso \code{\link[phyloseq]{subset_taxa}}
 #' @include recipe-class.R
 #' @family subset phy steps
@@ -28,7 +28,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
@@ -54,7 +54,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_subset_taxa",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, tax_level, taxa, id) {
     recipes_pkg_check(
       required_pkgs_subset_taxa(),
@@ -76,9 +76,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_subset_taxa",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, tax_level, taxa, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

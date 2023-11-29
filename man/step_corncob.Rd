@@ -2,8 +2,8 @@
 % Please edit documentation in R/corncob.R
 \name{step_corncob}
 \alias{step_corncob}
-\alias{step_corncob,recipe-method}
-\alias{step_corncob,prep_recipe-method}
+\alias{step_corncob,Recipe-method}
+\alias{step_corncob,PrepRecipe-method}
 \title{corncob analysis}
 \usage{
 step_corncob(
@@ -24,7 +24,7 @@ step_corncob(
   id = rand_id("corncob")
 )
 
-\S4method{step_corncob}{recipe}(
+\S4method{step_corncob}{Recipe}(
   rec,
   phi.formula = stats::formula(~1),
   formula_null = stats::formula(~1),
@@ -42,7 +42,7 @@ step_corncob(
   id = rand_id("corncob")
 )
 
-\S4method{step_corncob}{prep_recipe}(
+\S4method{step_corncob}{PrepRecipe}(
   rec,
   phi.formula = stats::formula(~1),
   formula_null = stats::formula(~1),
@@ -61,8 +61,8 @@ step_corncob(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{phi.formula}{An object of class formula without the response: a
 symbolic description of the model to be fitted to the dispersion.}
@@ -106,7 +106,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Corncob an individual taxon regression model that uses abundance tables and
@@ -125,7 +125,7 @@ variability, and addresses each of the challenges presented below:
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

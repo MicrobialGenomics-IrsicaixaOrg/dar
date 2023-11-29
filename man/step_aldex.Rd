@@ -2,8 +2,8 @@
 % Please edit documentation in R/aldex2.R
 \name{step_aldex}
 \alias{step_aldex}
-\alias{step_aldex,recipe-method}
-\alias{step_aldex,prep_recipe-method}
+\alias{step_aldex,Recipe-method}
+\alias{step_aldex,PrepRecipe-method}
 \title{ALDEx2 analysis}
 \usage{
 step_aldex(
@@ -15,7 +15,7 @@ step_aldex(
   id = rand_id("aldex")
 )
 
-\S4method{step_aldex}{recipe}(
+\S4method{step_aldex}{Recipe}(
   rec,
   max_significance = 0.05,
   mc.samples = 128,
@@ -24,7 +24,7 @@ step_aldex(
   id = rand_id("aldex")
 )
 
-\S4method{step_aldex}{prep_recipe}(
+\S4method{step_aldex}{PrepRecipe}(
   rec,
   max_significance = 0.05,
   mc.samples = 128,
@@ -34,8 +34,8 @@ step_aldex(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{max_significance}{Benjamini-Hochberg corrected P value of Welch’s t
 test cutoff.}
@@ -73,7 +73,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 A differential abundance analysis for the comparison of two or more
@@ -99,7 +99,7 @@ analyses.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

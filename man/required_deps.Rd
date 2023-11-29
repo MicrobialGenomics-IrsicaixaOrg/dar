@@ -2,30 +2,30 @@
 % Please edit documentation in R/pkg_check.R
 \name{required_deps}
 \alias{required_deps}
-\alias{required_deps,recipe-method}
-\title{Returns required pakcages for recipe object}
+\alias{required_deps,Recipe-method}
+\title{Returns required pakcages for Recipe object}
 \usage{
 required_deps(rec)
 
-\S4method{required_deps}{recipe}(rec)
+\S4method{required_deps}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A \code{recipe} object}
+\item{rec}{A \code{Recipe} object}
 }
 \value{
 character
 }
 \description{
-Returns required pakcages for recipe object
+Returns required pakcages for Recipe object
 }
 \examples{
 data(test_rec)
 
 ## The function returns instructions to install any uninstalled dependencies 
-## needed to run the recipe steps
+## needed to run the Recipe steps
 dar:::required_deps(test_rec)
 
-## The function also works with prep_recipe-class objects
+## The function also works with PrepRecipe-class objects
 data(test_prep_rec)
 dar:::required_deps(test_prep_rec)
 }

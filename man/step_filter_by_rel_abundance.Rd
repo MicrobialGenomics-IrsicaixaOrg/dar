@@ -2,8 +2,8 @@
 % Please edit documentation in R/filter_by_abundance.R
 \name{step_filter_by_rel_abundance}
 \alias{step_filter_by_rel_abundance}
-\alias{step_filter_by_rel_abundance,recipe-method}
-\alias{step_filter_by_rel_abundance,prep_recipe-method}
+\alias{step_filter_by_rel_abundance,Recipe-method}
+\alias{step_filter_by_rel_abundance,PrepRecipe-method}
 \title{Filter taxa by abundance}
 \usage{
 step_filter_by_rel_abundance(
@@ -12,21 +12,21 @@ step_filter_by_rel_abundance(
   id = rand_id("filter_by_rel_abundance")
 )
 
-\S4method{step_filter_by_rel_abundance}{recipe}(
+\S4method{step_filter_by_rel_abundance}{Recipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_rel_abundance")
 )
 
-\S4method{step_filter_by_rel_abundance}{prep_recipe}(
+\S4method{step_filter_by_rel_abundance}{PrepRecipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_rel_abundance")
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{threshold}{The relative abundance threshold for filtering taxa,
 expressed as a proportion of the total abundance. For example, a threshold
@@ -56,7 +56,7 @@ This function modifies \code{rec} in place, you might want to make a copy of
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 

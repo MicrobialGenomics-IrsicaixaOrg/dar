@@ -2,24 +2,24 @@
 % Please edit documentation in R/rarefaction.R
 \name{step_rarefaction}
 \alias{step_rarefaction}
-\alias{step_rarefaction,recipe-method}
-\alias{step_rarefaction,prep_recipe-method}
+\alias{step_rarefaction,Recipe-method}
+\alias{step_rarefaction,PrepRecipe-method}
 \title{Resample an OTU table such that all samples have the same library size.}
 \usage{
 step_rarefaction(rec, id = rand_id("rarefaction"))
 
-\S4method{step_rarefaction}{recipe}(rec, id = rand_id("rarefaction"))
+\S4method{step_rarefaction}{Recipe}(rec, id = rand_id("rarefaction"))
 
-\S4method{step_rarefaction}{prep_recipe}(rec, id = rand_id("rarefaction"))
+\S4method{step_rarefaction}{PrepRecipe}(rec, id = rand_id("rarefaction"))
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Please note that the authors of phyloseq do not advocate using this as a
@@ -46,7 +46,7 @@ integer argument as rngseed.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- 
   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

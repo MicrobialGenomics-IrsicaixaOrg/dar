@@ -2,17 +2,17 @@
 
 ## class unions ----
 
-#' @rdname recipe-class
+#' @rdname Recipe-class
 methods::setClassUnion("phyloseq_or_null", c("phyloseq", "NULL"))
 
-#' @rdname recipe-class
+#' @rdname Recipe-class
 methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 
 ## class def ----
 
-#' recipe-class object
+#' Recipe-class object
 #'
-#' A recipe is a description of the steps to be applied to a data set in order
+#' A Recipe is a description of the steps to be applied to a data set in order
 #' to prepare it for data analysis.
 #'
 #' @slot phyloseq Phyloseq-class object.
@@ -22,13 +22,13 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 #'   that will be used in the analysis.
 #' @slot steps List of step-class objects that will be used by DA.
 #'
-#' @name recipe-class
-#' @rdname recipe-class
-#' @exportClass recipe
-#' @return recipe-class object
+#' @name Recipe-class
+#' @rdname Recipe-class
+#' @exportClass Recipe
+#' @return Recipe-class object
 #' @autoglobal
 methods::setClass(
-  Class = "recipe",
+  Class = "Recipe",
   slots = c(
     phyloseq = "phyloseq_or_null",
     var_info = "tibble_or_NULL",
@@ -45,9 +45,9 @@ methods::setClass(
 
 ## constructor ----
 
-#' Create a recipe for preprocessing data
+#' Create a Recipe for preprocessing data
 #'
-#' A recipe is a description of the steps to be applied to a data set in order
+#' A Recipe is a description of the steps to be applied to a data set in order
 #' to prepare it for data analysis.
 #'
 #' @param microbiome_object Phyloseq-class object or
@@ -58,14 +58,14 @@ methods::setClass(
 #'   any context.
 #' @param steps list with steps.
 #'
-#' @return An object of class `recipe` with sub-objects: \item{phyloseq}{object
+#' @return An object of class `Recipe` with sub-objects: \item{phyloseq}{object
 #'   of class `phyloseq` with taxa abundance information.} \item{var_info}{A
 #'   tibble that contains the current set of terms in the data set. This
 #'   initially defaults to the same data contained in `var_info`.}
 #'   \item{tax_info}{A tibble that contains the current set of taxonomic levels
 #'   that will be used in the analysis.}
 #'
-#' @aliases recipe
+#' @aliases Recipe
 #' @export
 #' @autoglobal
 #' @tests testthat 
@@ -164,7 +164,7 @@ recipe <- function(microbiome_object = NULL,
   }
   
   methods::new(
-    Class = "recipe",
+    Class = "Recipe",
     phyloseq = microbiome_object,
     var_info = var_info,
     tax_info = tax_info,
@@ -175,7 +175,7 @@ recipe <- function(microbiome_object = NULL,
 ## validity ----
 
 methods::setValidity(
-  Class = "recipe",
+  Class = "Recipe",
   method = function(object) {
     TRUE
   }
@@ -183,7 +183,7 @@ methods::setValidity(
 
 ## printing ----
 
-methods::setMethod("show", signature = "recipe", definition = function(object) {
+methods::setMethod("show", signature = "Recipe", definition = function(object) {
   cli::cat_rule(crayon::blue("DAR Recipe"))
   cat("Inputs:\n\n")
 
@@ -205,7 +205,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     cat(
       glue::glue(
         "     {cross()} undefined variable of interest. Use ",
-        "{crayon::bgMagenta('add_var()')} to add it to recipe!"
+        "{crayon::bgMagenta('add_var()')} to add it to Recipe!"
       ),
       "\n"
     )
@@ -231,7 +231,7 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
     cat(
       glue::glue(
         "     {cross()} undefined taxonomic level. Use ",
-        "{crayon::bgMagenta('add_tax()')} to add it to recipe!"
+        "{crayon::bgMagenta('add_tax()')} to add it to Recipe!"
       ),
       "\n"
     )
@@ -278,9 +278,9 @@ methods::setMethod("show", signature = "recipe", definition = function(object) {
 
 ## get_var ----
 
-#' Returns var_info from recipe-class object
+#' Returns var_info from Recipe-class object
 #'
-#' @param rec A `recipe` object
+#' @param rec A `Recipe` object
 #'
 #' @aliases get_var
 #' @return Tibble containing `var_info`.
@@ -301,15 +301,15 @@ methods::setGeneric("get_var", function(rec) standardGeneric("get_var"))
 #' @export
 methods::setMethod(
   f = "get_var",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) { rec@var_info }
 )
 
 ## get_tax ----
 
-#' Returns tax_info from recipe-class object
+#' Returns tax_info from Recipe-class object
 #'
-#' @param rec A `recipe` object
+#' @param rec A `Recipe` object
 #'
 #' @aliases get_tax
 #' @return Tibble containing `tax_info`.
@@ -331,15 +331,15 @@ methods::setGeneric("get_tax", function(rec) standardGeneric("get_tax"))
 #' @autoglobal
 methods::setMethod(
   f = "get_tax",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) { rec@tax_info }
 )
 
 ## get_phy ----
 
-#' Returns phyloseq from recipe-class object
+#' Returns phyloseq from Recipe-class object
 #'
-#' @param rec A `recipe` object
+#' @param rec A `Recipe` object
 #'
 #' @aliases get_phy
 #' @return Phyloseq class object
@@ -361,20 +361,20 @@ methods::setGeneric("get_phy", function(rec) standardGeneric("get_phy"))
 #' @autoglobal
 methods::setMethod(
   f = "get_phy",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) { rec@phyloseq }
 )
 
 ## add_var ----
 
-#' Adds variable of interest to the recipe
+#' Adds variable of interest to the Recipe
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param var_info A character string of column names corresponding to variables
 #'   that will be used in any context.
 #'
 #' @aliases add_var
-#' @return A `recipe` object.
+#' @return A `Recipe` object.
 #' @export
 #' @autoglobal
 #' @examples
@@ -402,7 +402,7 @@ methods::setGeneric("add_var", function(rec, var_info)
 #' @autoglobal
 methods::setMethod(
   f = "add_var",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, var_info) {
     rec@var_info <- tibble::tibble(vars = var_info)
     rec
@@ -411,14 +411,14 @@ methods::setMethod(
 
 ## add_tax ----
 
-#' Adds taxonomic level of interest in the recipe.
+#' Adds taxonomic level of interest in the Recipe.
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param tax_info A character string of taxonomic levels that will be used in
 #'   any context.
 #'
 #' @aliases add_tax
-#' @return A `recipe` object.
+#' @return A `Recipe` object.
 #' @export
 #' @autoglobal
 #' @examples
@@ -432,7 +432,7 @@ methods::setMethod(
 #' rec <- add_tax(rec, tax_info = "Species")
 #' rec
 #'
-#' ## add tax info to a prep-recipe returns an error
+#' ## add tax info to a prep-Recipe returns an error
 #' data(test_prep_rec)
 #' err <- testthat::expect_error(
 #'   add_tax(test_prep_rec, tax_info = "Species")
@@ -447,7 +447,7 @@ methods::setGeneric("add_tax", function(rec, tax_info)
 #' @autoglobal
 methods::setMethod(
   f = "add_tax",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, tax_info) {
     rec@tax_info <- tibble::tibble(vars = tax_info)
     rec
@@ -456,11 +456,11 @@ methods::setMethod(
 
 
 
-## Phyloseq slots as tibble from recipe ----
+## Phyloseq slots as tibble from Recipe ----
 
-#' Extracts tax_table from phyloseq inside a recipe
+#' Extracts tax_table from phyloseq inside a Recipe
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #'
 #' @return A tibble
 #' @export
@@ -481,7 +481,7 @@ methods::setGeneric("tax_table", function(rec) standardGeneric("tax_table"))
 #' @autoglobal
 methods::setMethod(
   f = "tax_table",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) {
     rec@phyloseq@tax_table %>%
       to_tibble("taxa_id") %>%
@@ -489,9 +489,9 @@ methods::setMethod(
   }
 )
 
-#' Extracts sample_data from phyloseq inside a recipe
+#' Extracts sample_data from phyloseq inside a Recipe
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #'
 #' @return A tibble
 #' @export
@@ -512,7 +512,7 @@ methods::setGeneric("sample_data", function(rec) standardGeneric("sample_data"))
 #' @autoglobal
 methods::setMethod(
   f = "sample_data",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) {
     rec@phyloseq %>%
       phyloseq::sample_data() %>%
@@ -521,9 +521,9 @@ methods::setMethod(
   }
 )
 
-#' Extracts otu_table from phyloseq inside a recipe
+#' Extracts otu_table from phyloseq inside a Recipe
 #'
-#' @param rec A recipe or recipe step.
+#' @param rec A Recipe or Recipe step.
 #'
 #' @return A tibble
 #' @export
@@ -544,7 +544,7 @@ methods::setGeneric("otu_table", function(rec) standardGeneric("otu_table"))
 #' @autoglobal
 methods::setMethod(
   f = "otu_table",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) {
     rec@phyloseq %>%
       phyloseq::otu_table() %>%
@@ -552,47 +552,47 @@ methods::setMethod(
   }
 )
 
-# CLASS PREP_RECIPE ------------------------------------------------------------
+# CLASS PrepRecipe ------------------------------------------------------------
 
 ## class def ----
 
-#' prep_recipe-class object
+#' PrepRecipe-class object
 #'
-#' A prep_recipe is recipe with the results corresponding to the steps defined
-#' in the recipe.
+#' A PrepRecipe is Recipe with the results corresponding to the steps defined
+#' in the Recipe.
 #'
-#' @slot results Contains the results of all defined analysis in the recipe.
+#' @slot results Contains the results of all defined analysis in the Recipe.
 #' @slot bakes Contains the executed bakes.
 #'
-#' @name prep_recipe-class
-#' @rdname prep_recipe-class
-#' @exportClass prep_recipe
-#' @return prep_recipe-class object
+#' @name PrepRecipe-class
+#' @rdname PrepRecipe-class
+#' @exportClass PrepRecipe
+#' @return PrepRecipe-class object
 #' @autoglobal
 methods::setClass(
-  Class = "prep_recipe",
-  contains = "recipe",
+  Class = "PrepRecipe",
+  contains = "Recipe",
   slots = c(results = "list", bakes = "list")
 )
 
 ## constructor ----
 
-#' Create a recipe prep_recipe.
+#' Create a PrepRecipe.
 #'
-#' A prep_recipe is recipe with the results corresponding to the steps defined
-#' in the recipe.
+#' A PrepRecipe is Recipe with the results corresponding to the steps defined
+#' in the Recipe.
 #'
-#' @param rec A recipe object.
+#' @param rec A Recipe object.
 #' @param results list with the results
 #' @param bakes list with saved bakes
 #'
-#' @return An object of class `prep_recipe`.
+#' @return An object of class `PrepRecipe`.
 #' @autoglobal
 #' @keywords internal
-#' @aliases prep_recipe
+#' @aliases PrepRecipe
 prep_recipe <- function(rec, results, bakes) {
   methods::new(
-    Class = "prep_recipe",
+    Class = "PrepRecipe",
     results = results,
     bakes = bakes,
     rec
@@ -602,7 +602,7 @@ prep_recipe <- function(rec, results, bakes) {
 ## validity ----
 
 methods::setValidity(
-  Class = "recipe",
+  Class = "Recipe",
   method = function(object) {
     TRUE
   }
@@ -610,13 +610,13 @@ methods::setValidity(
 
 ## printing ----
 
-#' @param object A recipe object.
+#' @param object A Recipe object.
 #' 
-#' @rdname recipe
+#' @rdname Recipe-class
 #' @autoglobal
 methods::setMethod(
   "show",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(object) {
     cli::cat_rule(crayon::blue("DAR Results"))
     cat("Inputs:\n\n")
@@ -643,7 +643,7 @@ methods::setMethod(
       cat(
         glue::glue(
           "     {cross()} undefined variable of interest. Use ", 
-          "{crayon::bgMagenta('add_var()')} to add it to recipe!"
+          "{crayon::bgMagenta('add_var()')} to add it to Recipe!"
         ),
         "\n"
       )
@@ -673,7 +673,7 @@ methods::setMethod(
       cat(
         glue::glue(
           "     {cross()} undefined taxonomic level. Use ", 
-          "{crayon::bgMagenta('add_tax()')} to add it to recipe!"
+          "{crayon::bgMagenta('add_tax()')} to add it to Recipe!"
         ),
         "\n"
       )
@@ -761,9 +761,9 @@ required_pkgs_prep <- function(x, ...) {
 #' @autoglobal
 methods::setMethod(
   f = "add_var",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, var_info) {
-    rlang::abort("var_info can only be added to a non-prep recipe")
+    rlang::abort("var_info can only be added to a non-PrepRecipe")
   }
 )
 
@@ -774,20 +774,20 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "add_tax",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, tax_info) {
-    rlang::abort("tax_info can only be added to a non-prep recipe")
+    rlang::abort("tax_info can only be added to a non-PrepRecipe")
   }
 )
 
 ## prep ----
 
-#' Performs all the steps defined in a recipe
+#' Performs all the steps defined in a Recipe
 #'
-#' For a recipe with at least one preprocessing or DA operation run the steps in
+#' For a Recipe with at least one preprocessing or DA operation run the steps in
 #' a convenient order.
 #'
-#' @param rec A `recipe` object. and furrr packages.
+#' @param rec A `Recipe` object. and furrr packages.
 #' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
 #'   using future and furrr packages.
 #' @param workers Number of workers for palatalization.
@@ -795,20 +795,20 @@ methods::setMethod(
 #'   results.
 #'
 #' @aliases prep
-#' @return A `prep_recipe` object.
+#' @return A `PrepRecipe` object.
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Define recipe
+#' ## Define Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
 #'   step_maaslin()
 #'
-#' ## Prep recipe
+#' ## Prep Recipe
 #' da_results <- prep(rec)
 #'
 #' ## If you try
@@ -818,7 +818,7 @@ methods::setMethod(
 #' da_results <- bake(da_results, count_cutoff = n_methods)
 #' da_results
 #'
-#' ## If you try to run prep on an object of class prep_recipe it returns an 
+#' ## If you try to run prep on an object of class PrepRecipe it returns an 
 #' ## error.
 #' err <- testthat::expect_error(prep(da_results))
 #' err
@@ -842,11 +842,11 @@ methods::setGeneric(
 #' @export
 methods::setMethod(
   f = "prep",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, parallel, workers, force) {
     if ("results" %in% methods::slotNames(rec) & !force) {
       rlang::abort(c(
-        "The input recipe has already been prep!",
+        "The input Recipe has already been prep!",
         i = glue::glue(
           "To force the rerun of all steps plese run ", 
           "{crayon::bgMagenta('prep(rec, force = T)')}"
@@ -935,7 +935,7 @@ methods::setMethod(
 
 #' Returns data.frame with OTU intersection between methods
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param steps character vector with step_ids to take in account.
 #' @param tidy Boolan indicating if result must be in tidy format.
 #'
@@ -949,7 +949,7 @@ methods::setMethod(
 #' df <- intersection_df(test_prep_rec)
 #' head(df)
 #'
-#' ## intersection_df function needs a prep-recipe. If you pass a a non-prep
+#' ## intersection_df function needs a prep-Recipe. If you pass a a non-prep
 #' ## recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(intersection_df(test_rec))
@@ -966,10 +966,10 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "intersection_df",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, steps, tidy) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then retry last command."
       )
@@ -982,7 +982,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "intersection_df",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, steps, tidy) {
     df <- names(rec@results) %>%
       purrr::keep(. %in% steps) %>%
@@ -1010,7 +1010,7 @@ methods::setMethod(
 
 #' Overlap of significant OTUs between tested methods.
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param steps Character vector with step_ids to take in account.
 #' @param type Indicates whether to use all taxa ("all") or only those that are
 #'   differentially abundant in at least one method ("da"). Default as "all". 
@@ -1031,8 +1031,8 @@ methods::setMethod(
 #' ## results of maaslin
 #' overlap_df(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
-#' ## overlap_df function needs a prep-recipe. If you pass a a non-prep
-#' ## recipe the output is an error.
+#' ## overlap_df function needs a prep-Recipe. If you pass a a non-prep
+#' ## Recipe the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(overlap_df(test_rec))
 #' err
@@ -1048,10 +1048,10 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "overlap_df",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, steps, type) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('overlap_df()')}"
@@ -1065,7 +1065,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "overlap_df",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, steps, type) {
     df <- 
       intersection_df(rec) %>%  
@@ -1106,7 +1106,7 @@ methods::setMethod(
 
 #' Extract results from defined bake
 #'
-#' @param rec A `recipe` object.
+#' @param rec A `Recipe` object.
 #' @param bake Name or index of the bake to extract.
 #'
 #' @aliases cool
@@ -1116,7 +1116,7 @@ methods::setMethod(
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## First we need to add bakes (extraction strategies) to the prep recipe.
+#' ## First we need to add bakes (extraction strategies) to the PrepRecipe.
 #' rec <- bake(test_prep_rec)
 #'
 #' ## Finally we can extract the results with the cool method
@@ -1127,7 +1127,7 @@ methods::setMethod(
 #' rec <- bake(rec, count_cutoff = 1)
 #' cool(rec, 2)
 #'
-#' ## bake and cool methods needs a prep-recipe. If you pass a non-prep recipe
+#' ## bake and cool methods needs a prep-Recipe. If you pass a non-PrepRecipe
 #' ## the output is an error.
 #' data(test_rec)
 #' err <- testthat::expect_error(cool(test_rec))
@@ -1144,10 +1144,10 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "cool",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec, bake) {
     rlang::abort(c(
-      "This function needs a prep recipe!",
+      "This function needs a PrepRecipe!",
       glue::glue(
         "Run {crayon::bgMagenta('prep(rec)')} and then try with ", 
         "{crayon::bgMagenta('cool()')}"
@@ -1161,25 +1161,25 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "cool",
-  signature = "prep_recipe",
+  signature = "PrepRecipe",
   definition = function(rec, bake) {
     all_bakes <- rec@bakes
     all_names <- all_bakes %>% purrr::map_chr(~ as.character(.x[["id"]]))
     
     if (is.numeric(bake) & length(all_bakes) < bake) {
       rlang::abort(c(
-        "Bake index is not defined in the prep_recipe!",
+        "Bake index is not defined in the PrepRecipe!",
         glue::glue(
-          "Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with ", 
+          "Run {crayon::bgMagenta('bake(PrepRecipe)')} and then try with ", 
           "{crayon::bgMagenta('cool()')}"
         )
       ))
     }
     if (!is.numeric(bake) & !bake %in% all_names) {
       rlang::abort(c(
-        "Bake name is not defined in the prep_recipe!",
+        "Bake name is not defined in the PrepRecipe!",
         glue::glue(
-          "Run {crayon::bgMagenta('bake(prep_recipe)')} and then try with ", 
+          "Run {crayon::bgMagenta('bake(PrepRecipe)')} and then try with ", 
           "{crayon::bgMagenta('cool()')}"
         )
       ))

@@ -2,8 +2,8 @@
 % Please edit documentation in R/metagenomeseq.R
 \name{step_metagenomeseq}
 \alias{step_metagenomeseq}
-\alias{step_metagenomeseq,recipe-method}
-\alias{step_metagenomeseq,prep_recipe-method}
+\alias{step_metagenomeseq,Recipe-method}
+\alias{step_metagenomeseq,PrepRecipe-method}
 \title{MetagenomeSeq analysis}
 \usage{
 step_metagenomeseq(
@@ -18,7 +18,7 @@ step_metagenomeseq(
   id = rand_id("metagenomeseq")
 )
 
-\S4method{step_metagenomeseq}{recipe}(
+\S4method{step_metagenomeseq}{Recipe}(
   rec,
   zeroMod = NULL,
   useCSSoffset = TRUE,
@@ -30,7 +30,7 @@ step_metagenomeseq(
   id = rand_id("metagenomeseq")
 )
 
-\S4method{step_metagenomeseq}{prep_recipe}(
+\S4method{step_metagenomeseq}{PrepRecipe}(
   rec,
   zeroMod = NULL,
   useCSSoffset = TRUE,
@@ -43,8 +43,8 @@ step_metagenomeseq(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{zeroMod}{The zero model, the model to account for the change in the
 number of OTUs observed as a linear effect of the depth of coverage.}
@@ -73,7 +73,7 @@ than 0 counts.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 metagenomeSeq is designed to determine features (be it Operational Taxanomic
@@ -85,7 +85,7 @@ disease association detection and the testing of feature correlations.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

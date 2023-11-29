@@ -4,13 +4,20 @@
 \name{phyloseq_or_null-class}
 \alias{phyloseq_or_null-class}
 \alias{tibble_or_NULL-class}
-\alias{recipe-class}
-\title{recipe-class object}
+\alias{Recipe-class}
+\alias{show,PrepRecipe-method}
+\title{Recipe-class object}
+\usage{
+\S4method{show}{PrepRecipe}(object)
+}
+\arguments{
+\item{object}{A Recipe object.}
+}
 \value{
-recipe-class object
+Recipe-class object
 }
 \description{
-A recipe is a description of the steps to be applied to a data set in order
+A Recipe is a description of the steps to be applied to a data set in order
 to prepare it for data analysis.
 }
 \section{Slots}{

@@ -2,22 +2,23 @@
 % Please edit documentation in R/recipe-class.R
 \name{prep_recipe}
 \alias{prep_recipe}
-\title{Create a recipe prep_recipe.}
+\alias{PrepRecipe}
+\title{Create a PrepRecipe.}
 \usage{
 prep_recipe(rec, results, bakes)
 }
 \arguments{
-\item{rec}{A recipe object.}
+\item{rec}{A Recipe object.}
 
 \item{results}{list with the results}
 
 \item{bakes}{list with saved bakes}
 }
 \value{
-An object of class \code{prep_recipe}.
+An object of class \code{PrepRecipe}.
 }
 \description{
-A prep_recipe is recipe with the results corresponding to the steps defined
-in the recipe.
+A PrepRecipe is Recipe with the results corresponding to the steps defined
+in the Recipe.
 }
 \keyword{internal}

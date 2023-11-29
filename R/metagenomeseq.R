@@ -6,8 +6,8 @@
 #' effects of both normalization and under-sampling of microbial communities on
 #' disease association detection and the testing of feature correlations.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param zeroMod The zero model, the model to account for the change in the
 #'   number of OTUs observed as a linear effect of the depth of coverage.
 #' @param useCSSoffset Boolean, whether to include the default scaling
@@ -30,13 +30,13 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_metagenomeseq
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -77,7 +77,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_metagenomeseq",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         zeroMod,
                         useCSSoffset,
@@ -110,7 +110,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_metagenomeseq",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         zeroMod,
                         useCSSoffset,
@@ -120,7 +120,7 @@ methods::setMethod(
                         rarefy,
                         rm_zeros,
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

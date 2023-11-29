@@ -3,15 +3,15 @@
 \docType{data}
 \name{test_prep_rec}
 \alias{test_prep_rec}
-\title{Prep-recipe for metaHIV_phy data}
+\title{PrepRecipe for metaHIV_phy data}
 \format{
-A prep-recipe object.
+A PrepRecipe object.
 }
 \usage{
 data("test_prep_rec")
 }
 \description{
-A recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
+A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
 and "Genus" as a \code{tax_info}. Also includes \code{step_deseq}, \code{step_maaslin} and
 \code{step_metagenomeSeq}.
 }

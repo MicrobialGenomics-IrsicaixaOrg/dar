@@ -21,20 +21,20 @@
 #' function, or, alternatively, that you explicitly provide a single positive
 #' integer argument as rngseed.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
 #' @family rarefaction phy steps
 #' @aliases step_rarefaction
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @examples 
 #' data(metaHIV_phy)
 #' 
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- 
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -60,7 +60,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_rarefaction",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, id) {
     recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")
     add_step(rec, step_rarefaction_new(id = id))
@@ -72,9 +72,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_rarefaction",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

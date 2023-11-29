@@ -2,8 +2,8 @@
 % Please edit documentation in R/deseq2.R
 \name{step_deseq}
 \alias{step_deseq}
-\alias{step_deseq,recipe-method}
-\alias{step_deseq,prep_recipe-method}
+\alias{step_deseq,Recipe-method}
+\alias{step_deseq,PrepRecipe-method}
 \title{DESeq2 analysis}
 \usage{
 step_deseq(
@@ -18,7 +18,7 @@ step_deseq(
   id = rand_id("deseq")
 )
 
-\S4method{step_deseq}{recipe}(
+\S4method{step_deseq}{Recipe}(
   rec,
   test = "Wald",
   fitType = "local",
@@ -30,7 +30,7 @@ step_deseq(
   id = rand_id("deseq")
 )
 
-\S4method{step_deseq}{prep_recipe}(
+\S4method{step_deseq}{PrepRecipe}(
   rec,
   test = "Wald",
   fitType = "local",
@@ -43,8 +43,8 @@ step_deseq(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{test}{Either "Wald" or "LRT", which will then use either Wald
 significance tests (defined by nbinomWaldTest), or the likelihood ratio
@@ -81,7 +81,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Differential expression analysis based on the Negative Binomial (a.k.a.
@@ -97,7 +97,7 @@ be generated using the lfcShrink function.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

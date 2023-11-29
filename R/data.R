@@ -23,21 +23,21 @@ NULL
 
 #' Recipe for metaHIV_phy data
 #'
-#' A recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
+#' A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
 #' and "Genus" as a `tax_info`.
 #'
-#' @format A recipe object.
+#' @format A Recipe object.
 #' @autoglobal
 #' @usage data("test_rec")
 "test_rec"
 
-#' Prep-recipe for metaHIV_phy data
+#' PrepRecipe for metaHIV_phy data
 #'
-#' A recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
+#' A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
 #' and "Genus" as a `tax_info`. Also includes `step_deseq`, `step_maaslin` and
 #' `step_metagenomeSeq`.
 #'
-#' @format A prep-recipe object.
+#' @format A PrepRecipe object.
 #' @autoglobal
 #' @usage data("test_prep_rec")
 "test_prep_rec"

@@ -25,12 +25,12 @@ check <- function(subclass, ..., .prefix = "check_") {
 
 #' Add a New Operation to the Current Recipe
 #'
-#' `add_step` adds a step to the last location in the recipe. `add_check` does
+#' `add_step` adds a step to the last location in the Recipe. `add_check` does
 #' the same for checks.
 #'
-#' @param rec A [recipe()].
+#' @param rec A [Recipe()].
 #' @param object A step or check object.
-#' @return A updated [recipe()] with the new operation in the last slot.
+#' @return A updated [Recipe()] with the new operation in the last slot.
 #' @keywords internal
 #' @autoglobal
 methods::setGeneric("add_step", function(rec, object)
@@ -41,7 +41,7 @@ methods::setGeneric("add_step", function(rec, object)
 #' @autoglobal
 methods::setMethod(
   f = "add_step",
-  signature = c("recipe"),
+  signature = c("Recipe"),
   definition = function(rec, object) {
 
     dupl_rec <-
@@ -78,7 +78,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "add_step",
-  signature = c("prep_recipe"),
+  signature = c("PrepRecipe"),
   definition = function(rec, object) {
 
     dupl_rec <-

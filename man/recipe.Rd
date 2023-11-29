@@ -2,8 +2,8 @@
 % Please edit documentation in R/recipe-class.R
 \name{recipe}
 \alias{recipe}
-\alias{show,prep_recipe-method}
-\title{Create a recipe for preprocessing data}
+\alias{Recipe}
+\title{Create a Recipe for preprocessing data}
 \usage{
 recipe(
   microbiome_object = NULL,
@@ -11,8 +11,6 @@ recipe(
   tax_info = NULL,
   steps = list()
 )
-
-\S4method{show}{prep_recipe}(object)
 }
 \arguments{
 \item{microbiome_object}{Phyloseq-class object or
@@ -25,11 +23,9 @@ that will be used in any context.}
 any context.}
 
 \item{steps}{list with steps.}
-
-\item{object}{A recipe object.}
 }
 \value{
-An object of class \code{recipe} with sub-objects: \item{phyloseq}{object
+An object of class \code{Recipe} with sub-objects: \item{phyloseq}{object
 of class \code{phyloseq} with taxa abundance information.} \item{var_info}{A
 tibble that contains the current set of terms in the data set. This
 initially defaults to the same data contained in \code{var_info}.}
@@ -37,7 +33,7 @@ initially defaults to the same data contained in \code{var_info}.}
 that will be used in the analysis.}
 }
 \description{
-A recipe is a description of the steps to be applied to a data set in order
+A Recipe is a description of the steps to be applied to a data set in order
 to prepare it for data analysis.
 }
 \examples{

@@ -82,9 +82,9 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 #' @autoglobal
 required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 
-#' Returns required pakcages for recipe object
+#' Returns required pakcages for Recipe object
 #'
-#' @param rec A `recipe` object
+#' @param rec A `Recipe` object
 #'
 #' @aliases required_deps
 #' @return character
@@ -94,10 +94,10 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
 #' data(test_rec)
 #' 
 #' ## The function returns instructions to install any uninstalled dependencies 
-#' ## needed to run the recipe steps
+#' ## needed to run the Recipe steps
 #' dar:::required_deps(test_rec)
 #' 
-#' ## The function also works with prep_recipe-class objects
+#' ## The function also works with PrepRecipe-class objects
 #' data(test_prep_rec)
 #' dar:::required_deps(test_prep_rec)
 methods::setGeneric("required_deps", function(rec)
@@ -108,7 +108,7 @@ methods::setGeneric("required_deps", function(rec)
 #' @autoglobal
 methods::setMethod(
   f = "required_deps",
-  signature = "recipe",
+  signature = "Recipe",
   definition = function(rec) {
     text <- 
       rec@steps %>%

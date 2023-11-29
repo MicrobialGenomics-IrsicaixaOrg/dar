@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{tax_table}
 \alias{tax_table}
-\alias{tax_table,recipe-method}
-\title{Extracts tax_table from phyloseq inside a recipe}
+\alias{tax_table,Recipe-method}
+\title{Extracts tax_table from phyloseq inside a Recipe}
 \usage{
 tax_table(rec)
 
-\S4method{tax_table}{recipe}(rec)
+\S4method{tax_table}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 }
 \value{
 A tibble
 }
 \description{
-Extracts tax_table from phyloseq inside a recipe
+Extracts tax_table from phyloseq inside a Recipe
 }
 \examples{
 data(metaHIV_phy)

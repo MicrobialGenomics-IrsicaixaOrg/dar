@@ -5,13 +5,13 @@
 \alias{test_rec}
 \title{Recipe for metaHIV_phy data}
 \format{
-A recipe object.
+A Recipe object.
 }
 \usage{
 data("test_rec")
 }
 \description{
-A recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
+A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
 and "Genus" as a \code{tax_info}.
 }
 \keyword{datasets}

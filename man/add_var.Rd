@@ -2,27 +2,27 @@
 % Please edit documentation in R/recipe-class.R
 \name{add_var}
 \alias{add_var}
-\alias{add_var,recipe-method}
-\alias{add_var,prep_recipe-method}
-\title{Adds variable of interest to the recipe}
+\alias{add_var,Recipe-method}
+\alias{add_var,PrepRecipe-method}
+\title{Adds variable of interest to the Recipe}
 \usage{
 add_var(rec, var_info)
 
-\S4method{add_var}{recipe}(rec, var_info)
+\S4method{add_var}{Recipe}(rec, var_info)
 
-\S4method{add_var}{prep_recipe}(rec, var_info)
+\S4method{add_var}{PrepRecipe}(rec, var_info)
 }
 \arguments{
-\item{rec}{A \code{recipe} object.}
+\item{rec}{A \code{Recipe} object.}
 
 \item{var_info}{A character string of column names corresponding to variables
 that will be used in any context.}
 }
 \value{
-A \code{recipe} object.
+A \code{Recipe} object.
 }
 \description{
-Adds variable of interest to the recipe
+Adds variable of interest to the Recipe
 }
 \examples{
 data(metaHIV_phy)

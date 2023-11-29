@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{get_tax}
 \alias{get_tax}
-\alias{get_tax,recipe-method}
-\title{Returns tax_info from recipe-class object}
+\alias{get_tax,Recipe-method}
+\title{Returns tax_info from Recipe-class object}
 \usage{
 get_tax(rec)
 
-\S4method{get_tax}{recipe}(rec)
+\S4method{get_tax}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A \code{recipe} object}
+\item{rec}{A \code{Recipe} object}
 }
 \value{
 Tibble containing \code{tax_info}.
 }
 \description{
-Returns tax_info from recipe-class object
+Returns tax_info from Recipe-class object
 }
 \examples{
 data(metaHIV_phy)

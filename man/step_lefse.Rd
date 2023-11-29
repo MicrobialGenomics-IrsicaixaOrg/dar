@@ -2,8 +2,8 @@
 % Please edit documentation in R/lefse.R
 \name{step_lefse}
 \alias{step_lefse}
-\alias{step_lefse,recipe-method}
-\alias{step_lefse,prep_recipe-method}
+\alias{step_lefse,Recipe-method}
+\alias{step_lefse,PrepRecipe-method}
 \title{lefse analysis}
 \usage{
 step_lefse(
@@ -18,7 +18,7 @@ step_lefse(
   id = rand_id("lefse")
 )
 
-\S4method{step_lefse}{recipe}(
+\S4method{step_lefse}{Recipe}(
   rec,
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
@@ -30,7 +30,7 @@ step_lefse(
   id = rand_id("lefse")
 )
 
-\S4method{step_lefse}{prep_recipe}(
+\S4method{step_lefse}{PrepRecipe}(
   rec,
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
@@ -43,8 +43,8 @@ step_lefse(
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{kruskal.threshold}{numeric(1) The p-value for the Kruskal-Wallis Rank
 Sum Test (default 0.05).}
@@ -75,7 +75,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{recipe}
+An object of class \code{Recipe}
 }
 \description{
 Lefser is metagenomic biomarker discovery tool that is based on LEfSe tool
@@ -90,7 +90,7 @@ assigned and used within the analysis.
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>

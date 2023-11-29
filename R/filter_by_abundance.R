@@ -7,8 +7,8 @@
 #' sum of their abundance is greater than the product of the total abundance and
 #' the provided threshold.
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param threshold The relative abundance threshold for filtering taxa,
 #'   expressed as a proportion of the total abundance. For example, a threshold
 #'   of 0.01 means that a taxon must make up at least 1% of the total abundance
@@ -30,7 +30,7 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
@@ -51,7 +51,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_rel_abundance",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec, threshold = 0.01, id) {
     recipes_pkg_check(
       required_pkgs_filter_by_rel_abundance(),
@@ -69,9 +69,9 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_filter_by_rel_abundance",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

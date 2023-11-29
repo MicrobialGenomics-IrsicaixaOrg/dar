@@ -7,7 +7,7 @@
 export_steps(rec, file_name)
 }
 \arguments{
-\item{rec}{A recipe object.}
+\item{rec}{A Recipe object.}
 
 \item{file_name}{The path and file name of the optout file.}
 }
@@ -20,7 +20,7 @@ Export step parameters as json.
 \examples{
 data(metaHIV_phy)
 
-## Create a recipe with steps
+## Create a Recipe with steps
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -28,7 +28,7 @@ rec <-
   step_filter_by_prevalence(0.4) |>
   step_maaslin()
  
-## Prep recipe   
+## Prep Recipe   
 rec <- prep(rec, parallel = TRUE)
 
 ## Export to json file

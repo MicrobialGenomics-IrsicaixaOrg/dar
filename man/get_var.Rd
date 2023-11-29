@@ -2,21 +2,21 @@
 % Please edit documentation in R/recipe-class.R
 \name{get_var}
 \alias{get_var}
-\alias{get_var,recipe-method}
-\title{Returns var_info from recipe-class object}
+\alias{get_var,Recipe-method}
+\title{Returns var_info from Recipe-class object}
 \usage{
 get_var(rec)
 
-\S4method{get_var}{recipe}(rec)
+\S4method{get_var}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A \code{recipe} object}
+\item{rec}{A \code{Recipe} object}
 }
 \value{
 Tibble containing \code{var_info}.
 }
 \description{
-Returns var_info from recipe-class object
+Returns var_info from Recipe-class object
 }
 \examples{
 data(metaHIV_phy)

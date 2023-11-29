@@ -10,8 +10,8 @@
 #' * within-taxon correlation
 #' * hypothesis testing with categorical and continuous covariates
 #'
-#' @param rec A recipe object. The step will be added to the sequence of
-#'   operations for this recipe.
+#' @param rec A Recipe object. The step will be added to the sequence of
+#'   operations for this Recipe.
 #' @param phi.formula An object of class formula without the response: a
 #'   symbolic description of the model to be fitted to the dispersion.
 #' @param formula_null Formula for mean under null, without response.
@@ -43,7 +43,7 @@
 #' @include recipe-class.R
 #' @family Diff taxa steps
 #' @aliases step_corncob
-#' @return An object of class `recipe`
+#' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
 #' @md
@@ -54,7 +54,7 @@
 #' @examples 
 #' data(metaHIV_phy)
 #' 
-#' ## Init recipe
+#' ## Init Recipe
 #' rec <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
@@ -101,7 +101,7 @@ methods::setGeneric(
 #' @autoglobal
 methods::setMethod(
   f = "step_corncob",
-  signature = c(rec = "recipe"),
+  signature = c(rec = "Recipe"),
   definition = function(rec,
                         phi.formula,
                         formula_null,
@@ -145,7 +145,7 @@ methods::setMethod(
 #' @autoglobal
 methods::setMethod(
   f = "step_corncob",
-  signature = c(rec = "prep_recipe"),
+  signature = c(rec = "PrepRecipe"),
   definition = function(rec,
                         phi.formula,
                         formula_null,
@@ -161,7 +161,7 @@ methods::setMethod(
                         log2FC,
                         rarefy,
                         id) {
-    rlang::abort("This function needs a non-prep recipe!")
+    rlang::abort("This function needs a non-PrepRecipe!")
   }
 )
 

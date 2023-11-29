@@ -2,8 +2,8 @@
 % Please edit documentation in R/plot_methods.R
 \name{mutual_plt}
 \alias{mutual_plt}
-\alias{mutual_plt,recipe-method}
-\alias{mutual_plt,prep_recipe-method}
+\alias{mutual_plt,Recipe-method}
+\alias{mutual_plt,PrepRecipe-method}
 \title{Mutual finding plot}
 \usage{
 mutual_plt(
@@ -14,7 +14,7 @@ mutual_plt(
   top_n = 20
 )
 
-\S4method{mutual_plt}{recipe}(
+\S4method{mutual_plt}{Recipe}(
   rec,
   count_cutoff = NULL,
   comparisons = NULL,
@@ -22,7 +22,7 @@ mutual_plt(
   top_n = 20
 )
 
-\S4method{mutual_plt}{prep_recipe}(
+\S4method{mutual_plt}{PrepRecipe}(
   rec,
   count_cutoff = NULL,
   comparisons = NULL,
@@ -31,7 +31,7 @@ mutual_plt(
 )
 }
 \arguments{
-\item{rec}{A recipe or recipe step.}
+\item{rec}{A Recipe or Recipe step.}
 
 \item{count_cutoff}{Indicates the minimum number of methods in which an OTU
 must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
@@ -76,7 +76,7 @@ mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
 ## results of maaslin.
 mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## mutual_plt function needs a prep-recipe. If you pass a a non-prep recipe
+## mutual_plt function needs a PrepRecipe. If you pass a a non-PrepRecipe
 ## the output is an error.
 data(test_rec)
 err <- testthat::expect_error(mutual_plt(test_rec))

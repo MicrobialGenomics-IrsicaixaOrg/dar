@@ -2,26 +2,26 @@
 % Please edit documentation in R/steps_and_checks.R
 \name{add_step}
 \alias{add_step}
-\alias{add_step,recipe-method}
-\alias{add_step,prep_recipe-method}
+\alias{add_step,Recipe-method}
+\alias{add_step,PrepRecipe-method}
 \title{Add a New Operation to the Current Recipe}
 \usage{
 add_step(rec, object)
 
-\S4method{add_step}{recipe}(rec, object)
+\S4method{add_step}{Recipe}(rec, object)
 
-\S4method{add_step}{prep_recipe}(rec, object)
+\S4method{add_step}{PrepRecipe}(rec, object)
 }
 \arguments{
-\item{rec}{A \code{\link[=recipe]{recipe()}}.}
+\item{rec}{A \code{\link[=Recipe]{Recipe()}}.}
 
 \item{object}{A step or check object.}
 }
 \value{
-A updated \code{\link[=recipe]{recipe()}} with the new operation in the last slot.
+A updated \code{\link[=Recipe]{Recipe()}} with the new operation in the last slot.
 }
 \description{
-\code{add_step} adds a step to the last location in the recipe. \code{add_check} does
+\code{add_step} adds a step to the last location in the Recipe. \code{add_check} does
 the same for checks.
 }
 \keyword{internal}

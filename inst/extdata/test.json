@@ -1,11 +1,11 @@
 {
    "tax_level": [c("Kingdom")],
    "taxa": [c("Bacteria", "Archaea")],
-   "id": [c("subset_taxa__Semla")],
+   "id": [c("subset_taxa__Boyoz")],
 }
 {
    ".f": [c("function(x) sum(x > 0) >= (0.3 * length(x))")],
-   "id": [c("filter_taxa__Danish_pastry")],
+   "id": [c("filter_taxa__Charlotte")],
 }
 {
    "min_abundance": 0,
@@ -20,7 +20,7 @@
    "standardize": TRUE,
    "reference": ,
    "rarefy": FALSE,
-   "id": [c("maaslin__Tortell")],
+   "id": [c("maaslin__ChaSan")],
 }
 {
    "zeroMod": ,
@@ -30,7 +30,7 @@
    "log2FC": 0,
    "rarefy": FALSE,
    "rm_zeros": 0.01,
-   "id": [c("metagenomeseq__Pogača")],
+   "id": [c("metagenomeseq__Zlebia")],
 }
 {
    "test": [c("Wald")],
@@ -40,5 +40,5 @@
    "max_significance": 0.05,
    "log2FC": 0,
    "rarefy": FALSE,
-   "id": [c("deseq__Tortita_negra")],
+   "id": [c("deseq__Linzer_torte")],
 }

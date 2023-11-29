@@ -2,8 +2,8 @@
 % Please edit documentation in R/filter_by_variance.R
 \name{step_filter_by_variance}
 \alias{step_filter_by_variance}
-\alias{step_filter_by_variance,recipe-method}
-\alias{step_filter_by_variance,prep_recipe-method}
+\alias{step_filter_by_variance,Recipe-method}
+\alias{step_filter_by_variance,PrepRecipe-method}
 \title{Filter taxa by variance}
 \usage{
 step_filter_by_variance(
@@ -12,21 +12,21 @@ step_filter_by_variance(
   id = rand_id("filter_by_variance")
 )
 
-\S4method{step_filter_by_variance}{recipe}(
+\S4method{step_filter_by_variance}{Recipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_variance")
 )
 
-\S4method{step_filter_by_variance}{prep_recipe}(
+\S4method{step_filter_by_variance}{PrepRecipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_variance")
 )
 }
 \arguments{
-\item{rec}{A recipe object. The step will be added to the sequence of
-operations for this recipe.}
+\item{rec}{A Recipe object. The step will be added to the sequence of
+operations for this Recipe.}
 
 \item{threshold}{The variance threshold for filtering taxa. The default value
 is 0.01.}
@@ -34,7 +34,7 @@ is 0.01.}
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-A recipe object that has been filtered based on variance.
+A Recipe object that has been filtered based on variance.
 }
 \description{
 This is a convenience function around the filter_taxa function. It is
@@ -56,7 +56,7 @@ This function modifies \code{rec} in place, you might want to make a copy of
 \examples{
 data(metaHIV_phy)
 
-## Init recipe
+## Init Recipe
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec
 
