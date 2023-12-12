@@ -72,6 +72,19 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(metaHIV_phy)
+#' 
+#' test <-
+#'  recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
+#'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+#'  step_filter_by_prevalence() |> 
+#'  step_ancom()
+#'  
+#' expect_s4_class(prep(test), "PrepRecipe")
+#' 
+#' data(test_prep_rec)
+#' expect_error(step_ancom(test_prep_rec, rarefy = TRUE))
 #' @examples
 #' data(metaHIV_phy)
 #'

@@ -12,8 +12,6 @@ rand_id(prefix = "step")
 \value{
 A character string with the prefix and random letters separated by
 and underscore.
-
-character vector
 }
 \description{
 Make a random identification field for steps

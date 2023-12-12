@@ -31,6 +31,15 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(metaHIV_phy)
+#' data(test_prep_rec)
+#' test <- 
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+#'   step_rarefaction() 
+#'   
+#' expect_s4_class(prep(test), "PrepRecipe")
+#' expect_error(step_rarefaction(test_prep_rec))
 #' @examples 
 #' data(metaHIV_phy)
 #' 

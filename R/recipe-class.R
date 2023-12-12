@@ -78,7 +78,7 @@ methods::setClass(
 #' )
 #' 
 #' data(GlobalPatterns, package = "mia")
-#' expect_s4_class(recipe(GlobalPatterns), "recipe")
+#' expect_s4_class(recipe(GlobalPatterns), "Recipe")
 #' 
 #' @examples
 #' data(metaHIV_phy)
@@ -727,6 +727,12 @@ methods::setMethod(
             purrr::map2_chr(names(.), ~ {
               if (is.null(.x)) {
                 .x <- "NULL"
+              }
+              if (.y == "weights" & .x != "NULL") {
+                .x <- 
+                  glue::glue("{names(.x)} = {.x}") %>%
+                  stringr::str_c(collapse = ", ") %>%
+                  stringr::str_c("c(", ., ")")
               }
               glue::glue("{.y}: {.x}")
             }) %>% stringr::str_c(collapse = ", ")

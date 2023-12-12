@@ -3,9 +3,10 @@
 # Test found in pkg_check.R:12 (file:line)
   
 expected <- capture.output(
-  glue::glue("1 package is needed for step_aldex() and is not installed: ", 
-  "(randompackage). \n Start a clean R session then run: ", 
-  "BiocManager::install(c(\"randompackage\")) ") %>% print()
+  glue::glue("2 packages are needed for step_aldex() and are not installed: ", 
+  "(randompackage, packrandom). \n Start a clean R session then run: ", 
+  "BiocManager::install(c(\"randompackage\")) ",
+  "& install.packages(c(\"packrandom\")) ") %>% print()
 )
   
 res <- capture.output(

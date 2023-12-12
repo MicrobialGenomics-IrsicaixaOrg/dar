@@ -27,6 +27,9 @@
 #' @aliases step_filter_by_prevalence
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(test_prep_rec)
+#' expect_error(step_filter_by_prevalence(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #'

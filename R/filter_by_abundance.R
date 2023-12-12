@@ -21,12 +21,16 @@
 #'   phyloseq object. It then compares this total abundance to the abundance of
 #'   each individual taxon. If a taxon's abundance is less than the threshold
 #'   times the total abundance, that taxon is removed from the phyloseq object.
+#' @return A Recipe object that has been filtered based on abundance.
 #' @seealso \code{\link[phyloseq]{filter_taxa}}
 #' @include recipe-class.R
 #' @family filter phy steps
-#' @aliases step_filter_by_rel_abundance
+#' @aliases step_filter_by_abundance
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(test_prep_rec)
+#' expect_error(step_filter_by_abundance(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -34,41 +38,41 @@
 #' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 #' rec
 #'
-#' ## Define filter_by_rel_abundance step with default parameters
-#' rec <- step_filter_by_rel_abundance(rec, threshold = 0.01)
+#' ## Define filter_by_abundance step with default parameters
+#' rec <- step_filter_by_abundance(rec, threshold = 0.01)
 #' rec
 methods::setGeneric(
-  name = "step_filter_by_rel_abundance",
+  name = "step_filter_by_abundance",
   def = function(rec, 
                  threshold = 0.01, 
-                 id = rand_id("filter_by_rel_abundance")) {
-    standardGeneric("step_filter_by_rel_abundance")
+                 id = rand_id("filter_by_abundance")) {
+    standardGeneric("step_filter_by_abundance")
   }
 )
 
-#' @rdname step_filter_by_rel_abundance
+#' @rdname step_filter_by_abundance
 #' @export
 #' @autoglobal
 methods::setMethod(
-  f = "step_filter_by_rel_abundance",
+  f = "step_filter_by_abundance",
   signature = c(rec = "Recipe"),
   definition = function(rec, threshold = 0.01, id) {
     recipes_pkg_check(
-      required_pkgs_filter_by_rel_abundance(),
-      "step_filter_by_rel_abundance()"
+      required_pkgs_filter_by_abundance(),
+      "step_filter_by_abundance()"
     )
     add_step(
       rec,
-      step_filter_by_rel_abundance_new(threshold = threshold, id = id)
+      step_filter_by_abundance_new(threshold = threshold, id = id)
     )
   }
 )
 
-#' @rdname step_filter_by_rel_abundance
+#' @rdname step_filter_by_abundance
 #' @export
 #' @autoglobal
 methods::setMethod(
-  f = "step_filter_by_rel_abundance",
+  f = "step_filter_by_abundance",
   signature = c(rec = "PrepRecipe"),
   definition = function(rec, threshold = 0.01, id) {
     rlang::abort("This function needs a non-PrepRecipe!")
@@ -78,19 +82,19 @@ methods::setMethod(
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-step_filter_by_rel_abundance_new <- function(threshold = 0.01, id) {
-  step(subclass = "filter_by_rel_abundance", threshold = threshold, id = id)
+step_filter_by_abundance_new <- function(threshold = 0.01, id) {
+  step(subclass = "filter_by_abundance", threshold = threshold, id = id)
 }
 
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-required_pkgs_filter_by_rel_abundance <- function(x, ...) {  c("bioc::phyloseq") }
+required_pkgs_filter_by_abundance <- function(x, ...) {  c("bioc::phyloseq") }
 
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-run_filter_by_rel_abundance <- function(rec, threshold = 0.01) {
+run_filter_by_abundance <- function(rec, threshold = 0.01) {
   t_abun <- sum(phyloseq::otu_table(get_phy(rec)))
   rec@phyloseq <- 
     get_phy(rec) %>%

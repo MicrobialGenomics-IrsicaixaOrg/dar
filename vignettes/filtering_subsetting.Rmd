@@ -68,7 +68,7 @@ of the total abundance and the provided threshold.
 ```{r step_filter_by_abundance}
 rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 rec <- 
-  step_filter_by_rel_abundance(rec, threshold = 0.01) |> 
+  step_filter_by_abundance(rec, threshold = 0.01) |> 
   prep()
 ```
 

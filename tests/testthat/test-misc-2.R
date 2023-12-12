@@ -1,6 +1,6 @@
 # File created by roxut; edit the function definition file, not this file
 
-# Test found in misc.R:80 (file:line)
+# Test found in misc.R:79 (file:line)
   
 data("metaHIV_phy")
 phy <- metaHIV_phy

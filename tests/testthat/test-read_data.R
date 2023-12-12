@@ -21,11 +21,11 @@ only_two_files <- c(
   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
   system.file("extdata", "metaHIV_metadata.txt", package = "dar")
 )
-expect_error(read_data(only_otu_phy))
+expect_error(read_data(only_two_files))
 
 duplicated_files <- c(
   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
   system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
-system.file("extdata", "metaHIV_metadata.txt", package = "dar")
+  system.file("extdata", "metaHIV_metadata.txt", package = "dar")
 )
 expect_error(read_data(duplicated_files))

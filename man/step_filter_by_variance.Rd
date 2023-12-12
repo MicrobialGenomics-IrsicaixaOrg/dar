@@ -68,9 +68,9 @@ rec
 \code{\link[phyloseq]{filter_taxa}}
 
 Other filter phy steps: 
+\code{\link{step_filter_by_abundance}()},
 \code{\link{step_filter_by_prevalence}()},
 \code{\link{step_filter_by_rarity}()},
-\code{\link{step_filter_by_rel_abundance}()},
 \code{\link{step_filter_taxa}()}
 }
 \concept{filter phy steps}

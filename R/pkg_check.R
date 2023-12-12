@@ -11,9 +11,10 @@
 #' @autoglobal
 #' @tests testthat
 #' expected <- capture.output(
-#'   glue::glue("1 package is needed for step_aldex() and is not installed: ", 
-#'   "(randompackage). \n Start a clean R session then run: ", 
-#'   "BiocManager::install(c(\"randompackage\")) ") %>% print()
+#'   glue::glue("2 packages are needed for step_aldex() and are not installed: ", 
+#'   "(randompackage, packrandom). \n Start a clean R session then run: ", 
+#'   "BiocManager::install(c(\"randompackage\")) ",
+#'   "& install.packages(c(\"packrandom\")) ") %>% print()
 #' )
 #'   
 #' res <- capture.output(
@@ -59,7 +60,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
     
     msg_cran <- NULL
     if (stringr::str_count(inst_cran) > 2) {
-      msg_cran <- glue::glue('install.packages(c("{inst_cran}"))')
+      msg_cran <- glue::glue('install.packages(c({inst_cran}))')
     }
     
     inst <- stringr::str_c(c(msg_bioc, msg_cran), collapse = " & ")
@@ -80,7 +81,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-required_pkgs_error <- function(x, ...) { c("bioc::randompackage") }
+required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom") }
 
 #' Returns required pakcages for Recipe object
 #'

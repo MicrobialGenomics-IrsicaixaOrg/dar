@@ -114,3 +114,4 @@ Collate:
 VignetteBuilder: knitr
 Config/roxyglobals/filename: globals.R
 Config/roxyglobals/unique: TRUE
+Config/testthat/parallel: true

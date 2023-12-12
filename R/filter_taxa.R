@@ -23,13 +23,29 @@
 #' @autoglobal
 #' @tests testthat
 #' data(metaHIV_phy)
-#' rec <- 
+#' rec_1 <- 
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
 #'   step_metagenomeseq(rm_zeros = 0)
 #'   
-#' expect_error(prep(rec))
+#' rec_2 <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
+#'   step_metagenomeseq(rm_zeros = 0.01)
 #'   
+#' rec_3 <- 
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
+#'   step_metagenomeseq(rm_zeros = NULL)
+#'   
+#' expect_error(prep(rec_1))
+#' expect_match(capture_warnings(prep(rec_2)), "NaNs produced", all = TRUE)
+#' expect_match(capture_warnings(prep(rec_3)), "NaNs produced", all = TRUE)
+#' expect_s4_class(suppressWarnings(prep(rec_2)), "PrepRecipe")
+#' expect_s4_class(suppressWarnings(prep(rec_3)), "PrepRecipe")
+#'
+#' data(test_prep_rec)
+#' expect_error(step_filter_taxa(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #' 
@@ -181,6 +197,7 @@ methods::setMethod(
   f = "zero_otu",
   signature = "phyloseq",
   definition = function(obj, var, pct_cutoff) {
+    if (is.null(pct_cutoff)) { pct_cutoff <- 0 }
     phyloseq::otu_table(obj) %>%
       to_tibble("taxa_id") %>%
       tidyr::pivot_longer(-1, names_to = "sample_id") %>%

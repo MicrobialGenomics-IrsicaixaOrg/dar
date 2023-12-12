@@ -33,12 +33,12 @@
 #'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
 #'   system.file("extdata", "metaHIV_metadata.txt", package = "dar")
 #' )
-#' expect_error(read_data(only_otu_phy))
+#' expect_error(read_data(only_two_files))
 #' 
 #' duplicated_files <- c(
 #'   system.file("extdata", "metaHIV_counts.txt", package = "dar"),
 #'   system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
-#' system.file("extdata", "metaHIV_metadata.txt", package = "dar")
+#'   system.file("extdata", "metaHIV_metadata.txt", package = "dar")
 #' )
 #' expect_error(read_data(duplicated_files))
 #' 
@@ -70,15 +70,15 @@ read_data <- function(data_path) {
   }
   
   if (length(data_path) == 3) {
+    
+    if (length(unique(data_path)) < 3) {
+      rlang::abort(c(x = "The three input files must be unique"))
+    }
+    
     files <-
       data_path %>%
       purrr::set_names() %>%
-      purrr::map(read_file) %>%
-      unique()
-    
-    if (length(files) < 3) {
-      rlang::abort(c(x = "The three input files must be unique"))
-    }
+      purrr::map(read_file) 
     
     counts_df <-
       files %>%

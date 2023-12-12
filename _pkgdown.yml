@@ -28,7 +28,7 @@ reference:
   - step_lefse
   - step_maaslin
   - step_metagenomeseq
-  - step_wilcox
+  - step_wilcox 
 - title: "Exploration"
   contents:
   - abundance_plt
@@ -57,11 +57,12 @@ reference:
   contents:
   - export_steps
   - import_steps
+  - read_data
 - title: "Other functions"
   contents:
   - contains_rarefaction
   - rand_id
-  - prep_recipe-class
+  - PrepRecipe-class
   - phyloseq_or_null-class
 - title: "Data"
   contents:

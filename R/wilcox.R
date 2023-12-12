@@ -29,6 +29,20 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(metaHIV_phy)
+#' 
+#' test <-
+#'  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+#'  step_filter_by_variance() |> 
+#'  step_wilcox() |> 
+#'  prep()
+#'  
+#' expect_s4_class(test, "PrepRecipe")
+#' 
+#' data(test_prep_rec)
+#' expect_error(step_wilcox(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -78,7 +92,7 @@ methods::setMethod(
                         id) {
 
     recipes_pkg_check(required_pkgs_wilcox(), "step_wilcox()")
-    if (!rarefy & !contains_rarefaction(rec)) {
+    if (rarefy & !contains_rarefaction(rec)) {
       rlang::inform(c(
         "!" = glue::glue(
           "Run wilcox without rarefaction is not recommended ", 

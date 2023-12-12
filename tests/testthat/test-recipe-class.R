@@ -11,4 +11,4 @@ expect_error(
 )
 
 data(GlobalPatterns, package = "mia")
-expect_s4_class(recipe(GlobalPatterns), "recipe")
+expect_s4_class(recipe(GlobalPatterns), "Recipe")

@@ -12,6 +12,22 @@
 #' @return An updated step or check with the new class.
 #' @keywords internal
 #' @autoglobal
+#' @tests testthat
+#' data(metaHIV_phy)
+#' expect_s4_class(
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'     step_metagenomeseq() |>
+#'     step_metagenomeseq(),
+#'   "Recipe"
+#' )
+#' 
+#' data(test_prep_rec)
+#' expect_s4_class(
+#'   test_prep_rec |> 
+#'     bake() |>
+#'     bake(),
+#'  "PrepRecipe"
+#' )
 step <- function(subclass, ..., .prefix = "step_") {
   structure(list(...), class = c(paste0(.prefix, subclass), "step"))
 }

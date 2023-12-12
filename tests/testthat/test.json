@@ -1,0 +1,44 @@
+{
+   "tax_level": [c("Kingdom")],
+   "taxa": [c("Bacteria", "Archaea")],
+   "id": [c("subset_taxa__Boyoz")],
+}
+{
+   ".f": [c("function(x) sum(x > 0) >= (0.3 * length(x))")],
+   "id": [c("filter_taxa__Charlotte")],
+}
+{
+   "min_abundance": 0,
+   "min_prevalence": 0.1,
+   "min_variance": 0,
+   "normalization": [c("TSS")],
+   "transform": [c("LOG")],
+   "analysis_method": [c("LM")],
+   "max_significance": 0.25,
+   "random_effects": ,
+   "correction": [c("BH")],
+   "standardize": TRUE,
+   "reference": ,
+   "rarefy": FALSE,
+   "id": [c("maaslin__ChaSan")],
+}
+{
+   "zeroMod": ,
+   "useCSSoffset": TRUE,
+   "useMixedModel": FALSE,
+   "max_significance": 0.05,
+   "log2FC": 0,
+   "rarefy": FALSE,
+   "rm_zeros": 0.01,
+   "id": [c("metagenomeseq__Zlebia")],
+}
+{
+   "test": [c("Wald")],
+   "fitType": [c("local")],
+   "betaPrior": FALSE,
+   "type": [c("ashr")],
+   "max_significance": 0.05,
+   "log2FC": 0,
+   "rarefy": FALSE,
+   "id": [c("deseq__Linzer_torte")],
+}

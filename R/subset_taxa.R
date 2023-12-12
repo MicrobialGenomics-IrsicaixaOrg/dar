@@ -24,7 +24,10 @@
 #' @family subset phy steps
 #' @aliases step_subset_taxa
 #' @export
-#' @autoglobal
+#' @autoglobal 
+#' @tests testthat
+#' data(test_prep_rec)
+#' expect_error(step_subset_taxa(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #'

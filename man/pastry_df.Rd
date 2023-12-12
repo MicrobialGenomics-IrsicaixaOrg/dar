@@ -9,6 +9,9 @@ A tbl_df object with 228 unique pasteries.
 \source{
 https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/pastry.csv
 }
+\value{
+tibble with pastry names
+}
 \description{
 Tibble contain
 }

@@ -33,6 +33,9 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(test_prep_rec)
+#' expect_error(step_metagenomeseq(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -192,12 +195,15 @@ run_metagenomeseq <- function(rec,
             phyloseq::prune_samples(phy)
           
           ## Filter taxa
-          phy2 <-
+          to_prune <-  
             zero_otu(phy2, var = var, pct_cutoff = rm_zeros) %>%
             dplyr::pull(taxa_id) %>%
-            unique() %>%
-            phyloseq::prune_taxa(phy2)
+            unique() 
           
+          if (length(to_prune) > 0) {
+            phy2 <- phyloseq::prune_taxa(to_prune, phy2)
+          }
+      
           mr_exp <- phyloseq_to_MRexperiment(phy2)
           p <- suppressMessages(metagenomeSeq::cumNormStat(mr_exp))
           mr_obj <- metagenomeSeq::cumNorm(mr_exp, p = p)

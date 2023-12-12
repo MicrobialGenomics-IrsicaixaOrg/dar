@@ -6,7 +6,6 @@
 #'
 #' @export
 #' @autoglobal
-#' @return character vector
 #' @tests testthat
 #' set.seed(123)
 #' expect_equal(rand_id(), "step__Filo")
@@ -364,6 +363,14 @@ export_steps <- function(rec, file_name) {
 #' @return recipe-class object
 #' @export
 #' @autoglobal
+#' @tests testthat
+#' data(metaHIV_phy)
+#' data(test_prep_rec)
+#' expect_snapshot_file(export_steps(test_prep_rec, "test.json"), "test.json")
+#' expect_snapshot_output(
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |> 
+#'     import_steps(system.file("extdata", "test_bake.json", package = "dar"))
+#' )
 #' @examples
 #' data(metaHIV_phy)
 #'

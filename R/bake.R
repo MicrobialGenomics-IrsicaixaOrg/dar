@@ -18,14 +18,35 @@
 #' @export
 #' @autoglobal
 #' @tests testthat
+#' data(test_rec)
 #' data(test_prep_rec)
 #' 
-#' ## Test internal check
-#' rec <- test_prep_rec
+#' ## Test bake default values
+#' testthat::expect_error(bake(test_rec))
+#' testthat::expect_s4_class(bake(test_prep_rec), "PrepRecipe")
+#' 
+#' ## Test count_cutoff parameter
+#' testthat::expect_error(cool(bake(test_prep_rec, count_cutoff = 10)))
+#' 
+#' ## Test exclude parameter
+#' test <- bake(test_prep_rec, exclude = steps_ids(test_prep_rec, "da")[1])
+#' testthat::expect_s3_class(cool(test), "tbl_df")
+#' testthat::expect_equal(nrow(cool(test)), 34)
+#' 
+#' test <- bake(test_prep_rec, exclude = "force_error")
+#' testthat::expect_error(cool(test))
+#' 
+#' ## Test weights parameter
+#' weights <- c(2, 1, 3)
+#' names(weights) <- steps_ids(test_prep_rec, "da")
+#' test <- bake(test_prep_rec, weights = weights)
+#' testthat::expect_s3_class(cool(test), "tbl_df")
+#' testthat::expect_equal(nrow(cool(test)), 34)
+#' 
 #' weights <- c(2, 1)
-#' names(weights) <- steps_ids(rec, "da")[1:2]
-#' res <- bake(rec, weights = weights)
-#' expect_error(cool(res))
+#' names(weights) <- steps_ids(test_prep_rec, "da")[1:2]
+#' test <- bake(test_prep_rec, weights = weights)
+#' expect_error(cool(test))
 #' 
 #' @examples 
 #' data(test_prep_rec)
@@ -128,9 +149,27 @@ required_pkgs_bake <- function(x, ...) { c() }
 #' @autoglobal
 run_bake <- function(rec, count_cutoff, weights, exclude, id) {
 
+  if (!all(exclude %in% steps_ids(rec, "da"))) {
+    msg <- 
+      exclude[!exclude %in% steps_ids(rec, "da")] %>% 
+      stringr::str_c(collapse = ", ")
+    
+    rlang::abort(glue::glue(
+      "{crayon::blue(msg)} must be an existent step_id inside the PrepRecipe!"
+    ))
+  }
   ids <- steps_ids(rec, type = "da") %>% .[!. %in% exclude]
   if (is.null(count_cutoff)) {
     count_cutoff <- length(steps_ids(rec, "da")) - length(exclude)
+  }
+  
+  if (count_cutoff > length(steps_ids(rec, "da"))) {
+    rlang::abort(
+      glue::glue(
+        "{crayon::blue('count_cutoff')} must be less than or equal to ",
+        "the number of da methods!"
+      )
+    )
   }
 
   if (is.null(weights)) {
