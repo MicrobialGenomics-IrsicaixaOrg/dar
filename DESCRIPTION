@@ -59,7 +59,6 @@ Suggests:
     apeglm,
     ashr,
     Biobase,
-    corncob,
     covr,
     DESeq2,
     devtools,
@@ -77,7 +76,6 @@ Suggests:
     rstatix,
     SummarizedExperiment,
     testthat (>= 3.0.0)
-Remotes: statdivlab/corncob
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.4.0)
@@ -87,7 +85,6 @@ Collate:
     'aldex2.R'
     'ancom.R'
     'bake.R'
-    'corncob.R'
     'dar-package.R'
     'data.R'
     'deseq2.R'

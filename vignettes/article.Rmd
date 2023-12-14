@@ -140,7 +140,6 @@ rec <- rec |>
   step_ancom() |> 
   step_aldex() |> 
   step_deseq() |> 
-  step_corncob(filter_discriminant = FALSE) |> 
   step_metagenomeseq(rm_zeros = 0.01) |> 
   step_maaslin(min_prevalence = 0) |> 
   step_lefse() |> 

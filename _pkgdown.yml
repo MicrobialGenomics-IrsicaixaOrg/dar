@@ -23,7 +23,6 @@ reference:
   contents:
   - step_aldex
   - step_ancom
-  - step_corncob
   - step_deseq
   - step_lefse
   - step_maaslin
