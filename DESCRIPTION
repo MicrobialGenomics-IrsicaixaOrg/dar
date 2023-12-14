@@ -59,7 +59,6 @@ Suggests:
     apeglm,
     ashr,
     Biobase,
-    corncob,
     covr,
     DESeq2,
     devtools,
