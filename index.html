@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Differential Abundance Analysis by Consensus">
 <meta property="og:description" content="Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results that range within the specificity vs sensitivity space in such a way that type I and type II error that are difficult to ascertain in real microbiome data when a single method is used. Recently, a consensus approach based on multiple differential abundance (DA) methods was recently suggested in order to increase robustness. With dar, you can use dplyr-like pipeable sequences of DA methods and then apply different consensus strategies. In this way we can obtain more reliable results in a fast, consistent and reproducible way.">
@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,8 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="articles/article.html">Workflow with real data</a>
-    <a class="dropdown-item" href="articles/data_import.html">Converting Common Data Formats to Phyloseq</a>
+    <a class="dropdown-item" href="articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a>
+    <a class="dropdown-item" href="articles/filtering_subsetting.html">Filtering and Subsetting</a>
     <a class="dropdown-item" href="articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a>
   </div>
 </li>
@@ -113,10 +114,10 @@
 <span></span>
 <span><span class="co">## Define recipe</span></span>
 <span><span class="va">rec</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>expr <span class="op">=</span> <span class="st">'Kingdom %in% c("Bacteria", "Archaea")'</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>expr <span class="op">=</span> <span class="st">'Kingdom %in% c("Bacteria", "Archaea")'</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
@@ -129,13 +130,13 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Milhoja </span></span>
-<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Papanași </span></span>
+<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Suncake </span></span>
+<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Hot_water_crust_pastry </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Schaumrolle </span></span>
-<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Punschkrapfen</span></span>
+<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Crocetta_of_Caltanissetta </span></span>
+<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Tortita_negra</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -149,8 +150,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Punschkrapfen diff_taxa = 146 </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Tortita_negra diff_taxa = 146 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods</span></span>
 <span></span>
@@ -167,14 +168,14 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Schaumrolle diff_taxa = 236 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Punschkrapfen diff_taxa = 146 </span></span>
+<span><span class="co">#&gt;      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Tortita_negra diff_taxa = 146 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Bakes:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Belokranjska_povitica</span></span>
+<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Kürtőskalács</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
 <span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
