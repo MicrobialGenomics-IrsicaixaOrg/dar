@@ -132,6 +132,9 @@ jobs:
 
           ## For installing usethis's dependency gert
           brew install libgit2
+          
+          ## For installing gsl
+          brew install gsl
 
           ## Required for tcltk
           brew install xquartz --cask
