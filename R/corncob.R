@@ -128,37 +128,25 @@ methods::setMethod(
                         rarefy,
                         id) {
 
-    check <- recipes_pkg_check(required_pkgs_corncob(), "step_croncob()")
-    if (check) {
-      rec <- add_step(
-        rec,
-        step_corncob_new(
-          phi.formula = phi.formula,
-          formula_null = formula_null,
-          phi.formula_null = phi.formula_null,
-          link = link,
-          phi.link = phi.link,
-          test = test,
-          boot = boot,
-          B = B,
-          filter_discriminant = filter_discriminant,
-          fdr_cutoff = fdr_cutoff,
-          fdr = fdr,
-          log2FC = log2FC,
-          rarefy = rarefy,
-          id = id
-        ))
-    } else {
-      rlang::inform(c(
-        "i" = glue::glue(
-          "The {crayon::blue('corncob')} package is currently unavailable on ",
-          "CRAN due to dependency issues. The functionality of this function ",
-          "that requires {crayon::blue('corncob')} has been temporarily ",
-          "disabled."
-        )
-      ), use_cli_format = TRUE)
-    }
-  rec
+    recipes_pkg_check(required_pkgs_corncob(), "step_croncob()")
+    add_step(
+      rec,
+      step_corncob_new(
+        phi.formula = phi.formula,
+        formula_null = formula_null,
+        phi.formula_null = phi.formula_null,
+        link = link,
+        phi.link = phi.link,
+        test = test,
+        boot = boot,
+        B = B,
+        filter_discriminant = filter_discriminant,
+        fdr_cutoff = fdr_cutoff,
+        fdr = fdr,
+        log2FC = log2FC,
+        rarefy = rarefy,
+        id = id
+      ))
   }
 )
 
