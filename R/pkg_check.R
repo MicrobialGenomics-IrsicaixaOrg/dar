@@ -37,6 +37,7 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
     }
   }
   
+  res <- TRUE
   if (any(!good)) {
     pkList <- paste(
       stringr::str_remove_all(pkg[!good], ".*[/]|.*[:]") , collapse = ", "
@@ -73,9 +74,10 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
       '{crayon::blue(inst)}' 
     )
     cat(c(msg, "\n"))
+    res <- FALSE
   }
 
-  invisible()
+  invisible(res)
 }
 
 #' @noRd
