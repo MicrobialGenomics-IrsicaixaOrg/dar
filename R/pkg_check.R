@@ -9,7 +9,7 @@
 #'   which packages (if any) should be installed along with code to do so.
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' expected <- capture.output(
 #'   glue::glue("2 packages are needed for step_aldex() and are not installed: ", 
 #'   "(randompackage, packrandom). \n Start a clean R session then run: ", 

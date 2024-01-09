@@ -17,7 +17,7 @@
 #' @return An object of class `PrepRecipe`
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' 

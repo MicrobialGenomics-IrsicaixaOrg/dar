@@ -33,7 +33,7 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' expect_error(step_metagenomeseq(test_prep_rec))
 #' @examples

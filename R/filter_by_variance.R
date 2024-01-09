@@ -25,7 +25,7 @@
 #' @aliases step_filter_by_variance
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' expect_error(step_filter_by_variance(test_prep_rec))
 #' @examples

@@ -12,7 +12,7 @@
 #' @return An updated step or check with the new class.
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(metaHIV_phy)
 #' expect_s4_class(
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>

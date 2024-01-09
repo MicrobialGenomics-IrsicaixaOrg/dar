@@ -13,7 +13,7 @@
 #' @return heatmap
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' expect_error(corr_heatmap(test_rec))
@@ -120,7 +120,7 @@ methods::setMethod(
 #' @return UpSet plot
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' expect_error(intersection_plt(test_rec))
@@ -204,7 +204,7 @@ methods::setMethod(
 #' @return ggplot2-class object
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' test_1 <- 
@@ -323,7 +323,7 @@ methods::setMethod(
 #' @return ggplot2
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
@@ -618,7 +618,7 @@ methods::setMethod(
 #' @return ggplot2
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
 #' 

@@ -68,7 +68,7 @@ methods::setClass(
 #' @aliases Recipe
 #' @export
 #' @autoglobal
-#' @tests testthat 
+#' @tests 
 #' data(metaHIV_phy) 
 #' colnames(metaHIV_phy@tax_table) <-
 #'   c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")

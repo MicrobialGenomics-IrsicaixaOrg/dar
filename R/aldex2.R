@@ -58,7 +58,7 @@
 #' @return An object of class `Recipe`
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(metaHIV_phy)
 #' 
 #' test <-

@@ -6,7 +6,7 @@
 #'
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' set.seed(123)
 #' expect_equal(rand_id(), "step__Filo")
 #' 
@@ -28,7 +28,7 @@ rand_id <- function(prefix = "step") {
 #' @keywords internal
 #' @autoglobal
 #' 
-#' @tests testthat
+#' @tests
 #' data("metaHIV_phy")
 #' phy <- metaHIV_phy
 #' var <- "RiskGroup2"
@@ -76,7 +76,7 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #' @keywords internal
 #' @autoglobal
 #' 
-#' @tests testthat
+#' @tests
 #' data("metaHIV_phy")
 #' phy <- metaHIV_phy
 #' df <- phyloseq::otu_table(phy)
@@ -111,7 +111,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' @return character vector
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' exprs <- test_prep_rec@steps |> purrr::map_chr(step_to_expr)
 #' expect_length(exprs, 5)
@@ -157,7 +157,7 @@ step_to_expr <- function(step) {
 #' @export
 #' @autoglobal
 #' 
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' res_1 <- find_intersections(
 #'   test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -213,7 +213,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' @return character vector
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' rec <- test_prep_rec
 #' expect_equal(
@@ -363,7 +363,7 @@ export_steps <- function(rec, file_name) {
 #' @return recipe-class object
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(metaHIV_phy)
 #' data(test_prep_rec)
 #' expect_snapshot_file(export_steps(test_prep_rec, "test.json"), "test.json")

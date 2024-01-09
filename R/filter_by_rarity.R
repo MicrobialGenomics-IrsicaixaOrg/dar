@@ -27,7 +27,7 @@
 #' @aliases step_filter_by_rarity
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' expect_error(step_filter_by_rarity(test_prep_rec))
 #' @examples

@@ -20,7 +20,7 @@
 #' @return A tibble
 #' @export
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' data(test_rec)
 #' test <- phy_qc(test_rec)
 #' 

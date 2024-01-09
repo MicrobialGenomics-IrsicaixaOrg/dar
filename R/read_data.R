@@ -13,7 +13,7 @@
 #' @export
 #' @autoglobal
 #'
-#' @tests testthat
+#' @tests
 #' 
 #' ## read phyloseq from rds file
 #' good_file <- system.file("extdata", "metaHIV_phy.rds", package = "dar")
@@ -126,7 +126,7 @@ read_data <- function(data_path) {
 #' @rdname read_data
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' df <- 
 #'   read_file(system.file("extdata", "metaHIV_counts.txt", package = "dar"))
 #' 
@@ -212,7 +212,7 @@ validate_otu <- function(otu) {
 #' @rdname read_data
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' df <- 
 #'   read_file(system.file("extdata", "metaHIV_metadata.txt", package = "dar"))
 #' 
@@ -260,7 +260,7 @@ validate_sample_data <- function(sample_data) {
 #' @rdname read_data
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' df <- read_file(system.file("extdata", "metaHIV_taxas.txt", package = "dar"))
 #' 
 #' expect_s3_class(validate_tax_table(df), c("tbl_df", "tbl", "data.frame"))
@@ -316,7 +316,7 @@ validate_tax_table <- function(tax_table) {
 #' @rdname read_data
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' ## phyloseq validation
 #' phy <-
 #'   system.file("extdata", "metaHIV_phy.rds", package = "dar") |>
@@ -414,7 +414,7 @@ read_phyloseq <- function(file_path) {
 #' @rdname read_data
 #' @keywords internal
 #' @autoglobal
-#' @tests testthat
+#' @tests
 #' ## File no exists and bad file extension
 #' expect_error(read_file("asdfas.tx"))
 read_file <- function(file_path, ext = c(".txt|.csv|.tsv")) {

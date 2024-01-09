@@ -25,7 +25,7 @@
 #' @aliases step_subset_taxa
 #' @export
 #' @autoglobal 
-#' @tests testthat
+#' @tests
 #' data(test_prep_rec)
 #' expect_error(step_subset_taxa(test_prep_rec))
 #' @examples
