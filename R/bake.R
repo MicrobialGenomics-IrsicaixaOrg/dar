@@ -30,8 +30,13 @@
 #' 
 #' ## Test exclude parameter
 #' test <- bake(test_prep_rec, exclude = steps_ids(test_prep_rec, "da")[1])
-#' testthat::expect_s3_class(cool(test), "tbl_df")
-#' testthat::expect_equal(nrow(cool(test)), 34)
+#' cool(test) |> 
+#'   testthat::expect_s3_class("tbl_df") |> 
+#'   testthat::expect_snapshot()
+#'   
+#' nrow(cool(test)) |>
+#'  testthat::expect_equal(34) |>
+#'  testthat::expect_snapshot()
 #' 
 #' test <- bake(test_prep_rec, exclude = "force_error")
 #' testthat::expect_error(cool(test))
@@ -40,8 +45,13 @@
 #' weights <- c(2, 1, 3)
 #' names(weights) <- steps_ids(test_prep_rec, "da")
 #' test <- bake(test_prep_rec, weights = weights)
-#' testthat::expect_s3_class(cool(test), "tbl_df")
-#' testthat::expect_equal(nrow(cool(test)), 34)
+#' cool(test) |> 
+#'   testthat::expect_s3_class("tbl_df") |> 
+#'   testthat::expect_snapshot()
+#' 
+#' nrow(cool(test)) |> 
+#'   testthat::expect_equal(34) |> 
+#'   testthat::expect_snapshot()
 #' 
 #' weights <- c(2, 1)
 #' names(weights) <- steps_ids(test_prep_rec, "da")[1:2]

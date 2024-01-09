@@ -2,23 +2,14 @@
 
 # File R/pkg_check.R: @tests
 
-test_that("Function recipes_pkg_check() @ L30", {
-  expected <- capture.output(
-    glue::glue("2 packages are needed for step_aldex() and are not installed: ", 
-    "(randompackage, packrandom). \n Start a clean R session then run: ", 
-    "BiocManager::install(c(\"randompackage\")) ",
-    "& install.packages(c(\"packrandom\")) ") %>% print()
-  )
+test_that("Function recipes_pkg_check() @ L21", {
+  dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()") |> 
+    expect_snapshot()
     
-  res <- capture.output(
-    dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()")
-  )
-  expect_equal(res, expected)
-  expect_invisible(
-    dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()")
-  )
-  expect_invisible(
-    dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()")
-  )
+  dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()") |> 
+    expect_snapshot()
+    
+  dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()") |> 
+    expect_snapshot()
 })
 

@@ -35,7 +35,7 @@
 #' data(metaHIV_phy)
 #' data(test_prep_rec)
 #' test <- 
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
 #'   step_rarefaction() 
 #'   
 #' expect_s4_class(prep(test), "PrepRecipe")

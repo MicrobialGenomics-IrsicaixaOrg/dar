@@ -2,16 +2,17 @@
 
 # File R/ancom.R: @tests
 
-test_that("[unknown alias] @ L112", {
+test_that("[unknown alias] @ L113", {
   data(metaHIV_phy)
   
   test <-
-   recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
+   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
    step_filter_by_prevalence() |> 
    step_ancom()
    
-  expect_s4_class(prep(test), "PrepRecipe")
+  expect_s4_class(prep(test), "PrepRecipe") |> 
+    expect_snapshot()
   
   data(test_prep_rec)
   expect_error(step_ancom(test_prep_rec, rarefy = TRUE))

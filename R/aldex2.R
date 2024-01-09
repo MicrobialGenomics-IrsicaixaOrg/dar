@@ -62,7 +62,7 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_abundance() |> 
 #'  step_aldex() |> 

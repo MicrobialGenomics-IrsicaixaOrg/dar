@@ -215,6 +215,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' @autoglobal
 #' @tests
 #' data(test_prep_rec)
+#' print(test_prep_rec) |> expect_snapshot()
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
@@ -305,6 +306,12 @@ dot <- function() {
 #' @return invisible
 #' @export
 #' @autoglobal
+#' @tests
+#' data(test_prep_rec)
+#' file <- tempfile(fileext = ".json") 
+#' export_steps(test_prep_rec, file)
+#' readr::read_lines(file) |> 
+#'   expect_snapshot()
 #' @examples
 #' data(metaHIV_phy)
 #' 
@@ -365,12 +372,9 @@ export_steps <- function(rec, file_name) {
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' data(test_prep_rec)
-#' expect_snapshot_file(export_steps(test_prep_rec, "test.json"), "test.json")
-#' expect_snapshot_output(
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |> 
-#'     import_steps(system.file("extdata", "test_bake.json", package = "dar"))
-#' )
+#' recipe(metaHIV_phy, "RiskGroup2", "Class") |> 
+#'  import_steps(system.file("extdata", "test_bake.json", package = "dar")) |> 
+#'  expect_snapshot()
 #' @examples
 #' data(metaHIV_phy)
 #'

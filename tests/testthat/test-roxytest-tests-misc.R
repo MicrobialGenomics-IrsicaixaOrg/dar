@@ -68,8 +68,9 @@ test_that("Function find_intersections() @ L191", {
 })
 
 
-test_that("Function steps_ids() @ L252", {
+test_that("Function steps_ids() @ L253", {
   data(test_prep_rec)
+  print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
   expect_equal(
     steps_ids(rec), 
@@ -93,13 +94,19 @@ test_that("Function steps_ids() @ L252", {
 })
 
 
-test_that("Function import_steps() @ L394", {
-  data(metaHIV_phy)
+test_that("Function export_steps() @ L331", {
   data(test_prep_rec)
-  expect_snapshot_file(export_steps(test_prep_rec, "test.json"), "test.json")
-  expect_snapshot_output(
-    recipe(metaHIV_phy, "RiskGroup2", "Species") |> 
-      import_steps(system.file("extdata", "test_bake.json", package = "dar"))
-  )
+  file <- tempfile(fileext = ".json") 
+  export_steps(test_prep_rec, file)
+  readr::read_lines(file) |> 
+    expect_snapshot()
+})
+
+
+test_that("Function import_steps() @ L398", {
+  data(metaHIV_phy)
+  recipe(metaHIV_phy, "RiskGroup2", "Class") |> 
+   import_steps(system.file("extdata", "test_bake.json", package = "dar")) |> 
+   expect_snapshot()
 })
 

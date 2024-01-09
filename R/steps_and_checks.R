@@ -14,12 +14,17 @@
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
+#' recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'     step_metagenomeseq() |>
+#'     step_metagenomeseq() |> 
+#'     expect_snapshot()
+#'     
 #' expect_s4_class(
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'     step_metagenomeseq() |>
 #'     step_metagenomeseq(),
 #'   "Recipe"
-#' )
+#' ) |> expect_snapshot()
 #' 
 #' data(test_prep_rec)
 #' expect_s4_class(
@@ -27,7 +32,7 @@
 #'     bake() |>
 #'     bake(),
 #'  "PrepRecipe"
-#' )
+#' ) |> expect_snapshot()
 step <- function(subclass, ..., .prefix = "step_") {
   structure(list(...), class = c(paste0(.prefix, subclass), "step"))
 }

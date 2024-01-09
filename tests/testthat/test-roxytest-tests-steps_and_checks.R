@@ -2,14 +2,19 @@
 
 # File R/steps_and_checks.R: @tests
 
-test_that("Function step() @ L31", {
+test_that("Function step() @ L36", {
   data(metaHIV_phy)
+  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+      step_metagenomeseq() |>
+      step_metagenomeseq() |> 
+      expect_snapshot()
+      
   expect_s4_class(
     recipe(metaHIV_phy, "RiskGroup2", "Species") |>
       step_metagenomeseq() |>
       step_metagenomeseq(),
     "Recipe"
-  )
+  ) |> expect_snapshot()
   
   data(test_prep_rec)
   expect_s4_class(
@@ -17,6 +22,6 @@ test_that("Function step() @ L31", {
       bake() |>
       bake(),
    "PrepRecipe"
-  )
+  ) |> expect_snapshot()
 })
 

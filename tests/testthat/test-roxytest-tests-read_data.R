@@ -21,7 +21,8 @@ test_that("Function read_data() @ L58", {
     system.file("extdata", "metaHIV_metadata.txt", package = "dar"),
     system.file("extdata", "metaHIV_taxas.txt", package = "dar")
   )
-  expect_s4_class(read_data(good_files), "phyloseq")
+  expect_s4_class(read_data(good_files), "phyloseq") |> 
+    expect_snapshot()
   
   only_two_files <- c(
     system.file("extdata", "metaHIV_counts.txt", package = "dar"),
