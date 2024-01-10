@@ -37,7 +37,7 @@ usage, steps, exploration and bakes.
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -205,8 +205,8 @@ least 3% of the samples have counts greater than 0.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Hellimli</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_by_prevalence() <span style="color: #555555;">id = filter_by_prevalence__Punsch_roll</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Kürtőskalács</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_by_prevalence() <span style="color: #555555;">id = filter_by_prevalence__Plăcintă</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span></code></pre></div>
 </div>
@@ -215,9 +215,9 @@ least 3% of the samples have counts greater than 0.</p>
 </h2>
 <p>Now that we have defined the preprocessing of the input data for all
 the da methods that will be used, we need to define them. For this
-introduction we will use <strong>metagenomeSeq</strong>,
-<strong>maaslin2</strong> and <strong>DESeq2</strong> methods with
-default parameters (those defined by the authors of each method).</p>
+introduction we will use <strong>metagenomeSeq</strong> and
+<strong>maaslin2</strong> methods with default parameters (those defined
+by the authors of each method).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rec_obj</span> <span class="op">&lt;-</span> <span class="va">rec_obj</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/step_deseq.html">step_deseq</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -234,14 +234,14 @@ default parameters (those defined by the authors of each method).</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Hellimli</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_by_prevalence() <span style="color: #555555;">id = filter_by_prevalence__Punsch_roll</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Kürtőskalács</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_filter_by_prevalence() <span style="color: #555555;">id = filter_by_prevalence__Plăcintă</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Tu</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Djevrek</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Gyeongju_bread</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Boyoz</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_metagenomeseq() <span style="color: #555555;">id = metagenomeseq__Mandelkubb</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_maaslin() <span style="color: #555555;">id = maaslin__Conejito</span></span></span></code></pre></div>
 <p>The <code>dar</code> package includes more da steps than those
 defined above. Below is the full list:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -273,9 +273,9 @@ time using the <code>prep</code> function.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Tu <span style="color: #555555;">diff_taxa = 166</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Djevrek <span style="color: #555555;">diff_taxa = 236</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Gyeongju_bread <span style="color: #555555;">diff_taxa = 146</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Boyoz <span style="color: #555555;">diff_taxa = 166</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> metagenomeseq__Mandelkubb <span style="color: #555555;">diff_taxa = 236</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Conejito <span style="color: #555555;">diff_taxa = 146</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 65 taxa are present in all tested methods</span></span></code></pre></div>
 <p>Note that the resulting object print shows information about the
@@ -352,7 +352,7 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  codetools          0.2-19     <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
 <span><span class="co">#&gt;  colorspace         2.1-0      <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
 <span><span class="co">#&gt;  crayon             1.5.2      <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
-<span><span class="co">#&gt;  dar              * 0.99.4     <span style="color: #555555;">2024-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  dar              * 0.99.5     <span style="color: #555555;">2024-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  data.table         1.14.10    <span style="color: #555555;">2023-12-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
 <span><span class="co">#&gt;  dendextend         1.17.1     <span style="color: #555555;">2023-03-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
 <span><span class="co">#&gt;  desc               1.4.3      <span style="color: #555555;">2023-12-10</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.4.0)</span></span></span>
