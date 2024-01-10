@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 0.99.3
+Version: 0.99.4
 Date: 2023-09-21
 Authors@R: 
     c(person(given = "Francesc",
