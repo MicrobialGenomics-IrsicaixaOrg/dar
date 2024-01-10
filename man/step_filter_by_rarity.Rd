@@ -47,7 +47,7 @@ This function modifies \code{rec} in place, you might want to make a copy of
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
 rec
 
 ## Define step_filter_by_rarity step with default parameters

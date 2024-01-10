@@ -48,12 +48,13 @@
 #' data(metaHIV_phy)
 #' 
 #' ## Init Recipe
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
 #' rec
 #' 
 #' ## Define filter taxa step with default parameters
 #' rec <- 
 #'   step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+#'   
 #' rec
 methods::setGeneric(
   name = "step_filter_taxa",

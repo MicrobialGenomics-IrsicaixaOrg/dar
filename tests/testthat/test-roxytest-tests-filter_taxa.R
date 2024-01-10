@@ -2,7 +2,7 @@
 
 # File R/filter_taxa.R: @tests
 
-test_that("[unknown alias] @ L58", {
+test_that("[unknown alias] @ L59", {
   data(metaHIV_phy)
   rec_1 <- 
     recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>

@@ -33,7 +33,7 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_variance() |> 
 #'  step_wilcox() |> 
@@ -48,7 +48,7 @@
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'

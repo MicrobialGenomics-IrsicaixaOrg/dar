@@ -41,7 +41,7 @@ data(metaHIV_phy)
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Class") |>
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
   step_metagenomeseq(rm_zeros = 0.01) |>
