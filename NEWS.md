@@ -1,5 +1,12 @@
 # dar 0.99.4
 
+## Improvements
+- Reducing tests and examples computation time
+
+## Bug Fixes
+- Fixing bug in Github Actions on Linux with `rlang` installation. 
+
+
 # dar 0.99.3
 
 ## New Features
