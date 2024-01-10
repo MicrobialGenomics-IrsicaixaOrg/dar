@@ -121,8 +121,8 @@ rec_obj
 
 Now that we have defined the preprocessing of the input data for all the da 
 methods that will be used, we need to define them. For this introduction we 
-will use __metagenomeSeq__, __maaslin2__ and __DESeq2__ methods with default 
-parameters (those defined by the authors of each method).
+will use __metagenomeSeq__ and __maaslin2__ methods with default parameters
+(those defined by the authors of each method).
 
 ```{r da_steps}
 rec_obj <- rec_obj |>

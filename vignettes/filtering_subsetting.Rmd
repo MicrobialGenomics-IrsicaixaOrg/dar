@@ -132,3 +132,9 @@ functions effectively, you can streamline your data analysis workflow and focus
 on the aspects of your data that are most relevant to your research questions. 
 The `dar` package offers the added convenience of performing these operations 
 directly on the recipe object.
+
+## Session info
+
+```{r}
+devtools::session_info()
+```
