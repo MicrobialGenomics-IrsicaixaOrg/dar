@@ -1,3 +1,8 @@
+# dar 0.99.5
+
+## Improvements
+- Reducing vignettes computation time
+
 # dar 0.99.4
 
 ## Improvements
