@@ -14,7 +14,7 @@ more groups of multiple samples."><meta property="og:image" content="https://mic
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,7 +161,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Init Recipe</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Class"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.4 * length(x))"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -171,7 +171,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Class</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Phylum</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -192,13 +192,13 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">76</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Class</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Phylum</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> wilcox__Chorley_cake <span style="color: #555555;">diff_taxa = 8</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> wilcox__Chorley_cake <span style="color: #555555;">diff_taxa = 5</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 8 taxa are present in all tested methods </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 5 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Wearing rarefaction only for this step</span></span></span>

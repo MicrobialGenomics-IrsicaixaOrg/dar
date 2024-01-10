@@ -12,7 +12,7 @@ to prepare it for data analysis."><meta property="og:image" content="https://mic
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,7 +120,7 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Define recipe</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Class"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.3 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
@@ -136,14 +136,12 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span><span class="co">## Results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id taxa              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Otu_332 Erysipelotrichia  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Otu_392 Betaproteobacteria</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Otu_361 Negativicutes     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Otu_96  Bacteroidia       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Otu_391 Lentisphaeria     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id taxa         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Otu_96  Bacteroidetes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Otu_391 Lentisphaerae</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Otu_1   Euryarchaeota</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## You can also crate a recipe without var and tax info</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
