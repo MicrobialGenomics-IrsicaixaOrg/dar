@@ -68,14 +68,14 @@ abundance_plt(test_prep_rec)
 
 ## Giving the value "heatmap" to the type parameter, the resulting graph
 ## a heatmap.
-abundance_plt(test_prep_rec, type = "heatmap")
+# abundance_plt(test_prep_rec, type = "heatmap")
 
 ## By default, those taxa significant in all methods are plotted. If you want
 ## to graph some determined features, you can pass them as vector through the
 ## taxa_ids parameter.
-taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
-abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
-abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
+# taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
+# abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
+# abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
 
 ## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
 ## Recipe the output is an error.

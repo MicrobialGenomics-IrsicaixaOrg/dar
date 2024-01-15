@@ -98,11 +98,8 @@ rec <-
 
 rec
 
-## Define step with default parameters and prep
-rec <- 
-  step_lefse(rec) |>
-  prep(parallel = FALSE)
-  
+## Define step with default parameters
+rec <- step_lefse(rec) 
 rec
 
 ## Running lefse without rarefaction (not recommended)

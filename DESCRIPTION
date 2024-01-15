@@ -25,7 +25,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(roclets = c("collate", "namespace", "rd", "roxytest::testthat_roclet",
     "roxyglobals::global_roclet"), markdown = TRUE)
-RoxygenNote: 7.2.3
 URL: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar,
     https://microbialgenomics-irsicaixaorg.github.io/dar/
 BugReports: https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues
@@ -113,4 +112,4 @@ Collate:
 VignetteBuilder: knitr
 Config/roxyglobals/filename: globals.R
 Config/roxyglobals/unique: TRUE
-Config/testthat/parallel: false
+Config/testthat/parallel: true
