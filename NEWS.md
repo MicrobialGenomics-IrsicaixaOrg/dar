@@ -1,8 +1,12 @@
+# dar 0.99.7
+
+## Improvements
+- Reducing examples computation time
+
 # dar 0.99.6
 
 ## Improvements
 - Suggest using `BiocManager::install()` to install `dar` dependencies
-
 
 # dar 0.99.5
 
@@ -16,7 +20,6 @@
 
 ## Bug Fixes
 - Fixing bug in Github Actions on Linux with `rlang` installation. 
-
 
 # dar 0.99.3
 
