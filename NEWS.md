@@ -1,3 +1,8 @@
+# dar 0.99.8
+
+## Improvements
+- Reducing examples computation time
+
 # dar 0.99.7
 
 ## Improvements
