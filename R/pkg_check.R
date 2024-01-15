@@ -15,9 +15,6 @@
 #'   
 #' dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()") |> 
 #'   expect_snapshot()
-#'   
-#' dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()") |> 
-#'   expect_snapshot()
 recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   good <- rep(TRUE, length(pkg))
   for (i in seq(along.with = pkg)) {
@@ -33,37 +30,20 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
       stringr::str_remove_all(pkg[!good], ".*[/]|.*[:]") , collapse = ", "
     )
     
-    inst_bioc <- 
-      pkg[!good] %>% 
-      .[stringr::str_starts(., "bioc::")] %>% 
-      stringr::str_remove_all("bioc::") %>% 
+    to_inst <-
+      pkg[!good] %>%
+      stringr::str_remove_all("bioc::") %>%
       paste("\"", ., "\"", sep = "", collapse = ", ")
-    
-    inst_cran <- 
-      pkg[!good] %>% 
-      .[!stringr::str_starts(., "bioc::")] %>% 
-      paste("\"", ., "\"", sep = "", collapse = ", ")
-     
-    msg_bioc <- NULL
-    if (stringr::str_count(inst_bioc) > 2) {
-      msg_bioc <- glue::glue('BiocManager::install(c({inst_bioc}))')
-    }
-    
-    msg_cran <- NULL
-    if (stringr::str_count(inst_cran) > 2) {
-      msg_cran <- glue::glue('install.packages(c({inst_cran}))')
-    }
-    
-    inst <- stringr::str_c(c(msg_bioc, msg_cran), collapse = " & ")
-      
-    msg <- glue::glue(
-      '{sum(!good)} {ifelse(sum(!good) > 1, "packages are", "package is")} ',
-      'needed for {crayon::blue(step_name)} and ',
-      '{ifelse(sum(!good) > 1, "are", "is")} not installed: ',
-      '({crayon::blue(pkList)}). \n Start a clean R session then run: ',
-      '{crayon::blue(inst)}' 
-    )
-    cat(c(msg, "\n"))
+
+    inst <- glue::glue('BiocManager::install(c({to_inst}))')
+    n_packages = glue::glue('{sum(!good)} {ifelse(sum(!good) > 1, "packages are", "package is")}')
+    step_name <- glue::glue('{crayon::blue(step_name)}')
+    to_be <- glue::glue('{ifelse(sum(!good) > 1, "are", "is")}')
+    blue_pkList <- glue::glue('{crayon::blue(pkList)}')
+    rlang::inform(c(
+      "i" = glue::glue('{n_packages} needed for {step_name} and {to_be} not installed: ({blue_pkList})'),
+      "*" = glue::glue('Start a clean R session then run: {crayon::blue(inst)}')
+    ))
   }
 
   invisible()
