@@ -522,10 +522,10 @@ contains_rarefaction <- function(rec) {
 #' data(metaHIV_phy)
 #' 
 #' ## With seed
-#' phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
+#' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
 #' 
 #' ## Witout seed
-#' phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
+#' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
 use_rarefy <- function(phy, rarefy) {
   if (isTRUE(rarefy)) {
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)

@@ -30,9 +30,9 @@ https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2
 data(metaHIV_phy)
 
 ## With seed
-phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
+# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
 
 ## Witout seed
-phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
+# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
 }
 \keyword{internal}

@@ -52,9 +52,7 @@
 #' rec
 #' 
 #' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_rarefaction(rec) |>
-#'   prep(parallel = FALSE)
+#' rec <- step_rarefaction(rec) 
 #'   
 #' rec
 methods::setGeneric(
