@@ -22,7 +22,7 @@ https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2">
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,10 +109,10 @@ otherwise the original phyloseq object is returned.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## With seed</span></span></span>
-<span class="r-in"><span><span class="va">phy_rarefied</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">:::</span><span class="fu">use_rarefy</span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># phy_rarefied &lt;- dar:::use_rarefy(metaHIV_phy, TRUE)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Witout seed</span></span></span>
-<span class="r-in"><span><span class="va">phy_rarefied</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">:::</span><span class="fu">use_rarefy</span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"no_seed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># phy_rarefied &lt;- dar:::use_rarefy(metaHIV_phy, "no_seed")</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
