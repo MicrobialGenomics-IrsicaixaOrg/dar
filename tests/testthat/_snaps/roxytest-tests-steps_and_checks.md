@@ -19,7 +19,7 @@
       
       DA steps:
       
-           (*) step_metagenomeseq() id = metagenomeseq__Jalebi 
+           (*) step_metagenomeseq() id = metagenomeseq__Huff_paste 
 
 ---
 
