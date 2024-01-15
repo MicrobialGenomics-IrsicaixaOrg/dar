@@ -1,3 +1,9 @@
+# dar 0.99.6
+
+## Improvements
+- Suggest using `BiocManager::install()` to install `dar` dependencies
+
+
 # dar 0.99.5
 
 ## Improvements
