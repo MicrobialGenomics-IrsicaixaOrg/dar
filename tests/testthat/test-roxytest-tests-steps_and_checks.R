@@ -5,7 +5,7 @@
 test_that("Function step() @ L36", {
   data(metaHIV_phy)
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-      step_metagenomeseq() |>
+      step_metagenomeseq(id = "panallet") |>
       step_metagenomeseq() |> 
       expect_snapshot()
       
