@@ -24,7 +24,7 @@ assigned and used within the analysis."><meta property="og:image" content="https
     
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.8</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -213,53 +213,36 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Masan</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Apple_strudel</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Krempita</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Gustavus_Adolphus_pastry</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Define step with default parameters and prep</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
-<span class="r-in"><span>  <span class="fu">step_lefse</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span>parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Rarefaction is enabled</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Rarefaction is being performed with a set seed. This will ensure that the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   results are reproducible, but will not allow for randomness in the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   subsampling process.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Rarefaction is a process that randomly subsamples the data to a specified</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   depth. This is done to account for differences in sequencing depth between</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   samples. However, this process is not without controversy. Rarefaction can</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   lead to loss of information and can also lead to false positives in</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   differential abundance testing. For more information, see</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The outcome variable is specified as 'RiskGroup2' and the reference category is 'hts'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  See `?factor` or `?relevel` to change the reference category.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The outcome variable is specified as 'RiskGroup2' and the reference category is 'hts'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  See `?factor` or `?relevel` to change the reference category.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The outcome variable is specified as 'RiskGroup2' and the reference category is 'msm'.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  See `?factor` or `?relevel` to change the reference category.</span>
-<span class="r-in"><span>  </span></span>
+<span class="r-in"><span><span class="co">## Define step with default parameters</span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">step_lefse</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span> </span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Results</span> ─────────────────────────────────────────────────────────────────</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">101</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Phylum</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> lefse__Puff_pastry <span style="color: #555555;">diff_taxa = 92</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Krempita</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Gustavus_Adolphus_pastry</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 92 taxa are present in all tested methods </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_lefse() <span style="color: #555555;">id = lefse__Reuzenbol</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Running lefse without rarefaction (not recommended)</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
 <span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Species"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">step_lefse</span><span class="op">(</span>rarefy <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run lefse without rarefaction is not recommended (<span style="color: #0000BB;">id = lefse__Pastel</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run lefse without rarefaction is not recommended (<span style="color: #0000BB;">id = lefse__Blachinda</span>)</span>
 <span class="r-in"><span>  </span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
@@ -274,7 +257,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_lefse() <span style="color: #555555;">id = lefse__Pastel</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_lefse() <span style="color: #555555;">id = lefse__Blachinda</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
