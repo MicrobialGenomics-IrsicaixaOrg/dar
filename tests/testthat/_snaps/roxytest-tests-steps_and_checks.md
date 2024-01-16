@@ -19,7 +19,7 @@
       
       DA steps:
       
-           (*) step_metagenomeseq() id = metagenomeseq__Huff_paste 
+           (*) step_metagenomeseq() id = panallet 
 
 ---
 
