@@ -838,7 +838,7 @@ methods::setGeneric(
   name = "prep",
   def = function(rec,
                  parallel = TRUE,
-                 workers = 8,
+                 workers = 4,
                  force = FALSE) {
     standardGeneric("prep")
   }

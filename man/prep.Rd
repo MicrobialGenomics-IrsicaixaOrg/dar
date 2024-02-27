@@ -5,9 +5,9 @@
 \alias{prep,Recipe-method}
 \title{Performs all the steps defined in a Recipe}
 \usage{
-prep(rec, parallel = TRUE, workers = 8, force = FALSE)
+prep(rec, parallel = TRUE, workers = 4, force = FALSE)
 
-\S4method{prep}{Recipe}(rec, parallel = TRUE, workers = 8, force = FALSE)
+\S4method{prep}{Recipe}(rec, parallel = TRUE, workers = 4, force = FALSE)
 }
 \arguments{
 \item{rec}{A \code{Recipe} object. and furrr packages.}

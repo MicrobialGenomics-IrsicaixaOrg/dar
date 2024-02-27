@@ -395,7 +395,7 @@ export_steps <- function(rec, file_name) {
 #'   
 #' rec
 #' cool(rec)
-import_steps <- function(rec, file, parallel = TRUE, workers = 8) {
+import_steps <- function(rec, file, parallel = TRUE, workers = 4) {
   lines <-
     readr::read_lines(file) %>%
     purrr::discard(stringr::str_detect(., "[{]|[}]"))
