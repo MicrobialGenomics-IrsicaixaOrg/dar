@@ -1,3 +1,8 @@
+# dar 0.99.9
+
+## Bug Fixes
+- Set workers parameter to 4 in order to avoid issues with BBS builds
+
 # dar 0.99.8
 
 ## Improvements
