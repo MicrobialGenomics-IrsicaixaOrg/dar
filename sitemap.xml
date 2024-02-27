@@ -46,6 +46,9 @@
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.html</loc>
   </url>
   <url>
+    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.html</loc>
+  </url>
+  <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.html</loc>
   </url>
   <url>
@@ -137,9 +140,6 @@
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe-class.html</loc>
   </url>
   <url>
     <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.html</loc>
