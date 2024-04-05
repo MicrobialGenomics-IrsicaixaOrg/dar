@@ -58,6 +58,7 @@ Suggests:
     apeglm,
     ashr,
     Biobase,
+    corncob,
     covr,
     DESeq2,
     devtools,
@@ -85,6 +86,7 @@ Collate:
     'aldex2.R'
     'ancom.R'
     'bake.R'
+    'corncob.R'
     'dar-package.R'
     'data.R'
     'deseq2.R'

@@ -70,6 +70,7 @@ utils::globalVariables(c(
   "otu",
   # <rm_zero_variance>
   "otu_id",
+  # <corncob_stats_tbl>
   # <run_deseq>
   # <run_metagenomeseq>
   # <run_wilcox>
@@ -90,6 +91,7 @@ utils::globalVariables(c(
   # <prepro_lefse>
   "RTC",
   # <sample_data>
+  # <run_corncob>
   # <run_metagenomeseq>
   # <.count_summary>
   # <.abundance_heatmap>
@@ -103,6 +105,7 @@ utils::globalVariables(c(
   # <Recipe-class>
   "tax_lev",
   # <run_bake>
+  # <corncob_stats_tbl>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <mutual_plt>
@@ -111,6 +114,7 @@ utils::globalVariables(c(
   # <intersection_df>
   # <run_aldex>
   # <run_bake>
+  # <corncob_stats_tbl>
   # <zero_otu>
   # <zero_otu>
   # <run_maaslin>

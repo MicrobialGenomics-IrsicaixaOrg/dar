@@ -124,6 +124,7 @@ rec
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_ancom}()},
+\code{\link{step_corncob}()},
 \code{\link{step_deseq}()},
 \code{\link{step_lefse}()},
 \code{\link{step_maaslin}()},
