@@ -149,6 +149,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
     <div class="dont-index"><p>Other Diff taxa steps: 
 <code><a href="step_aldex.html">step_aldex</a>()</code>,
 <code><a href="step_ancom.html">step_ancom</a>()</code>,
+<code><a href="step_corncob.html">step_corncob</a>()</code>,
 <code><a href="step_deseq.html">step_deseq</a>()</code>,
 <code><a href="step_lefse.html">step_lefse</a>()</code>,
 <code><a href="step_maaslin.html">step_maaslin</a>()</code>,
@@ -175,8 +176,8 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Flaky_pastry</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Alfajor</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Linzer_torte</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Malsouka</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -196,7 +197,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> wilcox__Schnecken <span style="color: #555555;">diff_taxa = 5</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> wilcox__Dutch_Baby_Pancake <span style="color: #555555;">diff_taxa = 5</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 5 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -205,7 +206,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, <span class="st">"RiskGroup2"</span>, <span class="st">"Species"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">step_wilcox</span><span class="op">(</span>rarefy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run wilcox without rarefaction is not recommended (<span style="color: #0000BB;">id = wilcox__Linzer_torte</span>)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Run wilcox without rarefaction is not recommended (<span style="color: #0000BB;">id = wilcox__Masan</span>)</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
@@ -220,7 +221,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_wilcox() <span style="color: #555555;">id = wilcox__Linzer_torte</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_wilcox() <span style="color: #555555;">id = wilcox__Masan</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
