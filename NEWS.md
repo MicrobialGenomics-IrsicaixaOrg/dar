@@ -1,3 +1,8 @@
+# dar 0.99.10
+
+## New Features
+- Reimplementing `step_corncob` after the return of corncob package to cran
+
 # dar 0.99.9
 
 ## Bug Fixes
