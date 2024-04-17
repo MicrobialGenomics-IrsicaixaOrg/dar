@@ -1,3 +1,8 @@
+# dar 0.99.11
+
+## Bug Fixes
+- Remove humann example form data import vignette
+
 # dar 0.99.10
 
 ## New Features
