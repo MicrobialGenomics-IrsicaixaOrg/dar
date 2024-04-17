@@ -3,8 +3,10 @@ title: "Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Data Import}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 <style>
@@ -31,9 +33,8 @@ to aid users in converting other prevalent data formats, such as `biome`,
 `TreeSummarizedExperiment` formats. 
 
 ```{r}
-suppressPackageStartupMessages(library(phyloseq))
 suppressPackageStartupMessages(library(mia))
-
+suppressPackageStartupMessages(library(phyloseq))
 ```
 
 ## Importing Data from `biome` Format
@@ -241,34 +242,6 @@ tse_metaphlan
 
 # Recipe init
 rec <- dar::recipe(tse_metaphlan)
-
-rec
-```
-
-
-## Importing Data from `humann` Format
-
-The `humann` format is another commonly used format in bioinformatics for 
-microbiome sequencing data. Here's how you can import data in `humann` format 
-to `TreeSummarizedExperiment.`
-
-
-### To TreeSummarizedExperiment
-
-To convert data from the `humann` format to the `TreeSummarizedExperiment`
-format, you can use the `mia::loadFromHumann()` function. Here's a step-by-step 
-example of how to perform this conversion:
-
-```{r}
-# Importing data from HUMAnN
-tse_humann <- mia::loadFromHumann(
-  file = system.file("extdata", "humann_output.tsv", package = "mia")
-)
-
-tse_humann
-
-# Recipe init
-rec <- dar::recipe(tse_humann)
 
 rec
 ```
