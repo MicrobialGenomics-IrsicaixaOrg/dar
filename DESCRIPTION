@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 0.99.11
+Version: 0.99.12
 Date: 2023-09-21
 Authors@R: 
     c(person(given = "Francesc",
@@ -76,6 +76,7 @@ Suggests:
     roxytest,
     rstatix,
     SummarizedExperiment,
+    TreeSummarizedExperiment,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Depends: 
