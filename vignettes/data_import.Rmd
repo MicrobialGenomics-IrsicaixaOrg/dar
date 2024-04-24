@@ -234,19 +234,11 @@ step-by-step example of how to perform this conversion:
 ```{r}
 # Importing data from Metaphlan
 tse_metaphlan <- mia::loadFromMetaphlan(
-  file = system.file("extdata", "merged_abundance_table.txt", package = "mia"),
-)
-
-tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
-  assays = list(counts = SummarizedExperiment::assay(tse_metaphlan)),
-  rowData = SummarizedExperiment::rowData(tse_metaphlan),
-  colData = SummarizedExperiment::colData(tse_metaphlan) |> 
-    as.data.frame() |> 
-    dplyr::mutate(condition = rep(c("A", "B"), times = 3))
+  file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
 )
 
 # Recipe init
-rec <- dar::recipe(tse_metaphlan, var_info = "condition", tax_info = "Genus")
+rec <- dar::recipe(tse_metaphlan)
 
 rec
 ```
