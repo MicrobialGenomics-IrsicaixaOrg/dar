@@ -62,8 +62,8 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       NOT_CRAN: true
       TZ: UTC
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      ## GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ## GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
 
@@ -182,6 +182,9 @@ jobs:
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         shell: Rscript {0}
 
       - name: Install BiocGenerics
@@ -210,6 +213,9 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
+      - name: Collect Workflow Telemetry
+        uses: runforesight/workflow-telemetry-action@v1
+  
       - name: Run CMD check
         env:
           _R_CHECK_CRAN_INCOMING_: false
