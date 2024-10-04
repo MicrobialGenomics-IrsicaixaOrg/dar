@@ -116,4 +116,4 @@ VignetteBuilder: knitr
 Config/roxyglobals/filename: globals.R
 Config/roxyglobals/unique: TRUE
 Config/testthat/parallel: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
