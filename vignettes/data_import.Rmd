@@ -79,7 +79,7 @@ rec
 ### To TreeSummarizedExperiment
 
 To convert data from the `biome` format to the `TreeSummarizedExperiment` format, 
-you can use the `mia::loadFromBiom()` function. Here's a step-by-step example 
+you can use the `mia::importBIOM()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
 ```{r}
@@ -88,7 +88,7 @@ rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
 
 # Import biom as a phyloseq-class object
-tse <- mia::loadFromBiom(rich_dense_biom)
+tse <- mia::importBIOM(rich_dense_biom)
 
 tse
 
@@ -144,12 +144,12 @@ rec
 ### To TreeSummarizedExperiment
 
 To convert data from the `qiime` format to the `TreeSummarizedExperiment` format, 
-you can use the `mia::loadFromQIIME2()` function. Here's a step-by-step example 
+you can use the `mia::importQIIME2()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
 ```{r}
 # Import QIIME data to tse
-tse_qiime <- mia::loadFromQIIME2(
+tse_qiime <- mia::importQIIME2(
   featureTableFile = system.file("extdata", "table.qza", package = "mia"),
   taxonomyTableFile = system.file("extdata", "taxonomy.qza", package = "mia"),
   sampleMetaFile = system.file("extdata", "sample-metadata.tsv", package = "mia"),
@@ -199,12 +199,12 @@ rec
 ### To TreeSummarizedExperiment
 
 To convert data from the `mothur` format to the `TreeSummarizedExperiment` 
-format, you can use the `mia::loadFromMothur()` function. Here's a step-by-step 
+format, you can use the `mia::importMothur()` function. Here's a step-by-step 
 example of how to perform this conversion:
 
 ```{r}
 # Import Mothur data to TreeSummarizedExperiment
-tse_mothur <- mia::loadFromMothur(
+tse_mothur <- mia::importMothur(
   sharedFile = system.file("extdata", "mothur_example.shared", package = "mia"),
   taxonomyFile = system.file("extdata", "mothur_example.cons.taxonomy", package = "mia"),
   designFile = system.file("extdata", "mothur_example.design", package = "mia")
@@ -228,17 +228,25 @@ format to `TreeSummarizedExperiment.`
 ### To TreeSummarizedExperiment
 
 To convert data from the `metaphlan` format to the `TreeSummarizedExperiment` 
-format, you can use the `mia::loadFromMetaphlan()` function. Here's a 
+format, you can use the `mia::importMetaPhlAn()` function. Here's a 
 step-by-step example of how to perform this conversion:
 
 ```{r}
 # Importing data from Metaphlan
-tse_metaphlan <- mia::loadFromMetaphlan(
+tse_metaphlan <- mia::importMetaPhlAn(
   file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
 )
 
 # Recipe init
-rec <- dar::recipe(tse_metaphlan)
+tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
+  assays = list(counts = SummarizedExperiment::assay(tse_metaphlan)),
+  rowData = SummarizedExperiment::rowData(tse_metaphlan),
+  colData = SummarizedExperiment::colData(tse_metaphlan) |> 
+    as.data.frame() |> 
+    dplyr::mutate(condition = rep(c("A", "B"), times = 3))
+)
+
+rec <- dar::recipe(tse_metaphlan, var_info = "condition", tax_info = "Genus")
 
 rec
 ```
