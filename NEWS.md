@@ -1,3 +1,5 @@
+# dar 1.0.0
+
 # dar 0.99.13
 
 ## Bug Fixes
