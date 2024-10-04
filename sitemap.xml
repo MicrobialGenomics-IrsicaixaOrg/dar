@@ -1,231 +1,79 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/404.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/dar.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/index.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_step.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/contains_rarefaction.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/find_intersections.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_comparisons.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/grapes-greater-than-grapes.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_df.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/metaHIV_phy.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pastry_df.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipes_pkg_check.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_abundance.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_prevalence.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_rarity.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_variance.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rarefaction.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_to_expr.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/steps_ids.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_prep_rec.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_rec.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidyeval.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/to_tibble.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/use_rarefy.html</loc>
-  </url>
-  <url>
-    <loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/404.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/CONTRIBUTING.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/LICENSE-text.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/LICENSE.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/dar.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/index.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/authors.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/index.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/news/index.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_step.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/contains_rarefaction.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/find_intersections.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_comparisons.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/grapes-greater-than-grapes.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/index.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_df.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/metaHIV_phy.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pastry_df.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipes_pkg_check.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_abundance.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_prevalence.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_rarity.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_variance.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rarefaction.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_to_expr.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/steps_ids.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_prep_rec.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_rec.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidyeval.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/to_tibble.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/use_rarefy.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.html</loc></url>
 </urlset>
+
