@@ -319,7 +319,7 @@ run_ancom <- function(rec,
             phyloseq::prune_taxa(s_phy)
           
           res <- ANCOMBC::ancombc2(
-            data = s_phy, 
+            data = mia::convertFromPhyloseq(s_phy), 
             tax_level = tax_level,
             fix_formula = fix_formula,
             rand_formula = rand_formula,
