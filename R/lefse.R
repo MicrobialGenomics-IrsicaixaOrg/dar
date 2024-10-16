@@ -16,7 +16,7 @@
 #' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test
 #'   when 'blockCol' is present (default 0.05).
 #' @param lda.threshold numeric(1) The effect size threshold (default 2.0).
-#' @param blockCol character(1) Optional column name in 'colData(expr)'
+#' @param subclassCol character(1) Optional column name in 'colData(expr)'
 #'   indicating the blocks, usually a factor with two levels (e.g., 'c("adult",
 #'   "senior")'; default NULL).
 #' @param assay The i-th assay matrix in the ‘SummarizedExperiment' (’expr';
@@ -85,7 +85,7 @@ methods::setGeneric(
                  kruskal.threshold = 0.05,
                  wilcox.threshold = 0.05,
                  lda.threshold = 2,
-                 blockCol = NULL,
+                 subclassCol = NULL,
                  assay = 1L,
                  trim.names = FALSE,
                  rarefy = TRUE,
@@ -104,7 +104,7 @@ methods::setMethod(
                         kruskal.threshold,
                         wilcox.threshold,
                         lda.threshold,
-                        blockCol,
+                        subclassCol,
                         assay,
                         trim.names,
                         rarefy,
@@ -126,7 +126,7 @@ methods::setMethod(
         kruskal.threshold = kruskal.threshold,
         wilcox.threshold = wilcox.threshold,
         lda.threshold = lda.threshold,
-        blockCol = blockCol,
+        subclassCol = subclassCol,
         assay = assay,
         trim.names = trim.names,
         rarefy = rarefy,
@@ -146,7 +146,7 @@ methods::setMethod(
                         kruskal.threshold,
                         wilcox.threshold,
                         lda.threshold,
-                        blockCol,
+                        subclassCol,
                         assay,
                         trim.names,
                         rarefy,
@@ -162,7 +162,7 @@ step_lefse_new <-
   function(kruskal.threshold,
            wilcox.threshold,
            lda.threshold,
-           blockCol,
+           subclassCol,
            assay,
            trim.names,
            rarefy,
@@ -172,7 +172,7 @@ step_lefse_new <-
       kruskal.threshold = kruskal.threshold,
       wilcox.threshold = wilcox.threshold,
       lda.threshold = lda.threshold,
-      blockCol = blockCol,
+      subclassCol = subclassCol,
       assay = assay,
       trim.names = trim.names,
       rarefy = rarefy,
@@ -195,7 +195,7 @@ run_lefse <-
            kruskal.threshold = kruskal.threshold,
            wilcox.threshold = wilcox.threshold,
            lda.threshold = lda.threshold,
-           blockCol = blockCol,
+           subclassCol = subclassCol,
            assay = assay,
            trim.names = trim.names,
            rarefy = rarefy ) {
@@ -213,26 +213,26 @@ run_lefse <-
           se <- SummarizedExperiment::SummarizedExperiment(
             assays = list(counts = lefse_mat[, sample_data$sample_id]),
             colData = sample_data
-          )
+          ) %>% lefser::relativeAb()
 
           # set.seed(1234)
           lefse_res <- lefser::lefser(
             se,
-            groupCol = var,
+            classCol = var,
             kruskal.threshold = 1,
             wilcox.threshold = 1,
             lda.threshold = 0,
-            blockCol = blockCol,
+            subclassCol = subclassCol,
             assay = assay,
             trim.names = trim.names
           )
           
           adjpval <-
-            ifelse(is.null(blockCol), kruskal.threshold, wilcox.threshold)
+            ifelse(is.null(subclassCol), kruskal.threshold, wilcox.threshold)
           
           lefse_res %>%
             tibble::as_tibble() %>%
-            dplyr::rename(otu = Names) %>%
+            dplyr::rename(otu = features) %>%
             dplyr::mutate(otu = stringr::str_remove_all(otu, "\`")) %>%
             dplyr::left_join(
               kruskal_test(se, sample_data[[var]]), by = "otu"

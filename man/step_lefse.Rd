@@ -11,7 +11,7 @@ step_lefse(
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
   lda.threshold = 2,
-  blockCol = NULL,
+  subclassCol = NULL,
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
@@ -23,7 +23,7 @@ step_lefse(
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
   lda.threshold = 2,
-  blockCol = NULL,
+  subclassCol = NULL,
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
@@ -35,7 +35,7 @@ step_lefse(
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
   lda.threshold = 2,
-  blockCol = NULL,
+  subclassCol = NULL,
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
@@ -54,7 +54,7 @@ when 'blockCol' is present (default 0.05).}
 
 \item{lda.threshold}{numeric(1) The effect size threshold (default 2.0).}
 
-\item{blockCol}{character(1) Optional column name in 'colData(expr)'
+\item{subclassCol}{character(1) Optional column name in 'colData(expr)'
 indicating the blocks, usually a factor with two levels (e.g., 'c("adult",
 "senior")'; default NULL).}
 

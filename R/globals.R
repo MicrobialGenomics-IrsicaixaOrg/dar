@@ -39,6 +39,8 @@ utils::globalVariables(c(
   "estimate",
   # <run_maaslin>
   "feature",
+  # <run_lefse>
+  "features",
   # <prepro_lefse>
   "Kingdom",
   # <ancom_stats_tbl>
@@ -60,8 +62,6 @@ utils::globalVariables(c(
   "n_zero",
   # <find_intersections>
   "name",
-  # <run_lefse>
-  "Names",
   # <zero_otu>
   # <zero_otu>
   # <.zero_groups>
