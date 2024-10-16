@@ -1,4 +1,4 @@
-# dar 1.1.1
+# dar 1.1.2
 
 ## Bug Fixes
 - `data_import.Rmd`
