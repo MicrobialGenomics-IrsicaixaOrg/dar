@@ -160,7 +160,7 @@ tse_qiime <- mia::importQIIME2(
 tse_qiime
 
 # Recipe init
-rec <- dar::recipe(tse_qiime, var_info = "body.site", tax_info = "Genus")
+rec <- dar::recipe(tse_qiime, var_info = "body.site", tax_info = "genus")
 
 rec
 ```

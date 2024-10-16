@@ -142,11 +142,11 @@ recipe <- function(microbiome_object = NULL,
   }
   
   if (is(microbiome_object, "TreeSummarizedExperiment")) {
-    microbiome_object <- 
-      mia::makePhyloseqFromTreeSummarizedExperiment(microbiome_object)
+    microbiome_object <- mia::convertToPhyloseq(microbiome_object)
   }
   
-  if (!all(colnames(microbiome_object@tax_table) %in% expected)) {
+  tax_names <- colnames(microbiome_object@tax_table) %>% stringr::str_to_sentence()
+  if (!all(tax_names %in% expected)) {
     rlang::abort(
       c(
         glue::glue(
