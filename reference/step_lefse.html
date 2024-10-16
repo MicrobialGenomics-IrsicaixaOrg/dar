@@ -21,7 +21,7 @@ assigned and used within the analysis."><meta property="og:image" content="https
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@ assigned and used within the analysis.</p>
 <span>  kruskal.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  wilcox.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  lda.threshold <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  blockCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subclassCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  trim.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rarefy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -85,7 +85,7 @@ assigned and used within the analysis.</p>
 <span>  kruskal.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  wilcox.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  lda.threshold <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  blockCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subclassCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  trim.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rarefy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -98,7 +98,7 @@ assigned and used within the analysis.</p>
 <span>  kruskal.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  wilcox.threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  lda.threshold <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  blockCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subclassCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  assay <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  trim.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  rarefy <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -129,7 +129,7 @@ when 'blockCol' is present (default 0.05).</p></dd>
 <dd><p>numeric(1) The effect size threshold (default 2.0).</p></dd>
 
 
-<dt id="arg-blockcol">blockCol<a class="anchor" aria-label="anchor" href="#arg-blockcol"></a></dt>
+<dt id="arg-subclasscol">subclassCol<a class="anchor" aria-label="anchor" href="#arg-subclasscol"></a></dt>
 <dd><p>character(1) Optional column name in 'colData(expr)'
 indicating the blocks, usually a factor with two levels (e.g., 'c("adult",
 "senior")'; default NULL).</p></dd>
