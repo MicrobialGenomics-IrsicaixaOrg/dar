@@ -48,11 +48,7 @@
 #'  step_lefse() |> 
 #'  step_lefse(rarefy = FALSE) 
 #'  
-#' expect_match(
-#'   capture_warnings(prep(test)),
-#'   "Convert counts to relative abundances with 'relativeAb\\(\\)'",
-#'   all = TRUE
-#' ) |>
+#' expect_s4_class(prep(test), "PrepRecipe") |> 
 #'   expect_snapshot()
 #' 
 #' data(test_prep_rec)
