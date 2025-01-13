@@ -1,5 +1,5 @@
 ---
-title: "dar: Publication code"
+title: "dar: Case of Study"
 author: Francesc Catala-Moll
 output-dir: doc/
 date: last-modified
