@@ -53,14 +53,14 @@ To begin the analysis process with the `dar` package, the first step is to
 initialize a `Recipe` object, which is an S4 class. This recipe object serves as 
 a blueprint for the data preparation steps required for the differential 
 abundance analysis. The initialization of the recipe object is done through the 
-function `recipe()`, which takes as inputs a `phyloseq` or 
-`TreeSummarizedExperiment` (TSE) object, the name of the categorical variable 
-of interest and the taxonomic level at which the differential abundance 
-analyses are to be performed. As previously mentioned, we will use the data set 
-from (Noguera-Julian, M., et al. 2016) and the variable of interest 
-"RiskGroup2" containing the categories: men who have sex with men (msm),
-non-MSM (hts) and people who inject drugs (pwid) and we will perform the 
-analysis at the species level.
+function `recipe()`, which takes as inputs a `phyloseq` or `TreeSummarizedExperiment` 
+(TSE) object, the name of the categorical variable of interest and the taxonomic
+level at which the differential abundance analyses are to be performed. As 
+previously mentioned, we will use the data set from 
+(Noguera-Julian, M., et al. 2016) and the variable of interest "RiskGroup2" 
+containing the categories: men who have sex with men (msm), non-MSM (hts) and 
+people who inject drugs (pwid) and we will perform the analysis at the species 
+level.
 
 ```{r}
 ## Recipe initialization
