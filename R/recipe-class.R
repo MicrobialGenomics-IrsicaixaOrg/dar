@@ -838,7 +838,7 @@ methods::setGeneric(
   name = "prep",
   def = function(rec,
                  parallel = TRUE,
-                 workers = 4,
+                 workers = future::availableCores(),
                  force = FALSE) {
     standardGeneric("prep")
   }
