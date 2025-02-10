@@ -1,16 +1,30 @@
 ---
 title: "dar: Case of Study"
-author: Francesc Catala-Moll
-output-dir: doc/
-date: last-modified
-fig-align: center
-format: 
-  html:
-    toc: true
-    number-sections: true
-    embed-resources: true
-
+output: rmarkdown::html_vignette
+description: |
+  
+vignette: >
+  %\VignetteIndexEntry{Workflow with real data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  digits = 3,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  fig.width = 8
+)
+options(digits = 3)
+```
 
 ## Introduction
 
