@@ -4,7 +4,7 @@
 \alias{import_steps}
 \title{Import steps from json file}
 \usage{
-import_steps(rec, file, parallel = TRUE, workers = 4)
+import_steps(rec, file, parallel = TRUE, workers = future::availableCores())
 }
 \arguments{
 \item{rec}{A Recipe object.}
