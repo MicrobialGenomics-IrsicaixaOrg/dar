@@ -22,7 +22,7 @@ reference:
 - title: "Step Functions - Differential Abundance Methods"
   contents:
   - step_aldex
-  - step_ancom
+  # - step_ancom
   - step_corncob
   - step_deseq
   - step_lefse

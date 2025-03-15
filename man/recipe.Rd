@@ -71,8 +71,8 @@ rec
 
 ## When trying to add an identical step to an existing one, the system
 ## returns an information message.
-rec <- step_ancom(rec)
-rec <- step_ancom(rec)
+rec <- step_aldex(rec)
+rec <- step_aldex(rec)
 
 ## The same with bake
 da_results <- bake(da_results)

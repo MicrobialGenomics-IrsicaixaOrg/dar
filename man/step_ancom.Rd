@@ -162,11 +162,12 @@ multi-group comparisons, including the global test, pairwise directional
 test, Dunnett's type of test, and trend test.
 }
 \examples{
+\dontrun{
 data(metaHIV_phy)
 
 ## Init Recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
@@ -186,6 +187,7 @@ rec <-
 
 rec
 }
+}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
@@ -197,3 +199,4 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
+\keyword{internal}
