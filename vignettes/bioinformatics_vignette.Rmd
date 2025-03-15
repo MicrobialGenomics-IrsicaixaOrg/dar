@@ -5,8 +5,10 @@ description: |
   
 vignette: >
   %\VignetteIndexEntry{Workflow with real data}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 <style>
@@ -85,7 +87,7 @@ Once data is preprocessed and cleaned, the next step is to add the da steps. The
 rec <- 
   rec |> 
   step_wilcox() |>
-  step_ancom() |>
+  # step_ancom() |>
   step_aldex() |>
   step_deseq() |>
   step_corncob(filter_discriminant = FALSE) |> 

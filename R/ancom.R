@@ -70,9 +70,10 @@
 #' @family Diff taxa steps
 #' @aliases step_ancom
 #' @return An object of class `Recipe`
-#' @export
+#' @keywords internal
 #' @autoglobal
 #' @tests
+#' testthat::skip("Temporary disabling due to problems with the ANCOM package")
 #' data(metaHIV_phy)
 #' 
 #' test <-
@@ -87,11 +88,12 @@
 #' data(test_prep_rec)
 #' expect_error(step_ancom(test_prep_rec, rarefy = TRUE))
 #' @examples
+#' \dontrun{
 #' data(metaHIV_phy)
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
@@ -110,6 +112,7 @@
 #'   step_ancom(rarefy = TRUE)
 #'
 #' rec
+#' }
 methods::setGeneric(
   name = "step_ancom",
   def = function(rec,
