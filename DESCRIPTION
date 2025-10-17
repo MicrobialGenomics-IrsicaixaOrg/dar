@@ -77,7 +77,8 @@ Suggests:
     rstatix,
     SummarizedExperiment,
     TreeSummarizedExperiment,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    GenomeInfoDb
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.5.0)
@@ -116,4 +117,4 @@ VignetteBuilder: knitr
 Config/roxyglobals/filename: globals.R
 Config/roxyglobals/unique: TRUE
 Config/testthat/parallel: true
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
