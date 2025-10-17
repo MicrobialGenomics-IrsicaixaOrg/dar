@@ -1,6 +1,6 @@
-pandoc: 3.6.3
-pkgdown: 2.1.1.9000
-pkgdown_sha: 739380ac569123aa88cbeab64ba4f42105f88c00
+pandoc: 3.8.1
+pkgdown: 2.1.3.9000
+pkgdown_sha: 34f217f67fb908fccaf55b0db07dae33322e7349
 articles:
   article: article.html
   bioinformatics_vignette: bioinformatics_vignette.html
@@ -8,7 +8,7 @@ articles:
   data_import: data_import.html
   filtering_subsetting: filtering_subsetting.html
   import_export_recipes: import_export_recipes.html
-last_built: 2025-03-15T15:08Z
+last_built: 2025-10-17T08:18Z
 urls:
   reference: https://microbialgenomics-irsicaixaorg.github.io/dar/reference
   article: https://microbialgenomics-irsicaixaorg.github.io/dar/articles
