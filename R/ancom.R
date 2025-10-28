@@ -352,8 +352,8 @@ run_ancom <- function(rec,
 #' @autoglobal
 ancom_stats_tbl <- function(ancom_res, var, rec, comparison) {
   ancom_res %>%
-    dplyr::select(taxa = taxon, dplyr::contains(!!var)) %>%
-    dplyr::right_join(tax_table(rec), ., by = "taxa") %>%
+    dplyr::select(taxa_id = taxon, dplyr::contains(!!var)) %>%
+    dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
     stats::setNames(
       stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
     ) %>%

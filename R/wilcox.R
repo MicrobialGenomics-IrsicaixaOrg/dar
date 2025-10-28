@@ -226,6 +226,7 @@ run_wilcox <- function(rec,
           estimate = -estimate, 
           effect = estimate,
           signif = ifelse(padj < max_significance, TRUE, FALSE)
-        )
+        ) %>% 
+          dplyr::relocate(taxa_id, .before = 1)
     })
 }

@@ -117,6 +117,7 @@ utils::globalVariables(c(
   # <corncob_stats_tbl>
   # <zero_otu>
   # <zero_otu>
+  # <run_lefse>
   # <run_maaslin>
   # <run_metagenomeseq>
   # <find_intersections>
@@ -125,6 +126,7 @@ utils::globalVariables(c(
   # <.abundance_heatmap>
   # <mutual_plt>
   # <.otu_method_count>
+  # <run_wilcox>
   "taxa_id",
   # <ancom_stats_tbl>
   "taxon",

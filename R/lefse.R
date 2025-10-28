@@ -246,7 +246,8 @@ run_lefse <-
               )
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa") %>%
-            dplyr::rename(lefse_id = otu)
+            dplyr::rename(lefse_id = otu) %>% 
+            dplyr::relocate(taxa_id, .before = 1)
         })
     })
 }
