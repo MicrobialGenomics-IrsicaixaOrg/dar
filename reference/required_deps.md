@@ -1,0 +1,36 @@
+# Returns required pakcages for Recipe object
+
+Returns required pakcages for Recipe object
+
+## Usage
+
+``` r
+required_deps(rec)
+
+# S4 method for class 'Recipe'
+required_deps(rec)
+```
+
+## Arguments
+
+- rec:
+
+  A `Recipe` object
+
+## Value
+
+character
+
+## Examples
+
+``` r
+data(test_rec)
+
+## The function returns instructions to install any uninstalled dependencies 
+## needed to run the Recipe steps
+dar:::required_deps(test_rec)
+
+## The function also works with PrepRecipe-class objects
+data(test_prep_rec)
+dar:::required_deps(test_prep_rec)
+```

@@ -1,0 +1,316 @@
+# dar
+
+## Introduction
+
+Differential abundance testing in microbiome data challenges both
+parametric and non-parametric statistical methods, due to its sparsity,
+high variability and compositional nature. Microbiome-specific
+statistical methods often assume classical distribution models or take
+into account compositional specifics. These produce results that range
+within the specificity vs sensitivity space in such a way that type I
+and type II error are difficult to ascertain in real microbiome data
+when a single method is used. Recently, a consensus approach based on
+multiple differential abundance (DA) methods was recently suggested in
+order to increase robustness.
+
+With dar, you can use dplyr-like pipeable sequences of DA methods and
+then apply different consensus strategies. In this way we can obtain
+more reliable results in a fast, consistent and reproducible way.
+
+## Installation
+
+You can install the development version of dar from
+[GitHub](https://github.com/) with:
+
+``` r
+
+# install.packages("devtools")
+devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
+```
+
+## Usage
+
+``` r
+
+library(dar)
+#> Registered S3 methods overwritten by 'vegan':
+#>   method         from      
+#>   reorder.hclust seriation 
+#>   rev.hclust     dendextend
+data("metaHIV_phy")
+
+## Define recipe
+rec <-
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
+  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
+  step_metagenomeseq(rm_zeros = 0.01) %>%
+  step_maaslin()
+
+rec
+#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Species 
+#> 
+#> Preporcessing steps:
+#> 
+#>      ◉ step_subset_taxa() id = subset_taxa__Suncake 
+#>      ◉ step_filter_taxa() id = filter_taxa__Hot_water_crust_pastry 
+#> 
+#> DA steps:
+#> 
+#>      ◉ step_metagenomeseq() id = metagenomeseq__Crocetta_of_Caltanissetta 
+#>      ◉ step_maaslin() id = maaslin__Tortita_negra
+
+## Prep recipe
+da_results <- prep(rec, parallel = TRUE)
+da_results
+#> ── DAR Results ─────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 278 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Species 
+#> 
+#> Results:
+#> 
+#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
+#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
+#> 
+#>      ℹ 124 taxa are present in all tested methods
+
+## Consensus strategy
+n_methods <- 2
+da_results <- bake(da_results, count_cutoff = n_methods)
+da_results
+#> ── DAR Results ─────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 278 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Species 
+#> 
+#> Results:
+#> 
+#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
+#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
+#> 
+#>      ℹ 124 taxa are present in all tested methods 
+#> 
+#> Bakes:
+#> 
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Kürtőskalács
+
+## Results
+cool(da_results)
+#> ℹ Bake for count_cutoff = 2
+#> # A tibble: 124 × 2
+#>    taxa_id taxa                   
+#>    <chr>   <chr>                  
+#>  1 Otu_63  Bacteroides_plebeius   
+#>  2 Otu_216 Clostridium_sp_CAG_632 
+#>  3 Otu_441 Brachyspira_sp_CAG_700 
+#>  4 Otu_108 Prevotella_sp_CAG_520  
+#>  5 Otu_257 Butyrivibrio_sp_CAG_318
+#>  6 Otu_104 Prevotella_sp_CAG_1092 
+#>  7 Otu_69  Bacteroides_sp_CAG_530 
+#>  8 Otu_102 Prevotella_sp_AM42_24  
+#>  9 Otu_159 Lactobacillus_ruminis  
+#> 10 Otu_117 Alistipes_inops        
+#> # ℹ 114 more rows
+```
+
+## Contributing
+
+- If you think you have encountered a bug, please [submit an
+  issue](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues).
+
+- Either way, learn how to create and share a
+  [reprex](https://reprex.tidyverse.org/articles/articles/learn-reprex.html)
+  (a minimal, reproducible example), to clearly communicate about your
+  code.
+
+- Working on your first Pull Request? You can learn how from this *free*
+  series [How to Contribute to an Open Source Project on
+  GitHub](https://kcd.im/pull-request)
+
+## Code of Conduct
+
+Please note that the dar project is released with a [Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
+
+# Package index
+
+## Basic Functions
+
+- [`dar`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.md)
+  [`dar-package`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.md)
+  : dar: Differential Abundance Analysis by Consensus
+- [`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+  : Create a Recipe for preprocessing data
+- [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)
+  : Performs all the steps defined in a Recipe
+- [`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
+  : Define consensus strategies from a Recipe
+- [`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
+  : Extract results from defined bake
+
+## Step Functions - Data Preprocessing
+
+- [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
+  : Filter taxa based on across-sample OTU abundance criteria
+- [`step_filter_by_prevalence()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_prevalence.md)
+  : Filter taxa by prevalence
+- [`step_filter_by_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_abundance.md)
+  : Filter taxa by abundance
+- [`step_filter_by_rarity()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_rarity.md)
+  : Filter taxa by rarity
+- [`step_filter_by_variance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_variance.md)
+  : Filter taxa by variance
+- [`step_subset_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.md)
+  : Subset taxa by taxonomic level
+- [`step_rarefaction()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rarefaction.md)
+  : Resample an OTU table such that all samples have the same library
+  size.
+
+## Step Functions - Differential Abundance Methods
+
+- [`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)
+  : ALDEx2 analysis
+- [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
+  : corncob analysis
+- [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md)
+  : DESeq2 analysis
+- [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md)
+  : lefse analysis
+- [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
+  : MaAsLin2 analysis
+- [`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.md)
+  : MetagenomeSeq analysis
+- [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
+  : Wilcox analysis
+
+## Exploration
+
+- [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
+  : Abundance boxplot
+
+- [`corr_heatmap()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md)
+  :
+
+  Plot otuput of the `overlap_df` function as a heatmap.
+
+- [`exclusion_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.md)
+  : Plot the number of shared DA OTUs between methods.
+
+- [`find_intersections()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/find_intersections.md)
+  : Finds common OTU between method results
+
+- [`intersection_df()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_df.md)
+  : Returns data.frame with OTU intersection between methods
+
+- [`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
+  : Plot results using UpSet plot
+
+- [`mutual_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.md)
+  : Mutual finding plot
+
+- [`overlap_df()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.md)
+  : Overlap of significant OTUs between tested methods.
+
+## Recipe Getters and Adders
+
+- [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
+  : Adds taxonomic level of interest in the Recipe.
+- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
+  : Adds variable of interest to the Recipe
+- [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
+  : Returns phyloseq from Recipe-class object
+- [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
+  : Returns tax_info from Recipe-class object
+- [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
+  : Returns var_info from Recipe-class object
+- [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
+  : Extracts otu_table from phyloseq inside a Recipe
+- [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)
+  : Phyloseq Quality Control Metrics
+- [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
+  : Extracts sample_data from phyloseq inside a Recipe
+- [`steps_ids()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/steps_ids.md)
+  : Get step_ids from recipe
+- [`tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)
+  : Extracts tax_table from phyloseq inside a Recipe
+- [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
+  : Returns required pakcages for Recipe object
+- [`zero_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.md)
+  : Extract outs with all 0 values in at least on level of the variable
+
+## Import and Export
+
+- [`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)
+  : Export step parameters as json.
+- [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
+  : Import steps from json file
+- [`read_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`validate_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`validate_sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`validate_tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`validate_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`read_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  [`read_file()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
+  : Loads Phyloseq data
+
+## Other functions
+
+- [`contains_rarefaction()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/contains_rarefaction.md)
+  : Checks if Recipe contains a rarefaction step
+- [`rand_id()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.md)
+  : Make a random identification field for steps
+- [`PrepRecipe-class`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.md)
+  : PrepRecipe-class object
+- [`show(`*`<PrepRecipe>`*`)`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.md)
+  : Recipe-class object
+
+## Data
+
+- [`metaHIV_phy`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/metaHIV_phy.md)
+  : Phyloseq object from metaHIV project
+- [`pastry_df`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pastry_df.md)
+  : Pastery data for step id generation
+- [`test_rec`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_rec.md)
+  : Recipe for metaHIV_phy data
+- [`test_prep_rec`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/test_prep_rec.md)
+  : PrepRecipe for metaHIV_phy data
+
+# Articles
+
+### All vignettes
+
+- [Workflow with real
+  data](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
+
+- [dar: Case of
+  Study](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/bioinformatics_vignette.md):
+
+- [Introduction to
+  dar](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/dar.md):
+
+  Start here if this is your first time using dar! You will learn about
+  basic usage, steps, exploration and bakes.
+
+- [Converting Common Data Formats to Phyloseq and
+  TreeSummarizedExperiment](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.md):
+
+- [Filtering and
+  Subsetting](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.md):
+
+  This vignette provides a comprehensive guide to using the
+  `filter_taxa` and `subset_taxa` functions, as well as their
+  convenience wrappers.
+
+- [Reproducibility in Microbiome Data
+  Analysis](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
