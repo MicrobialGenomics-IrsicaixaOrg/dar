@@ -1,8 +1,8 @@
-# dar 1.5.2
+# dar 1.5.3
 
-# dar 1.3.3
+## Bug Fixes
 
-# dar 1.3.2
+- https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/117
 
 # dar 1.1.3
 - `setp_ancom` temporally deactivation
