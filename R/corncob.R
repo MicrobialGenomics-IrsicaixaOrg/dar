@@ -320,7 +320,8 @@ corncob_stats_tbl <- function(corncob_res,
     dplyr::mutate(
       effect = log2FC,
       signif = ifelse(padj < fdr_cutoff & abs(log2FC) >= log2FC, TRUE, FALSE)
-    )
+    ) %>% 
+    dplyr::relocate(taxa_id, .before = 1)
 }
 
 #' @noRd
