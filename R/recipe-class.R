@@ -824,11 +824,11 @@ methods::setMethod(
 #' da_results <- bake(da_results, count_cutoff = n_methods)
 #' da_results
 #'
-#' ## If you try to run prep on an object of class PrepRecipe it returns an 
+#' ## If you try to run prep on an object of class PrepRecipe it returns an
 #' ## error.
 #' err <- testthat::expect_error(prep(da_results))
 #' err
-#' 
+#'
 #' ## You can force the overwrite with:
 #' prep(rec, force = TRUE)
 #'
@@ -836,10 +836,12 @@ methods::setMethod(
 #' prep(rec, parallel = TRUE, workers = 2)
 methods::setGeneric(
   name = "prep",
-  def = function(rec,
-                 parallel = TRUE,
-                 workers = future::availableCores(),
-                 force = FALSE) {
+  def = function(
+    rec,
+    parallel = TRUE,
+    workers = future::availableCores(constraints = "connections-16"),
+    force = FALSE
+  ) {
     standardGeneric("prep")
   }
 )
@@ -894,9 +896,7 @@ methods::setMethod(
     
     if (parallel) {
       recipes_pkg_check(required_pkgs_prep(), "prep()")
-      future::plan(future::multisession, workers = workers)
-      on.exit(future::plan(future::sequential))
-      
+      with(future::plan(future::multisession, workers = workers), local = TRUE)
       res <-
         rec@steps %>%
         purrr::map_chr(step_to_expr) %>%

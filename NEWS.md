@@ -1,3 +1,8 @@
+# dar 1.5.4
+
+* FIXED: Resolved a crash occurring on servers with >128 cores by limiting connection setup based on available R connections.
+* CHANGED: Refactored parallel execution to use `with(..., local = TRUE)`. This ensures the internal parallel plan is temporary and does not overwrite the user's global future configuration.
+
 # dar 1.5.3
 
 ## Bug Fixes
