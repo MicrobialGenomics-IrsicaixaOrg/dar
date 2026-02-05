@@ -372,8 +372,8 @@ export_steps <- function(rec, file_name) {
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' recipe(metaHIV_phy, "RiskGroup2", "Class") |> 
-#'  import_steps(system.file("extdata", "test_bake.json", package = "dar")) |> 
+#' recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'  import_steps(system.file("extdata", "test_bake.json", package = "dar")) |>
 #'  expect_snapshot()
 #' @examples
 #' data(metaHIV_phy)
@@ -386,31 +386,40 @@ export_steps <- function(rec, file_name) {
 #' json_file <- system.file("extdata", "test.json", package = "dar")
 #' rec <- import_steps(rec, json_file)
 #' rec
-#' 
-#' ## If the json file contains 'bake', the Recipe is automatically prepared. 
+#'
+#' ## If the json file contains 'bake', the Recipe is automatically prepared.
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
-#' rec <- 
+#' rec <-
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
 #'   import_steps(json_file)
-#'   
+#'
 #' rec
 #' cool(rec)
-import_steps <- function(rec, file, parallel = TRUE, workers = future::availableCores()) {
+import_steps <- function(
+  rec,
+  file,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16")
+) {
   lines <-
     readr::read_lines(file) %>%
     purrr::discard(stringr::str_detect(., "[{]|[}]"))
 
-  id_idx <-  which(stringr::str_detect(lines, "id"))
+  id_idx <- which(stringr::str_detect(lines, "id"))
   for (i in seq_along(id_idx)) {
     low_idx <- 1
-    if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
-    if (stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
+    if (i != 1) {
+      low_idx <- id_idx[i - 1] + 1
+    }
+    if (stringr::str_detect(lines[id_idx[i]], "bake_")) {
+      next
+    }
     fun_name <- lines[id_idx[i]] %>%
       stringr::str_remove_all(".*: |,|\\\"") %>%
       stringr::str_remove_all("__.*") %>%
       stringr::str_replace_all("\\[|\\]|c\\(", "")
 
-    extract_instructions(lines[low_idx:id_idx[i]]) %>% 
+    extract_instructions(lines[low_idx:id_idx[i]]) %>%
       stringr::str_replace_all("\\[|\\]", "") %>%
       stringr::str_c(collapse = ", ") %>%
       stringr::str_c("rec <<- step_", fun_name, "(rec, ", ., ")") %>%
@@ -427,8 +436,12 @@ import_steps <- function(rec, file, parallel = TRUE, workers = future::available
     rec <- prep(rec, parallel = parallel, workers = workers)
     for (i in seq_along(id_idx)) {
       low_idx <- 1
-      if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
-      if (!stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
+      if (i != 1) {
+        low_idx <- id_idx[i - 1] + 1
+      }
+      if (!stringr::str_detect(lines[id_idx[i]], "bake_")) {
+        next
+      }
       fun_name <- lines[id_idx[i]] %>%
         stringr::str_remove_all(".*: |,|\\\"") %>%
         stringr::str_remove_all("__.*") %>%

@@ -67,7 +67,7 @@ Suggests:
     knitr,
     lefser,
     limma,
-    Maaslin2,
+    maaslin3,
     metagenomeSeq,
     microbiome,
     rmarkdown,
@@ -99,7 +99,7 @@ Collate:
     'filter_taxa.R'
     'globals.R'
     'lefse.R'
-    'maaslin2.R'
+    'maaslin3.R'
     'metagenomeseq.R'
     'misc.R'
     'phyloseq_qc.R'

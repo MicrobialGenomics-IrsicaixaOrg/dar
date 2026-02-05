@@ -47,8 +47,6 @@ utils::globalVariables(c(
   "lfc",
   # <run_deseq>
   "log2FoldChange",
-  # <run_maaslin>
-  "metadata",
   # <run_bake>
   # <exclusion_plt>
   # <mutual_plt>
@@ -81,6 +79,8 @@ utils::globalVariables(c(
   "pct",
   # <run_bake>
   "ponderation",
+  # <run_maaslin>
+  "pval_individual",
   # <run_lefse>
   # <kruskal_test>
   "pvalue",
@@ -88,6 +88,8 @@ utils::globalVariables(c(
   "pvalues",
   # <run_maaslin>
   "qval",
+  # <run_maaslin>
+  "qval_individual",
   # <prepro_lefse>
   "RTC",
   # <sample_data>
@@ -138,7 +140,6 @@ utils::globalVariables(c(
   # <zero_otu>
   # <zero_otu>
   # <kruskal_test>
-  # <run_maaslin>
   # <find_intersections>
   # <.zero_stats>
   # <.zero_groups>

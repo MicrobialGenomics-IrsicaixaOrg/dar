@@ -29,16 +29,12 @@
     Message
       ! This step is already defined with the same parameters and will be skipped: 
       rec %>% step_metagenomeseq(zeroMod = NULL, useCSSoffset = TRUE, useMixedModel = FALSE, max_significance = 0.05, log2FC = 0, rarefy = FALSE, rm_zeros = 0)
-      ! This step is already defined with the same parameters and will be skipped: 
-      rec %>% step_metagenomeseq(zeroMod = NULL, useCSSoffset = TRUE, useMixedModel = FALSE, max_significance = 0.05, log2FC = 0, rarefy = FALSE, rm_zeros = 0)
 
 ---
 
     Code
       expect_s4_class(bake(bake(test_prep_rec)), "PrepRecipe")
     Message
-      ! This step is already defined with the same parameters and will be skipped: 
-      rec %>% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)
       ! This step is already defined with the same parameters and will be skipped: 
       rec %>% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)
 

@@ -87,11 +87,11 @@
       
       Results:
       
-           v maaslin__ChaSan diff_taxa = 86 
+           v maaslin__ChaSan diff_taxa = 41 
            v metagenomeseq__Zlebia diff_taxa = 6 
            v deseq__Linzer_torte diff_taxa = 5 
       
-           i 4 taxa are present in all tested methods 
+           i 3 taxa are present in all tested methods 
       
       Bakes:
       

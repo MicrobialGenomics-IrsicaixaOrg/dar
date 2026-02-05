@@ -4,12 +4,7 @@
 \alias{import_steps}
 \title{Import steps from json file}
 \usage{
-import_steps(
-  rec,
-  file,
-  parallel = TRUE,
-  workers = future::availableCores(constraints = "connections-16")
-)
+import_steps(rec, file, parallel = TRUE, workers = future::availableCores())
 }
 \arguments{
 \item{rec}{A Recipe object.}
@@ -39,12 +34,12 @@ json_file <- system.file("extdata", "test.json", package = "dar")
 rec <- import_steps(rec, json_file)
 rec
 
-## If the json file contains 'bake', the Recipe is automatically prepared.
+## If the json file contains 'bake', the Recipe is automatically prepared. 
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
-rec <-
+rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   import_steps(json_file)
-
+  
 rec
 cool(rec)
 }
