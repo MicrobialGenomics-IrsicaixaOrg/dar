@@ -1,3 +1,7 @@
+# dar 1.5.5
+
+* CHANGED: Migration from Maaslin2 to maaslin3
+
 # dar 1.5.4
 
 * FIXED: Resolved a crash occurring on servers with >128 cores by limiting connection setup based on available R connections.
