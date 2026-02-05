@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.5.4
+Version: 1.5.5
 Date: 2025-10-14
 Authors@R: 
     c(person(given = "Francesc",
@@ -67,7 +67,7 @@ Suggests:
     knitr,
     lefser,
     limma,
-    Maaslin2,
+    maaslin3,
     metagenomeSeq,
     microbiome,
     rmarkdown,
@@ -99,7 +99,7 @@ Collate:
     'filter_taxa.R'
     'globals.R'
     'lefse.R'
-    'maaslin2.R'
+    'maaslin3.R'
     'metagenomeseq.R'
     'misc.R'
     'phyloseq_qc.R'

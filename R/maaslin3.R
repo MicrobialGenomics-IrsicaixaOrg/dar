@@ -1,10 +1,8 @@
-#' MaAsLin2 analysis
+#' MaAsLin3 analysis
 #'
-#' MaAsLin2 finds associations between microbiome meta-omics features and
-#' complex metadata in population-scale epidemiological studies. The software
-#' includes multiple analysis methods (including support for multiple covariates
-#' and repeated measures), filtering, normalization, and transform options to
-#' customize analysis for your specific study.
+#' MaAsLin 3 finds associations between microbiome meta-omics features and
+#' complex metadata. It uses a unified framework to test for both abundance
+#' (using linear models) and prevalence (using logistic regression).
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
 #'   operations for this Recipe.
@@ -13,27 +11,21 @@
 #'   detected at minimum abundance.
 #' @param min_variance Keep features with variance greater than.
 #' @param normalization The normalization method to apply. Default: "TSS".
-#'   Choices: "TSS", "CLR", "CSS", "NONE", "TMM".
-#' @param transform The transform to apply. Default: "LOG". Choices: "LOG",
-#'   "LOGIT", "AST", "NONE".
-#' @param analysis_method The analysis method to apply. Default: "LM". Choices:
-#'   "LM", "CPLM", "ZICP", "NEGBIN", "ZINB".
+#'   Choices: "TSS", "CLR", "NONE".
+#' @param transform The transform to apply. Default: "LOG" (Base 2). Choices: "LOG",
+#'   "PLOG", "NONE".
 #' @param max_significance The q-value threshold for significance.
-#' @param random_effects The random effects for the model, comma-delimited for
-#'   multiple effects.
+#' @param random_effects The random effects for the model (vector of character strings).
 #' @param correction The correction method for computing the q-value.
 #' @param standardize Apply z-score so continuous metadata are on the same
 #'   scale.
 #' @param reference The factor to use as a reference for a variable with more
 #'   than two levels provided as a string of 'variable,reference' semi-colon
-#'   delimited for multiple variables.
-#' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
-#'   rarefaction uses the standard R sample function to resample from the
-#'   abundance values in the otu_table component of the first argument, physeq.
-#'   Often one of the major goals of this procedure is to achieve parity in
-#'   total number of counts between samples, as an alternative to other formal
-#'   normalization procedures, which is why a single value for the sample.size
-#'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
+#'   delimited.
+#' @param median_comparison_abundance Test abundance coefficients against a null
+#'   value corresponding to the median coefficient for a metadata variable across
+#'   the features. Recommended for relative abundance (default: TRUE).
+#' @param rarefy Boolean indicating if OTU counts must be rarefyed.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -44,18 +36,18 @@
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' 
+#'
 #' test <-
 #'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'  step_filter_by_abundance() |> 
-#'  step_maaslin() |> 
-#'  step_maaslin(rarefy = TRUE) |> 
-#'  step_maaslin(rarefy = "no_seed") 
-#'  
-#' expect_s4_class(prep(test), "PrepRecipe") |> 
+#'  step_filter_by_abundance() |>
+#'  step_maaslin() |>
+#'  step_maaslin(rarefy = TRUE) |>
+#'  step_maaslin(rarefy = "no_seed")
+#'
+#' expect_s4_class(prep(test), "PrepRecipe") |>
 #'   expect_snapshot()
-#' 
+#'
 #' data(test_prep_rec)
 #' expect_error(step_maaslin(test_prep_rec))
 #' @examples
@@ -90,12 +82,12 @@ methods::setGeneric(
                  min_variance = 0.0,
                  normalization = "TSS",
                  transform = "LOG",
-                 analysis_method = "LM",
-                 max_significance = 0.25,
+                 max_significance = 0.1,
                  random_effects = NULL,
                  correction = "BH",
                  standardize = TRUE,
                  reference = NULL,
+                 median_comparison_abundance = TRUE,
                  rarefy = FALSE,
                  id = rand_id("maaslin")) {
     standardGeneric("step_maaslin")
@@ -114,15 +106,15 @@ methods::setMethod(
                         min_variance,
                         normalization,
                         transform,
-                        analysis_method,
                         max_significance,
                         random_effects,
                         correction,
                         standardize,
                         reference,
+                        median_comparison_abundance,
                         rarefy,
                         id) {
-
+    
     recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
     add_step(
       rec,
@@ -132,12 +124,12 @@ methods::setMethod(
         min_variance = min_variance,
         normalization = normalization,
         transform = transform,
-        analysis_method = analysis_method,
         max_significance = max_significance,
         random_effects = random_effects,
         correction = correction,
         standardize = standardize,
         reference = reference,
+        median_comparison_abundance = median_comparison_abundance,
         rarefy = rarefy,
         id = id
       )
@@ -157,12 +149,12 @@ methods::setMethod(
                         min_variance,
                         normalization,
                         transform,
-                        analysis_method,
                         max_significance,
                         random_effects,
                         correction,
                         standardize,
                         reference,
+                        median_comparison_abundance,
                         rarefy,
                         id) {
     rlang::abort("This function needs a non-PrepRecipe!")
@@ -178,12 +170,12 @@ step_maaslin_new <- function(rec,
                              min_variance,
                              normalization,
                              transform,
-                             analysis_method,
                              max_significance,
                              random_effects,
                              correction,
                              standardize,
                              reference,
+                             median_comparison_abundance,
                              rarefy,
                              id) {
   step(
@@ -193,12 +185,12 @@ step_maaslin_new <- function(rec,
     min_variance = min_variance,
     normalization = normalization,
     transform = transform,
-    analysis_method = analysis_method,
     max_significance = max_significance,
     random_effects = random_effects,
     correction = correction,
     standardize = standardize,
     reference = reference,
+    median_comparison_abundance = median_comparison_abundance,
     rarefy = rarefy,
     id = id
   )
@@ -207,7 +199,7 @@ step_maaslin_new <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-required_pkgs_maaslin <- function(x, ...) { c("bioc::Maaslin2") }
+required_pkgs_maaslin <- function(x, ...) { c("bioc::maaslin3") }
 
 #' @noRd
 #' @keywords internal
@@ -218,24 +210,20 @@ run_maaslin <- function(rec,
                         min_variance,
                         normalization,
                         transform,
-                        analysis_method,
                         max_significance,
                         random_effects,
                         correction,
                         standardize,
                         reference,
+                        median_comparison_abundance,
                         rarefy) {
 
-  output <- glue::glue("{tempdir()}/maaslin_output")
+  output <- glue::glue("{tempdir()}/maaslin3_output")
 
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  phy <- 
-    get_phy(rec) %>% 
-    use_rarefy(rarefy)
-  
+  phy <- get_phy(rec) %>% use_rarefy(rarefy)
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
@@ -253,35 +241,40 @@ run_maaslin <- function(rec,
             data.frame(row.names = 1) %>%
             as.matrix()
 
-          maaslin2_quietly(
+          m3_res <- maaslin3_quietly(
             input_data,
             input_metadata,
             output,
             var,
-            rec,
             min_abundance,
             min_prevalence,
             min_variance,
             normalization,
             transform,
-            analysis_method,
             max_significance,
             random_effects,
             fixed_effects = var,
             correction,
             standardize,
-            reference
-          ) %>%
-            purrr::pluck("results") %>%
+            reference,
+            median_comparison_abundance
+          ) 
+          
+          m3_res %>%
+            purrr::pluck("fit_data_abundance", "results") %>%
             tibble::as_tibble() %>%
-            dplyr::select(-metadata, -value) %>%
+            dplyr::select(
+              taxa_id = feature,
+              coef,
+              stderr,
+              pval = pval_individual,
+              qval = qval_individual
+            ) %>%
             dplyr::mutate(
-              coef = coef / log10(2),
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = !!var
             ) %>%
-            dplyr::rename(taxa_id = feature) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id") %>% 
+            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
               effect = coef,
               signif = ifelse(qval < max_significance, TRUE, FALSE)
@@ -290,47 +283,31 @@ run_maaslin <- function(rec,
     })
 }
 
-#' Maaslin2 without log infromation
+#' Maaslin3 without console noise
 #'
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-maaslin2_quietly <- function(input_data,
-                             input_metadata,
-                             output,
-                             var,
-                             rec,
-                             min_abundance,
-                             min_prevalence,
-                             min_variance,
-                             normalization,
-                             transform,
-                             analysis_method,
-                             max_significance,
-                             random_effects,
-                             fixed_effects,
-                             correction,
-                             standardize,
-                             reference,
-                             rarefy) {
-  f_quietly <- function(input_data,
-                        input_metadata,
-                        output,
-                        var,
-                        rec,
-                        min_abundance,
-                        min_prevalence,
-                        min_variance,
-                        normalization,
-                        transform,
-                        analysis_method,
-                        max_significance,
-                        random_effects,
-                        fixed_effects,
-                        correction,
-                        standardize,
-                        reference) {
-    res <- Maaslin2::Maaslin2(
+maaslin3_quietly <- function(
+  input_data,
+  input_metadata,
+  output,
+  var,
+  min_abundance,
+  min_prevalence,
+  min_variance,
+  normalization,
+  transform,
+  max_significance,
+  random_effects,
+  fixed_effects,
+  correction,
+  standardize,
+  reference,
+  median_comparison_abundance
+) {
+  f_quietly <- function(...) {
+    maaslin3::maaslin3(
       input_data = input_data,
       input_metadata = input_metadata,
       output = output,
@@ -340,33 +317,15 @@ maaslin2_quietly <- function(input_data,
       min_variance = min_variance,
       normalization = normalization,
       transform = transform,
-      analysis_method = analysis_method,
       max_significance = max_significance,
       random_effects = random_effects,
       correction = correction,
       standardize = standardize,
       reference = reference,
-      plot_heatmap = FALSE,
-      plot_scatter = FALSE
+      median_comparison_abundance = median_comparison_abundance,
+      verbosity = 'ERROR'
     )
   }
-  purrr::quietly(f_quietly)(
-    input_data,
-    input_metadata,
-    output,
-    var,
-    rec,
-    min_abundance,
-    min_prevalence,
-    min_variance,
-    normalization,
-    transform,
-    analysis_method,
-    max_significance,
-    random_effects,
-    fixed_effects,
-    correction,
-    standardize,
-    reference
-  )$result
+
+  purrr::quietly(f_quietly)()$result
 }

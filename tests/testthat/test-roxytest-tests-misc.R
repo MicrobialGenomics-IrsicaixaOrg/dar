@@ -105,8 +105,8 @@ test_that("Function export_steps() @ L331", {
 
 test_that("Function import_steps() @ L398", {
   data(metaHIV_phy)
-  recipe(metaHIV_phy, "RiskGroup2", "Class") |> 
-   import_steps(system.file("extdata", "test_bake.json", package = "dar")) |> 
+  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+   import_steps(system.file("extdata", "test_bake.json", package = "dar")) |>
    expect_snapshot()
 })
 
