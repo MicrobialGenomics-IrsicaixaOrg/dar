@@ -6,10 +6,20 @@ steps in a convenient order.
 ## Usage
 
 ``` r
-prep(rec, parallel = TRUE, workers = future::availableCores(), force = FALSE)
+prep(
+  rec,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16"),
+  force = FALSE
+)
 
 # S4 method for class 'Recipe'
-prep(rec, parallel = TRUE, workers = future::availableCores(), force = FALSE)
+prep(
+  rec,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16"),
+  force = FALSE
+)
 ```
 
 ## Arguments
@@ -65,15 +75,15 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Plăcintă diff_taxa = 146 
+#>      ✔ maaslin__Plăcintă diff_taxa = 53 
 #> 
-#>      ℹ 146 taxa are present in all tested methods 
+#>      ℹ 53 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
 #>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Welsh_cake 
 
-## If you try to run prep on an object of class PrepRecipe it returns an 
+## If you try to run prep on an object of class PrepRecipe it returns an
 ## error.
 err <- testthat::expect_error(prep(da_results))
 err
@@ -117,7 +127,7 @@ err
 #>  31.                         └─base::eval(expr, envir)
 #>  32.                           └─base::eval(expr, envir)
 #>  33.                             ├─testthat::expect_error(prep(da_results))
-#>  34.                             │ └─testthat:::expect_condition_matching(...)
+#>  34.                             │ └─testthat:::expect_condition_matching_(...)
 #>  35.                             │   └─testthat:::quasi_capture(...)
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)
@@ -136,9 +146,9 @@ prep(rec, force = TRUE)
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Plăcintă diff_taxa = 146 
+#>      ✔ maaslin__Plăcintă diff_taxa = 53 
 #> 
-#>      ℹ 146 taxa are present in all tested methods 
+#>      ℹ 53 taxa are present in all tested methods 
 #> 
 
 ## This function can operate in parallel thanks to future and furrr packages.
@@ -152,8 +162,8 @@ prep(rec, parallel = TRUE, workers = 2)
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Plăcintă diff_taxa = 146 
+#>      ✔ maaslin__Plăcintă diff_taxa = 53 
 #> 
-#>      ℹ 146 taxa are present in all tested methods 
+#>      ℹ 53 taxa are present in all tested methods 
 #> 
 ```

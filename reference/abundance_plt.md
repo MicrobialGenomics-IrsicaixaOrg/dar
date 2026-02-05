@@ -107,7 +107,7 @@ err
 #> Backtrace:
 #>     ▆
 #>  1. ├─testthat::expect_error(abundance_plt(test_rec))
-#>  2. │ └─testthat:::expect_condition_matching(...)
+#>  2. │ └─testthat:::expect_condition_matching_(...)
 #>  3. │   └─testthat:::quasi_capture(...)
 #>  4. │     ├─testthat (local) .capture(...)
 #>  5. │     │ └─base::withCallingHandlers(...)

@@ -133,7 +133,7 @@ err
 #>  31.                         └─base::eval(expr, envir)
 #>  32.                           └─base::eval(expr, envir)
 #>  33.                             ├─testthat::expect_error(bake(test_rec))
-#>  34.                             │ └─testthat:::expect_condition_matching(...)
+#>  34.                             │ └─testthat:::expect_condition_matching_(...)
 #>  35.                             │   └─testthat:::quasi_capture(...)
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)

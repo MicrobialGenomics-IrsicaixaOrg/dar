@@ -1,10 +1,8 @@
-# MaAsLin2 analysis
+# MaAsLin3 analysis
 
-MaAsLin2 finds associations between microbiome meta-omics features and
-complex metadata in population-scale epidemiological studies. The
-software includes multiple analysis methods (including support for
-multiple covariates and repeated measures), filtering, normalization,
-and transform options to customize analysis for your specific study.
+MaAsLin 3 finds associations between microbiome meta-omics features and
+complex metadata. It uses a unified framework to test for both abundance
+(using linear models) and prevalence (using logistic regression).
 
 ## Usage
 
@@ -16,12 +14,12 @@ step_maaslin(
   min_variance = 0,
   normalization = "TSS",
   transform = "LOG",
-  analysis_method = "LM",
-  max_significance = 0.25,
+  max_significance = 0.1,
   random_effects = NULL,
   correction = "BH",
   standardize = TRUE,
   reference = NULL,
+  median_comparison_abundance = TRUE,
   rarefy = FALSE,
   id = rand_id("maaslin")
 )
@@ -34,12 +32,12 @@ step_maaslin(
   min_variance = 0,
   normalization = "TSS",
   transform = "LOG",
-  analysis_method = "LM",
-  max_significance = 0.25,
+  max_significance = 0.1,
   random_effects = NULL,
   correction = "BH",
   standardize = TRUE,
   reference = NULL,
+  median_comparison_abundance = TRUE,
   rarefy = FALSE,
   id = rand_id("maaslin")
 )
@@ -52,12 +50,12 @@ step_maaslin(
   min_variance = 0,
   normalization = "TSS",
   transform = "LOG",
-  analysis_method = "LM",
-  max_significance = 0.25,
+  max_significance = 0.1,
   random_effects = NULL,
   correction = "BH",
   standardize = TRUE,
   reference = NULL,
+  median_comparison_abundance = TRUE,
   rarefy = FALSE,
   id = rand_id("maaslin")
 )
@@ -86,17 +84,12 @@ step_maaslin(
 - normalization:
 
   The normalization method to apply. Default: "TSS". Choices: "TSS",
-  "CLR", "CSS", "NONE", "TMM".
+  "CLR", "NONE".
 
 - transform:
 
-  The transform to apply. Default: "LOG". Choices: "LOG", "LOGIT",
-  "AST", "NONE".
-
-- analysis_method:
-
-  The analysis method to apply. Default: "LM". Choices: "LM", "CPLM",
-  "ZICP", "NEGBIN", "ZINB".
+  The transform to apply. Default: "LOG" (Base 2). Choices: "LOG",
+  "PLOG", "NONE".
 
 - max_significance:
 
@@ -104,8 +97,7 @@ step_maaslin(
 
 - random_effects:
 
-  The random effects for the model, comma-delimited for multiple
-  effects.
+  The random effects for the model (vector of character strings).
 
 - correction:
 
@@ -119,18 +111,17 @@ step_maaslin(
 
   The factor to use as a reference for a variable with more than two
   levels provided as a string of 'variable,reference' semi-colon
-  delimited for multiple variables.
+  delimited.
+
+- median_comparison_abundance:
+
+  Test abundance coefficients against a null value corresponding to the
+  median coefficient for a metadata variable across the features.
+  Recommended for relative abundance (default: TRUE).
 
 - rarefy:
 
-  Boolean indicating if OTU counts must be rarefyed. This rarefaction
-  uses the standard R sample function to resample from the abundance
-  values in the otu_table component of the first argument, physeq. Often
-  one of the major goals of this procedure is to achieve parity in total
-  number of counts between samples, as an alternative to other formal
-  normalization procedures, which is why a single value for the
-  sample.size is expected. If 'no_seed', rarefaction is performed
-  without a set seed.
+  Boolean indicating if OTU counts must be rarefyed.
 
 - id:
 
@@ -193,9 +184,9 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Paxlava diff_taxa = 65 
+#>      ✔ maaslin__Paxlava diff_taxa = 37 
 #> 
-#>      ℹ 65 taxa are present in all tested methods 
+#>      ℹ 37 taxa are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
@@ -216,5 +207,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Öçpoçmaq 
+#>      ◉ step_maaslin() id = maaslin__Maamoul 
 ```

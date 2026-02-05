@@ -110,8 +110,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Kołacz 
-#>      ◉ step_filter_taxa() id = filter_taxa__Franzbrötchen 
+#>      ◉ step_subset_taxa() id = subset_taxa__Jalebi 
+#>      ◉ step_filter_taxa() id = filter_taxa__Roti_tissue 
 #> 
 #> DA steps:
 #> 
@@ -131,7 +131,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ wilcox__Briouat diff_taxa = 5 
+#>      ✔ wilcox__Aloo_pie diff_taxa = 5 
 #> 
 #>      ℹ 5 taxa are present in all tested methods 
 #> 
@@ -140,7 +140,7 @@ rec
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   step_wilcox(rarefy = TRUE)
-#> ! Run wilcox without rarefaction is not recommended (id = wilcox__Papanași)
+#> ! Run wilcox without rarefaction is not recommended (id = wilcox__Pan_dulce)
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -155,5 +155,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_wilcox() id = wilcox__Papanași 
+#>      ◉ step_wilcox() id = wilcox__Pan_dulce 
 ```

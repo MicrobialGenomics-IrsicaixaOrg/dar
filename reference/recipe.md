@@ -75,12 +75,10 @@ da_results <- bake(da_results, count_cutoff = n_methods)
 ## Results
 cool(da_results)
 #> ℹ Bake for count_cutoff = 2
-#> # A tibble: 3 × 2
+#> # A tibble: 1 × 2
 #>   taxa_id taxa         
 #>   <chr>   <chr>        
 #> 1 Otu_96  Bacteroidetes
-#> 2 Otu_391 Lentisphaerae
-#> 3 Otu_1   Euryarchaeota
 
 ## You can also crate a recipe without var and tax info
 rec <- recipe(metaHIV_phy)

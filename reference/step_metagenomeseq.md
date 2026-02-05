@@ -135,8 +135,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Roti_john 
-#>      ◉ step_filter_taxa() id = filter_taxa__Roze_koek 
+#>      ◉ step_subset_taxa() id = subset_taxa__Yurla 
+#>      ◉ step_filter_taxa() id = filter_taxa__Pain_au_chocolat 
 #> 
 #> DA steps:
 #> 
@@ -157,7 +157,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Coussin_de_Lyon diff_taxa = 8 
+#>      ✔ metagenomeseq__Bakpia_Pathok diff_taxa = 8 
 #> 
 #>      ℹ 8 taxa are present in all tested methods 
 #> 
@@ -180,5 +180,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Malsouka 
+#>      ◉ step_metagenomeseq() id = metagenomeseq__Beaver_Tail 
 ```

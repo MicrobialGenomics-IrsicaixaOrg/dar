@@ -5,7 +5,12 @@ Import steps from json file
 ## Usage
 
 ``` r
-import_steps(rec, file, parallel = TRUE, workers = future::availableCores())
+import_steps(
+  rec,
+  file,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16")
+)
 ```
 
 ## Arguments
@@ -70,14 +75,14 @@ rec
 #>      ◉ step_metagenomeseq() id = metagenomeseq__Zlebia 
 #>      ◉ step_deseq() id = deseq__Linzer_torte 
 
-## If the json file contains 'bake', the Recipe is automatically prepared. 
+## If the json file contains 'bake', the Recipe is automatically prepared.
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
-rec <- 
+rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   import_steps(json_file)
 #> ! bakes found in imported recipe
 #> ℹ running prep()
-  
+
 rec
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -88,29 +93,29 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__ChaSan diff_taxa = 86 
+#>      ✔ maaslin__ChaSan diff_taxa = 41 
 #>      ✔ metagenomeseq__Zlebia diff_taxa = 69 
 #>      ✔ deseq__Linzer_torte diff_taxa = 53 
 #> 
-#>      ℹ 46 taxa are present in all tested methods 
+#>      ℹ 26 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
 #>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Trdelník 
 cool(rec)
 #> ℹ Bake for count_cutoff = 3
-#> # A tibble: 46 × 2
+#> # A tibble: 26 × 2
 #>    taxa_id taxa                        
 #>    <chr>   <chr>                       
-#>  1 Otu_96  Prevotella_copri            
-#>  2 Otu_102 Prevotella_sp_AM42_24       
-#>  3 Otu_340 Holdemanella_biformis       
-#>  4 Otu_332 Catenibacterium_mitsuokai   
-#>  5 Otu_108 Prevotella_sp_CAG_520       
-#>  6 Otu_115 Alistipes_finegoldii        
-#>  7 Otu_119 Alistipes_putredinis        
-#>  8 Otu_45  Slackia_isoflavoniconvertens
-#>  9 Otu_82  Barnesiella_intestinihominis
-#> 10 Otu_113 Prevotella_stercorea        
-#> # ℹ 36 more rows
+#>  1 Otu_78  Bacteroides_uniformis       
+#>  2 Otu_88  Odoribacter_splanchnicus    
+#>  3 Otu_119 Alistipes_putredinis        
+#>  4 Otu_129 Parabacteroides_merdae      
+#>  5 Otu_125 Parabacteroides_distasonis  
+#>  6 Otu_96  Prevotella_copri            
+#>  7 Otu_82  Barnesiella_intestinihominis
+#>  8 Otu_51  Bacteroides_dorei           
+#>  9 Otu_52  Bacteroides_eggerthii       
+#> 10 Otu_332 Catenibacterium_mitsuokai   
+#> # ℹ 16 more rows
 ```

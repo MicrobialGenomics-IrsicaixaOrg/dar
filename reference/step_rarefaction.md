@@ -70,8 +70,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Alexandertorte 
-#>      ◉ step_filter_taxa() id = filter_taxa__Baklava 
+#>      ◉ step_subset_taxa() id = subset_taxa__Zeeuwse_bolus 
+#>      ◉ step_filter_taxa() id = filter_taxa__Kifli 
 #> 
 #> DA steps:
 #> 
@@ -89,9 +89,9 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Alexandertorte 
-#>      ◉ step_filter_taxa() id = filter_taxa__Baklava 
-#>      ◉ step_rarefaction() id = rarefaction__Cronut 
+#>      ◉ step_subset_taxa() id = subset_taxa__Zeeuwse_bolus 
+#>      ◉ step_filter_taxa() id = filter_taxa__Kifli 
+#>      ◉ step_rarefaction() id = rarefaction__Marillenknödel 
 #> 
 #> DA steps:
 #> 
