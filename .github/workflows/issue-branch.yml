@@ -11,11 +11,6 @@ jobs:
     steps:
     - name: Create Issue Branch
       id: Create_Issue_Branch
-      uses: robvanderleek/create-issue-branch@main 
-      with:
-        branchName: short
-        autoCloseIssue: true
-        defaultBranch: 'devel'
-        openDraftPR: true
+      uses: robvanderleek/create-issue-branch@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
