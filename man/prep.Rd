@@ -5,9 +5,19 @@
 \alias{prep,Recipe-method}
 \title{Performs all the steps defined in a Recipe}
 \usage{
-prep(rec, parallel = TRUE, workers = future::availableCores(), force = FALSE)
+prep(
+  rec,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16"),
+  force = FALSE
+)
 
-\S4method{prep}{Recipe}(rec, parallel = TRUE, workers = future::availableCores(), force = FALSE)
+\S4method{prep}{Recipe}(
+  rec,
+  parallel = TRUE,
+  workers = future::availableCores(constraints = "connections-16"),
+  force = FALSE
+)
 }
 \arguments{
 \item{rec}{A \code{Recipe} object. and furrr packages.}
@@ -47,7 +57,7 @@ n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
 da_results
 
-## If you try to run prep on an object of class PrepRecipe it returns an 
+## If you try to run prep on an object of class PrepRecipe it returns an
 ## error.
 err <- testthat::expect_error(prep(da_results))
 err
