@@ -114,7 +114,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' @tests
 #' data(test_prep_rec)
 #' exprs <- test_prep_rec@steps |> purrr::map_chr(step_to_expr)
-#' expect_length(exprs, 5)
+#' expect_length(exprs, 4)
 #' expect_true(all(stringr::str_detect(exprs, "run_")))
 step_to_expr <- function(step) {
   params <-
@@ -169,9 +169,9 @@ step_to_expr <- function(step) {
 #'   test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2]
 #' )
 #' 
-#' expect_equal(nrow(res_1), 88)
-#' expect_equal(nrow(res_2), 36)
-#' expect_equal(nrow(res_3), 86)
+#' expect_equal(nrow(res_1), 52)
+#' expect_equal(nrow(res_2), 27)
+#' expect_equal(nrow(res_3), 41)
 #' expect_s3_class(res_1, "tbl_df")
 #' 
 #' @examples 
@@ -219,20 +219,19 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
-#'   c("subset_taxa__Boyoz",
-#'     "filter_taxa__Charlotte", 
-#'     "maaslin__ChaSan", 
-#'     "metagenomeseq__Zlebia", 
-#'     "deseq__Linzer_torte"    
+#'   c("subset_taxa__Bear_claw",
+#'     "filter_taxa__Spanakopita", 
+#'     "maaslin__Eccles_cake", 
+#'     "deseq__Belekoy"    
 #'    )
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "da"), 
-#'   c("maaslin__ChaSan", "metagenomeseq__Zlebia", "deseq__Linzer_torte")
+#'   c("maaslin__Eccles_cake", "deseq__Belekoy")
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "prepro"), 
-#'   c("subset_taxa__Boyoz", "filter_taxa__Charlotte")
+#'   c("subset_taxa__Bear_claw", "filter_taxa__Spanakopita")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")

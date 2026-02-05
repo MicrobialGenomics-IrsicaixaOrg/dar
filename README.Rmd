@@ -45,8 +45,8 @@ results in a fast, consistent and reproducible way.
 You can install the development version of dar from [GitHub](https://github.com/) with:
 
 ```{r eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
+# install.packages("pak")
+pak::pkg_install("MicrobialGenomics-IrsicaixaOrg/dar")
 ```
 
 ## Usage 
@@ -57,11 +57,11 @@ data("metaHIV_phy")
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
-  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
-  step_metagenomeseq(rm_zeros = 0.01) %>%
-  step_maaslin()
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
+  step_maaslin() |>
+  step_aldex()
 
 rec
 

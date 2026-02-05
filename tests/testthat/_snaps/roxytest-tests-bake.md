@@ -1,30 +1,30 @@
-# [unknown alias] @ L91
+# [unknown alias] @ L86
+
+    Code
+      testthat::expect_s3_class(cool(test), "tbl_df")
+    Message
+      i Bake for count_cutoff = 1
+      i Results from maaslin__Eccles_cake are excluded
+
+---
+
+    Code
+      testthat::expect_equal(nrow(cool(test)), 27)
+    Message
+      i Bake for count_cutoff = 1
+      i Results from maaslin__Eccles_cake are excluded
+
+---
 
     Code
       testthat::expect_s3_class(cool(test), "tbl_df")
     Message
       i Bake for count_cutoff = 2
-      i Results from maaslin__ChaSan are excluded
 
 ---
 
     Code
-      testthat::expect_equal(nrow(cool(test)), 34)
+      testthat::expect_equal(nrow(cool(test)), 41)
     Message
       i Bake for count_cutoff = 2
-      i Results from maaslin__ChaSan are excluded
-
----
-
-    Code
-      testthat::expect_s3_class(cool(test), "tbl_df")
-    Message
-      i Bake for count_cutoff = 3
-
----
-
-    Code
-      testthat::expect_equal(nrow(cool(test)), 34)
-    Message
-      i Bake for count_cutoff = 3
 

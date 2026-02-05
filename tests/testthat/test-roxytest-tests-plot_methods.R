@@ -2,33 +2,33 @@
 
 # File R/plot_methods.R: @tests
 
-test_that("[unknown alias] @ L42", {
+test_that("[unknown alias] @ L38", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(corr_heatmap(test_rec))
   expect_s3_class(corr_heatmap(test_prep_rec), "plotly")
   expect_s3_class(
-    corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1]), 
+    corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")), 
     "plotly"
   )
   expect_s3_class(corr_heatmap(test_prep_rec, type = "da"), "plotly")
 })
 
 
-test_that("[unknown alias] @ L152", {
+test_that("[unknown alias] @ L148", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(intersection_plt(test_rec))
   expect_s3_class(intersection_plt(test_prep_rec), "upset")
   expect_s3_class(
-    intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1]), 
+    intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")), 
     "upset"
   )
   expect_s3_class(intersection_plt(test_prep_rec, ordered_by = "degree"), "upset")
 })
 
 
-test_that("[unknown alias] @ L233", {
+test_that("[unknown alias] @ L229", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -41,10 +41,13 @@ test_that("[unknown alias] @ L233", {
 })
 
 
-test_that("[unknown alias] @ L373", {
+test_that("[unknown alias] @ L374", {
   data(test_rec)
   data(test_prep_rec)
   taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
+  
+  pdf(file = tempfile())
+  withr::defer(dev.off())
   
   expect_error(abundance_plt(test_rec))
   expect_s3_class(suppressMessages(
@@ -69,10 +72,12 @@ test_that("[unknown alias] @ L373", {
   expect_s3_class(suppressMessages(
     abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
   )
+  
+  teardown(dev.off())
 })
 
 
-test_that("[unknown alias] @ L680", {
+test_that("[unknown alias] @ L681", {
   data(test_rec)
   data(test_prep_rec)
   

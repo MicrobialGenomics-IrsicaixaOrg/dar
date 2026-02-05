@@ -68,7 +68,6 @@ Suggests:
     lefser,
     limma,
     maaslin3,
-    metagenomeSeq,
     microbiome,
     rmarkdown,
     roxygen2,

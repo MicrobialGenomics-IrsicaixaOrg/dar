@@ -41,8 +41,8 @@ You can install the development version of dar from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("MicrobialGenomics-IrsicaixaOrg/dar")
+# install.packages("pak")
+pak::pkg_install("MicrobialGenomics-IrsicaixaOrg/dar")
 ```
 
 ## Usage
@@ -57,11 +57,11 @@ data("metaHIV_phy")
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") %>%
-  step_subset_taxa(expr = 'Kingdom %in% c("Bacteria", "Archaea")') %>%
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") %>%
-  step_metagenomeseq(rm_zeros = 0.01) %>%
-  step_maaslin()
+  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
+  step_maaslin() |>
+  step_aldex()
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -73,13 +73,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Suncake 
-#>      ◉ step_filter_taxa() id = filter_taxa__Hot_water_crust_pastry 
+#>      ◉ step_subset_taxa() id = subset_taxa__Komaj_sehen 
+#>      ◉ step_filter_taxa() id = filter_taxa__Zlebia 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Crocetta_of_Caltanissetta 
-#>      ◉ step_maaslin() id = maaslin__Tortita_negra
+#>      ◉ step_maaslin() id = maaslin__Mille_feuille 
+#>      ◉ step_aldex() id = aldex__Shakarbura
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
@@ -93,10 +93,10 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
-#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
+#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
+#>      ✔ aldex__Shakarbura diff_taxa = 96 
 #> 
-#>      ℹ 124 taxa are present in all tested methods
+#>      ℹ 35 taxa are present in all tested methods
 
 ## Consensus strategy
 n_methods <- 2
@@ -111,32 +111,32 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 
-#>      ✔ maaslin__Tortita_negra diff_taxa = 146 
+#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
+#>      ✔ aldex__Shakarbura diff_taxa = 96 
 #> 
-#>      ℹ 124 taxa are present in all tested methods 
+#>      ℹ 35 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Kürtőskalács
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Birnbrot
 
 ## Results
 cool(da_results)
 #> ℹ Bake for count_cutoff = 2
-#> # A tibble: 124 × 2
-#>    taxa_id taxa                   
-#>    <chr>   <chr>                  
-#>  1 Otu_63  Bacteroides_plebeius   
-#>  2 Otu_216 Clostridium_sp_CAG_632 
-#>  3 Otu_441 Brachyspira_sp_CAG_700 
-#>  4 Otu_108 Prevotella_sp_CAG_520  
-#>  5 Otu_257 Butyrivibrio_sp_CAG_318
-#>  6 Otu_104 Prevotella_sp_CAG_1092 
-#>  7 Otu_69  Bacteroides_sp_CAG_530 
-#>  8 Otu_102 Prevotella_sp_AM42_24  
-#>  9 Otu_159 Lactobacillus_ruminis  
-#> 10 Otu_117 Alistipes_inops        
-#> # ℹ 114 more rows
+#> # A tibble: 35 × 2
+#>    taxa_id taxa                        
+#>    <chr>   <chr>                       
+#>  1 Otu_78  Bacteroides_uniformis       
+#>  2 Otu_88  Odoribacter_splanchnicus    
+#>  3 Otu_119 Alistipes_putredinis        
+#>  4 Otu_129 Parabacteroides_merdae      
+#>  5 Otu_125 Parabacteroides_distasonis  
+#>  6 Otu_82  Barnesiella_intestinihominis
+#>  7 Otu_96  Prevotella_copri            
+#>  8 Otu_51  Bacteroides_dorei           
+#>  9 Otu_332 Catenibacterium_mitsuokai   
+#> 10 Otu_62  Bacteroides_ovatus          
+#> # ℹ 25 more rows
 ```
 
 ## Contributing
