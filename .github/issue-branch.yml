@@ -1,5 +1,5 @@
 defaultBranch: 'devel'
-branchName: tiny
+branchName: short
 openDraftPR: true
 autoLinkIssue: true
 copyIssueDescriptionToPR: true
