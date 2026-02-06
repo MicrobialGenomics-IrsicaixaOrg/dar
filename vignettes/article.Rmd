@@ -124,25 +124,22 @@ rec
 
 Once data is preprocessed and cleaned, the next step is to add the da steps. 
 The `dar` package incorporates multiple methods to analyze the data, including: 
-ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin2, MetagenomeSeq, and Wilcox. 
+ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin3 and Wilcox. 
 These methods provide a range of options for uncovering potential microbial 
 biomarkers associated with the variable of interest. To ensure consistency 
 across methods, we decided not to use default parameters, but to set the 
-`min_prevalence` parameter to 0 for MAaslin2, and the `rm_zeros` parameter to 
-0.01 for MetagenomeSeq, since it was observed that the pct_all_zeros value was 
-not equal to 0 in some levels of the categorical variable in the results of 
-`phy_qc()`. This approach ensured that the analysis was consistent across all 
+`min_prevalence` parameter to 0 for MAaslin3. This approach ensured that the analysis was consistent across all 
 methods and that the results were interpretable.
 
 Note: to reduce computation time, in this example we will only use the 
-metagenomeSeq and MAaslin2 methods, that are the fastest ones. However, we 
+DESeq2 and MAaslin3 methods, that are the fastest ones. However, we 
 recommend using all the methods available in the package to ensure a more 
 robust analysis.
 
 ```{r}
 ## DA steps definition
 rec <- rec |> 
-  step_metagenomeseq(rm_zeros = 0.01) |> 
+  step_deseq() |> 
   step_maaslin(min_prevalence = 0) 
 
 rec

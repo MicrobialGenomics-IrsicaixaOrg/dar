@@ -34,10 +34,6 @@ data(test_prep_rec)
 ## Running the function returns a UpSet plot ordered by frequency.
 corr_heatmap(test_prep_rec)
 
-## If you want to exclude a method for the plot, you can remove it with the
-## step parameter. In the following example we eliminate from the graph the
-## results of maaslin
-corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
 ## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
 ## Recipe the output is an error.

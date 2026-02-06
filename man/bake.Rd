@@ -76,7 +76,7 @@ res <- bake(rec, exclude = steps_ids(rec, "da")[1])
 cool(res)
 
 ## Finally, we can use the `weights` parameter to weigh each method.
-weights <- c(2, 1, 1)
+weights <- c(2, 1)
 names(weights) <- steps_ids(rec, "da")
 res <- bake(rec, weights = weights)
 cool(res)

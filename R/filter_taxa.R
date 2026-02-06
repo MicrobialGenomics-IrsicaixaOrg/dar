@@ -22,26 +22,6 @@
 #' @export
 #' @autoglobal
 #' @tests 
-#' data(metaHIV_phy)
-#' rec_1 <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-#'   step_metagenomeseq(rm_zeros = 0)
-#'   
-#' rec_2 <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-#'   step_metagenomeseq(rm_zeros = 0.01)
-#'   
-#' rec_3 <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-#'   step_metagenomeseq(rm_zeros = NULL)
-#'   
-#' expect_error(prep(rec_1))
-#' expect_s4_class(prep(rec_2), "PrepRecipe")
-#' expect_s4_class(prep(rec_3), "PrepRecipe")
-#'
 #' data(test_prep_rec)
 #' expect_error(step_filter_taxa(test_prep_rec))
 #' @examples
@@ -91,49 +71,9 @@ required_pkgs_filter_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 #' @keywords internal
 #' @autoglobal
 run_filter_taxa <- function(rec, .f) {
-  
-  rm_zeros <- NULL
-  if (any(stringr::str_detect(steps_ids(rec), "metagenomeseq"))) {
-    rm_zeros <- rec@steps %>%
-      purrr::pluck(
-        which(stringr::str_detect(steps_ids(rec), "metagenomeseq")),
-        "rm_zeros", 
-        .default = NULL
-      )
-  }
-  
-  is_metagenomeseq <- TRUE
-  if (is.null(rm_zeros)) { 
-    rm_zeros <- 0 
-    is_metagenomeseq <- FALSE
-  }
-  
   rec@phyloseq <- 
     phyloseq::filter_taxa(get_phy(rec), eval(parse(text = .f)), prune = TRUE)
-  
-  val <- 
-    zero_otu(rec) %>% 
-    dplyr::filter(pct == 0) %>% 
-    nrow()
-  
-  if (val > 0 & rm_zeros == 0 & is_metagenomeseq) {
-    rlang::abort(c(
-      "!" = glue::glue(
-        "{crayon::bgMagenta('step_filter_taxa()')} returns a phyloseq ", 
-        "object that contains taxa with values of 0 in all samples of a ", 
-        "level within the variable of interest. This can cause errors during ",
-        "the execution of metagenomeseq method!"
-      ),
-      "*" = "Please create a new Recipe using a stricter filter expression.", 
-      "*" = glue::glue(
-        "Alternatively, you can increase the rm_zeros value ", 
-        "{crayon::bgMagenta('step_metagenomeseq(rm_zeros = 0.01)')}. This ", 
-        "value indicates the minimum proportion of samples of the same level ", 
-        "with more than 0 counts."
-      )
-    ), use_cli_format = TRUE)
-  }
-  
+ 
   rec
 }
 

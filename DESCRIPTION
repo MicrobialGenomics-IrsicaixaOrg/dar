@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.5.5
+Version: 1.5.6
 Date: 2025-10-14
 Authors@R: 
     c(person(given = "Francesc",
@@ -68,7 +68,6 @@ Suggests:
     lefser,
     limma,
     maaslin3,
-    metagenomeSeq,
     microbiome,
     rmarkdown,
     roxygen2,
@@ -78,7 +77,8 @@ Suggests:
     SummarizedExperiment,
     TreeSummarizedExperiment,
     testthat (>= 3.0.0),
-    GenomeInfoDb
+    GenomeInfoDb,
+    withr
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.5.0)

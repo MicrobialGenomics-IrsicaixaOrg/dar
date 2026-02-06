@@ -9,7 +9,6 @@ utils::globalVariables(c(
   # <run_bake>
   # <run_deseq>
   # <prepro_lefse>
-  # <run_metagenomeseq>
   # <step_to_expr>
   # <find_intersections>
   # <import_steps>
@@ -24,8 +23,6 @@ utils::globalVariables(c(
   ".",
   # <run_lefse>
   "adjp",
-  # <run_metagenomeseq>
-  "adjPvalues",
   # <run_maaslin>
   "coef",
   # <mutual_plt>
@@ -70,10 +67,8 @@ utils::globalVariables(c(
   "otu_id",
   # <corncob_stats_tbl>
   # <run_deseq>
-  # <run_metagenomeseq>
   # <run_wilcox>
   "padj",
-  # <run_filter_taxa>
   # <zero_otu>
   # <zero_otu>
   "pct",
@@ -84,8 +79,6 @@ utils::globalVariables(c(
   # <run_lefse>
   # <kruskal_test>
   "pvalue",
-  # <run_metagenomeseq>
-  "pvalues",
   # <run_maaslin>
   "qval",
   # <run_maaslin>
@@ -94,7 +87,6 @@ utils::globalVariables(c(
   "RTC",
   # <sample_data>
   # <run_corncob>
-  # <run_metagenomeseq>
   # <.count_summary>
   # <.abundance_heatmap>
   # <run_wilcox>
@@ -121,7 +113,6 @@ utils::globalVariables(c(
   # <zero_otu>
   # <run_lefse>
   # <run_maaslin>
-  # <run_metagenomeseq>
   # <find_intersections>
   # <.zero_groups>
   # <.abundance_boxplot>

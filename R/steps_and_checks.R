@@ -15,14 +15,14 @@
 #' @tests
 #' data(metaHIV_phy)
 #' recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'     step_metagenomeseq(id = "panallet") |>
-#'     step_metagenomeseq() |> 
+#'     step_maaslin(id = "panallet") |>
+#'     step_maaslin() |> 
 #'     expect_snapshot()
 #'     
 #' expect_s4_class(
 #'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'     step_metagenomeseq() |>
-#'     step_metagenomeseq(),
+#'     step_maaslin() |>
+#'     step_maaslin(),
 #'   "Recipe"
 #' ) |> expect_snapshot()
 #' 

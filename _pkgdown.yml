@@ -27,7 +27,6 @@ reference:
   - step_deseq
   - step_lefse
   - step_maaslin
-  - step_metagenomeseq
   - step_wilcox 
 - title: "Exploration"
   contents:

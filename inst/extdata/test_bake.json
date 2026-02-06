@@ -1,11 +1,11 @@
 {
    "tax_level": [c("Kingdom")],
    "taxa": [c("Bacteria", "Archaea")],
-   "id": [c("subset_taxa__Boyoz")],
+   "id": [c("subset_taxa__Bear_claw")],
 }
 {
    ".f": [c("function(x) sum(x > 0) >= (0.3 * length(x))")],
-   "id": [c("filter_taxa__Charlotte")],
+   "id": [c("filter_taxa__Spanakopita")],
 }
 {
    "min_abundance": 0,
@@ -20,17 +20,7 @@
    "reference": ,
    "median_comparison_abundance": TRUE,
    "rarefy": FALSE,
-   "id": [c("maaslin__ChaSan")],
-}
-{
-   "zeroMod": ,
-   "useCSSoffset": TRUE,
-   "useMixedModel": FALSE,
-   "max_significance": 0.05,
-   "log2FC": 0,
-   "rarefy": FALSE,
-   "rm_zeros": 0.01,
-   "id": [c("metagenomeseq__Zlebia")],
+   "id": [c("maaslin__Eccles_cake")],
 }
 {
    "test": [c("Wald")],
@@ -40,11 +30,11 @@
    "max_significance": 0.05,
    "log2FC": 0,
    "rarefy": FALSE,
-   "id": [c("deseq__Linzer_torte")],
+   "id": [c("deseq__Belekoy")],
 }
 {
    "count_cutoff": ,
    "weights": ,
    "exclude": ,
-   "id": [c("bake__Trdelník")],
+   "id": [c("bake__Makmur")],
 }

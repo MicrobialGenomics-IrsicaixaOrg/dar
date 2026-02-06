@@ -19,7 +19,7 @@
 #' expect_error(corr_heatmap(test_rec))
 #' expect_s3_class(corr_heatmap(test_prep_rec), "plotly")
 #' expect_s3_class(
-#'   corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1]), 
+#'   corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")), 
 #'   "plotly"
 #' )
 #' expect_s3_class(corr_heatmap(test_prep_rec, type = "da"), "plotly")
@@ -29,10 +29,6 @@
 #' ## Running the function returns a UpSet plot ordered by frequency.
 #' corr_heatmap(test_prep_rec)
 #'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
-#' corr_heatmap(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
 #' ## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
 #' ## Recipe the output is an error.
@@ -126,7 +122,7 @@ methods::setMethod(
 #' expect_error(intersection_plt(test_rec))
 #' expect_s3_class(intersection_plt(test_prep_rec), "upset")
 #' expect_s3_class(
-#'   intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1]), 
+#'   intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")), 
 #'   "upset"
 #' )
 #' expect_s3_class(intersection_plt(test_prep_rec, ordered_by = "degree"), "upset")
@@ -138,11 +134,6 @@ methods::setMethod(
 #'
 #' ## Alternatively, you can order the plot by degree
 #' intersection_plt(test_prep_rec, ordered_by = "degree")
-#'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
-#' intersection_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 #'
 #' ## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
 #' ## Recipe the output is an error.
@@ -325,6 +316,9 @@ methods::setMethod(
 #' data(test_prep_rec)
 #' taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
 #' 
+#' pdf(file = tempfile())
+#' withr::defer(dev.off())
+#' 
 #' expect_error(abundance_plt(test_rec))
 #' expect_s3_class(suppressMessages(
 #'   abundance_plt(test_prep_rec)), "ggplot"
@@ -348,6 +342,8 @@ methods::setMethod(
 #' expect_s3_class(suppressMessages(
 #'   abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
 #' )
+#' 
+#' teardown(dev.off())
 #' @examples
 #' data(test_prep_rec)
 #'

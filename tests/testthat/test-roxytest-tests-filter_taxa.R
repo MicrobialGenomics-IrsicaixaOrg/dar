@@ -2,27 +2,7 @@
 
 # File R/filter_taxa.R: @tests
 
-test_that("[unknown alias] @ L59", {
-  data(metaHIV_phy)
-  rec_1 <- 
-    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-    step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-    step_metagenomeseq(rm_zeros = 0)
-    
-  rec_2 <- 
-    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-    step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-    step_metagenomeseq(rm_zeros = 0.01)
-    
-  rec_3 <- 
-    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-    step_filter_taxa(.f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
-    step_metagenomeseq(rm_zeros = NULL)
-    
-  expect_error(prep(rec_1))
-  expect_s4_class(prep(rec_2), "PrepRecipe")
-  expect_s4_class(prep(rec_3), "PrepRecipe")
-  
+test_that("[unknown alias] @ L39", {
   data(test_prep_rec)
   expect_error(step_filter_taxa(test_prep_rec))
 })

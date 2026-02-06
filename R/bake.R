@@ -35,14 +35,14 @@
 #'   testthat::expect_snapshot()
 #'   
 #' nrow(cool(test)) |>
-#'  testthat::expect_equal(34) |>
+#'  testthat::expect_equal(27) |>
 #'  testthat::expect_snapshot()
 #' 
 #' test <- bake(test_prep_rec, exclude = "force_error")
 #' testthat::expect_error(cool(test))
 #' 
 #' ## Test weights parameter
-#' weights <- c(2, 1, 3)
+#' weights <- c(2, 1)
 #' names(weights) <- steps_ids(test_prep_rec, "da")
 #' test <- bake(test_prep_rec, weights = weights)
 #' cool(test) |> 
@@ -50,13 +50,8 @@
 #'   testthat::expect_snapshot()
 #' 
 #' nrow(cool(test)) |> 
-#'   testthat::expect_equal(34) |> 
+#'   testthat::expect_equal(41) |> 
 #'   testthat::expect_snapshot()
-#' 
-#' weights <- c(2, 1)
-#' names(weights) <- steps_ids(test_prep_rec, "da")[1:2]
-#' test <- bake(test_prep_rec, weights = weights)
-#' expect_error(cool(test))
 #' 
 #' @examples 
 #' data(test_prep_rec)
@@ -84,7 +79,7 @@
 #' cool(res)
 #' 
 #' ## Finally, we can use the `weights` parameter to weigh each method.
-#' weights <- c(2, 1, 1)
+#' weights <- c(2, 1)
 #' names(weights) <- steps_ids(rec, "da")
 #' res <- bake(rec, weights = weights)
 #' cool(res)

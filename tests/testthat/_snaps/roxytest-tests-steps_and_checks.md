@@ -1,11 +1,10 @@
 # Function step() @ L36
 
     Code
-      step_metagenomeseq(step_metagenomeseq(recipe(metaHIV_phy, "RiskGroup2",
-        "Species"), id = "panallet"))
+      step_maaslin(step_maaslin(recipe(metaHIV_phy, "RiskGroup2", "Species"), id = "panallet"))
     Message
       ! This step is already defined with the same parameters and will be skipped: 
-      rec %>% step_metagenomeseq(zeroMod = NULL, useCSSoffset = TRUE, useMixedModel = FALSE, max_significance = 0.05, log2FC = 0, rarefy = FALSE, rm_zeros = 0)
+      rec %>% step_maaslin(min_abundance = 0, min_prevalence = 0.1, min_variance = 0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1, random_effects = NULL, correction = c('BH'), standardize = TRUE, reference = NULL, median_comparison_abundance = TRUE, rarefy = FALSE)
     Output
       -- DAR Recipe ------------------------------------------------------------------
       Inputs:
@@ -19,16 +18,16 @@
       
       DA steps:
       
-           (*) step_metagenomeseq() id = panallet 
+           (*) step_maaslin() id = panallet 
 
 ---
 
     Code
-      expect_s4_class(step_metagenomeseq(step_metagenomeseq(recipe(metaHIV_phy,
-        "RiskGroup2", "Species"))), "Recipe")
+      expect_s4_class(step_maaslin(step_maaslin(recipe(metaHIV_phy, "RiskGroup2",
+        "Species"))), "Recipe")
     Message
       ! This step is already defined with the same parameters and will be skipped: 
-      rec %>% step_metagenomeseq(zeroMod = NULL, useCSSoffset = TRUE, useMixedModel = FALSE, max_significance = 0.05, log2FC = 0, rarefy = FALSE, rm_zeros = 0)
+      rec %>% step_maaslin(min_abundance = 0, min_prevalence = 0.1, min_variance = 0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1, random_effects = NULL, correction = c('BH'), standardize = TRUE, reference = NULL, median_comparison_abundance = TRUE, rarefy = FALSE)
 
 ---
 

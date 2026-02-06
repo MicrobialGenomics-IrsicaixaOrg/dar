@@ -1,3 +1,7 @@
+# dar 1.5.6
+
+* CHANGED: Mark step_metagenomeseq as defunct and remove its implementation and related references.
+
 # dar 1.5.5
 
 * CHANGED: Migration from Maaslin2 to maaslin3
