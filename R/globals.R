@@ -105,7 +105,6 @@ utils::globalVariables(c(
   "taxa",
   # <tax_table>
   # <intersection_df>
-  # <run_aldex>
   # <run_bake>
   # <corncob_stats_tbl>
   # <zero_otu>
