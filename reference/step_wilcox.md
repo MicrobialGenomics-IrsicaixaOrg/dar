@@ -86,8 +86,7 @@ Other Diff taxa steps:
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
-[`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
-[`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.md)
+[`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
 
 ## Examples
 
@@ -110,8 +109,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Jalebi 
-#>      ◉ step_filter_taxa() id = filter_taxa__Roti_tissue 
+#>      ◉ step_subset_taxa() id = subset_taxa__Kifli 
+#>      ◉ step_filter_taxa() id = filter_taxa__Marillenknödel 
 #> 
 #> DA steps:
 #> 
@@ -131,7 +130,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ wilcox__Aloo_pie diff_taxa = 5 
+#>      ✔ wilcox__Jalebi diff_taxa = 5 
 #> 
 #>      ℹ 5 taxa are present in all tested methods 
 #> 
@@ -140,7 +139,7 @@ rec
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   step_wilcox(rarefy = TRUE)
-#> ! Run wilcox without rarefaction is not recommended (id = wilcox__Pan_dulce)
+#> ! Run wilcox without rarefaction is not recommended (id = wilcox__Nazook)
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -155,5 +154,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_wilcox() id = wilcox__Pan_dulce 
+#>      ◉ step_wilcox() id = wilcox__Nazook 
 ```

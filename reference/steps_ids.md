@@ -31,15 +31,15 @@ data(test_rec)
 ## We can extract the step identifiers from a Recipe with `step_ids`
 ids <- steps_ids(test_rec)
 ids
-#> [1] "subset_taxa__Boyoz"     "filter_taxa__Charlotte" "maaslin__ChaSan"       
-#> [4] "metagenomeseq__Zlebia"  "deseq__Linzer_torte"   
+#> [1] "subset_taxa__Bear_claw"   "filter_taxa__Spanakopita"
+#> [3] "maaslin__Eccles_cake"     "deseq__Belekoy"          
 
 ## With the `type` parameter, extract the prepro and da steps separately.
 da_ids <- steps_ids(test_rec, type = "da")
 da_ids
-#> [1] "maaslin__ChaSan"       "metagenomeseq__Zlebia" "deseq__Linzer_torte"  
+#> [1] "maaslin__Eccles_cake" "deseq__Belekoy"      
 
 prepro_ids <- steps_ids(test_rec, type = "prepro")
 prepro_ids
-#> [1] "subset_taxa__Boyoz"     "filter_taxa__Charlotte"
+#> [1] "subset_taxa__Bear_claw"   "filter_taxa__Spanakopita"
 ```

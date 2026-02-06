@@ -90,7 +90,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Curry_puff 
+#>      ◉ step_subset_taxa() id = subset_taxa__Kroštule 
 #> 
 #> DA steps:
 #> 

@@ -9,7 +9,7 @@ to prepare it for data analysis."><meta property="og:image" content="https://mic
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,11 +107,12 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span>  <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.3 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="step_deseq.html">step_deseq</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Prep recipe</span></span></span>
 <span class="r-in"><span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Estimated rdf &lt; 1.0; not estimating variance</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Consensus strategy</span></span></span>
 <span class="r-in"><span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>

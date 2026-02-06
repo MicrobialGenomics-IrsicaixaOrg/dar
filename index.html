@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,8 +82,8 @@
 </h2>
 <p>You can install the development version of dar from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"MicrobialGenomics-IrsicaixaOrg/dar"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pkg_install</span><span class="op">(</span><span class="st">"MicrobialGenomics-IrsicaixaOrg/dar"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -98,11 +98,11 @@
 <span></span>
 <span><span class="co">## Define recipe</span></span>
 <span><span class="va">rec</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>expr <span class="op">=</span> <span class="st">'Kingdom %in% c("Bacteria", "Archaea")'</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_metagenomeseq.html">step_metagenomeseq</a></span><span class="op">(</span>rm_zeros <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op"><a href="reference/grapes-greater-than-grapes.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/step_aldex.html">step_aldex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── DAR Recipe ──────────────────────────────────────────────────────────────────</span></span>
@@ -114,13 +114,13 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Suncake </span></span>
-<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Hot_water_crust_pastry </span></span>
+<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Komaj_sehen </span></span>
+<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Zlebia </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_metagenomeseq() id = metagenomeseq__Crocetta_of_Caltanissetta </span></span>
-<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Tortita_negra</span></span>
+<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Mille_feuille </span></span>
+<span><span class="co">#&gt;      ◉ step_aldex() id = aldex__Shakarbura</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -134,10 +134,10 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Tortita_negra diff_taxa = 146 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Mille_feuille diff_taxa = 52 </span></span>
+<span><span class="co">#&gt;      ✔ aldex__Shakarbura diff_taxa = 96 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods</span></span>
+<span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods</span></span>
 <span></span>
 <span><span class="co">## Consensus strategy</span></span>
 <span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -152,32 +152,32 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ metagenomeseq__Crocetta_of_Caltanissetta diff_taxa = 236 </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Tortita_negra diff_taxa = 146 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Mille_feuille diff_taxa = 52 </span></span>
+<span><span class="co">#&gt;      ✔ aldex__Shakarbura diff_taxa = 96 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 124 taxa are present in all tested methods </span></span>
+<span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Bakes:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Kürtőskalács</span></span>
+<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Birnbrot</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
 <span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ Bake for count_cutoff = 2</span></span>
-<span><span class="co">#&gt; # A tibble: 124 × 2</span></span>
-<span><span class="co">#&gt;    taxa_id taxa                   </span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                  </span></span>
-<span><span class="co">#&gt;  1 Otu_63  Bacteroides_plebeius   </span></span>
-<span><span class="co">#&gt;  2 Otu_216 Clostridium_sp_CAG_632 </span></span>
-<span><span class="co">#&gt;  3 Otu_441 Brachyspira_sp_CAG_700 </span></span>
-<span><span class="co">#&gt;  4 Otu_108 Prevotella_sp_CAG_520  </span></span>
-<span><span class="co">#&gt;  5 Otu_257 Butyrivibrio_sp_CAG_318</span></span>
-<span><span class="co">#&gt;  6 Otu_104 Prevotella_sp_CAG_1092 </span></span>
-<span><span class="co">#&gt;  7 Otu_69  Bacteroides_sp_CAG_530 </span></span>
-<span><span class="co">#&gt;  8 Otu_102 Prevotella_sp_AM42_24  </span></span>
-<span><span class="co">#&gt;  9 Otu_159 Lactobacillus_ruminis  </span></span>
-<span><span class="co">#&gt; 10 Otu_117 Alistipes_inops        </span></span>
-<span><span class="co">#&gt; # ℹ 114 more rows</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 35 × 2</span></span>
+<span><span class="co">#&gt;    taxa_id taxa                        </span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                       </span></span>
+<span><span class="co">#&gt;  1 Otu_78  Bacteroides_uniformis       </span></span>
+<span><span class="co">#&gt;  2 Otu_88  Odoribacter_splanchnicus    </span></span>
+<span><span class="co">#&gt;  3 Otu_119 Alistipes_putredinis        </span></span>
+<span><span class="co">#&gt;  4 Otu_129 Parabacteroides_merdae      </span></span>
+<span><span class="co">#&gt;  5 Otu_125 Parabacteroides_distasonis  </span></span>
+<span><span class="co">#&gt;  6 Otu_82  Barnesiella_intestinihominis</span></span>
+<span><span class="co">#&gt;  7 Otu_96  Prevotella_copri            </span></span>
+<span><span class="co">#&gt;  8 Otu_51  Bacteroides_dorei           </span></span>
+<span><span class="co">#&gt;  9 Otu_332 Catenibacterium_mitsuokai   </span></span>
+<span><span class="co">#&gt; 10 Otu_62  Bacteroides_ovatus          </span></span>
+<span><span class="co">#&gt; # ℹ 25 more rows</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>

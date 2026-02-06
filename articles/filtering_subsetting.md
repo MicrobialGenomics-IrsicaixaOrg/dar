@@ -132,7 +132,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-02-05
+#>  date     2026-02-06
 #>  pandoc   3.8.2.1 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.7.32 @ /usr/local/bin/quarto
 #> 
@@ -152,7 +152,7 @@ devtools::session_info()
 #>  cluster        2.1.8.1  2025-03-12 [3] CRAN (R 4.5.2)
 #>  codetools      0.2-20   2024-03-31 [3] CRAN (R 4.5.2)
 #>  crayon         1.5.3    2024-06-20 [2] RSPM (R 4.5.0)
-#>  dar          * 1.5.5    2026-02-05 [1] Bioconductor
+#>  dar          * 1.5.6    2026-02-06 [1] Bioconductor
 #>  data.table     1.18.2.1 2026-01-27 [1] RSPM (R 4.5.0)
 #>  dendextend     1.19.1   2025-07-15 [1] RSPM (R 4.5.0)
 #>  desc           1.4.3    2023-12-10 [2] RSPM (R 4.5.0)
@@ -241,7 +241,6 @@ devtools::session_info()
 #>  viridis        0.6.5    2024-01-29 [1] RSPM (R 4.5.0)
 #>  viridisLite    0.4.3    2026-02-04 [1] RSPM (R 4.5.0)
 #>  webshot        0.5.5    2023-06-26 [1] RSPM (R 4.5.0)
-#>  withr          3.0.2    2024-10-28 [2] RSPM (R 4.5.0)
 #>  xfun           0.56     2026-01-18 [2] RSPM (R 4.5.0)
 #>  XVector        0.50.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
 #>  yaml           2.3.12   2025-12-10 [2] RSPM (R 4.5.0)

@@ -124,14 +124,13 @@ rec_obj
 
 Now that we have defined the preprocessing of the input data for all the
 da methods that will be used, we need to define them. For this
-introduction we will use **metagenomeSeq** and **maaslin2** methods with
-default parameters (those defined by the authors of each method).
+introduction we will use **maaslin2** method with default parameters
+(those defined by the authors of each method).
 
 ``` r
 
 rec_obj <- rec_obj |>
   step_deseq() |>
-  step_metagenomeseq(rm_zeros = 0.01) |>
   step_maaslin()
 
 rec_obj
@@ -150,8 +149,7 @@ rec_obj
 #> DA steps:
 #> 
 #>      ◉ step_deseq() id = deseq__Spina_santa 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Dutch_Baby_Pancake 
-#>      ◉ step_maaslin() id = maaslin__Knieküchle
+#>      ◉ step_maaslin() id = maaslin__Dutch_Baby_Pancake
 ```
 
 The `dar` package includes more da steps than those defined above. Below
@@ -190,8 +188,7 @@ da_results
 #> Results:
 #> 
 #>      ✔ deseq__Spina_santa diff_taxa = 166 
-#>      ✔ metagenomeseq__Dutch_Baby_Pancake diff_taxa = 236 
-#>      ✔ maaslin__Knieküchle diff_taxa = 53 
+#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 51 
 #> 
 #>      ℹ 27 taxa are present in all tested methods
 ```
@@ -253,7 +250,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-02-05
+#>  date     2026-02-06
 #>  pandoc   3.8.2.1 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.7.32 @ /usr/local/bin/quarto
 #> 
@@ -274,7 +271,7 @@ devtools::session_info()
 #>  cluster        2.1.8.1  2025-03-12 [3] CRAN (R 4.5.2)
 #>  codetools      0.2-20   2024-03-31 [3] CRAN (R 4.5.2)
 #>  crayon         1.5.3    2024-06-20 [2] RSPM (R 4.5.0)
-#>  dar          * 1.5.5    2026-02-05 [1] Bioconductor
+#>  dar          * 1.5.6    2026-02-06 [1] Bioconductor
 #>  data.table     1.18.2.1 2026-01-27 [1] RSPM (R 4.5.0)
 #>  dendextend     1.19.1   2025-07-15 [1] RSPM (R 4.5.0)
 #>  desc           1.4.3    2023-12-10 [2] RSPM (R 4.5.0)

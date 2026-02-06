@@ -66,14 +66,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Boyoz 
-#>      ◉ step_filter_taxa() id = filter_taxa__Charlotte 
+#>      ◉ step_subset_taxa() id = subset_taxa__Bear_claw 
+#>      ◉ step_filter_taxa() id = filter_taxa__Spanakopita 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__ChaSan 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Zlebia 
-#>      ◉ step_deseq() id = deseq__Linzer_torte 
+#>      ◉ step_maaslin() id = maaslin__Eccles_cake 
+#>      ◉ step_deseq() id = deseq__Belekoy 
 
 ## If the json file contains 'bake', the Recipe is automatically prepared.
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
@@ -93,18 +92,17 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__ChaSan diff_taxa = 41 
-#>      ✔ metagenomeseq__Zlebia diff_taxa = 69 
-#>      ✔ deseq__Linzer_torte diff_taxa = 53 
+#>      ✔ maaslin__Eccles_cake diff_taxa = 41 
+#>      ✔ deseq__Belekoy diff_taxa = 53 
 #> 
-#>      ℹ 26 taxa are present in all tested methods 
+#>      ℹ 27 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Trdelník 
+#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Makmur 
 cool(rec)
-#> ℹ Bake for count_cutoff = 3
-#> # A tibble: 26 × 2
+#> ℹ Bake for count_cutoff = 2
+#> # A tibble: 27 × 2
 #>    taxa_id taxa                        
 #>    <chr>   <chr>                       
 #>  1 Otu_78  Bacteroides_uniformis       
@@ -117,5 +115,5 @@ cool(rec)
 #>  8 Otu_51  Bacteroides_dorei           
 #>  9 Otu_52  Bacteroides_eggerthii       
 #> 10 Otu_332 Catenibacterium_mitsuokai   
-#> # ℹ 16 more rows
+#> # ℹ 17 more rows
 ```

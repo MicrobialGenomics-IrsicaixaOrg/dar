@@ -44,8 +44,6 @@
   : lefse analysis
 - [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
   : MaAsLin3 analysis
-- [`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.md)
-  : MetagenomeSeq analysis
 - [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
   : Wilcox analysis
 

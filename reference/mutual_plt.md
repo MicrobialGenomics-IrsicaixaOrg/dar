@@ -72,7 +72,7 @@ data(test_prep_rec)
 
 ## Running the function returns a tile plot,
 mutual_plt(test_prep_rec)
-#> ℹ count_cutoff set to 2
+#> ℹ count_cutoff set to 1
 #> ! Taxa present in selected methods are greater than the cutoff top_n = 20
 #> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
 
@@ -90,7 +90,7 @@ mutual_plt(
 
 ## A single comparisons can be plotted through the comparison parameter.
 mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
-#> ℹ count_cutoff set to 2
+#> ℹ count_cutoff set to 1
 #> ! Taxa present in selected methods are greater than the cutoff top_n = 20
 #> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
 

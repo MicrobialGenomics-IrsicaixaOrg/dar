@@ -42,18 +42,16 @@ data(test_prep_rec)
 ## Running the function returns a UpSet plot ordered by frequency.
 df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
 head(df)
-#>                       maaslin__ChaSan metagenomeseq__Zlebia deseq__Linzer_torte
-#> maaslin__ChaSan             1.0000000             0.4257426           0.4158416
-#> metagenomeseq__Zlebia       0.4257426             1.0000000           0.8712871
-#> deseq__Linzer_torte         0.4158416             0.8712871           1.0000000
+#>                      maaslin__Eccles_cake deseq__Belekoy
+#> maaslin__Eccles_cake            1.0000000      0.6435644
+#> deseq__Belekoy                  0.6435644      1.0000000
 
 ## If you want to exclude a method for the plot, you can remove it with the
 ## step parameter. In the following example we eliminate from the graph the
 ## results of maaslin
 overlap_df(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#>                       metagenomeseq__Zlebia deseq__Linzer_torte
-#> metagenomeseq__Zlebia             1.0000000           0.8712871
-#> deseq__Linzer_torte               0.8712871           1.0000000
+#>                deseq__Belekoy
+#> deseq__Belekoy              1
 
 ## overlap_df function needs a prep-Recipe. If you pass a a non-prep
 ## Recipe the output is an error.

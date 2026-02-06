@@ -70,8 +70,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Zeeuwse_bolus 
-#>      ◉ step_filter_taxa() id = filter_taxa__Kifli 
+#>      ◉ step_subset_taxa() id = subset_taxa__Yurla 
+#>      ◉ step_filter_taxa() id = filter_taxa__Pain_au_chocolat 
 #> 
 #> DA steps:
 #> 
@@ -89,9 +89,9 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Zeeuwse_bolus 
-#>      ◉ step_filter_taxa() id = filter_taxa__Kifli 
-#>      ◉ step_rarefaction() id = rarefaction__Marillenknödel 
+#>      ◉ step_subset_taxa() id = subset_taxa__Yurla 
+#>      ◉ step_filter_taxa() id = filter_taxa__Pain_au_chocolat 
+#>      ◉ step_rarefaction() id = rarefaction__Bakpia_Pathok 
 #> 
 #> DA steps:
 #> 

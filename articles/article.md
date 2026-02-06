@@ -139,28 +139,24 @@ rec
 
 Once data is preprocessed and cleaned, the next step is to add the da
 steps. The `dar` package incorporates multiple methods to analyze the
-data, including: ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin2,
-MetagenomeSeq, and Wilcox. These methods provide a range of options for
-uncovering potential microbial biomarkers associated with the variable
-of interest. To ensure consistency across methods, we decided not to use
-default parameters, but to set the `min_prevalence` parameter to 0 for
-MAaslin2, and the `rm_zeros` parameter to 0.01 for MetagenomeSeq, since
-it was observed that the pct_all_zeros value was not equal to 0 in some
-levels of the categorical variable in the results of
-[`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md).
+data, including: ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin3 and
+Wilcox. These methods provide a range of options for uncovering
+potential microbial biomarkers associated with the variable of interest.
+To ensure consistency across methods, we decided not to use default
+parameters, but to set the `min_prevalence` parameter to 0 for MAaslin3.
 This approach ensured that the analysis was consistent across all
 methods and that the results were interpretable.
 
 Note: to reduce computation time, in this example we will only use the
-metagenomeSeq and MAaslin2 methods, that are the fastest ones. However,
-we recommend using all the methods available in the package to ensure a
+DESeq2 and MAaslin3 methods, that are the fastest ones. However, we
+recommend using all the methods available in the package to ensure a
 more robust analysis.
 
 ``` r
 
 ## DA steps definition
 rec <- rec |> 
-  step_metagenomeseq(rm_zeros = 0.01) |> 
+  step_deseq() |> 
   step_maaslin(min_prevalence = 0) 
 
 rec
@@ -178,7 +174,7 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Spina_santa 
+#>      ◉ step_deseq() id = deseq__Spina_santa 
 #>      ◉ step_maaslin() id = maaslin__Dutch_Baby_Pancake
 ```
 
@@ -202,9 +198,6 @@ provisional overview of the results and a comparison between methods.
 
 ## Execute in parallel
 da_results <- prep(rec, parallel = TRUE)
-#> Warning in sqrt(out$s2.post): NaNs produced
-#> Warning in sqrt(out$s2.post): NaNs produced
-#> Warning in sqrt(out$s2.post): NaNs produced
 da_results
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -215,10 +208,10 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Spina_santa diff_taxa = 294 
+#>      ✔ deseq__Spina_santa diff_taxa = 174 
 #>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 58 
 #> 
-#>      ℹ 55 taxa are present in all tested methods
+#>      ℹ 31 taxa are present in all tested methods
 ```
 
 ## Default results extraction
@@ -238,20 +231,20 @@ results <-
   cool()
 
 results
-#> # A tibble: 55 × 2
-#>    taxa_id taxa                          
-#>    <chr>   <chr>                         
-#>  1 Otu_369 Dialister_sp_CAG_357          
-#>  2 Otu_63  Bacteroides_plebeius          
-#>  3 Otu_69  Bacteroides_sp_CAG_530        
-#>  4 Otu_209 Clostridium_sp_CAG_242        
-#>  5 Otu_102 Prevotella_sp_AM42_24         
-#>  6 Otu_130 Parabacteroides_sp_CAG_409    
-#>  7 Otu_265 Eisenbergiella_massiliensis   
-#>  8 Otu_245 Anaerotignum_lactatifermentans
-#>  9 Otu_215 Clostridium_sp_CAG_590        
-#> 10 Otu_76  Bacteroides_stercoris         
-#> # ℹ 45 more rows
+#> # A tibble: 31 × 2
+#>    taxa_id taxa                        
+#>    <chr>   <chr>                       
+#>  1 Otu_35  Collinsella_aerofaciens     
+#>  2 Otu_37  Collinsella_stercoris       
+#>  3 Otu_47  Bacteroides_cellulosilyticus
+#>  4 Otu_48  Bacteroides_clarus          
+#>  5 Otu_63  Bacteroides_plebeius        
+#>  6 Otu_69  Bacteroides_sp_CAG_530      
+#>  7 Otu_78  Bacteroides_uniformis       
+#>  8 Otu_82  Barnesiella_intestinihominis
+#>  9 Otu_96  Prevotella_copri            
+#> 10 Otu_102 Prevotella_sp_AM42_24       
+#> # ℹ 21 more rows
 ```
 
 However, `dar` allows for complex consensus strategies based on the
@@ -383,10 +376,10 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ metagenomeseq__Spina_santa diff_taxa = 294 
+#>      ✔ deseq__Spina_santa diff_taxa = 174 
 #>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 58 
 #> 
-#>      ℹ 55 taxa are present in all tested methods 
+#>      ℹ 31 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
@@ -407,20 +400,20 @@ consensus strategies, you can change it to extract the desired results).
 f_results <- cool(da_results, bake = 1)
 
 f_results
-#> # A tibble: 55 × 2
-#>    taxa_id taxa                          
-#>    <chr>   <chr>                         
-#>  1 Otu_369 Dialister_sp_CAG_357          
-#>  2 Otu_63  Bacteroides_plebeius          
-#>  3 Otu_69  Bacteroides_sp_CAG_530        
-#>  4 Otu_209 Clostridium_sp_CAG_242        
-#>  5 Otu_102 Prevotella_sp_AM42_24         
-#>  6 Otu_130 Parabacteroides_sp_CAG_409    
-#>  7 Otu_265 Eisenbergiella_massiliensis   
-#>  8 Otu_245 Anaerotignum_lactatifermentans
-#>  9 Otu_215 Clostridium_sp_CAG_590        
-#> 10 Otu_76  Bacteroides_stercoris         
-#> # ℹ 45 more rows
+#> # A tibble: 31 × 2
+#>    taxa_id taxa                        
+#>    <chr>   <chr>                       
+#>  1 Otu_35  Collinsella_aerofaciens     
+#>  2 Otu_37  Collinsella_stercoris       
+#>  3 Otu_47  Bacteroides_cellulosilyticus
+#>  4 Otu_48  Bacteroides_clarus          
+#>  5 Otu_63  Bacteroides_plebeius        
+#>  6 Otu_69  Bacteroides_sp_CAG_530      
+#>  7 Otu_78  Bacteroides_uniformis       
+#>  8 Otu_82  Barnesiella_intestinihominis
+#>  9 Otu_96  Prevotella_copri            
+#> 10 Otu_102 Prevotella_sp_AM42_24       
+#> # ℹ 21 more rows
 ```
 
 To further visualize the results, the
@@ -457,7 +450,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-02-05
+#>  date     2026-02-06
 #>  pandoc   3.8.2.1 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.7.32 @ /usr/local/bin/quarto
 #> 
@@ -479,7 +472,7 @@ devtools::session_info()
 #>  codetools      0.2-20   2024-03-31 [3] CRAN (R 4.5.2)
 #>  crayon         1.5.3    2024-06-20 [2] RSPM (R 4.5.0)
 #>  crosstalk      1.2.2    2025-08-26 [1] RSPM (R 4.5.0)
-#>  dar          * 1.5.5    2026-02-05 [1] Bioconductor
+#>  dar          * 1.5.6    2026-02-06 [1] Bioconductor
 #>  data.table     1.18.2.1 2026-01-27 [1] RSPM (R 4.5.0)
 #>  dendextend     1.19.1   2025-07-15 [1] RSPM (R 4.5.0)
 #>  desc           1.4.3    2023-12-10 [2] RSPM (R 4.5.0)

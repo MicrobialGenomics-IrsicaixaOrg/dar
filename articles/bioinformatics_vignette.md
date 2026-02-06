@@ -141,17 +141,12 @@ rec
 Once data is preprocessed and cleaned, the next step is to add the da
 steps. The dar package incorporates multiple methods to analyze the
 data, including: `ALDEx2`, `ANCOM-BC`, `corncob`, `DESeq2`, `Lefse`,
-`MAaslin2`, `MetagenomeSeq`, and `Wilcox.` These methods provide a range
-of options for uncovering potential microbial biomarkers associated with
-the variable of interest. To ensure consistency across methods, we
-decided not to use default parameters, but to set the `min_prevalence`
-parameter to 0 for `MAaslin2`, and the `rm_zeros` parameter to 0.01 for
-`MetagenomeSeq`, since it was observed that the `pct_all_zeros` value
-was not equal to 0 in some levels of the categorical variable in the
-results of
-[`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md).
-This approach ensured that the analysis was consistent across all
-methods and that the results were interpretable.
+`MAaslin3`, and `Wilcox.` These methods provide a range of options for
+uncovering potential microbial biomarkers associated with the variable
+of interest. To ensure consistency across methods, we decided not to use
+default parameters, but to set the `min_prevalence` parameter to 0 for
+`MAaslin2`. This approach ensured that the analysis was consistent
+across all methods and that the results were interpretable.
 
 ``` r
 
@@ -163,7 +158,6 @@ rec <-
   step_aldex() |>
   step_deseq() |>
   step_corncob(filter_discriminant = FALSE) |> 
-  step_metagenomeseq(rm_zeros = 0.01) |>
   step_maaslin(min_prevalence = 0) |> 
   step_lefse()
 
@@ -186,9 +180,8 @@ rec
 #>      ◉ step_aldex() id = aldex__Klobasnek 
 #>      ◉ step_deseq() id = deseq__Kroštule 
 #>      ◉ step_corncob() id = corncob__Muskazine 
-#>      ◉ step_metagenomeseq() id = metagenomeseq__Milk_cream_strudel 
-#>      ◉ step_maaslin() id = maaslin__Poffertjes 
-#>      ◉ step_lefse() id = lefse__Pain_aux_raisins
+#>      ◉ step_maaslin() id = maaslin__Milk_cream_strudel 
+#>      ◉ step_lefse() id = lefse__Poffertjes
 ```
 
 ## Prep recipe
@@ -211,9 +204,6 @@ provisional overview of the results and a comparison between methods.
 
 # Execute in parallel
 da_results <- prep(rec, parallel = TRUE)
-#> Warning in sqrt(out$s2.post): NaNs produced
-#> Warning in sqrt(out$s2.post): NaNs produced
-#> Warning in sqrt(out$s2.post): NaNs produced
 #> Warning in lefser::lefser(se, classCol = var, kruskal.threshold = 1,
 #> wilcox.threshold = 1, : Variables in the input are collinear. Try only with the
 #> terminal nodes using `get_terminal_nodes` function
@@ -235,14 +225,13 @@ da_results
 #> Results:
 #> 
 #>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 183 
-#>      ✔ aldex__Klobasnek diff_taxa = 95 
+#>      ✔ aldex__Klobasnek diff_taxa = 93 
 #>      ✔ deseq__Kroštule diff_taxa = 174 
 #>      ✔ corncob__Muskazine diff_taxa = 135 
-#>      ✔ metagenomeseq__Milk_cream_strudel diff_taxa = 294 
-#>      ✔ maaslin__Poffertjes diff_taxa = 58 
-#>      ✔ lefse__Pain_aux_raisins diff_taxa = 117 
+#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 58 
+#>      ✔ lefse__Poffertjes diff_taxa = 117 
 #> 
-#>      ℹ 20 taxa are present in all tested methods
+#>      ℹ 19 taxa are present in all tested methods
 ```
 
 ## Default results extraction
@@ -262,29 +251,28 @@ results <-
   cool()
 
 results
-#> # A tibble: 20 × 2
+#> # A tibble: 19 × 2
 #>    taxa_id taxa                        
 #>    <chr>   <chr>                       
 #>  1 Otu_35  Collinsella_aerofaciens     
 #>  2 Otu_47  Bacteroides_cellulosilyticus
-#>  3 Otu_48  Bacteroides_clarus          
-#>  4 Otu_63  Bacteroides_plebeius        
-#>  5 Otu_69  Bacteroides_sp_CAG_530      
-#>  6 Otu_78  Bacteroides_uniformis       
-#>  7 Otu_82  Barnesiella_intestinihominis
-#>  8 Otu_96  Prevotella_copri            
-#>  9 Otu_102 Prevotella_sp_AM42_24       
-#> 10 Otu_115 Alistipes_finegoldii        
-#> 11 Otu_119 Alistipes_putredinis        
-#> 12 Otu_130 Parabacteroides_sp_CAG_409  
-#> 13 Otu_234 Eubacterium_ramulus         
-#> 14 Otu_255 Ruminococcus_torques        
-#> 15 Otu_258 Coprococcus_catus           
-#> 16 Otu_259 Coprococcus_comes           
-#> 17 Otu_261 Dorea_formicigenerans       
-#> 18 Otu_262 Dorea_longicatena           
-#> 19 Otu_332 Catenibacterium_mitsuokai   
-#> 20 Otu_365 Mitsuokella_jalaludinii
+#>  3 Otu_63  Bacteroides_plebeius        
+#>  4 Otu_69  Bacteroides_sp_CAG_530      
+#>  5 Otu_78  Bacteroides_uniformis       
+#>  6 Otu_82  Barnesiella_intestinihominis
+#>  7 Otu_96  Prevotella_copri            
+#>  8 Otu_102 Prevotella_sp_AM42_24       
+#>  9 Otu_115 Alistipes_finegoldii        
+#> 10 Otu_119 Alistipes_putredinis        
+#> 11 Otu_130 Parabacteroides_sp_CAG_409  
+#> 12 Otu_234 Eubacterium_ramulus         
+#> 13 Otu_255 Ruminococcus_torques        
+#> 14 Otu_258 Coprococcus_catus           
+#> 15 Otu_259 Coprococcus_comes           
+#> 16 Otu_261 Dorea_formicigenerans       
+#> 17 Otu_262 Dorea_longicatena           
+#> 18 Otu_332 Catenibacterium_mitsuokai   
+#> 19 Otu_365 Mitsuokella_jalaludinii
 ```
 
 However, `dar` allows for complex consensus strategies based on the
@@ -417,18 +405,17 @@ da_results
 #> Results:
 #> 
 #>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 183 
-#>      ✔ aldex__Klobasnek diff_taxa = 95 
+#>      ✔ aldex__Klobasnek diff_taxa = 93 
 #>      ✔ deseq__Kroštule diff_taxa = 174 
 #>      ✔ corncob__Muskazine diff_taxa = 135 
-#>      ✔ metagenomeseq__Milk_cream_strudel diff_taxa = 294 
-#>      ✔ maaslin__Poffertjes diff_taxa = 58 
-#>      ✔ lefse__Pain_aux_raisins diff_taxa = 117 
+#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 58 
+#>      ✔ lefse__Poffertjes diff_taxa = 117 
 #> 
-#>      ℹ 20 taxa are present in all tested methods 
+#>      ℹ 19 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Tortell
+#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Knish
 ```
 
 ## Extract results
@@ -445,29 +432,28 @@ consensus strategies, you can change it to extract the desired results).
 f_results <- cool(da_results, bake = 1)
 
 f_results
-#> # A tibble: 20 × 2
+#> # A tibble: 19 × 2
 #>    taxa_id taxa                        
 #>    <chr>   <chr>                       
 #>  1 Otu_35  Collinsella_aerofaciens     
 #>  2 Otu_47  Bacteroides_cellulosilyticus
-#>  3 Otu_48  Bacteroides_clarus          
-#>  4 Otu_63  Bacteroides_plebeius        
-#>  5 Otu_69  Bacteroides_sp_CAG_530      
-#>  6 Otu_78  Bacteroides_uniformis       
-#>  7 Otu_82  Barnesiella_intestinihominis
-#>  8 Otu_96  Prevotella_copri            
-#>  9 Otu_102 Prevotella_sp_AM42_24       
-#> 10 Otu_115 Alistipes_finegoldii        
-#> 11 Otu_119 Alistipes_putredinis        
-#> 12 Otu_130 Parabacteroides_sp_CAG_409  
-#> 13 Otu_234 Eubacterium_ramulus         
-#> 14 Otu_255 Ruminococcus_torques        
-#> 15 Otu_258 Coprococcus_catus           
-#> 16 Otu_259 Coprococcus_comes           
-#> 17 Otu_261 Dorea_formicigenerans       
-#> 18 Otu_262 Dorea_longicatena           
-#> 19 Otu_332 Catenibacterium_mitsuokai   
-#> 20 Otu_365 Mitsuokella_jalaludinii
+#>  3 Otu_63  Bacteroides_plebeius        
+#>  4 Otu_69  Bacteroides_sp_CAG_530      
+#>  5 Otu_78  Bacteroides_uniformis       
+#>  6 Otu_82  Barnesiella_intestinihominis
+#>  7 Otu_96  Prevotella_copri            
+#>  8 Otu_102 Prevotella_sp_AM42_24       
+#>  9 Otu_115 Alistipes_finegoldii        
+#> 10 Otu_119 Alistipes_putredinis        
+#> 11 Otu_130 Parabacteroides_sp_CAG_409  
+#> 12 Otu_234 Eubacterium_ramulus         
+#> 13 Otu_255 Ruminococcus_torques        
+#> 14 Otu_258 Coprococcus_catus           
+#> 15 Otu_259 Coprococcus_comes           
+#> 16 Otu_261 Dorea_formicigenerans       
+#> 17 Otu_262 Dorea_longicatena           
+#> 18 Otu_332 Catenibacterium_mitsuokai   
+#> 19 Otu_365 Mitsuokella_jalaludinii
 ```
 
 To further visualize the results, the
@@ -513,7 +499,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-02-05
+#>  date     2026-02-06
 #>  pandoc   3.8.2.1 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.7.32 @ /usr/local/bin/quarto
 #> 
@@ -539,10 +525,10 @@ devtools::session_info()
 #>  cluster          2.1.8.1  2025-03-12 [3] CRAN (R 4.5.2)
 #>  codetools        0.2-20   2024-03-31 [3] CRAN (R 4.5.2)
 #>  colorspace       2.1-2    2025-09-22 [1] RSPM (R 4.5.0)
-#>  ComplexHeatmap   2.26.0   2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
+#>  ComplexHeatmap   2.26.1   2026-02-03 [1] Bioconductor 3.22 (R 4.5.2)
 #>  crayon           1.5.3    2024-06-20 [2] RSPM (R 4.5.0)
 #>  crosstalk        1.2.2    2025-08-26 [1] RSPM (R 4.5.0)
-#>  dar            * 1.5.5    2026-02-05 [1] Bioconductor
+#>  dar            * 1.5.6    2026-02-06 [1] Bioconductor
 #>  data.table       1.18.2.1 2026-01-27 [1] RSPM (R 4.5.0)
 #>  dendextend       1.19.1   2025-07-15 [1] RSPM (R 4.5.0)
 #>  desc             1.4.3    2023-12-10 [2] RSPM (R 4.5.0)

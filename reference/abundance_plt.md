@@ -79,8 +79,6 @@ data(test_prep_rec)
 
 ## Running the function returns a boxplot,
 abundance_plt(test_prep_rec)
-#> ! Taxa present in all methods are greater than the cutoff top_n = 20
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
 
 
 ## Giving the value "heatmap" to the type parameter, the resulting graph

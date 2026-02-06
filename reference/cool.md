@@ -38,41 +38,46 @@ rec <- bake(test_prep_rec)
 
 ## Finally we can extract the results with the cool method
 cool(rec)
-#> ℹ Bake for count_cutoff = 3
-#> # A tibble: 23 × 2
-#>    taxa_id taxa           
-#>    <chr>   <chr>          
-#>  1 Otu_96  Prevotella     
-#>  2 Otu_340 Holdemanella   
-#>  3 Otu_332 Catenibacterium
-#>  4 Otu_119 Alistipes      
-#>  5 Otu_45  Slackia        
-#>  6 Otu_82  Barnesiella    
-#>  7 Otu_78  Bacteroides    
-#>  8 Otu_88  Odoribacter    
-#>  9 Otu_259 Coprococcus    
-#> 10 Otu_35  Collinsella    
-#> # ℹ 13 more rows
+#> ℹ Bake for count_cutoff = 2
+#> # A tibble: 16 × 2
+#>    taxa_id taxa            
+#>    <chr>   <chr>           
+#>  1 Otu_78  Bacteroides     
+#>  2 Otu_88  Odoribacter     
+#>  3 Otu_119 Alistipes       
+#>  4 Otu_125 Parabacteroides 
+#>  5 Otu_96  Prevotella      
+#>  6 Otu_82  Barnesiella     
+#>  7 Otu_94  Paraprevotella  
+#>  8 Otu_332 Catenibacterium 
+#>  9 Otu_255 Blautia         
+#> 10 Otu_35  Collinsella     
+#> 11 Otu_262 Dorea           
+#> 12 Otu_365 Mitsuokella     
+#> 13 Otu_259 Coprococcus     
+#> 14 Otu_330 Ruthenibacterium
+#> 15 Otu_307 Faecalibacterium
+#> 16 Otu_433 Haemophilus     
 
 ## By default cool extracts the results of the first bake. If we have more
 ## bakes we can extract the one that you want with the bake parameter.
 rec <- bake(rec, count_cutoff = 1)
 cool(rec, 2)
 #> ℹ Bake for count_cutoff = 1
-#> # A tibble: 88 × 2
+#> # A tibble: 52 × 2
 #>    taxa_id taxa           
 #>    <chr>   <chr>          
-#>  1 Otu_96  Prevotella     
-#>  2 Otu_102 Prevotella     
-#>  3 Otu_340 Holdemanella   
-#>  4 Otu_332 Catenibacterium
-#>  5 Otu_108 Prevotella     
-#>  6 Otu_115 Alistipes      
-#>  7 Otu_119 Alistipes      
-#>  8 Otu_45  Slackia        
-#>  9 Otu_82  Barnesiella    
-#> 10 Otu_113 Prevotella     
-#> # ℹ 78 more rows
+#>  1 Otu_78  Bacteroides    
+#>  2 Otu_88  Odoribacter    
+#>  3 Otu_119 Alistipes      
+#>  4 Otu_129 Parabacteroides
+#>  5 Otu_125 Parabacteroides
+#>  6 Otu_96  Prevotella     
+#>  7 Otu_82  Barnesiella    
+#>  8 Otu_94  Paraprevotella 
+#>  9 Otu_79  Bacteroides    
+#> 10 Otu_51  Bacteroides    
+#> # ℹ 42 more rows
 
 ## bake and cool methods needs a prep-Recipe. If you pass a non-PrepRecipe
 ## the output is an error.

@@ -39,13 +39,13 @@ data(test_prep_rec)
 
 df <- intersection_df(test_prep_rec)
 head(df)
-#>   taxa_id maaslin__ChaSan metagenomeseq__Zlebia deseq__Linzer_torte
-#> 1   Otu_1               1                     0                   0
-#> 2  Otu_10               1                     0                   0
-#> 3  Otu_18               1                     0                   0
-#> 4  Otu_34               1                     1                   1
-#> 5  Otu_35               1                     1                   1
-#> 6  Otu_37               1                     0                   0
+#>   taxa_id maaslin__Eccles_cake deseq__Belekoy
+#> 1   Otu_1                    0              0
+#> 2  Otu_10                    0              0
+#> 3  Otu_18                    0              0
+#> 4  Otu_34                    0              1
+#> 5  Otu_35                    1              1
+#> 6  Otu_37                    1              0
 
 ## intersection_df function needs a prep-Recipe. If you pass a a non-prep
 ## recipe the output is an error.
