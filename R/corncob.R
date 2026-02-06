@@ -78,136 +78,46 @@
 #'   prep(parallel = FALSE)
 #'   
 #' rec
-methods::setGeneric(
-  name = "step_corncob",
-  def = function(rec,
-                 phi.formula = stats::formula(~ 1),
-                 formula_null = stats::formula(~ 1),
-                 phi.formula_null = stats::formula(~ 1),
-                 link = "logit",
-                 phi.link = "logit",
-                 test = "Wald",
-                 boot = FALSE,
-                 B = 1000,
-                 filter_discriminant = TRUE,
-                 fdr_cutoff = 0.05,
-                 fdr = "fdr",
-                 log2FC = 0,
-                 rarefy = FALSE,
-                 id = rand_id("corncob")) {
-    standardGeneric("step_corncob")
-  }
-)
-
-#' @rdname step_corncob
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_corncob",
-  signature = c(rec = "Recipe"),
-  definition = function(rec,
-                        phi.formula,
-                        formula_null,
-                        phi.formula_null,
-                        link,
-                        phi.link,
-                        test,
-                        boot,
-                        B,
-                        filter_discriminant,
-                        fdr_cutoff,
-                        fdr,
-                        log2FC,
-                        rarefy,
-                        id) {
-    
-    recipes_pkg_check(required_pkgs_corncob(), "step_croncob()")
-    add_step(
-      rec,
-      step_corncob_new(
-        phi.formula = phi.formula,
-        formula_null = formula_null,
-        phi.formula_null = phi.formula_null,
-        link = link,
-        phi.link = phi.link,
-        test = test,
-        boot = boot,
-        B = B,
-        filter_discriminant = filter_discriminant,
-        fdr_cutoff = fdr_cutoff,
-        fdr = fdr,
-        log2FC = log2FC,
-        rarefy = rarefy,
-        id = id
-      ))
-  }
-)
-
-#' @rdname step_corncob
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_corncob",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec,
-                        phi.formula,
-                        formula_null,
-                        phi.formula_null,
-                        link,
-                        phi.link,
-                        test,
-                        boot,
-                        B,
-                        filter_discriminant,
-                        fdr_cutoff,
-                        fdr,
-                        log2FC,
-                        rarefy,
-                        id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_corncob_new <- function(phi.formula,
-                             formula_null,
-                             phi.formula_null,
-                             link,
-                             phi.link,
-                             test,
-                             boot,
-                             B,
-                             filter_discriminant,
-                             fdr_cutoff,
-                             fdr,
-                             log2FC,
-                             rarefy,
-                             id) {
-  step(
-    subclass = "corncob",
-    phi.formula = phi.formula,
-    formula_null = formula_null,
-    phi.formula_null = phi.formula_null,
-    link = link,
-    phi.link = phi.link,
-    test = test,
-    boot = boot,
-    B = B,
-    filter_discriminant = filter_discriminant,
-    fdr_cutoff = fdr_cutoff,
-    fdr = fdr,
-    log2FC = log2FC,
-    rarefy = rarefy,
-    id = id
+step_corncob <- function(rec,
+                         phi.formula = stats::formula(~ 1),
+                         formula_null = stats::formula(~ 1),
+                         phi.formula_null = stats::formula(~ 1),
+                         link = "logit",
+                         phi.link = "logit",
+                         test = "Wald",
+                         boot = FALSE,
+                         B = 1000,
+                         filter_discriminant = TRUE,
+                         fdr_cutoff = 0.05,
+                         fdr = "fdr",
+                         log2FC = 0,
+                         rarefy = FALSE,
+                         id = rand_id("corncob")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(required_pkgs_corncob(), "step_corncob()")
+  
+  add_step(
+    rec,
+    step(
+      subclass = "corncob",
+      phi.formula = phi.formula,
+      formula_null = formula_null,
+      phi.formula_null = phi.formula_null,
+      link = link,
+      phi.link = phi.link,
+      test = test,
+      boot = boot,
+      B = B,
+      filter_discriminant = filter_discriminant,
+      fdr_cutoff = fdr_cutoff,
+      fdr = fdr,
+      log2FC = log2FC,
+      rarefy = rarefy,
+      id = id
+    )
   )
 }
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-required_pkgs_corncob <- function(x, ...) { c("corncob") }
 
 #' @noRd
 #' @keywords internal
@@ -225,31 +135,24 @@ run_corncob <- function(rec,
                         fdr_cutoff,
                         fdr,
                         log2FC,
-                        rarefy) {
+                        rarefy,
+                        id) {
   
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  phy <- 
-    get_phy(rec) %>% 
-    use_rarefy(rarefy)
-  
+  phy <- get_phy(rec) %>% use_rarefy(rarefy)
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+  
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
       get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
           
-          ## Filter samples
-          f_phy <- 
-            phyloseq::sample_data(phy) %>% 
-            to_tibble("sample_id") %>% 
-            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>% 
-            dplyr::pull(sample_id) %>% 
-            phyloseq::prune_samples(phy)
+          meta_vals <- phyloseq::get_variable(phy, var)
+          f_phy <- phyloseq::prune_samples(meta_vals %in% comparison, phy)
           
-          corncob_res <- 
-            tryCatch({
+          corncob_res <- tryCatch({
               corncob::differentialTest(
                 formula = glue::glue("~ { var }") %>% stats::formula(),
                 data = f_phy,
@@ -267,7 +170,6 @@ run_corncob <- function(rec,
               )
             }, error = function(e) { conditionMessage(e) })
           
-          ## Skip error for no convergence
           check_non_convergence(corncob_res)
           
           signif_taxa <- corncob::otu_to_taxonomy(
@@ -287,6 +189,11 @@ run_corncob <- function(rec,
         })
     })
 }
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+required_pkgs_corncob <- function(x, ...) { c("corncob") }
 
 #' @noRd
 #' @keywords internal
@@ -326,7 +233,6 @@ corncob_stats_tbl <- function(corncob_res,
 
 #' @noRd
 #' @keywords internal
-#' @autoglobal
 check_non_convergence <- function(corncob_res) {
   if (!methods::is(corncob_res, "differentialTest")) {
     if (stringr::str_detect(corncob_res, "failed to converge")) {

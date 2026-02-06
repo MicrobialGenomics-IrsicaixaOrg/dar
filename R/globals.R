@@ -85,7 +85,6 @@ utils::globalVariables(c(
   # <prepro_lefse>
   "RTC",
   # <sample_data>
-  # <run_corncob>
   # <.count_summary>
   # <.abundance_heatmap>
   # <run_wilcox>

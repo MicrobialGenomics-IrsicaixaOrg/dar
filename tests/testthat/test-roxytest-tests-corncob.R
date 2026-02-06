@@ -2,7 +2,7 @@
 
 # File R/corncob.R: @tests
 
-test_that("[unknown alias] @ L81", {
+test_that("Function step_corncob() @ L81", {
   data(metaHIV_phy)
   
   test <-
