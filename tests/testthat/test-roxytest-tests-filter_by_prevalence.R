@@ -2,7 +2,7 @@
 
 # File R/filter_by_prevalence.R: @tests
 
-test_that("[unknown alias] @ L43", {
+test_that("Function step_filter_by_prevalence() @ L43", {
   data(test_prep_rec)
   expect_error(step_filter_by_prevalence(test_prep_rec))
 })

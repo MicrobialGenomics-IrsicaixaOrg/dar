@@ -4,7 +4,8 @@
 #' designed to speed up filtering complex experimental objects with one function
 #' call. In the case of run_filter_by_rarity, the filtering will be based on the
 #' rarity of each taxon. The taxa retained in the dataset are those where the
-#' sum of their rarity is less than the provided threshold.
+#' prevalence (proportion of samples where present) is LESS than the provided
+#' threshold.
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
 #'   operations for this Recipe.
@@ -16,10 +17,11 @@
 #'
 #' @note This function modifies `rec` in place, you might want to make a copy of
 #'   `rec` before modifying it if you need to preserve the original object.
-#' @details The function calculates the rarity of all taxa in the phyloseq
+#' @details The function calculates the prevalence of all taxa in the phyloseq
 #'   object as the proportion of samples in which they are present. It then
-#'   compares this rarity to the threshold. If a taxon's rarity is greater than
-#'   the threshold, that taxon is removed from the phyloseq object.
+#'   compares this prevalence to the threshold. If a taxon's prevalence is greater
+#'   than or equal to the threshold, that taxon is removed (filtered out) from 
+#'   the phyloseq object, leaving only the "rare" taxa.
 #' @return A Recipe object that has been filtered based on rarity.
 #' @seealso \code{\link[phyloseq]{filter_taxa}}
 #' @include recipe-class.R
@@ -40,63 +42,37 @@
 #' ## Define step_filter_by_rarity step with default parameters
 #' rec <- step_filter_by_rarity(rec, threshold = 0.01)
 #' rec
-methods::setGeneric(
-  name = "step_filter_by_rarity",
-  def = function(rec, 
-                 threshold = 0.01, 
-                 id = rand_id("filter_by_rarity")) {
-    standardGeneric("step_filter_by_rarity")
-  }
-)
-
-#' @rdname step_filter_by_rarity
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_rarity",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    recipes_pkg_check(
-      required_pkgs_filter_by_rarity(),
-      "step_filter_by_rarity()"
+step_filter_by_rarity <- function(rec, 
+                                  threshold = 0.01, 
+                                  id = rand_id("filter_by_rarity")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(
+    required_pkgs_filter_by_rarity(), 
+    "step_filter_by_rarity()"
+  )
+  
+  add_step(
+    rec,
+    step(
+      subclass = "filter_by_rarity", 
+      threshold = threshold, 
+      id = id
     )
-    add_step(
-      rec,
-      step_filter_by_rarity_new(threshold = threshold, id = id)
-    )
-  }
-)
-
-#' @rdname step_filter_by_rarity
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_rarity",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_filter_by_rarity_new <- function(threshold = 0.01, id) {
-  step(subclass = "filter_by_rarity", threshold = threshold, id = id)
+  )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_filter_by_rarity <- function(x, ...) {  c("bioc::phyloseq") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
-run_filter_by_rarity <- function(rec, threshold = 0.01) {
+run_filter_by_rarity <- function(rec, threshold = 0.01, id) {
   rec@phyloseq <- 
     get_phy(rec) %>%
     phyloseq::filter_taxa(function(x) sum(x > 0) < (threshold * length(x)), TRUE) 
   
   rec
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_filter_by_rarity <- function(x, ...) {  c("bioc::phyloseq") }

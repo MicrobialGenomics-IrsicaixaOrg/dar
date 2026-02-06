@@ -2,12 +2,9 @@
 % Please edit documentation in R/filter_taxa.R
 \name{step_filter_taxa}
 \alias{step_filter_taxa}
-\alias{step_filter_taxa,Recipe-method}
 \title{Filter taxa based on across-sample OTU abundance criteria}
 \usage{
 step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
-
-\S4method{step_filter_taxa}{Recipe}(rec, .f, id = rand_id("filter_taxa"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
