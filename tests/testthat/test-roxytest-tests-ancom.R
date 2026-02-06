@@ -2,8 +2,7 @@
 
 # File R/ancom.R: @tests
 
-test_that("[unknown alias] @ L116", {
-  testthat::skip("Temporary disabling due to problems with the ANCOM package")
+test_that("Function step_ancom() @ L113", {
   data(metaHIV_phy)
   
   test <-

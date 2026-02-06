@@ -4,7 +4,6 @@ utils::globalVariables(c(
   # <Recipe-class>
   # <intersection_df>
   # <cool>
-  # <run_ancom>
   # <ancom_stats_tbl>
   # <run_bake>
   # <run_deseq>

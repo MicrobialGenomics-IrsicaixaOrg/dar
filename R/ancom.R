@@ -70,10 +70,9 @@
 #' @family Diff taxa steps
 #' @aliases step_ancom
 #' @return An object of class `Recipe`
-#' @keywords internal
 #' @autoglobal
+#' @export
 #' @tests
-#' testthat::skip("Temporary disabling due to problems with the ANCOM package")
 #' data(metaHIV_phy)
 #' 
 #' test <-
@@ -88,7 +87,6 @@
 #' data(test_prep_rec)
 #' expect_error(step_ancom(test_prep_rec, rarefy = TRUE))
 #' @examples
-#' \dontrun{
 #' data(metaHIV_phy)
 #'
 #' ## Init Recipe
@@ -112,136 +110,30 @@
 #'   step_ancom(rarefy = TRUE)
 #'
 #' rec
-#' }
-methods::setGeneric(
-  name = "step_ancom",
-  def = function(rec,
-                 fix_formula = get_var(rec)[[1]],
-                 rand_formula = NULL,
-                 p_adj_method = "holm",
-                 prv_cut = 0.1,
-                 lib_cut = 0,
-                 s0_perc = 0.05,
-                 group = NULL,
-                 struc_zero = FALSE,
-                 neg_lb = FALSE,
-                 alpha = 0.05,
-                 n_cl = 1,
-                 verbose = FALSE,
-                 global = FALSE,
-                 pairwise = FALSE,
-                 dunnet = FALSE,
-                 trend = FALSE,
-                 rarefy = FALSE, 
-                 id = rand_id("ancom")) {
-    standardGeneric("step_ancom")
-  }
-)
+step_ancom <- function(rec,
+                       fix_formula = get_var(rec)[[1]],
+                       rand_formula = NULL,
+                       p_adj_method = "holm",
+                       prv_cut = 0.1,
+                       lib_cut = 0,
+                       s0_perc = 0.05,
+                       group = NULL,
+                       struc_zero = FALSE,
+                       neg_lb = FALSE,
+                       alpha = 0.05,
+                       n_cl = 1,
+                       verbose = FALSE,
+                       global = FALSE,
+                       pairwise = FALSE,
+                       dunnet = FALSE,
+                       trend = FALSE,
+                       rarefy = FALSE,
+                       id = rand_id("ancom")) {
 
-#' @rdname step_ancom
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_ancom",
-  signature = c(rec = "Recipe"),
-  definition = function(rec,
-                        fix_formula,
-                        rand_formula,
-                        p_adj_method,
-                        prv_cut,
-                        lib_cut,
-                        s0_perc,
-                        group,
-                        struc_zero,
-                        neg_lb,
-                        alpha,
-                        n_cl,
-                        verbose,
-                        global,
-                        pairwise,
-                        dunnet,
-                        trend,
-                        rarefy, 
-                        id) {
-
-    recipes_pkg_check(required_pkgs_ancom(), "step_ancom()")
-    add_step(
-      rec,
-      step_ancom_new(
-        fix_formula = fix_formula,
-        rand_formula = rand_formula,
-        p_adj_method = p_adj_method,
-        prv_cut = prv_cut,
-        lib_cut = lib_cut,
-        s0_perc = s0_perc,
-        group = group,
-        struc_zero = struc_zero,
-        neg_lb = neg_lb,
-        alpha = alpha,
-        n_cl = n_cl,
-        verbose = verbose,
-        global = global,
-        pairwise = pairwise,
-        dunnet = dunnet,
-        trend = trend,
-        rarefy = rarefy, 
-        id = id
-      )
-    )
-  }
-)
-
-#' @rdname step_ancom
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_ancom",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec,
-                        fix_formula,
-                        rand_formula,
-                        p_adj_method,
-                        prv_cut,
-                        lib_cut,
-                        s0_perc,
-                        group,
-                        struc_zero,
-                        neg_lb,
-                        alpha,
-                        n_cl,
-                        verbose,
-                        global,
-                        pairwise,
-                        dunnet,
-                        trend,
-                        rarefy, 
-                        id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_ancom_new <-
-  function(fix_formula,
-           rand_formula,
-           p_adj_method,
-           prv_cut,
-           lib_cut,
-           s0_perc,
-           group,
-           struc_zero,
-           neg_lb,
-           alpha,
-           n_cl,
-           verbose,
-           global,
-           pairwise,
-           dunnet,
-           trend,
-           rarefy, 
-           id) {
+  check_recipe(rec)
+  recipes_pkg_check(c("bioc::ANCOMBC"), "step_ancom()")
+  add_step(
+    rec,
     step(
       subclass = "ancom",
       fix_formula = fix_formula,
@@ -260,19 +152,14 @@ step_ancom_new <-
       pairwise = pairwise,
       dunnet = dunnet,
       trend = trend,
-      rarefy = rarefy, 
+      rarefy = rarefy,
       id = id
     )
-  }
+  )
+}
 
 #' @noRd
 #' @keywords internal
-#' @autoglobal
-required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
 run_ancom <- function(rec,
                       fix_formula,
                       rand_formula,
@@ -290,62 +177,61 @@ run_ancom <- function(rec,
                       pairwise,
                       dunnet,
                       trend,
-                      rarefy, 
+                      rarefy,
                       id) {
   
   vars <- get_var(rec)[[1]]
   tax_level <- get_tax(rec)[[1]]
   phy <- 
     get_phy(rec) %>% 
-    use_rarefy(rarefy)
-  
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
-        purrr::map_dfr(function(comparison) {
-          vct_comp <- glue::glue("c('{comparison[1]}', '{comparison[2]}')")
-          s_phy <-
-            glue::glue(
-              "phyloseq::subset_samples(phy, {var} %in% {vct_comp})"
-            ) %>%
-            parse(text = .) %>%
-            eval()
-          
-          ## Remove OTUs with zero variance
-          to_remove <- rm_zero_variance(s_phy, vars)
-          
-          s_phy <- 
-            rownames(phyloseq::otu_table(s_phy)) %>% 
-            .[!. %in% to_remove] %>% 
-            phyloseq::prune_taxa(s_phy)
-          
-          res <- ANCOMBC::ancombc2(
-            data = mia::convertFromPhyloseq(s_phy), 
-            tax_level = tax_level,
-            fix_formula = fix_formula,
-            rand_formula = rand_formula,
-            p_adj_method = p_adj_method,
-            prv_cut = prv_cut,
-            lib_cut = lib_cut,
-            s0_perc = s0_perc,
-            group = group,
-            struc_zero = struc_zero,
-            neg_lb = neg_lb,
-            alpha = alpha,
-            n_cl = n_cl,
-            verbose = verbose,
-            global = global,
-            pairwise = pairwise,
-            dunnet = dunnet,
-            trend = trend
-          )
-        
-          ancom_stats_tbl(res$res, var, rec, comparison)
-        })
-    }) 
+    use_rarefy(rarefy) %>%
+    phyloseq::tax_glom(taxrank = tax_level, NArm = FALSE)
+
+ vars %>%
+  purrr::set_names() %>%
+  purrr::map(function(var) {
+    get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
+    purrr::map_dfr(function(comparison) {
+      meta_vals <- phyloseq::get_variable(phy, var)
+      s_phy <- phyloseq::prune_samples(meta_vals %in% comparison, phy)
+      to_remove <- rm_zero_variance(s_phy, var)
+      if (length(to_remove) > 0) {
+        s_phy <- phyloseq::prune_taxa(
+          phyloseq::taxa_names(s_phy)[!phyloseq::taxa_names(s_phy) %in% to_remove],
+          s_phy
+        )
+      }
+
+      res <- ANCOMBC::ancombc2(
+        data = mia::convertFromPhyloseq(s_phy),
+        tax_level = tax_level,
+        fix_formula = fix_formula,
+        rand_formula = rand_formula,
+        p_adj_method = p_adj_method,
+        prv_cut = prv_cut,
+        lib_cut = lib_cut,
+        s0_perc = s0_perc,
+        group = group,
+        struc_zero = struc_zero,
+        neg_lb = neg_lb,
+        alpha = alpha,
+        n_cl = n_cl,
+        verbose = verbose,
+        global = global,
+        pairwise = pairwise,
+        dunnet = dunnet,
+        trend = trend
+      )
+
+      ancom_stats_tbl(res$res, var, rec, comparison)
+    })
+  })
 }
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 
 #' @noRd
 #' @keywords internal
