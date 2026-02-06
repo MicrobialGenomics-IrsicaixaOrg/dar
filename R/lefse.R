@@ -66,7 +66,7 @@
 #' 
 #' ## Define step with default parameters
 #' rec <- step_lefse(rec) 
-#
+#'
 #' rec
 #' 
 #' ## Running lefse without rarefaction (not recommended)
@@ -75,94 +75,30 @@
 #'   step_lefse(rarefy = FALSE)
 #'   
 #' rec
-methods::setGeneric(
-  name = "step_lefse",
-  def = function(rec,
-                 kruskal.threshold = 0.05,
-                 wilcox.threshold = 0.05,
-                 lda.threshold = 2,
-                 subclassCol = NULL,
-                 assay = 1L,
-                 trim.names = FALSE,
-                 rarefy = TRUE,
-                 id = rand_id("lefse")) {
-    standardGeneric("step_lefse")
-  }
-)
-
-#' @rdname step_lefse
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_lefse",
-  signature = c(rec = "Recipe"),
-  definition = function(rec,
-                        kruskal.threshold,
-                        wilcox.threshold,
-                        lda.threshold,
-                        subclassCol,
-                        assay,
-                        trim.names,
-                        rarefy,
-                        id) {
-
-    recipes_pkg_check(required_pkgs_lefse(), "step_lefser()")
-    if (!rarefy & !contains_rarefaction(rec)) {
-      rlang::inform(c(
-        "!" = glue::glue(
-          "Run lefse without rarefaction is not recommended", 
-          " ({crayon::blue(paste0('id = ', id))})"
-        )
-      ))
-    }
-
-    add_step(
-      rec,
-      step_lefse_new(
-        kruskal.threshold = kruskal.threshold,
-        wilcox.threshold = wilcox.threshold,
-        lda.threshold = lda.threshold,
-        subclassCol = subclassCol,
-        assay = assay,
-        trim.names = trim.names,
-        rarefy = rarefy,
-        id = id
+step_lefse <- function(rec,
+                       kruskal.threshold = 0.05,
+                       wilcox.threshold = 0.05,
+                       lda.threshold = 2,
+                       subclassCol = NULL,
+                       assay = 1L,
+                       trim.names = FALSE,
+                       rarefy = TRUE,
+                       id = rand_id("lefse")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")
+  
+  if (!rarefy & !contains_rarefaction(rec)) {
+    rlang::inform(c(
+      "!" = glue::glue(
+        "Run lefse without rarefaction is not recommended", 
+        " ({crayon::blue(paste0('id = ', id))})"
       )
-    )
+    ))
   }
-)
-
-#' @rdname step_lefse
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_lefse",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec,
-                        kruskal.threshold,
-                        wilcox.threshold,
-                        lda.threshold,
-                        subclassCol,
-                        assay,
-                        trim.names,
-                        rarefy,
-                        id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_lefse_new <-
-  function(kruskal.threshold,
-           wilcox.threshold,
-           lda.threshold,
-           subclassCol,
-           assay,
-           trim.names,
-           rarefy,
-           id) {
+  
+  add_step(
+    rec,
     step(
       subclass = "lefse",
       kruskal.threshold = kruskal.threshold,
@@ -174,27 +110,21 @@ step_lefse_new <-
       rarefy = rarefy,
       id = id
     )
-  }
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-required_pkgs_lefse <- function(x, ...) { 
-  c("bioc::lefser", "bioc::SummarizedExperiment") 
+  )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-run_lefse <-
-  function(rec,
-           kruskal.threshold = kruskal.threshold,
-           wilcox.threshold = wilcox.threshold,
-           lda.threshold = lda.threshold,
-           subclassCol = subclassCol,
-           assay = assay,
-           trim.names = trim.names,
-           rarefy = rarefy ) {
+#' @keywords internal
+run_lefse <- function(rec,
+                      kruskal.threshold,
+                      wilcox.threshold,
+                      lda.threshold,
+                      subclassCol,
+                      assay,
+                      trim.names,
+                      rarefy,
+                      id) {
 
   lefse_mat <- prepro_lefse(rec, rarefy)
   vars <- get_var(rec)
@@ -211,7 +141,8 @@ run_lefse <-
             colData = sample_data
           ) %>% lefser::relativeAb()
 
-          # set.seed(1234)
+          # Note: We set internal thresholds loosely (1, 1, 0) to capture all results,
+          # then filter manually below using the user-provided thresholds.
           lefse_res <- lefser::lefser(
             se,
             classCol = var,
@@ -223,8 +154,7 @@ run_lefse <-
             trim.names = trim.names
           )
           
-          adjpval <-
-            ifelse(is.null(subclassCol), kruskal.threshold, wilcox.threshold)
+          adjpval <- ifelse(is.null(subclassCol), kruskal.threshold, wilcox.threshold)
           
           lefse_res %>%
             tibble::as_tibble() %>%
@@ -246,7 +176,7 @@ run_lefse <-
               )
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa") %>%
-            dplyr::rename(lefse_id = otu) %>% 
+            dplyr::rename(lefse_id = otu, taxa_id = taxa) %>% 
             dplyr::relocate(taxa_id, .before = 1)
         })
     })
@@ -254,10 +184,16 @@ run_lefse <-
 
 #' @noRd
 #' @keywords internal
+required_pkgs_lefse <- function(x, ...) { 
+  c("bioc::lefser", "bioc::SummarizedExperiment") 
+}
+
+#' @noRd
 #' @autoglobal
+#' @keywords internal
 prepro_lefse <- function(rec, rarefy) {
 
-  tax_level <- get_tax(rec)
+  tax_level <- get_tax(rec)[[1]]
   phy <- 
     get_phy(rec) %>% 
     use_rarefy(rarefy)
@@ -284,10 +220,6 @@ prepro_lefse <- function(rec, rarefy) {
           dplyr::everything(),
           .fns = function(x) stringr::str_replace_all(x, " |[.]|-", "_")
         )) 
-        # dplyr::mutate(dplyr::across(
-        #   .fns = function(x)
-        #     stringr::str_replace_all(x, "\\[|\\]", "")
-        # )) %>% 
 
       if (it == 1) {
         tax_lev_names <- tax_lev_names %>% dplyr::pull(!!tax)
@@ -297,6 +229,7 @@ prepro_lefse <- function(rec, rarefy) {
           tidyr::unite('name', Kingdom:(!!tax), sep = "|") %>%
           dplyr::pull()
       }
+
       abundance_df <- abundance_df %>% dplyr::mutate(RTC = tax_lev_names)
     }) %>%
     dplyr::filter(
@@ -310,8 +243,8 @@ prepro_lefse <- function(rec, rarefy) {
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
+#' @keywords internal
 kruskal_test <- function(se, levels, assay = 1L) {
   group <- levels %>% as.factor() %>% as.numeric()
   expr <- SummarizedExperiment::assay(se, i = assay)
@@ -322,3 +255,4 @@ kruskal_test <- function(se, levels, assay = 1L) {
     dplyr::rename(pvalue = value) %>%
     dplyr::mutate(adjp = stats::p.adjust(pvalue, method = "BH"))
 }
+

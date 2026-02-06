@@ -2,35 +2,9 @@
 % Please edit documentation in R/lefse.R
 \name{step_lefse}
 \alias{step_lefse}
-\alias{step_lefse,Recipe-method}
-\alias{step_lefse,PrepRecipe-method}
 \title{lefse analysis}
 \usage{
 step_lefse(
-  rec,
-  kruskal.threshold = 0.05,
-  wilcox.threshold = 0.05,
-  lda.threshold = 2,
-  subclassCol = NULL,
-  assay = 1L,
-  trim.names = FALSE,
-  rarefy = TRUE,
-  id = rand_id("lefse")
-)
-
-\S4method{step_lefse}{Recipe}(
-  rec,
-  kruskal.threshold = 0.05,
-  wilcox.threshold = 0.05,
-  lda.threshold = 2,
-  subclassCol = NULL,
-  assay = 1L,
-  trim.names = FALSE,
-  rarefy = TRUE,
-  id = rand_id("lefse")
-)
-
-\S4method{step_lefse}{PrepRecipe}(
   rec,
   kruskal.threshold = 0.05,
   wilcox.threshold = 0.05,
@@ -100,6 +74,7 @@ rec
 
 ## Define step with default parameters
 rec <- step_lefse(rec) 
+
 rec
 
 ## Running lefse without rarefaction (not recommended)

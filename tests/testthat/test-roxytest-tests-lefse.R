@@ -2,7 +2,7 @@
 
 # File R/lefse.R: @tests
 
-test_that("[unknown alias] @ L78", {
+test_that("Function step_lefse() @ L78", {
   data(metaHIV_phy)
   
   test <-
