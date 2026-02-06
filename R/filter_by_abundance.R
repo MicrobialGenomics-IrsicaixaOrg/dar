@@ -41,64 +41,38 @@
 #' ## Define filter_by_abundance step with default parameters
 #' rec <- step_filter_by_abundance(rec, threshold = 0.01)
 #' rec
-methods::setGeneric(
-  name = "step_filter_by_abundance",
-  def = function(rec, 
-                 threshold = 0.01, 
-                 id = rand_id("filter_by_abundance")) {
-    standardGeneric("step_filter_by_abundance")
-  }
-)
-
-#' @rdname step_filter_by_abundance
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_abundance",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    recipes_pkg_check(
-      required_pkgs_filter_by_abundance(),
-      "step_filter_by_abundance()"
+step_filter_by_abundance <- function(rec, 
+                                     threshold = 0.01, 
+                                     id = rand_id("filter_by_abundance")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(
+    required_pkgs_filter_by_abundance(), 
+    "step_filter_by_abundance()"
+  )
+  
+  add_step(
+    rec,
+    step(
+      subclass = "filter_by_abundance", 
+      threshold = threshold, 
+      id = id
     )
-    add_step(
-      rec,
-      step_filter_by_abundance_new(threshold = threshold, id = id)
-    )
-  }
-)
-
-#' @rdname step_filter_by_abundance
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_abundance",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_filter_by_abundance_new <- function(threshold = 0.01, id) {
-  step(subclass = "filter_by_abundance", threshold = threshold, id = id)
+  )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_filter_by_abundance <- function(x, ...) {  c("bioc::phyloseq") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
-run_filter_by_abundance <- function(rec, threshold = 0.01) {
-  t_abun <- sum(phyloseq::otu_table(get_phy(rec)))
+run_filter_by_abundance <- function(rec, threshold = 0.01, id) {
+  t_abun <- sum(phyloseq::otu_table(get_phy(rec)))  
   rec@phyloseq <- 
     get_phy(rec) %>%
     phyloseq::filter_taxa(function(x) sum(x) > (t_abun * threshold), TRUE) 
   
   rec
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_filter_by_abundance <- function(x, ...) {  c("bioc::phyloseq") }

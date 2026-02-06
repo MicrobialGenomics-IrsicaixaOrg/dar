@@ -2,7 +2,7 @@
 
 # File R/filter_by_abundance.R: @tests
 
-test_that("[unknown alias] @ L44", {
+test_that("Function step_filter_by_abundance() @ L44", {
   data(test_prep_rec)
   expect_error(step_filter_by_abundance(test_prep_rec))
 })
