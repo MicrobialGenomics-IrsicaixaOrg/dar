@@ -2,35 +2,9 @@
 % Please edit documentation in R/deseq2.R
 \name{step_deseq}
 \alias{step_deseq}
-\alias{step_deseq,Recipe-method}
-\alias{step_deseq,PrepRecipe-method}
 \title{DESeq2 analysis}
 \usage{
 step_deseq(
-  rec,
-  test = "Wald",
-  fitType = "local",
-  betaPrior = FALSE,
-  type = "ashr",
-  max_significance = 0.05,
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("deseq")
-)
-
-\S4method{step_deseq}{Recipe}(
-  rec,
-  test = "Wald",
-  fitType = "local",
-  betaPrior = FALSE,
-  type = "ashr",
-  max_significance = 0.05,
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("deseq")
-)
-
-\S4method{step_deseq}{PrepRecipe}(
   rec,
   test = "Wald",
   fitType = "local",
