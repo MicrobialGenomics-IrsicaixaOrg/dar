@@ -1,4 +1,4 @@
-# [unknown alias] @ L78
+# Function step_lefse() @ L78
 
     Code
       expect_s4_class(prep(test), "PrepRecipe")

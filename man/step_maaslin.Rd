@@ -2,45 +2,9 @@
 % Please edit documentation in R/maaslin3.R
 \name{step_maaslin}
 \alias{step_maaslin}
-\alias{step_maaslin,Recipe-method}
-\alias{step_maaslin,PrepRecipe-method}
 \title{MaAsLin3 analysis}
 \usage{
 step_maaslin(
-  rec,
-  min_abundance = 0,
-  min_prevalence = 0.1,
-  min_variance = 0,
-  normalization = "TSS",
-  transform = "LOG",
-  max_significance = 0.1,
-  random_effects = NULL,
-  correction = "BH",
-  standardize = TRUE,
-  reference = NULL,
-  median_comparison_abundance = TRUE,
-  rarefy = FALSE,
-  id = rand_id("maaslin")
-)
-
-\S4method{step_maaslin}{Recipe}(
-  rec,
-  min_abundance = 0,
-  min_prevalence = 0.1,
-  min_variance = 0,
-  normalization = "TSS",
-  transform = "LOG",
-  max_significance = 0.1,
-  random_effects = NULL,
-  correction = "BH",
-  standardize = TRUE,
-  reference = NULL,
-  median_comparison_abundance = TRUE,
-  rarefy = FALSE,
-  id = rand_id("maaslin")
-)
-
-\S4method{step_maaslin}{PrepRecipe}(
   rec,
   min_abundance = 0,
   min_prevalence = 0.1,

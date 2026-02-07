@@ -2,7 +2,7 @@
 
 # File R/maaslin3.R: @tests
 
-test_that("[unknown alias] @ L77", {
+test_that("Function step_maaslin() @ L77", {
   data(metaHIV_phy)
   
   test <-

@@ -1,4 +1,4 @@
-# [unknown alias] @ L77
+# Function step_maaslin() @ L77
 
     Code
       expect_s4_class(prep(test), "PrepRecipe")

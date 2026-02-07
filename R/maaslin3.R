@@ -74,136 +74,48 @@
 #'   step_maaslin(rarefy = TRUE)
 #'
 #' rec
-methods::setGeneric(
-  name = "step_maaslin",
-  def = function(rec,
-                 min_abundance = 0.0,
-                 min_prevalence = 0.1,
-                 min_variance = 0.0,
-                 normalization = "TSS",
-                 transform = "LOG",
-                 max_significance = 0.1,
-                 random_effects = NULL,
-                 correction = "BH",
-                 standardize = TRUE,
-                 reference = NULL,
-                 median_comparison_abundance = TRUE,
-                 rarefy = FALSE,
-                 id = rand_id("maaslin")) {
-    standardGeneric("step_maaslin")
-  }
-)
-
-#' @rdname step_maaslin
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_maaslin",
-  signature = c(rec = "Recipe"),
-  definition = function(rec,
-                        min_abundance,
-                        min_prevalence,
-                        min_variance,
-                        normalization,
-                        transform,
-                        max_significance,
-                        random_effects,
-                        correction,
-                        standardize,
-                        reference,
-                        median_comparison_abundance,
-                        rarefy,
-                        id) {
-    
-    recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
-    add_step(
-      rec,
-      step_maaslin_new(
-        min_abundance = min_abundance,
-        min_prevalence = min_prevalence,
-        min_variance = min_variance,
-        normalization = normalization,
-        transform = transform,
-        max_significance = max_significance,
-        random_effects = random_effects,
-        correction = correction,
-        standardize = standardize,
-        reference = reference,
-        median_comparison_abundance = median_comparison_abundance,
-        rarefy = rarefy,
-        id = id
-      )
+step_maaslin <- function(rec,
+                         min_abundance = 0.0,
+                         min_prevalence = 0.1,
+                         min_variance = 0.0,
+                         normalization = "TSS",
+                         transform = "LOG",
+                         max_significance = 0.1,
+                         random_effects = NULL,
+                         correction = "BH",
+                         standardize = TRUE,
+                         reference = NULL,
+                         median_comparison_abundance = TRUE,
+                         rarefy = FALSE,
+                         id = rand_id("maaslin")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
+  
+  add_step(
+    rec,
+    step(
+      subclass = "maaslin",
+      min_abundance = min_abundance,
+      min_prevalence = min_prevalence,
+      min_variance = min_variance,
+      normalization = normalization,
+      transform = transform,
+      max_significance = max_significance,
+      random_effects = random_effects,
+      correction = correction,
+      standardize = standardize,
+      reference = reference,
+      median_comparison_abundance = median_comparison_abundance,
+      rarefy = rarefy,
+      id = id
     )
-  }
-)
-
-#' @rdname step_maaslin
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_maaslin",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec,
-                        min_abundance,
-                        min_prevalence,
-                        min_variance,
-                        normalization,
-                        transform,
-                        max_significance,
-                        random_effects,
-                        correction,
-                        standardize,
-                        reference,
-                        median_comparison_abundance,
-                        rarefy,
-                        id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_maaslin_new <- function(rec,
-                             min_abundance,
-                             min_prevalence,
-                             min_variance,
-                             normalization,
-                             transform,
-                             max_significance,
-                             random_effects,
-                             correction,
-                             standardize,
-                             reference,
-                             median_comparison_abundance,
-                             rarefy,
-                             id) {
-  step(
-    subclass = "maaslin",
-    min_abundance = min_abundance,
-    min_prevalence = min_prevalence,
-    min_variance = min_variance,
-    normalization = normalization,
-    transform = transform,
-    max_significance = max_significance,
-    random_effects = random_effects,
-    correction = correction,
-    standardize = standardize,
-    reference = reference,
-    median_comparison_abundance = median_comparison_abundance,
-    rarefy = rarefy,
-    id = id
   )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_maaslin <- function(x, ...) { c("bioc::maaslin3") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
 run_maaslin <- function(rec,
                         min_abundance,
                         min_prevalence,
@@ -216,97 +128,108 @@ run_maaslin <- function(rec,
                         standardize,
                         reference,
                         median_comparison_abundance,
-                        rarefy) {
+                        rarefy,
+                        id) {
 
-  output <- glue::glue("{tempdir()}/maaslin3_output")
+  # MaAsLin3 writes output to disk, so we use a temp dir
+  output_dir <- glue::glue("{tempdir()}/maaslin3_output")
+  if (!dir.exists(output_dir)) dir.create(output_dir)
 
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
-  phy <- get_phy(rec) %>% use_rarefy(rarefy)
+  phy <- get_phy(rec) %>% use_rarefy(rarefy) 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
-        purrr::map_dfr(function(comparison) {
+      comparisons_list <- get_comparisons(var, phy, as_list = TRUE, n_cut = 1)
+      purrr::map_dfr(comparisons_list, function(comparison) {
+        input_metadata <-
+          sample_data(rec) %>%
+          dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
+          data.frame(row.names = 1)
 
-          input_metadata <-
-            sample_data(rec) %>%
-            dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
-            data.frame(row.names = 1)
+        input_data <-
+          otu_table(rec) %>%
+          dplyr::select(taxa_id, dplyr::all_of(rownames(input_metadata))) %>%
+          data.frame(row.names = 1) %>%
+          as.matrix()
 
-          input_data <-
-            otu_table(rec) %>%
-            dplyr::select(taxa_id, dplyr::all_of(rownames(input_metadata))) %>%
-            data.frame(row.names = 1) %>%
-            as.matrix()
-
-          m3_res <- maaslin3_quietly(
-            input_data,
-            input_metadata,
-            output,
-            var,
-            min_abundance,
-            min_prevalence,
-            min_variance,
-            normalization,
-            transform,
-            max_significance,
-            random_effects,
-            fixed_effects = var,
-            correction,
-            standardize,
-            reference,
-            median_comparison_abundance
-          ) 
-          
-          m3_res %>%
-            purrr::pluck("fit_data_abundance", "results") %>%
-            tibble::as_tibble() %>%
-            dplyr::select(
-              taxa_id = feature,
-              coef,
-              stderr,
-              pval = pval_individual,
-              qval = qval_individual
-            ) %>%
-            dplyr::mutate(
-              comparison = stringr::str_c(comparison, collapse = "_"),
-              var = !!var
-            ) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
-            dplyr::mutate(
-              effect = coef,
-              signif = ifelse(qval < max_significance, TRUE, FALSE)
-            )
-        })
+        m3_res <- maaslin3_quietly(
+          input_data,
+          input_metadata,
+          output_dir,
+          var,
+          min_abundance,
+          min_prevalence,
+          min_variance,
+          normalization,
+          transform,
+          max_significance,
+          random_effects,
+          fixed_effects = var,
+          correction,
+          standardize,
+          reference,
+          median_comparison_abundance
+        ) 
+        
+        # MaAsLin3 returns results for both abundance and prevalence.
+        # Typically we care about the combined or abundance results.
+        # Here we extract 'fit_data_abundance' as per original code.
+        m3_res %>%
+          purrr::pluck("result", "fit_data_abundance", "results") %>%
+          tibble::as_tibble() %>%
+          dplyr::select(
+            taxa_id = feature,
+            coef,
+            stderr,
+            pval = pval_individual,
+            qval = qval_individual
+          ) %>%
+          dplyr::mutate(
+            comparison = stringr::str_c(comparison, collapse = "_"),
+            var = !!var
+          ) %>%
+          dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+          dplyr::mutate(
+            effect = coef,
+            signif = ifelse(qval < max_significance, TRUE, FALSE)
+          ) %>%
+          dplyr::relocate(taxa_id, .before = 1)
+      })
     })
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_maaslin <- function(x, ...) { c("bioc::maaslin3") }
+
 
 #' Maaslin3 without console noise
 #'
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-maaslin3_quietly <- function(
-  input_data,
-  input_metadata,
-  output,
-  var,
-  min_abundance,
-  min_prevalence,
-  min_variance,
-  normalization,
-  transform,
-  max_significance,
-  random_effects,
-  fixed_effects,
-  correction,
-  standardize,
-  reference,
-  median_comparison_abundance
-) {
-  f_quietly <- function(...) {
+#' @keywords internal
+maaslin3_quietly <- function(input_data,
+                             input_metadata,
+                             output,
+                             var,
+                             min_abundance,
+                             min_prevalence,
+                             min_variance,
+                             normalization,
+                             transform,
+                             max_significance,
+                             random_effects,
+                             fixed_effects,
+                             correction,
+                             standardize,
+                             reference,
+                             median_comparison_abundance){
+  
+  # We wrap the call in a function to pass to purrr::quietly
+  f_quietly <- function() {
     maaslin3::maaslin3(
       input_data = input_data,
       input_metadata = input_metadata,
@@ -323,9 +246,10 @@ maaslin3_quietly <- function(
       standardize = standardize,
       reference = reference,
       median_comparison_abundance = median_comparison_abundance,
-      verbosity = 'ERROR'
+      verbosity = 'ERROR' 
     )
   }
 
-  purrr::quietly(f_quietly)()$result
+  # Capture output to prevent console spam
+  purrr::quietly(f_quietly)()
 }
