@@ -14,9 +14,9 @@ utils::globalVariables(c(
   # <.zero_prepro>
   # <recipes_pkg_check>
   # <corr_heatmap>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   # <run_subset_taxa>
   # <run_wilcox>
   ".",
@@ -54,9 +54,9 @@ utils::globalVariables(c(
   # <mutual_plt>
   "method",
   # <run_bake>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   "method_count",
   # <.zero_stats>
   "n_zero",
@@ -99,9 +99,9 @@ utils::globalVariables(c(
   "tax_lev",
   # <run_bake>
   # <corncob_stats_tbl>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   "taxa",
   # <tax_table>
   # <intersection_df>
@@ -111,9 +111,9 @@ utils::globalVariables(c(
   # <run_maaslin>
   # <find_intersections>
   # <.zero_groups>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   # <.otu_method_count>
   # <run_wilcox>
   "taxa_id",

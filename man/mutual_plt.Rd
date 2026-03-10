@@ -2,8 +2,6 @@
 % Please edit documentation in R/plot_methods.R
 \name{mutual_plt}
 \alias{mutual_plt}
-\alias{mutual_plt,Recipe-method}
-\alias{mutual_plt,PrepRecipe-method}
 \title{Mutual finding plot}
 \usage{
 mutual_plt(
@@ -13,25 +11,9 @@ mutual_plt(
   steps = steps_ids(rec, type = "da"),
   top_n = 20
 )
-
-\S4method{mutual_plt}{Recipe}(
-  rec,
-  count_cutoff = NULL,
-  comparisons = NULL,
-  steps = steps_ids(rec, type = "da"),
-  top_n = 20
-)
-
-\S4method{mutual_plt}{PrepRecipe}(
-  rec,
-  count_cutoff = NULL,
-  comparisons = NULL,
-  steps = steps_ids(rec, type = "da"),
-  top_n = 20
-)
 }
 \arguments{
-\item{rec}{A Recipe or Recipe step.}
+\item{rec}{A prepped \code{Recipe} object.}
 
 \item{count_cutoff}{Indicates the minimum number of methods in which an OTU
 must be present (Default: NULL). If count_cutoff is NULL count_cutoff is

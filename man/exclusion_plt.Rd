@@ -2,18 +2,12 @@
 % Please edit documentation in R/plot_methods.R
 \name{exclusion_plt}
 \alias{exclusion_plt}
-\alias{exclusion_plt,Recipe-method}
-\alias{exclusion_plt,PrepRecipe-method}
 \title{Plot the number of shared DA OTUs between methods.}
 \usage{
 exclusion_plt(rec, steps = steps_ids(rec, "da"))
-
-\S4method{exclusion_plt}{Recipe}(rec, steps = steps_ids(rec, "da"))
-
-\S4method{exclusion_plt}{PrepRecipe}(rec, steps = steps_ids(rec, "da"))
 }
 \arguments{
-\item{rec}{A \code{Recipe} object.}
+\item{rec}{A prepped \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 }
@@ -34,7 +28,7 @@ exclusion_plt(test_prep_rec)
 ## results of maaslin
 exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
-## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
+## exclusion_plt function needs a PrepRecipe. If you pass a a non-prep
 ## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(exclusion_plt(test_rec))

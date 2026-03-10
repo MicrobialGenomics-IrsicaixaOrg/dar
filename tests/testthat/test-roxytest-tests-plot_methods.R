@@ -2,7 +2,7 @@
 
 # File R/plot_methods.R: @tests
 
-test_that("[unknown alias] @ L38", {
+test_that("Function corr_heatmap() @ L35", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(corr_heatmap(test_rec))
@@ -15,7 +15,7 @@ test_that("[unknown alias] @ L38", {
 })
 
 
-test_that("[unknown alias] @ L143", {
+test_that("Function intersection_plt() @ L103", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(intersection_plt(test_rec))
@@ -28,7 +28,7 @@ test_that("[unknown alias] @ L143", {
 })
 
 
-test_that("[unknown alias] @ L224", {
+test_that("Function exclusion_plt() @ L156", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -41,7 +41,7 @@ test_that("[unknown alias] @ L224", {
 })
 
 
-test_that("[unknown alias] @ L369", {
+test_that("Function abundance_plt() @ L274", {
   data(test_rec)
   data(test_prep_rec)
   taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
@@ -77,7 +77,7 @@ test_that("[unknown alias] @ L369", {
 })
 
 
-test_that("[unknown alias] @ L676", {
+test_that("Function mutual_plt() @ L371", {
   data(test_rec)
   data(test_prep_rec)
   
