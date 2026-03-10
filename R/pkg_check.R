@@ -16,34 +16,33 @@
 #' dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()") |> 
 #'   expect_snapshot()
 recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
-  good <- rep(TRUE, length(pkg))
-  for (i in seq(along.with = pkg)) {
-    x <- stringr::str_remove_all(pkg[i], ".*[/]|.*[:]")
-    tested <- try(find.package(x), silent = TRUE)
-    if (methods::is(tested, "try-error")) {
-      good[i] <- FALSE
-    }
-  }
+  if (is.null(pkg) || length(pkg) == 0) return(invisible())
+  pkg_names <- stringr::str_remove_all(pkg, ".*[/]|.*[:]")
+  is_inst <- vapply(pkg_names, rlang::is_installed, logical(1))
   
-  if (any(!good)) {
-    pkList <- paste(
-      stringr::str_remove_all(pkg[!good], ".*[/]|.*[:]") , collapse = ", "
+  if (any(!is_inst)) {
+    missing_pkgs <- pkg[!is_inst]
+    missing_names <- pkg_names[!is_inst]
+
+    # Format for BiocManager::install
+    to_inst <- 
+      missing_pkgs %>%
+      stringr::str_remove_all("bioc::") %>%
+      paste0('"', ., '"', collapse = ", ")
+
+    inst_code <- glue::glue("BiocManager::install(c({to_inst}))")
+    
+    n_missing <- length(missing_pkgs)
+    pkg_word <- ifelse(n_missing > 1, "packages are", "package is")
+    to_be <- ifelse(n_missing > 1, "are", "is")
+    missing_str <- paste(missing_names, collapse = ", ")
+
+    msg <- c(
+      "i" = glue::glue("{n_missing} {pkg_word} needed for {crayon::blue(step_name)} and {to_be} not installed: ({crayon::blue(missing_str)})"),
+      "*" = glue::glue("Start a clean R session then run: {crayon::blue(inst_code)}")
     )
     
-    to_inst <-
-      pkg[!good] %>%
-      stringr::str_remove_all("bioc::") %>%
-      paste("\"", ., "\"", sep = "", collapse = ", ")
-
-    inst <- glue::glue('BiocManager::install(c({to_inst}))')
-    n_packages = glue::glue('{sum(!good)} {ifelse(sum(!good) > 1, "packages are", "package is")}')
-    step_name <- glue::glue('{crayon::blue(step_name)}')
-    to_be <- glue::glue('{ifelse(sum(!good) > 1, "are", "is")}')
-    blue_pkList <- glue::glue('{crayon::blue(pkList)}')
-    rlang::inform(c(
-      "i" = glue::glue('{n_packages} needed for {step_name} and {to_be} not installed: ({blue_pkList})'),
-      "*" = glue::glue('Start a clean R session then run: {crayon::blue(inst)}')
-    ))
+    rlang::inform(msg)
   }
 
   invisible()
@@ -72,26 +71,15 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 #' ## The function also works with PrepRecipe-class objects
 #' data(test_prep_rec)
 #' dar:::required_deps(test_prep_rec)
-methods::setGeneric("required_deps", function(rec)
-  standardGeneric("required_deps"))
-
-#' @rdname required_deps
-#' @keywords internal
-#' @autoglobal
-methods::setMethod(
-  f = "required_deps",
-  signature = "Recipe",
-  definition = function(rec) {
-    text <- 
-      rec@steps %>%
-      purrr::walk( ~ {
-        id <- class(.x)[[1]]
-        id_2 <- stringr::str_remove_all(id, "step_")
-        glue::glue("recipes_pkg_check(required_pkgs_{id_2}(), '{id}()')") %>%
-          parse(text = .) %>%
-          eval()
-      })
+required_deps <- function(rec) {
+  check_any_recipe(rec)
+  purrr::walk(rec@steps, function(step_obj) {
+    id <- stringr::str_remove_all(class(step_obj)[[1]], "step_")
+    req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
+    if (!is.null(req_fun)) {
+      recipes_pkg_check(pkg = req_fun(), step_name = paste0("step_", id, "()"))
+    }
+  })
     
-    invisible()
-  }
-)
+  invisible()
+}
