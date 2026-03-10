@@ -26,6 +26,10 @@ utils::globalVariables(c(
   "coef",
   # <mutual_plt>
   "comparison",
+  # <.count_summary>
+  "count_max",
+  # <.count_summary>
+  "count_mean",
   # <run_aldex>
   # <mutual_plt>
   "effect",
@@ -41,6 +45,8 @@ utils::globalVariables(c(
   "Kingdom",
   # <ancom_stats_tbl>
   "lfc",
+  # <.count_summary>
+  "lib_size",
   # <run_deseq>
   "log2FoldChange",
   # <run_bake>

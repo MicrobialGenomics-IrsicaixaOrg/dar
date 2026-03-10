@@ -1,4 +1,4 @@
-# Function step_lefse() @ L78
+# Function step_lefse() @ L81
 
     Code
       expect_s4_class(prep(test), "PrepRecipe")

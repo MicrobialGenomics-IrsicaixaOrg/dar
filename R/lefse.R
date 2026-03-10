@@ -41,12 +41,15 @@
 #' @tests
 #' data(metaHIV_phy)
 #' 
-#' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-#'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'  step_filter_by_prevalence() |> 
-#'  step_lefse() |> 
-#'  step_lefse(rarefy = FALSE) 
+#' expect_message(
+#'  test <- 
+#'    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+#'    step_filter_by_prevalence() |> 
+#'    step_lefse() |> 
+#'    step_lefse(rarefy = FALSE),
+#'  "Run lefse without rarefaction is not recommended"
+#' )
 #'  
 #' expect_s4_class(prep(test), "PrepRecipe") |> 
 #'   expect_snapshot()

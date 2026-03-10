@@ -343,7 +343,7 @@ methods::setMethod(
 #'   abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
 #' )
 #' 
-#' teardown(dev.off())
+#' withr::defer(dev.off())
 #' @examples
 #' data(test_prep_rec)
 #'

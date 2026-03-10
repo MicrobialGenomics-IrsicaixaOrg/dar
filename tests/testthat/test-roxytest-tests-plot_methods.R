@@ -73,7 +73,7 @@ test_that("[unknown alias] @ L369", {
     abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
   )
   
-  teardown(dev.off())
+  withr::defer(dev.off())
 })
 
 
