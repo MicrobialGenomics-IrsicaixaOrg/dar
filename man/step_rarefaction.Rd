@@ -2,15 +2,9 @@
 % Please edit documentation in R/rarefaction.R
 \name{step_rarefaction}
 \alias{step_rarefaction}
-\alias{step_rarefaction,Recipe-method}
-\alias{step_rarefaction,PrepRecipe-method}
 \title{Resample an OTU table such that all samples have the same library size.}
 \usage{
 step_rarefaction(rec, id = rand_id("rarefaction"))
-
-\S4method{step_rarefaction}{Recipe}(rec, id = rand_id("rarefaction"))
-
-\S4method{step_rarefaction}{PrepRecipe}(rec, id = rand_id("rarefaction"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
@@ -50,7 +44,7 @@ data(metaHIV_phy)
 rec <- 
   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+  step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 
 rec
 

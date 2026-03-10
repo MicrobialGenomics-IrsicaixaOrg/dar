@@ -51,8 +51,7 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    UpSetR,
-    waldo
+    UpSetR
 Suggests: 
     ALDEx2,
     ANCOMBC,
@@ -107,7 +106,6 @@ Collate:
     'pkg_check.R'
     'plot_methods.R'
     'rarefaction.R'
-    'read_data.R'
     'steps_and_checks.R'
     'subset_taxa.R'
     'utilis-validation.R'

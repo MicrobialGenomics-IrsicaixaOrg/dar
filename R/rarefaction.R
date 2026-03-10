@@ -47,7 +47,7 @@
 #' rec <- 
 #'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+#'   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 #' 
 #' rec
 #' 
@@ -55,56 +55,25 @@
 #' rec <- step_rarefaction(rec) 
 #'   
 #' rec
-methods::setGeneric(
-  name = "step_rarefaction",
-  def = function(rec, id = rand_id("rarefaction")) {
-    standardGeneric("step_rarefaction")
-  }
-)
-
-#' @rdname step_rarefaction
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_rarefaction",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, id) {
-    recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")
-    add_step(rec, step_rarefaction_new(id = id))
-  }
-)
-
-#' @rdname step_rarefaction
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_rarefaction",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_rarefaction_new <- function(id) {
-  step(subclass = "rarefaction", id = id)
+step_rarefaction <- function(rec, id = rand_id("rarefaction")) {
+  check_recipe(rec)
+  recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")
+  add_step(
+    rec,
+    step(
+      subclass = "rarefaction", 
+      id = id
+    )
+  )
 }
 
 #' @noRd
 #' @keywords internal
-#' @autoglobal
-required_pkgs_rarefaction <- function(x, ...) {  c("bioc::phyloseq") }
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-run_rarefaction <- function(rec) {
-  rec@phyloseq <- 
-    get_phy(rec) %>% 
-    use_rarefy(TRUE)
-    
+run_rarefaction <- function(rec, id) {
+  rec@phyloseq <- get_phy(rec) %>% use_rarefy(TRUE)
   rec
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_rarefaction <- function(x, ...) {  c("bioc::phyloseq") }
