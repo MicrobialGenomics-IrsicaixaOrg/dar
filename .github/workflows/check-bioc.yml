@@ -222,6 +222,13 @@ jobs:
           remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
         shell: Rscript {0}
 
+      - name: Force downgrade CVXR (Temp. fix for ANCOMBC)
+        run: |
+          remove.packages("CVXR")
+          remotes::install_cran("pak")
+          pak::pkg_install("CVXR@1.0.15")
+        shell: Rscript {0}
+
       - name: Install BiocGenerics
         if:  env.has_RUnit == 'true'
         run: |
