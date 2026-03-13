@@ -5,7 +5,6 @@ data("metaHIV_phy")
 test_rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Genus") %>%
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) %>%
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") %>%
   step_maaslin() %>%
   step_deseq()

@@ -41,15 +41,49 @@ test_that("Function to_tibble() @ L100", {
 })
 
 
-test_that("Function step_to_expr() @ L119", {
-  data(test_prep_rec)
-  exprs <- test_prep_rec@steps |> purrr::map_chr(step_to_expr)
-  expect_length(exprs, 4)
-  expect_true(all(stringr::str_detect(exprs, "run_")))
+test_that("Function step_to_call() @ L162", {
+  # 1. Test standard string and numeric parameters
+  step_standard <- list(
+    id = "maaslin__123", 
+    transform = "LOG", 
+    min_abundance = 0.1
+  )
+  call_standard <- step_to_call(step_standard)
+  
+  expect_true(is.call(call_standard))
+  expect_true(is.function(call_standard[[1]]))
+  expect_equal(call_standard[[1]], run_maaslin)
+  expect_equal(rlang::call_args(call_standard)$transform, "LOG")
+  expect_equal(rlang::call_args(call_standard)$min_abundance, 0.1)
+  
+  # 2. Test with a function parameter (The main reason for this refactor)
+  my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
+  step_func <- list(
+    id = "filter_taxa__abc", 
+    .f = my_fun
+  )
+  call_func <- step_to_call(step_func)
+  
+  expect_true(is.call(call_func))
+  expect_true(is.function(call_func[[1]]))
+  expect_equal(call_func[[1]], run_filter_taxa)
+  expect_true(is.function(rlang::call_args(call_func)$.f))
+  
+  # 3. Test with a formula parameter
+  step_formula <- list(
+    id = "deseq__xyz", 
+    design = ~ RiskGroup2
+  )
+  call_formula <- step_to_call(step_formula)
+  
+  expect_true(is.call(call_formula))
+  expect_true(is.function(call_formula[[1]]))
+  expect_equal(call_formula[[1]], run_deseq)
+  expect_true(inherits(rlang::call_args(call_formula)$design, "formula"))
 })
 
 
-test_that("Function find_intersections() @ L191", {
+test_that("Function find_intersections() @ L277", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -68,41 +102,32 @@ test_that("Function find_intersections() @ L191", {
 })
 
 
-test_that("Function steps_ids() @ L252", {
+test_that("Function steps_ids() @ L338", {
   data(test_prep_rec)
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
   expect_equal(
     steps_ids(rec), 
-    c("subset_taxa__Bear_claw",
-      "filter_taxa__Spanakopita", 
-      "maaslin__Eccles_cake", 
-      "deseq__Belekoy"    
+    c("subset_taxa__Chatti_Pathiri",
+      "filter_taxa__Fa_gao", 
+      "maaslin__Gundain", 
+      "deseq__Puff_pastry"    
      )
   )
   expect_equal(
     steps_ids(rec, "da"), 
-    c("maaslin__Eccles_cake", "deseq__Belekoy")
+    c("maaslin__Gundain", "deseq__Puff_pastry")
   )
   expect_equal(
     steps_ids(rec, "prepro"), 
-    c("subset_taxa__Bear_claw", "filter_taxa__Spanakopita")
+    c("subset_taxa__Chatti_Pathiri", "filter_taxa__Fa_gao")
   )
   expect_error(steps_ids(rec, "das"))
   expect_type(steps_ids(rec), "character")
 })
 
 
-test_that("Function export_steps() @ L330", {
-  data(test_prep_rec)
-  file <- tempfile(fileext = ".json") 
-  export_steps(test_prep_rec, file)
-  readr::read_lines(file) |> 
-    expect_snapshot()
-})
-
-
-test_that("Function import_steps() @ L397", {
+test_that("Function import_steps() @ L477", {
   data(metaHIV_phy)
   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
    import_steps(system.file("extdata", "test_bake.json", package = "dar")) |>

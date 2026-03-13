@@ -58,8 +58,8 @@ step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
 #' @autoglobal
 #' @keywords internal
 run_filter_taxa <- function(rec, .f, id) {
-  rec@phyloseq <- 
-    phyloseq::filter_taxa(get_phy(rec), eval(parse(text = .f)), prune = TRUE)
+  if (is.character(.f)) { .f <- eval(parse(text = .f)) }
+  rec@phyloseq <- phyloseq::filter_taxa(get_phy(rec), .f, prune = TRUE)
  
   rec
 }

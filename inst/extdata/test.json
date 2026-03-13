@@ -1,11 +1,11 @@
 {
    "tax_level": [c("Kingdom")],
    "taxa": [c("Bacteria", "Archaea")],
-   "id": [c("subset_taxa__Bear_claw")],
+   "id": [c("subset_taxa__Chatti_Pathiri")],
 }
 {
    ".f": [c("function(x) sum(x > 0) >= (0.3 * length(x))")],
-   "id": [c("filter_taxa__Spanakopita")],
+   "id": [c("filter_taxa__Fa_gao")],
 }
 {
    "min_abundance": 0,
@@ -14,13 +14,13 @@
    "normalization": [c("TSS")],
    "transform": [c("LOG")],
    "max_significance": 0.1,
-   "random_effects": ,
+   "random_effects": NULL,
    "correction": [c("BH")],
    "standardize": TRUE,
-   "reference": ,
+   "reference": NULL,
    "median_comparison_abundance": TRUE,
    "rarefy": FALSE,
-   "id": [c("maaslin__Eccles_cake")],
+   "id": [c("maaslin__Gundain")],
 }
 {
    "test": [c("Wald")],
@@ -30,5 +30,5 @@
    "max_significance": 0.05,
    "log2FC": 0,
    "rarefy": FALSE,
-   "id": [c("deseq__Belekoy")],
+   "id": [c("deseq__Puff_pastry")],
 }

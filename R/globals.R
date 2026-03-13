@@ -2,8 +2,6 @@
 
 utils::globalVariables(c(
   # <Recipe-class>
-  # <intersection_df>
-  # <cool>
   # <ancom_stats_tbl>
   # <run_bake>
   # <run_deseq>
@@ -17,6 +15,8 @@ utils::globalVariables(c(
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
+  # <intersection_df>
+  # <cool>
   # <run_subset_taxa>
   # <run_wilcox>
   ".",
@@ -85,9 +85,9 @@ utils::globalVariables(c(
   "qval_individual",
   # <prepro_lefse>
   "RTC",
-  # <sample_data>
   # <.count_summary>
   # <.abundance_heatmap>
+  # <sample_data>
   # <run_wilcox>
   "sample_id",
   # <run_lefse>
@@ -103,8 +103,6 @@ utils::globalVariables(c(
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   "taxa",
-  # <tax_table>
-  # <intersection_df>
   # <run_bake>
   # <corncob_stats_tbl>
   # <run_lefse>
@@ -115,6 +113,8 @@ utils::globalVariables(c(
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <.otu_method_count>
+  # <tax_table>
+  # <intersection_df>
   # <run_wilcox>
   "taxa_id",
   # <ancom_stats_tbl>

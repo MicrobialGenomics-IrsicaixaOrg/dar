@@ -106,6 +106,7 @@ Collate:
     'pkg_check.R'
     'plot_methods.R'
     'rarefaction.R'
+    'recipe-utils.R'
     'steps_and_checks.R'
     'subset_taxa.R'
     'utilis-validation.R'
