@@ -234,39 +234,31 @@ corncob_stats_tbl <- function(corncob_res,
 #' @noRd
 #' @keywords internal
 check_non_convergence <- function(corncob_res) {
-  if (!methods::is(corncob_res, "differentialTest")) {
-    if (stringr::str_detect(corncob_res, "failed to converge")) {
-      rlang::abort(c(
-        glue::glue(
-          "{crayon::bgMagenta('corncob')}: All models failed to converge!"
-        ),
-        glue::glue(
-          "{crayon::bgMagenta('corncob')}: If you are seeing this, it",
-          " is likely that your model is overspecified. This occurs ", 
-          "when your sample size is not large enough to estimate all ", 
-          "the parameters of your model. This is most commonly due to", 
-          " categorical variables that include many categories."
-        ),
-        glue::glue(
-          "Please remove or edit the ", 
-          "{crayon::bgMagenta('step_corncob()')} and rerun."
-        )
-      ))
-    } else {
-      rlang::abort(
-        c(
-          glue::glue("{crayon::bgMagenta('corncob')}: Internal error!"),
-          glue::glue(
-            "Please remove or edit the ", 
-            "{crayon::bgMagenta('step_corncob()')} and rerun."
-          ),
-          glue::glue(
-            "Please report this bug on GitHub: ", 
-            "https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/", 
-            "issues" 
-          )
-        )
-      )
-    }
+  if (methods::is(corncob_res, "differentialTest")) {
+    return(invisible(corncob_res))
   }
+  
+  is_convergence_error <- 
+    is.character(corncob_res) && any(stringr::str_detect(corncob_res, "failed to converge"))
+  
+  if (is_convergence_error) {
+    cli::cli_abort(
+      c(
+        "x" = "{.pkg corncob}: All models failed to converge!",
+        "i" = "If you are seeing this, it is likely that your model is overspecified.",
+        "i" = "This occurs when your sample size is not large enough to estimate all the parameters of your model (commonly due to categorical variables with many categories).",
+        "*" = "Please remove or edit {.fn step_corncob} and rerun."
+      ),
+      class = "dar_error_corncob_convergence"
+    )
+  } 
+  
+  cli::cli_abort(
+    c(
+      "x" = "{.pkg corncob}: Internal error!",
+      "i" = "Please remove or edit {.fun step_corncob} and rerun.",
+      "*" = "Please report this bug on GitHub: {.url https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues}"
+    ),
+    class = "dar_error_corncob_internal"
+  )
 }

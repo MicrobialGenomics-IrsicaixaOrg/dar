@@ -2,8 +2,6 @@
 % Please edit documentation in R/bake.R
 \name{bake}
 \alias{bake}
-\alias{bake,PrepRecipe-method}
-\alias{bake,Recipe-method}
 \title{Define consensus strategies from a Recipe}
 \usage{
 bake(
@@ -13,32 +11,16 @@ bake(
   exclude = NULL,
   id = rand_id("bake")
 )
-
-\S4method{bake}{PrepRecipe}(
-  rec,
-  count_cutoff = NULL,
-  weights = NULL,
-  exclude = NULL,
-  id = rand_id("bake")
-)
-
-\S4method{bake}{Recipe}(
-  rec,
-  count_cutoff = NULL,
-  weights = NULL,
-  exclude = NULL,
-  id = rand_id("bake")
-)
 }
 \arguments{
-\item{rec}{A Recipe object. The step will be added to the sequence of
+\item{rec}{A PrepRecipe object. The step will be added to the sequence of
 operations for this Recipe.}
 
 \item{count_cutoff}{Indicates the minimum number of methods in which an OTU
-must be present (Default: NULL). If count_cutoff is NULL count_cutoff is
-equal to \code{length(steps_ids(rec, "da")) - length(exclude)}}
+must be present (Default: NULL). If \code{count_cutoff} is \code{NULL},
+it is set to \code{length(steps_ids(rec, "da")) - length(exclude)}.}
 
-\item{weights}{Named vector with the ponderation value for each method.}
+\item{weights}{Named numeric vector with the weight for each method.}
 
 \item{exclude}{Method ids to exclude.}
 
@@ -48,30 +30,29 @@ equal to \code{length(steps_ids(rec, "da")) - length(exclude)}}
 An object of class \code{PrepRecipe}
 }
 \description{
-For a prep Recipe adds a consensus strategies to use for result extraction.
+For a prep Recipe adds a consensus strategy to use for result extraction.
 }
 \examples{
 data(test_prep_rec)
 rec <- test_prep_rec
 
-## Default bake extracts common OTUs in all DA tested methods 
+## Default bake extracts common OTUs in all DA tested methods
 ## (In this case the Recipe contains 3 methods)
 res <- bake(rec)
 cool(res)
 
-## bake and cool methods needs a PrepRecipe. If you pass a non-PrepRecipe
-## the output is an error.
+## bake() requires a PrepRecipe
 data(test_rec)
 err <- testthat::expect_error(bake(test_rec))
 err
 
-## We can use the parameter `cout_cutoff` to for example select those OTUs
-## shared with at least two methods
+## We can use the parameter `count_cutoff` to select those OTUs
+## shared by at least two methods
 res <- bake(rec, count_cutoff = 2)
 cool(res)
 
-## Furthermore, we can exclude methods from the consensus strategy with the 
-## `exclude` parameter.
+## Furthermore, we can exclude methods from the consensus strategy
+## with the `exclude` parameter.
 res <- bake(rec, exclude = steps_ids(rec, "da")[1])
 cool(res)
 

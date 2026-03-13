@@ -77,7 +77,7 @@ test_that("Function abundance_plt() @ L274", {
 })
 
 
-test_that("Function mutual_plt() @ L371", {
+test_that("Function mutual_plt() @ L374", {
   data(test_rec)
   data(test_prep_rec)
   

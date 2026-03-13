@@ -2,7 +2,7 @@
 
 # File R/bake.R: @tests
 
-test_that("[unknown alias] @ L86", {
+test_that("Function bake() @ L85", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -15,13 +15,13 @@ test_that("[unknown alias] @ L86", {
   
   ## Test exclude parameter
   test <- bake(test_prep_rec, exclude = steps_ids(test_prep_rec, "da")[1])
-  cool(test) |> 
-    testthat::expect_s3_class("tbl_df") |> 
+  cool(test) |>
+    testthat::expect_s3_class("tbl_df") |>
     testthat::expect_snapshot()
-    
+  
   nrow(cool(test)) |>
-   testthat::expect_equal(27) |>
-   testthat::expect_snapshot()
+    testthat::expect_equal(27) |>
+    testthat::expect_snapshot()
   
   test <- bake(test_prep_rec, exclude = "force_error")
   testthat::expect_error(cool(test))
@@ -30,12 +30,12 @@ test_that("[unknown alias] @ L86", {
   weights <- c(2, 1)
   names(weights) <- steps_ids(test_prep_rec, "da")
   test <- bake(test_prep_rec, weights = weights)
-  cool(test) |> 
-    testthat::expect_s3_class("tbl_df") |> 
+  cool(test) |>
+    testthat::expect_s3_class("tbl_df") |>
     testthat::expect_snapshot()
   
-  nrow(cool(test)) |> 
-    testthat::expect_equal(41) |> 
+  nrow(cool(test)) |>
+    testthat::expect_equal(41) |>
     testthat::expect_snapshot()
 })
 

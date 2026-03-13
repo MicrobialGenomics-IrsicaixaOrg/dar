@@ -24,25 +24,18 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
     missing_pkgs <- pkg[!is_inst]
     missing_names <- pkg_names[!is_inst]
 
-    # Format for BiocManager::install
     to_inst <- 
       missing_pkgs %>%
       stringr::str_remove_all("bioc::") %>%
       paste0('"', ., '"', collapse = ", ")
 
     inst_code <- glue::glue("BiocManager::install(c({to_inst}))")
-    
-    n_missing <- length(missing_pkgs)
-    pkg_word <- ifelse(n_missing > 1, "packages are", "package is")
-    to_be <- ifelse(n_missing > 1, "are", "is")
-    missing_str <- paste(missing_names, collapse = ", ")
-
-    msg <- c(
-      "i" = glue::glue("{n_missing} {pkg_word} needed for {crayon::blue(step_name)} and {to_be} not installed: ({crayon::blue(missing_str)})"),
-      "*" = glue::glue("Start a clean R session then run: {crayon::blue(inst_code)}")
+    cli::cli_inform(
+      c(
+        "i" = "{length(missing_names)} package{?s} {?is/are} needed for {.val {step_name}} and {?is/are} not installed: {.pkg {missing_names}}.",
+        "*" = "Start a clean R session then run: {.run {inst_code}}"
+      )
     )
-    
-    rlang::inform(msg)
   }
 
   invisible()

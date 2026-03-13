@@ -3,7 +3,6 @@
 utils::globalVariables(c(
   # <Recipe-class>
   # <ancom_stats_tbl>
-  # <run_bake>
   # <run_deseq>
   # <prepro_lefse>
   # <step_to_expr>
@@ -54,11 +53,9 @@ utils::globalVariables(c(
   "lib_size",
   # <run_deseq>
   "log2FoldChange",
-  # <run_bake>
   # <exclusion_plt>
   # <mutual_plt>
   "method",
-  # <run_bake>
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
@@ -77,8 +74,6 @@ utils::globalVariables(c(
   # <run_deseq>
   # <run_wilcox>
   "padj",
-  # <run_bake>
-  "ponderation",
   # <run_maaslin>
   "pval_individual",
   # <run_lefse>
@@ -102,13 +97,11 @@ utils::globalVariables(c(
   "sum_methods",
   # <Recipe-class>
   "tax_lev",
-  # <run_bake>
   # <corncob_stats_tbl>
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   "taxa",
-  # <run_bake>
   # <corncob_stats_tbl>
   # <run_lefse>
   # <run_maaslin>

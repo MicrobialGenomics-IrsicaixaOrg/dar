@@ -281,7 +281,10 @@ abundance_plt <- function(rec,
   check_prep_recipe(rec)
   
   if (!type %in% c("boxplot", "heatmap")) {
-    rlang::abort("type must be boxplot or heatmap")
+    cli::cli_abort(
+      c("x" = "{.arg type} must be one of: {.val {c('boxplot', 'heatmap')}}."),
+      class = "dar_error_invalid_plot_type"
+    )
   }
 
   if (type == "boxplot") { 
@@ -377,25 +380,39 @@ mutual_plt <- function(rec,
   check_prep_recipe(rec)
   
   if (top_n == 0) {
-    rlang::abort("top_n must be greater than 0")
+    cli::cli_abort(
+      c("x" = "{.arg top_n} must be greater than {.val {0}}."),
+      class = "dar_error_invalid_top_n"
+    )
   }
-  
+
   if (is.null(count_cutoff)) {
     count_cutoff <- steps %>% length() * 2 / 3 
     count_cutoff <- round(count_cutoff, 0)
-    rlang::inform(c("i" = glue::glue("count_cutoff set to {count_cutoff}")))
+    cli::cli_inform(
+      c("i" = "{.arg count_cutoff} set to {.val {count_cutoff}}.")
+    )
   }
-  
+
   if (count_cutoff > length(steps_ids(rec, "da"))) {
-    rlang::abort("count_cutoff must be less or equal than the number of methods")
+    cli::cli_abort(
+      c("x" = "{.arg count_cutoff} must be less than or equal to the number of methods."),
+      class = "dar_error_invalid_count_cutoff"
+    )
   }
-  
+
   if (count_cutoff == 0) {
-    rlang::abort("count_cutoff must be greater than 0")
+    cli::cli_abort(
+      c("x" = "{.arg count_cutoff} must be greater than {.val {0}}."),
+      class = "dar_error_invalid_count_cutoff"
+    )
   }
-  
+
   if (!all(steps %in% steps_ids(rec, "da"))) {
-    rlang::abort("steps must be a subset of step_ids(rec, 'da')")
+    cli::cli_abort(
+      c("x" = "{.arg steps} must be a subset of {.code steps_ids(rec, 'da')}."),
+      class = "dar_error_invalid_steps"
+    )
   }
   
   df <- 
@@ -403,15 +420,9 @@ mutual_plt <- function(rec,
     dplyr::filter(method_count >= count_cutoff & method %in% steps)
   
   if (nrow(df) > top_n) {
-    rlang::inform(c(
-      "!" = glue::glue(
-        "Taxa present in selected methods are greater than the cutoff top_n = ", 
-        "{top_n}"
-      ),
-      "i" = glue::glue(
-        "The top {top_n} significant taxa with the greatest overlap between", 
-        " methods will be used"
-      )
+    cli::cli_inform(c(
+      "!" = "Taxa present in selected methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
+      "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
     ))
     
     taxa_ids <- 
@@ -427,14 +438,9 @@ mutual_plt <- function(rec,
   }
   
   if (nrow(df) == 0) {
-    rlang::inform(c(
-      "!" = glue::glue(
-        "0 taxa are present with count_cutoff = {count_cutoff}"
-      ),
-      "i" = glue::glue(
-        "The top {top_n} significant taxa with the greatest overlap between", 
-        " methods will be used"
-      )
+    cli::cli_inform(c(
+      "!" = "0 taxa are present with {.arg count_cutoff} = {.val {count_cutoff}}.",
+      "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
     ))
     
     taxa_ids <- 
@@ -451,7 +457,12 @@ mutual_plt <- function(rec,
   
   if (!is.null(comparisons)) {
     if (!all(comparisons %in% df$comparison)) {
-      rlang::abort("comparison must be a valid comparison")
+      cli::cli_abort(c(
+        "x" = "Invalid value in {.arg comparisons}.",
+        "i" = "Valid comparisons are: {.val {unique(df$comparison)}}."
+      ),
+      class = "dar_error_invalid_comparison"
+      )
     }
     df <- df %>% dplyr::filter(comparison %in% comparisons)
   }
@@ -499,15 +510,9 @@ mutual_plt <- function(rec,
       unique()
     
     if (length(taxa_ids) > top_n) {
-      rlang::inform(c(
-        "!" = glue::glue(
-          "Taxa present in all methods are greater than the cutoff top_n = ", 
-          "{top_n}"
-        ),
-        "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between", 
-          " methods will be used"
-        )
+      cli::cli_inform(c(
+        "!" = "Taxa present in all methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
+        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
       ))
      
       taxa_ids <- 
@@ -520,12 +525,9 @@ mutual_plt <- function(rec,
     }
     
     if (length(taxa_ids) == 0) {
-      rlang::inform(c(
-        "!" = "0 taxa are present in all tested methods",
-        "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap ", 
-          "between methods will be used"
-        )
+      cli::cli_inform(c(
+        "!" = "0 taxa are present in all tested methods.",
+        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
       ))
       
       taxa_ids <- 
@@ -576,15 +578,9 @@ mutual_plt <- function(rec,
       unique()
     
     if (length(taxa_ids) > top_n) {
-      rlang::inform(c(
-        "!" = glue::glue(
-          "Taxa present in all methods are greater than the cutoff top_n = ", 
-          "{top_n}"
-        ),
-        "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between", 
-          " methods will be used"
-        )
+      cli::cli_inform(c(
+        "!" = "Taxa present in all methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
+        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
       ))
       
       taxa_ids <- 
@@ -597,12 +593,9 @@ mutual_plt <- function(rec,
     }
     
     if (length(taxa_ids) == 0) {
-      rlang::inform(c(
-        "!" = "0 taxa are present in all tested methods",
-        "i" = glue::glue(
-          "The top {top_n} significant taxa with the greatest overlap between", 
-          " methods will be used"
-        )
+      cli::cli_inform(c(
+        "!" = "{.val 0} taxa are present in all tested methods.",
+        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
       ))
       
       taxa_ids <- 

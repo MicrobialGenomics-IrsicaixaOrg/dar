@@ -18,14 +18,14 @@
            i 16 taxa are present in all tested methods 
       
 
-# Function import_steps() @ L477
+# Function import_steps() @ L479
 
     Code
       import_steps(recipe(metaHIV_phy, "RiskGroup2", "Class"), system.file("extdata",
         "test_bake.json", package = "dar"))
     Message
       ! bakes found in imported recipe
-      i running prep()
+      i running `prep()`
     Output
       -- DAR Results -----------------------------------------------------------------
       Inputs:

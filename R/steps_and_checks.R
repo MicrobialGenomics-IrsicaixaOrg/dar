@@ -94,12 +94,11 @@ add_step <- function(rec, object) {
   
   if (dupl_rec) {
     expr <- stringr::str_replace(step_to_expr(object), 'run', 'step')
-    rlang::inform(
+    cli::cli_inform(
       c(
         "!" = "This step is already defined with the same parameters and will be skipped.",
-        "i" = expr
-      ),
-      use_cli_format = TRUE
+        "i" = "{.code {expr}}"
+      )
     )
     return(rec)
   } 

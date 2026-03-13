@@ -134,10 +134,11 @@ recipe <- function(microbiome_object = NULL,
   
   if (!is(microbiome_object, "phyloseq") && 
       !is(microbiome_object, "TreeSummarizedExperiment")) {
-    rlang::abort(
-      c(
-        "The input object must be a phyloseq or TreeSummarizedExperiment object."
-      )
+    cli::cli_abort(c(
+      "x" = "{.arg microbiome_object} must be a {.cls phyloseq} or {.cls TreeSummarizedExperiment} object.",
+      "i" = "You supplied an object of class: {.cls {class(microbiome_object)}}."
+    ),
+    class = "dar_error_invalid_microbiome_object"
     )
   }
   
@@ -147,19 +148,12 @@ recipe <- function(microbiome_object = NULL,
   
   tax_names <- colnames(microbiome_object@tax_table) %>% stringr::str_to_sentence()
   if (!all(tax_names %in% expected)) {
-    rlang::abort(
-      c(
-        glue::glue(
-          "'rank' must be a value from {crayon::bgMagenta('taxonomyRanks()')}."
-        ),
-        glue::glue(
-          "Rename the columns from the tax_table slot of your input phyloseq ",
-          "with standard names.",
-        ),
-        glue::glue(
-          "Standard names: {stringr::str_c(expected, collapse = ', ')}."
-        )
-      )
+    cli::cli_abort(c(
+      "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
+      "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} with standard names.",
+      "i" = "Standard names: {.val {expected}}."
+    ),
+    class = "dar_error_invalid_rank_names"
     )
   }
   

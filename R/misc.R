@@ -337,12 +337,14 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' prepro_ids
 steps_ids <- function(rec, type = "all") {
   if (!type %in% c("all", "da", "prepro")) {
-    rlang::abort(c(
-      "Incorrect step type!",
-      i = glue::glue(
-        "Please use one of: {crayon::bgMagenta('c(all, da, prepro)')}"
-      )
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Incorrect step type!",
+        "i" = "Please use one of: {.val {c('all', 'da', 'prepro')}}."
+      ),
+      class = "dar_error_invalid_step_type"
+    )
+
   }
 
   out <- purrr::map_chr(rec@steps, ~ .x[["id"]])
@@ -507,9 +509,9 @@ import_steps <- function(
   }
 
   if (any(stringr::str_detect(lines, "bake__"))) {
-    rlang::inform(c(
+    cli::cli_inform(c(
       "!" = "bakes found in imported recipe",
-      i = glue::glue("running {crayon::bgMagenta('prep()')}")
+      "i" = "running {.fun prep}"
     ))
 
     rec <- prep(rec, parallel = parallel, workers = workers)
@@ -639,27 +641,17 @@ rarefy_msg <- function(steps) {
   has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
   
   if (has_true) { 
-    rlang::inform(
-      c(
-        "!" = "Rarefaction is enabled (with set seed).", 
-        "i" = glue::glue(
-          "This process is not without controversy. Use ", 
-          "{crayon::bgMagenta('rarefaction_help()')} to get more info.")
-      ), 
-      use_cli_format = TRUE
-    )
+    cli::cli_inform(c(
+      "!" = "Rarefaction is enabled (with set seed).", 
+      "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
+    ))
   }
 
   if (has_no_seed) {
-    rlang::inform(
-      c(
-        "!" = "Rarefaction is enabled (without set seed).", 
-        "i" = glue::glue(
-          "This process is not without controversy. Use ", 
-          "{crayon::bgMagenta('rarefaction_help()')} to get more info.")
-      ), 
-      use_cli_format = TRUE
-    )
+    cli::cli_inform(c(
+      "!" = "Rarefaction is enabled (without set seed).", 
+      "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
+    ))
   }
   
   steps

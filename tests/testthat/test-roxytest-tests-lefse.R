@@ -5,14 +5,14 @@
 test_that("Function step_lefse() @ L81", {
   data(metaHIV_phy)
   
-  expect_message(
+  expect_condition(
    test <- 
      recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
      step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
      step_filter_by_prevalence() |> 
      step_lefse() |> 
      step_lefse(rarefy = FALSE),
-   "Run lefse without rarefaction is not recommended"
+   "lefse.*without rarefaction"
   )
    
   expect_s4_class(prep(test), "PrepRecipe") |> 
