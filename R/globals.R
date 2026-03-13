@@ -19,6 +19,8 @@ utils::globalVariables(c(
   # <cool>
   # <run_wilcox>
   ".",
+  # <run_wilcox>
+  ".y.",
   # <run_lefse>
   "adjp",
   # <run_maaslin>
@@ -40,6 +42,10 @@ utils::globalVariables(c(
   "feature",
   # <run_lefse>
   "features",
+  # <run_wilcox>
+  "group1",
+  # <run_wilcox>
+  "group2",
   # <prepro_lefse>
   "Kingdom",
   # <ancom_stats_tbl>

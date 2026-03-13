@@ -2,29 +2,9 @@
 % Please edit documentation in R/wilcox.R
 \name{step_wilcox}
 \alias{step_wilcox}
-\alias{step_wilcox,Recipe-method}
-\alias{step_wilcox,PrepRecipe-method}
 \title{Wilcox analysis}
 \usage{
 step_wilcox(
-  rec,
-  norm_method = "compositional",
-  max_significance = 0.05,
-  p_adj_method = "BH",
-  rarefy = FALSE,
-  id = rand_id("wilcox")
-)
-
-\S4method{step_wilcox}{Recipe}(
-  rec,
-  norm_method = "compositional",
-  max_significance = 0.05,
-  p_adj_method = "BH",
-  rarefy = FALSE,
-  id = rand_id("wilcox")
-)
-
-\S4method{step_wilcox}{PrepRecipe}(
   rec,
   norm_method = "compositional",
   max_significance = 0.05,
@@ -47,13 +27,7 @@ vegan::decostand function.}
 \item{p_adj_method}{Character. Specifying the method to adjust p-values for
 multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
-\item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
-rarefaction uses the standard R sample function to resample from the
-abundance values in the otu_table component of the first argument, physeq.
-Often one of the major goals of this procedure is to achieve parity in
-total number of counts between samples, as an alternative to other formal
-normalization procedures, which is why a single value for the sample.size
-is expected. If 'no_seed', rarefaction is performed without a set seed.}
+\item{rarefy}{Boolean indicating if OTU counts must be rarefyed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
@@ -71,23 +45,10 @@ data(metaHIV_phy)
 ## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea"))
 
-rec
-
-## Define step with default parameters and prep
-rec <-
-  step_wilcox(rec) |>
-  prep(parallel = FALSE)
-
-rec
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-  step_wilcox(rarefy = TRUE)
-
+## Define step with default parameters
+rec <- step_wilcox(rec)
 rec
 }
 \seealso{

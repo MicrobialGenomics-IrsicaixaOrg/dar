@@ -2,7 +2,7 @@
 
 # File R/wilcox.R: @tests
 
-test_that("[unknown alias] @ L70", {
+test_that("Function step_wilcox() @ L50", {
   data(metaHIV_phy)
   
   test <-
