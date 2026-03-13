@@ -2,26 +2,33 @@
 % Please edit documentation in R/steps_and_checks.R
 \name{add_step}
 \alias{add_step}
-\alias{add_step,Recipe-method}
-\alias{add_step,PrepRecipe-method}
 \title{Add a New Operation to the Current Recipe}
 \usage{
 add_step(rec, object)
-
-\S4method{add_step}{Recipe}(rec, object)
-
-\S4method{add_step}{PrepRecipe}(rec, object)
 }
 \arguments{
-\item{rec}{A \code{\link[=Recipe]{Recipe()}}.}
+\item{rec}{A \code{\link[=Recipe]{Recipe()}} or \code{\link[=PrepRecipe]{PrepRecipe()}}.}
 
 \item{object}{A step or check object.}
 }
 \value{
-A updated \code{\link[=Recipe]{Recipe()}} with the new operation in the last slot.
+A updated \code{\link[=Recipe]{Recipe()}} or \code{\link[=PrepRecipe]{PrepRecipe()}} with the new operation in the last slot.
 }
 \description{
 \code{add_step} adds a step to the last location in the Recipe. \code{add_check} does
 the same for checks.
+}
+\examples{
+data(metaHIV_phy)
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+
+# Internally, step_ functions use add_step to append themselves
+rec <- step_maaslin(rec)
+length(rec@steps) # Returns 1
+
+# If we try to add the exact same step, it will inform us and skip it
+rec <- step_maaslin(rec)
+length(rec@steps) # Still returns 1
+
 }
 \keyword{internal}

@@ -2,26 +2,42 @@
 
 # File R/steps_and_checks.R: @tests
 
-test_that("Function step() @ L36", {
+test_that("Function step() @ L20", {
   data(metaHIV_phy)
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-      step_maaslin(id = "panallet") |>
-      step_maaslin() |> 
-      expect_snapshot()
+  rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |> step_maaslin() 
       
-  expect_s4_class(
-    recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-      step_maaslin() |>
-      step_maaslin(),
-    "Recipe"
-  ) |> expect_snapshot()
+  expect_s4_class(rec, "Recipe")
+  expect_equal(length(rec@steps), 1)
+})
+
+
+test_that("Function add_step() @ L81", {
+  data(metaHIV_phy)
   
+  # 1. Test adding steps to a normal Recipe
+  rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+  rec <- step_maaslin(rec, id = "test_1")
+  expect_equal(length(rec@steps), 1)
+  
+  # 2. Test duplicate skipping mechanism in Recipe
+  # Adding the exact same step should not increase the length
+  expect_snapshot({
+   rec <- step_maaslin(rec, id = "test_2") 
+  })
+  expect_equal(length(rec@steps), 1)
+  
+  # 3. Test adding bakes to a PrepRecipe
   data(test_prep_rec)
-  expect_s4_class(
-    test_prep_rec |> 
-      bake() |>
-      bake(),
-   "PrepRecipe"
-  ) |> expect_snapshot()
+  initial_bakes <- length(test_prep_rec@bakes)
+  
+  # Bake adds a step to the @bakes slot
+  prepped <- bake(test_prep_rec)
+  expect_equal(length(prepped@bakes), initial_bakes + 1)
+  
+  # Duplicate bake should be skipped
+  expect_snapshot({
+     prepped_dup <- bake(prepped)
+  })
+  expect_equal(length(prepped_dup@bakes), initial_bakes + 1)
 })
 
