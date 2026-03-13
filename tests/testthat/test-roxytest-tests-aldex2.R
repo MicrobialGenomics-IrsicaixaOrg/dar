@@ -2,7 +2,7 @@
 
 # File R/aldex2.R: @tests
 
-test_that("[unknown alias] @ L99", {
+test_that("Function step_aldex() @ L99", {
   data(metaHIV_phy)
   
   test <-

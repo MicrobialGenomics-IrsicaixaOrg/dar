@@ -2,23 +2,9 @@
 % Please edit documentation in R/filter_by_abundance.R
 \name{step_filter_by_abundance}
 \alias{step_filter_by_abundance}
-\alias{step_filter_by_abundance,Recipe-method}
-\alias{step_filter_by_abundance,PrepRecipe-method}
 \title{Filter taxa by abundance}
 \usage{
 step_filter_by_abundance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_abundance")
-)
-
-\S4method{step_filter_by_abundance}{Recipe}(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_abundance")
-)
-
-\S4method{step_filter_by_abundance}{PrepRecipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_abundance")

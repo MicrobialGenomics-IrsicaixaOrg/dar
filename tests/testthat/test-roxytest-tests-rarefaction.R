@@ -2,7 +2,7 @@
 
 # File R/rarefaction.R: @tests
 
-test_that("[unknown alias] @ L58", {
+test_that("Function step_rarefaction() @ L58", {
   data(metaHIV_phy)
   data(test_prep_rec)
   test <- 

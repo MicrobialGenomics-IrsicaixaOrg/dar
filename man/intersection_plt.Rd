@@ -2,8 +2,6 @@
 % Please edit documentation in R/plot_methods.R
 \name{intersection_plt}
 \alias{intersection_plt}
-\alias{intersection_plt,Recipe-method}
-\alias{intersection_plt,PrepRecipe-method}
 \title{Plot results using UpSet plot}
 \usage{
 intersection_plt(
@@ -12,18 +10,9 @@ intersection_plt(
   ordered_by = c("freq", "degree"),
   font_size = 2
 )
-
-\S4method{intersection_plt}{Recipe}(rec, steps, font_size)
-
-\S4method{intersection_plt}{PrepRecipe}(
-  rec,
-  steps = steps_ids(rec, "da"),
-  ordered_by = c("freq", "degree"),
-  font_size = 2
-)
 }
 \arguments{
-\item{rec}{A \code{Recipe} object.}
+\item{rec}{A prepped \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 

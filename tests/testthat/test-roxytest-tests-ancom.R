@@ -2,12 +2,11 @@
 
 # File R/ancom.R: @tests
 
-test_that("[unknown alias] @ L116", {
-  testthat::skip("Temporary disabling due to problems with the ANCOM package")
+test_that("Function step_ancom() @ L113", {
   data(metaHIV_phy)
   
   test <-
-   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+   recipe(metaHIV_phy, "RiskGroup2", "Order") |>
    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
    step_filter_by_prevalence() |> 
    step_ancom()

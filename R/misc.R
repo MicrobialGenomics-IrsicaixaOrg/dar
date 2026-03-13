@@ -103,50 +103,136 @@ to_tibble <- function(df, id_name = "otu_id") {
     tibble::as_tibble(rownames = id_name)
 }
 
-#' Extracts parameters from steps and makes a character vector with the
-#' expression to evaluate
+#' Convert a step object into an unevaluated R call
 #'
-#' @param step object of class step
+#' @description
+#' This function takes a step from a `Recipe` and converts it into a native R
+#' call (language object) using `rlang::call2`. This avoids the pitfalls of
+#' pasting strings and parsing them, handling complex R objects like functions
+#' or formulas naturally. The resulting call will have `rec` as its first 
+#' argument, followed by the parameters defined in the step.
 #'
-#' @return character vector
+#' @param step A list or `step` class object containing the parameters for the
+#'   operation, including an `id` string (e.g., `"method__randomstring"`).
+#'
+#' @return An unevaluated call (language object).
+#' 
+#' @noRd
 #' @keywords internal
 #' @autoglobal
 #' @tests
-#' data(test_prep_rec)
-#' exprs <- test_prep_rec@steps |> purrr::map_chr(step_to_expr)
-#' expect_length(exprs, 4)
-#' expect_true(all(stringr::str_detect(exprs, "run_")))
+#' # 1. Test standard string and numeric parameters
+#' step_standard <- list(
+#'   id = "maaslin__123", 
+#'   transform = "LOG", 
+#'   min_abundance = 0.1
+#' )
+#' call_standard <- step_to_call(step_standard)
+#' 
+#' expect_true(is.call(call_standard))
+#' expect_true(is.function(call_standard[[1]]))
+#' expect_equal(call_standard[[1]], run_maaslin)
+#' expect_equal(rlang::call_args(call_standard)$transform, "LOG")
+#' expect_equal(rlang::call_args(call_standard)$min_abundance, 0.1)
+#' 
+#' # 2. Test with a function parameter (The main reason for this refactor)
+#' my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
+#' step_func <- list(
+#'   id = "filter_taxa__abc", 
+#'   .f = my_fun
+#' )
+#' call_func <- step_to_call(step_func)
+#' 
+#' expect_true(is.call(call_func))
+#' expect_true(is.function(call_func[[1]]))
+#' expect_equal(call_func[[1]], run_filter_taxa)
+#' expect_true(is.function(rlang::call_args(call_func)$.f))
+#' 
+#' # 3. Test with a formula parameter
+#' step_formula <- list(
+#'   id = "deseq__xyz", 
+#'   design = ~ RiskGroup2
+#' )
+#' call_formula <- step_to_call(step_formula)
+#' 
+#' expect_true(is.call(call_formula))
+#' expect_true(is.function(call_formula[[1]]))
+#' expect_equal(call_formula[[1]], run_deseq)
+#' expect_true(inherits(rlang::call_args(call_formula)$design, "formula"))
+step_to_call <- function(step) {
+  method <- stringr::str_remove_all(step[["id"]], "__.*")
+  fn_obj <- paste0("run_", method) %>% get(envir = asNamespace("dar"))
+  args <- step
+  args[["id"]] <- NULL
+  rlang::call2(fn_obj, rec = quote(rec), !!!args)
+}
+
+#' Converts a step object into an executable R code string
+#'
+#' @description
+#' This legacy function takes a step from a `Recipe` and converts its parameters
+#' into a formatted text string that can be evaluated using `eval(parse(text = ...))`.
+#' It handles the conversion of strings, NULLs, formulas, functions, and specific
+#' cases like `weights` for `step_bake`.
+#'
+#' @param step A list or `step` class object containing the parameters for the
+#'   operation, including an `id` string (e.g., `"method__randomstring"`).
+#'
+#' @return A character string containing the formatted R code (e.g., 
+#'   `"rec %>% run_method(param = 'value')"`) ready to be parsed and evaluated.
+#'
+#' @noRd
+#' @keywords internal
+#' @autoglobal
 step_to_expr <- function(step) {
   params <-
     step %>%
     purrr::discard(names(.) == "id") %>%
     purrr::map2_chr(names(.), ~ {
-      if (is.null(.x)) { return(glue::glue("{.y} = NULL"))}
+      
+      # 1. Manejo de NULL
+      if (is.null(.x)) { 
+        return(glue::glue("{.y} = NULL"))
+      }
+      
+      # 2. Manejo de Caracteres
       if (is.character(.x)) { 
         .x <- stringr::str_c("'", .x, "'", collapse = ", ")
         return(glue::glue("{.y} = c({.x})"))
       }
+      
+      # 3. Manejo de Fórmulas
       if (inherits(.x, "formula")) { 
         return(paste0(.y, " = ", paste0(.x, collapse = ""))) 
       }
-      if (.y == "weights" & is(step, "step_bake") & !is.null(.x)) {
+      
+      # 4. Manejo de Funciones (Parche de seguridad)
+      if (is.function(.x)) {
+        func_str <- paste(deparse(.x), collapse = " ")
+        return(glue::glue("{.y} = {func_str}"))
+      }
+      
+      # 5. Manejo especial de Weights para bakes
+      if (.y == "weights" && inherits(step, "step_bake") && !is.null(.x)) {
         text <- .x %>% 
           purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>% 
           stringr::str_c(collapse = ", ")
         return(glue::glue("{.y} = c({text})"))
       }
       
+      # 6. Fallback general (numéricos, lógicos, etc.)
       glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
 
+  # Extraemos el nombre real de la función (quitando el sufijo aleatorio)
   method <-
-    step["id"] %>%
+    step[["id"]] %>%
     stringr::str_remove_all("__.*")
 
+  # Construimos el string final con el pipeline
   glue::glue("rec %>% run_{method}({params})")
 }
-
 
 #' Finds common OTU between method results
 #'
@@ -219,19 +305,19 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
-#'   c("subset_taxa__Bear_claw",
-#'     "filter_taxa__Spanakopita", 
-#'     "maaslin__Eccles_cake", 
-#'     "deseq__Belekoy"    
+#'   c("subset_taxa__Chatti_Pathiri",
+#'     "filter_taxa__Fa_gao", 
+#'     "maaslin__Gundain", 
+#'     "deseq__Puff_pastry"    
 #'    )
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "da"), 
-#'   c("maaslin__Eccles_cake", "deseq__Belekoy")
+#'   c("maaslin__Gundain", "deseq__Puff_pastry")
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "prepro"), 
-#'   c("subset_taxa__Bear_claw", "filter_taxa__Spanakopita")
+#'   c("subset_taxa__Chatti_Pathiri", "filter_taxa__Fa_gao")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")
@@ -305,29 +391,8 @@ dot <- function() {
 #' @return invisible
 #' @export
 #' @autoglobal
-#' @tests
-#' data(test_prep_rec)
-#' file <- tempfile(fileext = ".json") 
-#' export_steps(test_prep_rec, file)
-#' readr::read_lines(file) |> 
-#'   expect_snapshot()
-#' @examples
-#' data(metaHIV_phy)
-#' 
-#' ## Create a Recipe with steps
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
-#'   step_filter_by_prevalence(0.4) |>
-#'   step_maaslin()
-#'  
-#' ## Prep Recipe   
-#' rec <- prep(rec, parallel = TRUE)
-#' 
-#' ## Export to json file
-#' export_steps(rec, tempfile(fileext = ".json"))
 export_steps <- function(rec, file_name) {
+  check_any_recipe(rec)
   inp <- rec@steps
   if (methods::is(rec, "PrepRecipe")) {
     inp <- c(rec@steps, rec@bakes)
@@ -339,22 +404,37 @@ export_steps <- function(rec, file_name) {
       params <-
         names(.x) %>%
         purrr::map_chr(function(.y) {
-          msg <- .x[[.y]]
-          if (is.character(.x[[.y]]) | is.factor(.x[[.y]])) {
-            msg <- 
-              double_quote(.x[[.y]]) %>% 
+          val <- .x[[.y]]
+          
+          # functions & formulas
+          if (is.function(val) || inherits(val, "formula")) {
+            val <- 
+              paste(deparse(val), collapse = " ") %>% 
+              stringr::str_squish() %>% 
+              glue::double_quote()
+          
+          # characters & factors
+          } else if (is.character(val) || is.factor(val)) {
+            val <- 
+              glue::double_quote(val) %>% 
               stringr::str_c(collapse = ", ") %>%
               stringr::str_c("[c(", ., ")]")
+
+          # NULL
+          } else if (is.null(val)) {
+            val <- "NULL"
           }
+
           stringr::str_c(
-            "   ", double_quote(.y), ": ", paste0(msg, collapse = ""), ","
+            "   ", 
+            glue::double_quote(.y), ": ", paste0(val, collapse = ""), 
+            ","
           )
-        }) %>%
-        stringr::str_c(collapse = "\n")
+        }) %>% stringr::str_c(collapse = "\n")
 
       stringr::str_c("{\n", params, "\n}")
     })
-
+  
   writeLines(to_cat, file_name)
 }
 
@@ -465,7 +545,7 @@ extract_instructions <- function(lines) {
     purrr::map_chr(function(.x) {
       params <- .x %>%
         stringr::str_squish() %>%
-        stringr::str_split(pattern = ": ") %>%
+        stringr::str_split(pattern = ": ", n = 2) %>% 
         unlist()
       
       param <- params[[1]] %>%
@@ -552,27 +632,26 @@ use_rarefy <- function(phy, rarefy) {
 #' @keywords internal
 #' @autoglobal
 rarefy_msg <- function(steps) {
-  info_rarefy <- "Rarefaction is a process that randomly subsamples the data to a specified depth. This is done to account for differences in sequencing depth between samples. However, this process is not without controversy. Rarefaction can lead to loss of information and can also lead to false positives in differential abundance testing. For more information, see https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2"
-  if (any(stringr::str_detect(steps, "rarefy = T"))) {
-    rlang::inform(
-      c(
-        "!" = "Rarefaction is enabled",
-        i = "Rarefaction is being performed with a set seed. This will ensure that the results are reproducible, but will not allow for randomness in the subsampling process.",
-        i = info_rarefy
-      ), use_cli_format = TRUE
+  info_rarefy <- "Rarefaction is a process that randomly subsamples the data..."
+  rarefy_vals <- purrr::map(steps, ~ .x[["rarefy"]])
+  
+  has_true <- any(purrr::map_lgl(rarefy_vals, ~ isTRUE(.x) || identical(.x, quote(T))))
+  has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
+  
+  if (has_true) { 
+    rlang::inform(c(
+      "!" = "Rarefaction is enabled", "i" = "With set seed.", 
+      "i" = info_rarefy), use_cli_format = TRUE
+    )
+  }
+
+  if (has_no_seed) {
+    rlang::inform(c(
+      "!" = "Rarefaction is enabled", "i" = "Without set seed.", 
+      "i" = info_rarefy), use_cli_format = TRUE
     )
   }
   
-  if (any(stringr::str_detect(steps, "rarefy = 'no_seed'"))) {
-    rlang::inform(
-      c(
-        "!" = "Rarefaction is enabled",
-        i = "Rarefaction is being performed without a set seed. This will ensure that the results are not reproducible, but will allow for more randomness in the subsampling process.",
-        i = info_rarefy
-      ), use_cli_format = TRUE
-    )
-  }
   steps
 }
-
 

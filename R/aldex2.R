@@ -96,59 +96,18 @@
 #'   step_aldex(rarefy = TRUE)
 #'
 #' rec
-methods::setGeneric(
-  name = "step_aldex",
-  def = function(rec,
-                 max_significance = 0.05,
-                 mc.samples = 128,
-                 denom = "all",
-                 rarefy = FALSE,
-                 id = rand_id("aldex")) {
-    standardGeneric("step_aldex")
-  }
-)
-
-#' @rdname step_aldex
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_aldex",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
-    recipes_pkg_check(required_pkgs_aldex(), "step_aldex()")
-    add_step(
-      rec,
-      step_aldex_new(
-        max_significance = max_significance,
-        mc.samples = mc.samples,
-        denom = denom,
-        rarefy = rarefy,
-        id = id
-      )
-    )
-  }
-)
-
-#' @rdname step_aldex
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_aldex",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, max_significance, mc.samples, denom, rarefy, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_aldex_new <- function(out_cut,
-                           max_significance,
-                           mc.samples,
-                           denom,
-                           rarefy,
-                           id) {
+step_aldex <- function(rec,
+                       max_significance = 0.05,
+                       mc.samples = 128,
+                       denom = "all",
+                       rarefy = FALSE,
+                       id = rand_id("aldex")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(c("bioc::ALDEx2"), "step_aldex()")
+  
+  add_step(
+    rec,
     step(
       subclass = "aldex",
       max_significance = max_significance,
@@ -157,43 +116,41 @@ step_aldex_new <- function(out_cut,
       rarefy = rarefy,
       id = id
     )
-  }
+  )
+}
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
-run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
+run_aldex <- function(rec,
+                      max_significance,
+                      mc.samples,
+                      denom,
+                      rarefy,
+                      id) {
 
-  vars <- get_var(rec)
-  tax_level <- get_tax(rec)
+  vars <- get_var(rec)[[1]]
+  tax_level <- get_tax(rec)[[1]]
+  
   phy <- 
     get_phy(rec) %>% 
-    use_rarefy(rarefy)
+    use_rarefy(rarefy) %>%
+    phyloseq::tax_glom(taxrank = tax_level, NArm = FALSE)
   
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
       get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
-          sample_data <-
-            dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
-
-          otu_table <-
-            otu_table(rec) %>%
-            dplyr::select(taxa_id, dplyr::all_of(sample_data$sample_id)) %>%
-            data.frame(row.names = 1) %>%
-            as.matrix()
+          meta_vals <- phyloseq::get_variable(phy, var)
+          s_phy <- phyloseq::prune_samples(meta_vals %in% comparison, phy)
+          otu_table <- phyloseq::otu_table(s_phy)
+          conds <- phyloseq::get_variable(s_phy, var) %>% as.character()
 
           clr <- suppressMessages(
             ALDEx2::aldex.clr(
               reads = otu_table,
-              conds = sample_data %>% dplyr::pull(!!var) %>% as.character(),
+              conds = conds,
               denom = denom,
               mc.samples = mc.samples
             )
@@ -216,3 +173,8 @@ run_aldex <- function(rec, max_significance, mc.samples, denom, rarefy) {
         })
     })
 }
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+required_pkgs_aldex <- function(x, ...) { c("bioc::ALDEx2") }

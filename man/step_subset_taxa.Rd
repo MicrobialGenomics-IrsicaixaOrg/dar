@@ -2,15 +2,9 @@
 % Please edit documentation in R/subset_taxa.R
 \name{step_subset_taxa}
 \alias{step_subset_taxa}
-\alias{step_subset_taxa,Recipe-method}
-\alias{step_subset_taxa,PrepRecipe-method}
 \title{Subset taxa by taxonomic level}
 \usage{
 step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
-
-\S4method{step_subset_taxa}{Recipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
-
-\S4method{step_subset_taxa}{PrepRecipe}(rec, tax_level, taxa, id = rand_id("subset_taxa"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
@@ -55,7 +49,7 @@ rec <- step_subset_taxa(
   tax_level = "Kingdom",
   taxa = c("Bacteria", "Archaea")
 )
-rec
+prep(rec)
 }
 \seealso{
 \code{\link[phyloseq]{subset_taxa}}

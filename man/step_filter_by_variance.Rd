@@ -2,23 +2,9 @@
 % Please edit documentation in R/filter_by_variance.R
 \name{step_filter_by_variance}
 \alias{step_filter_by_variance}
-\alias{step_filter_by_variance,Recipe-method}
-\alias{step_filter_by_variance,PrepRecipe-method}
 \title{Filter taxa by variance}
 \usage{
 step_filter_by_variance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_variance")
-)
-
-\S4method{step_filter_by_variance}{Recipe}(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_variance")
-)
-
-\S4method{step_filter_by_variance}{PrepRecipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_variance")
@@ -46,8 +32,8 @@ the variance of their abundance is greater than the provided threshold.
 \details{
 The function calculates the variance of all taxa in the phyloseq
 object. It then compares this variance to the variance of each individual
-taxon. If a taxon's variance is less than the threshold, that taxon is
-removed from the phyloseq object.
+taxon. If a taxon's variance is less than or equal to the threshold, that
+taxon is removed from the phyloseq object.
 }
 \note{
 This function modifies \code{rec} in place, you might want to make a copy of

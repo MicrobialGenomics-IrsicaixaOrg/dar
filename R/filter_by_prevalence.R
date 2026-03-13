@@ -40,63 +40,37 @@
 #' ## Define step_filter_by_prevalence step with default parameters
 #' rec <- step_filter_by_prevalence(rec, threshold = 0.01)
 #' rec
-methods::setGeneric(
-  name = "step_filter_by_prevalence",
-  def = function(rec, 
-                 threshold = 0.01, 
-                 id = rand_id("filter_by_prevalence")) {
-    standardGeneric("step_filter_by_prevalence")
-  }
-)
-
-#' @rdname step_filter_by_prevalence
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_prevalence",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    recipes_pkg_check(
-      required_pkgs_filter_by_prevalence(),
-      "step_filter_by_prevalence()"
+step_filter_by_prevalence <- function(rec, 
+                                      threshold = 0.01, 
+                                      id = rand_id("filter_by_prevalence")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(
+    required_pkgs_filter_by_prevalence(), 
+    "step_filter_by_prevalence()"
+  )
+  
+  add_step(
+    rec,
+    step(
+      subclass = "filter_by_prevalence", 
+      threshold = threshold, 
+      id = id
     )
-    add_step(
-      rec,
-      step_filter_by_prevalence_new(threshold = threshold, id = id)
-    )
-  }
-)
-
-#' @rdname step_filter_by_prevalence
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_prevalence",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_filter_by_prevalence_new <- function(threshold = 0.01, id) {
-  step(subclass = "filter_by_prevalence", threshold = threshold, id = id)
+  )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_filter_by_prevalence <- function(x, ...) {  c("bioc::phyloseq") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
-run_filter_by_prevalence <- function(rec, threshold = 0.01) {
+run_filter_by_prevalence <- function(rec, threshold = 0.01, id) {
   rec@phyloseq <- 
     get_phy(rec) %>%
     phyloseq::filter_taxa(function(x) sum(x > 0) > (threshold * length(x)), TRUE) 
   
   rec
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_filter_by_prevalence <- function(x, ...) {  c("bioc::phyloseq") }

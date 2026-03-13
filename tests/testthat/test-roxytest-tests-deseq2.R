@@ -2,7 +2,7 @@
 
 # File R/deseq2.R: @tests
 
-test_that("[unknown alias] @ L86", {
+test_that("Function step_deseq() @ L86", {
   data(metaHIV_phy)
   
   test <-

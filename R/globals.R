@@ -2,9 +2,6 @@
 
 utils::globalVariables(c(
   # <Recipe-class>
-  # <intersection_df>
-  # <cool>
-  # <run_ancom>
   # <ancom_stats_tbl>
   # <run_bake>
   # <run_deseq>
@@ -15,18 +12,25 @@ utils::globalVariables(c(
   # <.zero_prepro>
   # <recipes_pkg_check>
   # <corr_heatmap>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
-  # <run_subset_taxa>
+  # <intersection_df>
+  # <cool>
   # <run_wilcox>
   ".",
+  # <run_wilcox>
+  ".y.",
   # <run_lefse>
   "adjp",
   # <run_maaslin>
   "coef",
   # <mutual_plt>
   "comparison",
+  # <.count_summary>
+  "count_max",
+  # <.count_summary>
+  "count_mean",
   # <run_aldex>
   # <mutual_plt>
   "effect",
@@ -38,10 +42,16 @@ utils::globalVariables(c(
   "feature",
   # <run_lefse>
   "features",
+  # <run_wilcox>
+  "group1",
+  # <run_wilcox>
+  "group2",
   # <prepro_lefse>
   "Kingdom",
   # <ancom_stats_tbl>
   "lfc",
+  # <.count_summary>
+  "lib_size",
   # <run_deseq>
   "log2FoldChange",
   # <run_bake>
@@ -49,16 +59,14 @@ utils::globalVariables(c(
   # <mutual_plt>
   "method",
   # <run_bake>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   "method_count",
   # <.zero_stats>
   "n_zero",
   # <find_intersections>
   "name",
-  # <zero_otu>
-  # <zero_otu>
   # <.zero_groups>
   "no_zero",
   # <run_lefse>
@@ -69,9 +77,6 @@ utils::globalVariables(c(
   # <run_deseq>
   # <run_wilcox>
   "padj",
-  # <zero_otu>
-  # <zero_otu>
-  "pct",
   # <run_bake>
   "ponderation",
   # <run_maaslin>
@@ -85,10 +90,9 @@ utils::globalVariables(c(
   "qval_individual",
   # <prepro_lefse>
   "RTC",
-  # <sample_data>
-  # <run_corncob>
   # <.count_summary>
   # <.abundance_heatmap>
+  # <sample_data>
   # <run_wilcox>
   "sample_id",
   # <run_lefse>
@@ -100,36 +104,29 @@ utils::globalVariables(c(
   "tax_lev",
   # <run_bake>
   # <corncob_stats_tbl>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   "taxa",
-  # <tax_table>
-  # <intersection_df>
-  # <run_aldex>
   # <run_bake>
   # <corncob_stats_tbl>
-  # <zero_otu>
-  # <zero_otu>
   # <run_lefse>
   # <run_maaslin>
   # <find_intersections>
   # <.zero_groups>
+  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <mutual_plt>
   # <.otu_method_count>
+  # <tax_table>
+  # <intersection_df>
   # <run_wilcox>
   "taxa_id",
   # <ancom_stats_tbl>
   "taxon",
-  # <zero_otu>
-  # <zero_otu>
   # <exclusion_plt>
   "total",
   # <rm_zero_variance>
-  # <zero_otu>
-  # <zero_otu>
   # <kruskal_test>
   # <find_intersections>
   # <.zero_stats>

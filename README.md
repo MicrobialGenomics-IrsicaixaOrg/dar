@@ -73,13 +73,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Komaj_sehen 
-#>      ◉ step_filter_taxa() id = filter_taxa__Zlebia 
+#>      ◉ step_subset_taxa() id = subset_taxa__Nunt 
+#>      ◉ step_filter_taxa() id = filter_taxa__Schaumrolle 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Mille_feuille 
-#>      ◉ step_aldex() id = aldex__Shakarbura
+#>      ◉ step_maaslin() id = maaslin__Crêpes_Suzette 
+#>      ◉ step_aldex() id = aldex__Pineapple_bun
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
@@ -93,8 +93,8 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
-#>      ✔ aldex__Shakarbura diff_taxa = 96 
+#>      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 
+#>      ✔ aldex__Pineapple_bun diff_taxa = 98 
 #> 
 #>      ℹ 35 taxa are present in all tested methods
 
@@ -111,14 +111,14 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
-#>      ✔ aldex__Shakarbura diff_taxa = 96 
+#>      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 
+#>      ✔ aldex__Pineapple_bun diff_taxa = 98 
 #> 
 #>      ℹ 35 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Birnbrot
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Ladies_navels
 
 ## Results
 cool(da_results)

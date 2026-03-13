@@ -1,23 +1,27 @@
 #' Phyloseq Quality Control Metrics
 #'
-#' phy_qc() returns a tibble. It will have information about some important
-#' metrics about the sparsity of the count matrix. The content of the table is
-#' as follows:
-#' * var_levels: levels of the categorical variable of interest. "all" refers 
-#' to all rows of the dataset (without splitting by categorical levels).
-#' * n: total number of values in the count matrix.
-#' * n_zero: number of zeros in the count matrix.
-#' * pct_zero: percentage of zeros in the count matrix.
-#' * pct_all_zero: percentage of taxa with zero counts in all samples.
-#' * pct_singletons: percentage of taxa with counts in a single sample.
-#' * pct_doubletons: percentage of taxa with counts in two samples.
-#' * count_mean: average of the mean counts per sample.
-#' * count_min: average of the min counts per sample.
-#' * count_max: average of the max counts per sample.
+#' `phy_qc()` returns a tibble containing important metrics about the sparsity 
+#' and sequencing depth of the count matrix. These metrics are calculated both 
+#' globally and split by the levels of the categorical variable of interest.
+#' The content of the table is as follows:
+#' 
+#' * `var_levels`: levels of the categorical variable of interest. "all" refers 
+#'   to all rows of the dataset (without splitting by categorical levels).
+#' * `n`: total number of values in the count matrix.
+#' * `n_zero`: number of zeros in the count matrix.
+#' * `pct_zero`: percentage of zeros in the count matrix.
+#' * `pct_all_zero`: percentage of taxa with zero counts in all samples.
+#' * `pct_singletons`: percentage of taxa with counts in a single sample.
+#' * `pct_doubletons`: percentage of taxa with counts in exactly two samples.
+#' * `n_samples`: total number of samples in the group.
+#' * `lib_size_min`: minimum library size (total counts) across samples in the group.
+#' * `lib_size_max`: maximum library size (total counts) across samples in the group.
+#' * `count_mean`: average of the mean counts per sample.
+#' * `count_max`: average of the max counts per sample.
 #'
-#' @param rec A Recipe or Recipe step.
+#' @param rec A `Recipe` object.
 #'
-#' @return A tibble
+#' @return A tibble with QC metrics.
 #' @export
 #' @autoglobal
 #' @tests
@@ -27,7 +31,8 @@
 #' ## Check columns
 #' expected_cols <- c(
 #'   "var_levels", "n", "n_zero", "pct_zero", "pct_all_zero", "pct_singletons", 
-#'   "pct_doubletons", "count_mean", "count_min", "count_max"
+#'   "pct_doubletons", "n_samples", "lib_size_min", "lib_size_max", 
+#'   "count_mean", "count_max"
 #' )
 #' expect_equal(colnames(test), expected_cols)
 #' 
@@ -38,26 +43,26 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Define Recipe
+#' ## 1. Init Recipe
 #' rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-#'
+#' 
+#' ## 2. Get QC metrics
 #' phy_qc(rec)
-methods::setGeneric("phy_qc", function(rec) standardGeneric("phy_qc"))
+phy_qc <- function(rec) {  
+  check_recipe(rec)
+  var_name <- get_var(rec)[[1]]
+  zero_groups <- .zero_groups(rec)
+  count_summary <- .count_summary(rec)
+  .zero_stats(rec) %>% 
+    dplyr::left_join(.zero_groups(rec), by = var_name) %>% 
+    dplyr::left_join(.count_summary(rec), by = var_name) %>% 
+    dplyr::rename(var_levels = !!dplyr::sym(var_name))
+}
 
-#' @rdname phy_qc
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "phy_qc",
-  signature = "Recipe",
-  definition = function(rec) {
-    .zero_stats(rec) %>% 
-      dplyr::left_join(.zero_groups(rec), by = get_var(rec)[[1]]) %>% 
-      dplyr::left_join(.count_summary(rec), by = get_var(rec)[[1]]) %>% 
-      dplyr::rename(var_levels = !!dplyr::sym(get_var(rec)[[1]]))
-  }
-)
-
+#' Pre-process OTU table for QC metrics
+#' 
+#' @description Pivots the count matrix to a long format, joins sample metadata, 
+#' and duplicates the dataset to include an "all" grouping level.
 #' @noRd
 #' @keywords internal
 #' @autoglobal
@@ -69,6 +74,8 @@ methods::setMethod(
     dplyr::bind_rows(., dplyr::mutate(., !!var := "all"))
 }
 
+#' Calculate basic zero-inflation statistics
+#' 
 #' @noRd
 #' @keywords internal
 #' @autoglobal
@@ -83,6 +90,8 @@ methods::setMethod(
     )
 }
   
+#' Calculate prevalence-based sparsity metrics
+#' 
 #' @noRd
 #' @keywords internal
 #' @autoglobal
@@ -105,6 +114,8 @@ methods::setMethod(
     )
 }
 
+#' Calculate library size and count distributions
+#' 
 #' @noRd
 #' @keywords internal
 #' @autoglobal
@@ -112,10 +123,17 @@ methods::setMethod(
   .zero_prepro(rec) %>% 
     dplyr::group_by(!!dplyr::sym(get_var(rec)[[1]]), sample_id) %>% 
     dplyr::summarise(
+      lib_size = sum(value),     
       count_mean = mean(value), 
-      count_min = min(value),
       count_max = max(value),
-      .groups = "drop_last", 
+      .groups = "drop_last"
     ) %>% 
-    dplyr::summarise(dplyr::across(where(is.numeric), ~ mean(.x)))
+    dplyr::summarise(
+      n_samples = dplyr::n(),     
+      lib_size_min = min(lib_size),
+      lib_size_max = max(lib_size),
+      count_mean = mean(count_mean),
+      count_max = mean(count_max),
+      .groups = "drop"
+    )
 }

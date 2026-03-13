@@ -2,7 +2,7 @@
 
 # File R/filter_taxa.R: @tests
 
-test_that("[unknown alias] @ L39", {
+test_that("Function step_filter_taxa() @ L39", {
   data(test_prep_rec)
   expect_error(step_filter_taxa(test_prep_rec))
 })

@@ -2,7 +2,7 @@
 
 # File R/filter_by_variance.R: @tests
 
-test_that("[unknown alias] @ L41", {
+test_that("Function step_filter_by_variance() @ L41", {
   data(test_prep_rec)
   expect_error(step_filter_by_variance(test_prep_rec))
 })

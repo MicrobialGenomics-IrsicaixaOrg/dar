@@ -2,7 +2,7 @@
 
 # File R/subset_taxa.R: @tests
 
-test_that("[unknown alias] @ L45", {
+test_that("Function step_subset_taxa() @ L45", {
   data(test_prep_rec)
   expect_error(step_subset_taxa(test_prep_rec))
 })

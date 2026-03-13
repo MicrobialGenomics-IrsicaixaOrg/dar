@@ -2,18 +2,12 @@
 % Please edit documentation in R/plot_methods.R
 \name{corr_heatmap}
 \alias{corr_heatmap}
-\alias{corr_heatmap,Recipe-method}
-\alias{corr_heatmap,PrepRecipe-method}
 \title{Plot otuput of the \code{overlap_df} function as a heatmap.}
 \usage{
 corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
-
-\S4method{corr_heatmap}{Recipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
-
-\S4method{corr_heatmap}{PrepRecipe}(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 }
 \arguments{
-\item{rec}{A \code{Recipe} object.}
+\item{rec}{A prepped \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
 
@@ -33,7 +27,6 @@ data(test_prep_rec)
 
 ## Running the function returns a UpSet plot ordered by frequency.
 corr_heatmap(test_prep_rec)
-
 
 ## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
 ## Recipe the output is an error.

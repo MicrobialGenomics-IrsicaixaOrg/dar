@@ -16,8 +16,8 @@
 #'   `rec` before modifying it if you need to preserve the original object.
 #' @details The function calculates the variance of all taxa in the phyloseq
 #'   object. It then compares this variance to the variance of each individual
-#'   taxon. If a taxon's variance is less than the threshold, that taxon is
-#'   removed from the phyloseq object.
+#'   taxon. If a taxon's variance is less than or equal to the threshold, that 
+#'   taxon is removed from the phyloseq object.
 #' @return A Recipe object that has been filtered based on variance.
 #' @seealso \code{\link[phyloseq]{filter_taxa}}
 #' @include recipe-class.R
@@ -38,63 +38,37 @@
 #' ## Define step_filter_by_variance step with default parameters
 #' rec <- step_filter_by_variance(rec, threshold = 0.01)
 #' rec
-methods::setGeneric(
-  name = "step_filter_by_variance",
-  def = function(rec, 
-                 threshold = 0.01, 
-                 id = rand_id("filter_by_variance")) {
-    standardGeneric("step_filter_by_variance")
-  }
-)
-
-#' @rdname step_filter_by_variance
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_variance",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    recipes_pkg_check(
-      required_pkgs_filter_by_variance(),
-      "step_filter_by_variance()"
+step_filter_by_variance <- function(rec, 
+                                    threshold = 0.01, 
+                                    id = rand_id("filter_by_variance")) {
+  
+  check_recipe(rec)
+  recipes_pkg_check(
+    required_pkgs_filter_by_variance(), 
+    "step_filter_by_variance()"
+  )
+  
+  add_step(
+    rec,
+    step(
+      subclass = "filter_by_variance", 
+      threshold = threshold, 
+      id = id
     )
-    add_step(
-      rec,
-      step_filter_by_variance_new(threshold = threshold, id = id)
-    )
-  }
-)
-
-#' @rdname step_filter_by_variance
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_filter_by_variance",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, threshold = 0.01, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_filter_by_variance_new <- function(threshold = 0.01, id) {
-  step(subclass = "filter_by_variance", threshold = threshold, id = id)
+  )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_filter_by_variance <- function(x, ...) {  c("bioc::phyloseq") }
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
-run_filter_by_variance <- function(rec, threshold = 0.01) {
+run_filter_by_variance <- function(rec, threshold = 0.01, id) {
   rec@phyloseq <- 
     get_phy(rec) %>%
     phyloseq::filter_taxa(function(x) stats::var(x) > threshold, TRUE) 
   
   rec
 }
+
+#' @noRd
+#' @keywords internal
+required_pkgs_filter_by_variance <- function(x, ...) {  c("bioc::phyloseq") }

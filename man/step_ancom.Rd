@@ -2,55 +2,9 @@
 % Please edit documentation in R/ancom.R
 \name{step_ancom}
 \alias{step_ancom}
-\alias{step_ancom,Recipe-method}
-\alias{step_ancom,PrepRecipe-method}
 \title{ANCOM analysis}
 \usage{
 step_ancom(
-  rec,
-  fix_formula = get_var(rec)[[1]],
-  rand_formula = NULL,
-  p_adj_method = "holm",
-  prv_cut = 0.1,
-  lib_cut = 0,
-  s0_perc = 0.05,
-  group = NULL,
-  struc_zero = FALSE,
-  neg_lb = FALSE,
-  alpha = 0.05,
-  n_cl = 1,
-  verbose = FALSE,
-  global = FALSE,
-  pairwise = FALSE,
-  dunnet = FALSE,
-  trend = FALSE,
-  rarefy = FALSE,
-  id = rand_id("ancom")
-)
-
-\S4method{step_ancom}{Recipe}(
-  rec,
-  fix_formula = get_var(rec)[[1]],
-  rand_formula = NULL,
-  p_adj_method = "holm",
-  prv_cut = 0.1,
-  lib_cut = 0,
-  s0_perc = 0.05,
-  group = NULL,
-  struc_zero = FALSE,
-  neg_lb = FALSE,
-  alpha = 0.05,
-  n_cl = 1,
-  verbose = FALSE,
-  global = FALSE,
-  pairwise = FALSE,
-  dunnet = FALSE,
-  trend = FALSE,
-  rarefy = FALSE,
-  id = rand_id("ancom")
-)
-
-\S4method{step_ancom}{PrepRecipe}(
   rec,
   fix_formula = get_var(rec)[[1]],
   rand_formula = NULL,
@@ -162,7 +116,6 @@ multi-group comparisons, including the global test, pairwise directional
 test, Dunnett's type of test, and trend test.
 }
 \examples{
-\dontrun{
 data(metaHIV_phy)
 
 ## Init Recipe
@@ -187,7 +140,6 @@ rec <-
 
 rec
 }
-}
 \seealso{
 Other Diff taxa steps: 
 \code{\link{step_aldex}()},
@@ -198,4 +150,3 @@ Other Diff taxa steps:
 \code{\link{step_wilcox}()}
 }
 \concept{Diff taxa steps}
-\keyword{internal}

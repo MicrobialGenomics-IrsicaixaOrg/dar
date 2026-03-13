@@ -83,115 +83,42 @@
 #'   step_deseq(rarefy = TRUE)
 #'
 #' rec
-methods::setGeneric(
-  name = "step_deseq",
-  def = function(rec,
-                 test = "Wald",
-                 fitType = "local",
-                 betaPrior = FALSE,
-                 type = "ashr",
-                 max_significance = 0.05,
-                 log2FC = 0,
-                 rarefy = FALSE,
-                 id = rand_id("deseq")) {
-    standardGeneric("step_deseq")
+step_deseq <- function(rec,
+                       test = "Wald",
+                       fitType = "local",
+                       betaPrior = FALSE,
+                       type = "ashr",
+                       max_significance = 0.05,
+                       log2FC = 0,
+                       rarefy = FALSE,
+                       id = rand_id("deseq")) {
+  
+  check_recipe(rec)
+  if (type == "ashr") {
+    recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
+  } else {
+    recipes_pkg_check(required_pkgs_deseq()[-2], "step_deseq()")
   }
-)
-
-#' @rdname step_deseq
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_deseq",
-  signature = c(rec = "Recipe"),
-  definition = function(rec,
-                        test,
-                        fitType,
-                        betaPrior,
-                        type,
-                        max_significance,
-                        log2FC,
-                        rarefy,
-                        id) {
-
-    if (type == "ashr") {
-      recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
-    } else {
-      recipes_pkg_check(required_pkgs_deseq()[-2], "step_deseq()")
-    }
-
-    add_step(
-      rec,
-      step_deseq_new(
-        test = test,
-        fitType = fitType,
-        betaPrior = betaPrior,
-        type = type,
-        max_significance = max_significance,
-        log2FC = log2FC,
-        rarefy = rarefy,
-        id = id
-      )
+  
+  add_step(
+    rec,
+    step(
+      subclass = "deseq",
+      test = test,
+      fitType = fitType,
+      betaPrior = betaPrior,
+      type = type,
+      max_significance = max_significance,
+      log2FC = log2FC,
+      rarefy = rarefy,
+      id = id
     )
-  }
-)
-
-#' @rdname step_deseq
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_deseq",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec,
-                        test,
-                        fitType,
-                        betaPrior,
-                        type,
-                        max_significance,
-                        log2FC,
-                        rarefy,
-                        id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-step_deseq_new <-
-  function(rec,
-           test,
-           fitType,
-           betaPrior,
-           type,
-           max_significance,
-           log2FC,
-           rarefy,
-           id) {
-
-  step(
-    subclass = "deseq",
-    test = test,
-    fitType = fitType,
-    betaPrior = betaPrior,
-    type = type,
-    max_significance = max_significance,
-    log2FC = log2FC,
-    rarefy = rarefy,
-    id = id
   )
 }
 
 #' @noRd
-#' @keywords internal
 #' @autoglobal
-required_pkgs_deseq <- function(x, ...) {
-  c("bioc::DESeq2", "bioc::apeglm", "ashr")
-}
-
-#' @noRd
 #' @keywords internal
-#' @autoglobal
 run_deseq <- function(rec,
                       test,
                       fitType,
@@ -199,7 +126,8 @@ run_deseq <- function(rec,
                       type,
                       max_significance,
                       log2FC,
-                      rarefy) {
+                      rarefy,
+                      id) {
 
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
@@ -209,7 +137,8 @@ run_deseq <- function(rec,
   
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   phyloseq::sample_data(phy) <-  
-    to_tibble(phyloseq::sample_data(phy), "sample_id") %>% 
+    phyloseq::sample_data(phy) %>%
+    to_tibble("sample_id") %>% 
     dplyr::mutate(dplyr::across(where(is.character), as.factor)) %>% 
     data.frame(row.names = 1) %>% 
     phyloseq::sample_data() 
@@ -223,7 +152,7 @@ run_deseq <- function(rec,
             design = stats::as.formula(stringr::str_c("~", var))
           )
       )
-      
+
       dds <-
         dds %>%
         DESeq2::estimateSizeFactors(geoMeans = apply(
@@ -254,7 +183,8 @@ run_deseq <- function(rec,
             tibble::as_tibble(rownames = "taxa_id") %>%
             dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
-              comparison = stringr::str_c(x, "_", y), var = !!var
+              comparison = stringr::str_c(x, "_", y), 
+              var = !!var
             ) %>%
             dplyr::mutate(
               effect = log2FoldChange,
@@ -266,4 +196,10 @@ run_deseq <- function(rec,
             )
         })
     })
+}
+
+#' @noRd
+#' @keywords internal
+required_pkgs_deseq <- function(x, ...) {
+  c("bioc::DESeq2", "bioc::apeglm", "ashr")
 }

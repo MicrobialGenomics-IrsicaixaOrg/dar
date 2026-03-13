@@ -2,15 +2,9 @@
 % Please edit documentation in R/filter_by_rarity.R
 \name{step_filter_by_rarity}
 \alias{step_filter_by_rarity}
-\alias{step_filter_by_rarity,Recipe-method}
-\alias{step_filter_by_rarity,PrepRecipe-method}
 \title{Filter taxa by rarity}
 \usage{
 step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
-
-\S4method{step_filter_by_rarity}{Recipe}(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
-
-\S4method{step_filter_by_rarity}{PrepRecipe}(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
@@ -31,13 +25,15 @@ This is a convenience function around the filter_taxa function. It is
 designed to speed up filtering complex experimental objects with one function
 call. In the case of run_filter_by_rarity, the filtering will be based on the
 rarity of each taxon. The taxa retained in the dataset are those where the
-sum of their rarity is less than the provided threshold.
+prevalence (proportion of samples where present) is LESS than the provided
+threshold.
 }
 \details{
-The function calculates the rarity of all taxa in the phyloseq
+The function calculates the prevalence of all taxa in the phyloseq
 object as the proportion of samples in which they are present. It then
-compares this rarity to the threshold. If a taxon's rarity is greater than
-the threshold, that taxon is removed from the phyloseq object.
+compares this prevalence to the threshold. If a taxon's prevalence is greater
+than or equal to the threshold, that taxon is removed (filtered out) from
+the phyloseq object, leaving only the "rare" taxa.
 }
 \note{
 This function modifies \code{rec} in place, you might want to make a copy of

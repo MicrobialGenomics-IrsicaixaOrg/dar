@@ -196,6 +196,11 @@ jobs:
           BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE, force = TRUE)
         shell: Rscript {0}
 
+      - name: Force CVXR 1.0.15 (Temp fix for ANCOMBC)
+        run: |
+          remotes::install_version("CVXR", version = "1.0.15", repos = "https://cran.rstudio.com/", upgrade = "never")
+        shell: Rscript {0}
+
       - name: Install dependencies pass 1
         run: |
           ## Try installing the package dependencies in steps. First the local
@@ -211,7 +216,7 @@ jobs:
 
           ## Pass #1 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 1 at installing dependencies: local dependencies ****'))
-          remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = TRUE)
+          remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = FALSE, upgrade = "never")
         continue-on-error: true
         shell: Rscript {0}
 
@@ -219,7 +224,7 @@ jobs:
         run: |
           ## Pass #2 at installing dependencies
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
-          remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = TRUE, force = TRUE)
+          remotes::install_local(dependencies = TRUE, repos = BiocManager::repositories(), build_vignettes = TRUE, upgrade = "never", force = TRUE)
         shell: Rscript {0}
 
       - name: Install BiocGenerics

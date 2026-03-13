@@ -2,42 +2,45 @@
 % Please edit documentation in R/phyloseq_qc.R
 \name{phy_qc}
 \alias{phy_qc}
-\alias{phy_qc,Recipe-method}
 \title{Phyloseq Quality Control Metrics}
 \usage{
 phy_qc(rec)
-
-\S4method{phy_qc}{Recipe}(rec)
 }
 \arguments{
-\item{rec}{A Recipe or Recipe step.}
+\item{rec}{A \code{Recipe} object.}
 }
 \value{
-A tibble
+A tibble with QC metrics.
 }
 \description{
-phy_qc() returns a tibble. It will have information about some important
-metrics about the sparsity of the count matrix. The content of the table is
-as follows:
+\code{phy_qc()} returns a tibble containing important metrics about the sparsity
+and sequencing depth of the count matrix. These metrics are calculated both
+globally and split by the levels of the categorical variable of interest.
+The content of the table is as follows:
+}
+\details{
 \itemize{
-\item var_levels: levels of the categorical variable of interest. "all" refers
+\item \code{var_levels}: levels of the categorical variable of interest. "all" refers
 to all rows of the dataset (without splitting by categorical levels).
-\item n: total number of values in the count matrix.
-\item n_zero: number of zeros in the count matrix.
-\item pct_zero: percentage of zeros in the count matrix.
-\item pct_all_zero: percentage of taxa with zero counts in all samples.
-\item pct_singletons: percentage of taxa with counts in a single sample.
-\item pct_doubletons: percentage of taxa with counts in two samples.
-\item count_mean: average of the mean counts per sample.
-\item count_min: average of the min counts per sample.
-\item count_max: average of the max counts per sample.
+\item \code{n}: total number of values in the count matrix.
+\item \code{n_zero}: number of zeros in the count matrix.
+\item \code{pct_zero}: percentage of zeros in the count matrix.
+\item \code{pct_all_zero}: percentage of taxa with zero counts in all samples.
+\item \code{pct_singletons}: percentage of taxa with counts in a single sample.
+\item \code{pct_doubletons}: percentage of taxa with counts in exactly two samples.
+\item \code{n_samples}: total number of samples in the group.
+\item \code{lib_size_min}: minimum library size (total counts) across samples in the group.
+\item \code{lib_size_max}: maximum library size (total counts) across samples in the group.
+\item \code{count_mean}: average of the mean counts per sample.
+\item \code{count_max}: average of the max counts per sample.
 }
 }
 \examples{
 data(metaHIV_phy)
 
-## Define Recipe
+## 1. Init Recipe
 rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 
+## 2. Get QC metrics
 phy_qc(rec)
 }

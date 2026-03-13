@@ -2,8 +2,6 @@
 % Please edit documentation in R/plot_methods.R
 \name{abundance_plt}
 \alias{abundance_plt}
-\alias{abundance_plt,Recipe-method}
-\alias{abundance_plt,PrepRecipe-method}
 \title{Abundance boxplot}
 \usage{
 abundance_plt(
@@ -14,34 +12,16 @@ abundance_plt(
   scale = 1,
   top_n = 20
 )
-
-\S4method{abundance_plt}{Recipe}(
-  rec,
-  taxa_ids = NULL,
-  type = "boxplot",
-  transform = "compositional",
-  scale = 1,
-  top_n = 20
-)
-
-\S4method{abundance_plt}{PrepRecipe}(
-  rec,
-  taxa_ids = NULL,
-  type = "boxplot",
-  transform = "compositional",
-  scale = 1,
-  top_n = 20
-)
 }
 \arguments{
-\item{rec}{A Recipe or Recipe step.}
+\item{rec}{A prepped \code{Recipe} object.}
 
 \item{taxa_ids}{Character vector with taxa_ids to plot. If taxa_ids is NULL
 the significant characteristics present in all of the executed methods will
 be plotted.}
 
 \item{type}{Character vector indicating the type of the result. Options:
-c("boxoplot", "heatmap").}
+c("boxplot", "heatmap").}
 
 \item{transform}{Transformation to apply. The options include:
 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
@@ -55,7 +35,7 @@ applied and works with the raw counts.}
 \item{top_n}{Maximum number of taxa to represent. Default: 20.}
 }
 \value{
-ggplot2
+ggplot2 or HeatmapList
 }
 \description{
 Abundance boxplot

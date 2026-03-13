@@ -2,47 +2,9 @@
 % Please edit documentation in R/corncob.R
 \name{step_corncob}
 \alias{step_corncob}
-\alias{step_corncob,Recipe-method}
-\alias{step_corncob,PrepRecipe-method}
 \title{corncob analysis}
 \usage{
 step_corncob(
-  rec,
-  phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
-  link = "logit",
-  phi.link = "logit",
-  test = "Wald",
-  boot = FALSE,
-  B = 1000,
-  filter_discriminant = TRUE,
-  fdr_cutoff = 0.05,
-  fdr = "fdr",
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("corncob")
-)
-
-\S4method{step_corncob}{Recipe}(
-  rec,
-  phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
-  link = "logit",
-  phi.link = "logit",
-  test = "Wald",
-  boot = FALSE,
-  B = 1000,
-  filter_discriminant = TRUE,
-  fdr_cutoff = 0.05,
-  fdr = "fdr",
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("corncob")
-)
-
-\S4method{step_corncob}{PrepRecipe}(
   rec,
   phi.formula = stats::formula(~1),
   formula_null = stats::formula(~1),

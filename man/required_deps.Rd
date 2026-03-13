@@ -2,12 +2,9 @@
 % Please edit documentation in R/pkg_check.R
 \name{required_deps}
 \alias{required_deps}
-\alias{required_deps,Recipe-method}
 \title{Returns required pakcages for Recipe object}
 \usage{
 required_deps(rec)
-
-\S4method{required_deps}{Recipe}(rec)
 }
 \arguments{
 \item{rec}{A \code{Recipe} object}

@@ -2,29 +2,9 @@
 % Please edit documentation in R/aldex2.R
 \name{step_aldex}
 \alias{step_aldex}
-\alias{step_aldex,Recipe-method}
-\alias{step_aldex,PrepRecipe-method}
 \title{ALDEx2 analysis}
 \usage{
 step_aldex(
-  rec,
-  max_significance = 0.05,
-  mc.samples = 128,
-  denom = "all",
-  rarefy = FALSE,
-  id = rand_id("aldex")
-)
-
-\S4method{step_aldex}{Recipe}(
-  rec,
-  max_significance = 0.05,
-  mc.samples = 128,
-  denom = "all",
-  rarefy = FALSE,
-  id = rand_id("aldex")
-)
-
-\S4method{step_aldex}{PrepRecipe}(
   rec,
   max_significance = 0.05,
   mc.samples = 128,

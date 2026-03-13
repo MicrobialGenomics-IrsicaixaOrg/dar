@@ -2,23 +2,9 @@
 % Please edit documentation in R/filter_by_prevalence.R
 \name{step_filter_by_prevalence}
 \alias{step_filter_by_prevalence}
-\alias{step_filter_by_prevalence,Recipe-method}
-\alias{step_filter_by_prevalence,PrepRecipe-method}
 \title{Filter taxa by prevalence}
 \usage{
 step_filter_by_prevalence(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_prevalence")
-)
-
-\S4method{step_filter_by_prevalence}{Recipe}(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_prevalence")
-)
-
-\S4method{step_filter_by_prevalence}{PrepRecipe}(
   rec,
   threshold = 0.01,
   id = rand_id("filter_by_prevalence")
