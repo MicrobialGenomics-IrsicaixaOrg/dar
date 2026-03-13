@@ -17,7 +17,6 @@ utils::globalVariables(c(
   # <.abundance_heatmap>
   # <intersection_df>
   # <cool>
-  # <run_subset_taxa>
   # <run_wilcox>
   ".",
   # <run_lefse>
