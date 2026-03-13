@@ -639,19 +639,54 @@ rarefy_msg <- function(steps) {
   has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
   
   if (has_true) { 
-    rlang::inform(c(
-      "!" = "Rarefaction is enabled", "i" = "With set seed.", 
-      "i" = info_rarefy), use_cli_format = TRUE
+    rlang::inform(
+      c(
+        "!" = "Rarefaction is enabled (with set seed).", 
+        "i" = glue::glue(
+          "This process is not without controversy. Use ", 
+          "{crayon::bgMagenta('rarefaction_help()')} to get more info.")
+      ), 
+      use_cli_format = TRUE
     )
   }
 
   if (has_no_seed) {
-    rlang::inform(c(
-      "!" = "Rarefaction is enabled", "i" = "Without set seed.", 
-      "i" = info_rarefy), use_cli_format = TRUE
+    rlang::inform(
+      c(
+        "!" = "Rarefaction is enabled (without set seed).", 
+        "i" = glue::glue(
+          "This process is not without controversy. Use ", 
+          "{crayon::bgMagenta('rarefaction_help()')} to get more info.")
+      ), 
+      use_cli_format = TRUE
     )
   }
   
   steps
 }
 
+
+#' Information about the Rarefaction process
+#'
+#' Prints detailed information regarding the use of rarefaction in microbiome 
+#' analysis, its implications, and relevant literature.
+#'
+#' @export
+#' @autoglobal
+#' @examples
+#' rarefaction_help()
+rarefaction_help <- function() {
+  cli::cli_rule(left = "{.strong Rarefaction in Microbiome Analysis}")
+  cli::cli_text("") 
+  cli::cli_alert_info(c("{.strong What is Rarefaction?} It is a process that randomly subsamples the data to a specified depth to account for differences in sequencing depth between samples."))
+  cli::cli_text("")
+  cli::cli_alert_warning("{.strong The Controversy:}")
+  cli::cli_bullets(c(
+    "i" = "It can lead to an irreversible {.strong loss of information}.",
+    "i" = "It can lead to {.strong false positives} in differential abundance testing."
+  ))
+  cli::cli_text("")
+  cli::cli_alert_success("{.strong Reproducibility:} If performed with a {.emph set seed}, it ensures reproducible results, but removes randomness in the subsampling process.")
+  cli::cli_alert_info("{.strong More info:} {.url https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2}")
+  cli::cli_text("")
+}
