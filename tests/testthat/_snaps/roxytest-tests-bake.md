@@ -1,4 +1,4 @@
-# [unknown alias] @ L86
+# Function bake() @ L85
 
     Code
       testthat::expect_s3_class(cool(test), "tbl_df")
