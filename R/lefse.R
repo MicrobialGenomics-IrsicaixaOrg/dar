@@ -41,14 +41,14 @@
 #' @tests
 #' data(metaHIV_phy)
 #' 
-#' expect_message(
+#' expect_condition(
 #'  test <- 
 #'    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
 #'    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'    step_filter_by_prevalence() |> 
 #'    step_lefse() |> 
 #'    step_lefse(rarefy = FALSE),
-#'  "Run lefse without rarefaction is not recommended"
+#'  "lefse.*without rarefaction"
 #' )
 #'  
 #' expect_s4_class(prep(test), "PrepRecipe") |> 
@@ -92,11 +92,8 @@ step_lefse <- function(rec,
   recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")
   
   if (!rarefy & !contains_rarefaction(rec)) {
-    rlang::inform(c(
-      "!" = glue::glue(
-        "Run lefse without rarefaction is not recommended", 
-        " ({crayon::blue(paste0('id = ', id))})"
-      )
+    cli::cli_inform(c(
+      "!" = "Running {.pkg lefse} without rarefaction is not recommended ({.arg id} = {.val {id}})."
     ))
   }
   

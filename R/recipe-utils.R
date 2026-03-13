@@ -191,20 +191,26 @@ prep <- function(rec,
                  force = FALSE) {
   
   if (inherits(rec, "PrepRecipe") && !force) {
-    rlang::abort(c(
-      "The input Recipe has already been prepped!",
-      i = glue::glue("To force the rerun of all steps please run {crayon::bgMagenta('prep(rec, force = TRUE)')}")
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "The input recipe has already been prepped!",
+        "i" = "To force the rerun of all steps, please run {.code prep(rec, force = TRUE)}."
+      ),
+      class = "dar_error_recipe_already_prepped"
+    )
   }
   
   check_any_recipe(rec)
   
   check <- utils::capture.output(required_deps(rec))
   if (length(check) > 0) {
-    rlang::abort(c(
-      "Not all necessary dependencies are installed.",
-      i = glue::glue("Use {crayon::bgMagenta('required_deps(rec)')} to see how to install them.")
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Not all necessary dependencies are installed.",
+        "i" = "Use {.code required_deps(rec)} to see how to install them."
+      ),
+      class = "dar_error_missing_dependencies"
+    )
   }
   
   ## Phyloseq preprocessing steps
@@ -377,17 +383,23 @@ cool <- function(rec, bake = 1) {
   all_names <- all_bakes %>% purrr::map_chr(~ as.character(.x[["id"]]))
   
   if (is.numeric(bake) && length(all_bakes) < bake) {
-    rlang::abort(c(
-      "Bake index is not defined in the PrepRecipe!",
-      glue::glue("Run {crayon::bgMagenta('bake(PrepRecipe)')} and then try with {crayon::bgMagenta('cool()')}")
-    ))
+    cli::cli_abort(
+      c(
+       "x" = "Bake index is not defined in the {.cls PrepRecipe}",
+       "i" = "Run {.code bake(PrepRecipe)} and then try with {.code cool()}."
+      ),
+      class = "dar_error_missing_bake_index"
+    )
   }
   
   if (!is.numeric(bake) && !bake %in% all_names) {
-    rlang::abort(c(
-      "Bake name is not defined in the PrepRecipe!",
-      glue::glue("Run {crayon::bgMagenta('bake(PrepRecipe)')} and then try with {crayon::bgMagenta('cool()')}")
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Bake name is not defined in the {.cls PrepRecipe}!",
+        "i" = "Run {.code bake(PrepRecipe)} and then try with {.code cool()}."
+      ),
+      class = "dar_error_missing_bake_name"
+    )
   }
   
   if (!is.numeric(bake)) {

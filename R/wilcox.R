@@ -57,12 +57,12 @@ step_wilcox <- function(rec,
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_wilcox(), "step_wilcox()")
   if (rarefy && !contains_rarefaction(rec)) {
-    rlang::inform(c(
-      "!" = glue::glue(
-        "Run wilcox with rarefaction is recommended for low depth samples ", 
-        "({crayon::blue(paste0('id = ', id))})"
+    cli::cli_inform(
+      c(
+        "!" = "Running {.fun wilcox} with rarefaction is recommended for low depth samples.",
+        "i" = "Metadata: {.field id} = {.val {id}}"
       )
-    ))
+    )
   }
   
   add_step(

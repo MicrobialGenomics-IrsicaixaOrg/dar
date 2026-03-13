@@ -15,24 +15,24 @@
 check_recipe <- function(rec, arg_name = "rec") {
   
   if (!checkmate::test_class(rec, "Recipe")) {
-    rlang::abort(
-      message = glue::glue("The argument `{arg_name}` must be a 'Recipe' object."),
-      class = "dar_error_invalid_input",
-      body = c(
-        "x" = glue::glue("You supplied an object of class `{class(rec)[1]}` instead."),
-        "i" = "Did you forget to initialize the recipe with `recipe()`?"
-      )
+    cli::cli_abort(
+      c(
+        "x" = "The argument {.arg {arg_name}} must be a {.cls Recipe} object.",
+        "!" = "You supplied an object of class {.cls {class(rec)[1]}} instead.",
+        "i" = "Did you forget to initialize the recipe with {.fun recipe}?"
+      ),
+      class = "dar_error_invalid_input"
     )
   }
   
   if (is(rec, "PrepRecipe")) {
-    rlang::abort(
-      message = glue::glue("The argument `{arg_name}` must be an unprepped Recipe."),
-      class = "dar_error_invalid_input",
-      body = c(
-        "x" = "You passed a Recipe that has already been prepared (`prep()` was called).",
-        "i" = "Please pass the Recipe object BEFORE the prep() step."
-      )
+    cli::cli_abort(
+      c(
+        "x" = "The argument {.arg {arg_name}} must be an unprepped {.cls Recipe}.",
+        "!" = "You passed a {.cls Recipe} that has already been prepared ({.fun prep} was called).",
+        "i" = "Please pass the {.cls Recipe} object before the {.fun prep} step."
+      ),
+      class = "dar_error_invalid_input"
     )
   }
   
@@ -49,23 +49,23 @@ check_prep_recipe <- function(rec, arg_name = "rec") {
   
   if (!checkmate::test_class(rec, "PrepRecipe")) {
     if (checkmate::test_class(rec, "Recipe")) {
-      rlang::abort(
-        message = glue::glue("The argument `{arg_name}` must be a prepared recipe ('PrepRecipe')."),
-        class = "dar_error_invalid_input",
-        body = c(
-          "x" = "You supplied an unprepped 'Recipe'.",
-          "i" = "Please run `prep()` on your recipe before using this function."
-        )
+      cli::cli_abort(
+        c(
+          "x" = "The argument {.arg {arg_name}} must be a prepared {.cls PrepRecipe}.",
+          "!" = "You supplied an unprepped {.cls Recipe}.",
+          "i" = "Please run {.fun prep} on your recipe before using this function."
+        ),
+        class = "dar_error_invalid_input"
       )
     }
     
-    rlang::abort(
-      message = glue::glue("The argument `{arg_name}` must be a 'PrepRecipe' object."),
-      class = "dar_error_invalid_input",
-      body = c(
-        "x" = glue::glue("You supplied an object of class `{class(rec)[1]}` instead."),
-        "i" = "This function expects the output of `prep(recipe)`."
-      )
+    cli::cli_abort(
+      c(
+        "x" = "The argument {.arg {arg_name}} must be a {.cls PrepRecipe} object.",
+        "!" = "You supplied an object of class {.cls {class(rec)[1]}} instead.",
+        "i" = "This function expects the output of {.code prep(recipe)}."
+      ),
+      class = "dar_error_invalid_input"
     )
   }
   
@@ -82,13 +82,13 @@ check_any_recipe <- function(rec, arg_name = "rec") {
   
   # Since PrepRecipe inherits from Recipe, we only need to check the base class.
   if (!checkmate::test_class(rec, "Recipe")) {
-    rlang::abort(
-      message = glue::glue("The argument `{arg_name}` must be a 'Recipe' or 'PrepRecipe' object."),
-      class = "dar_error_invalid_input",
-      body = c(
-        "x" = glue::glue("You supplied an object of class `{class(rec)[1]}` instead."),
-        "i" = "Please supply a valid recipe object created with `recipe()`."
-      )
+    cli::cli_abort(
+      c(
+        "x" = "The argument {.arg {arg_name}} must be a {.cls Recipe} or {.cls PrepRecipe} object.",
+        "!" = "You supplied an object of class {.cls {class(rec)[1]}} instead.",
+        "i" = "Please supply a valid recipe object created with {.fun recipe}."
+      ),
+      class = "dar_error_invalid_input"
     )
   }
   
