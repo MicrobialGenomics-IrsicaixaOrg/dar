@@ -41,49 +41,25 @@
 #'   tax_level = "Kingdom",
 #'   taxa = c("Bacteria", "Archaea")
 #' )
-#' rec
-methods::setGeneric(
-  name = "step_subset_taxa",
-  def = function(rec, 
-                 tax_level, 
-                 taxa, 
-                 id = rand_id("subset_taxa")) {
-    standardGeneric("step_subset_taxa")
-  }
-)
+#' prep(rec)
+step_subset_taxa <- function(rec, tax_level, taxa, id = rand_id("subset_taxa")) {
 
-#' @rdname step_subset_taxa
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_subset_taxa",
-  signature = c(rec = "Recipe"),
-  definition = function(rec, tax_level, taxa, id) {
-    recipes_pkg_check(
-      required_pkgs_subset_taxa(),
-      "step_subset_taxa()"
-    )
-    add_step(
-      rec,
-      step_subset_taxa_new(
-        tax_level = tax_level, 
-        taxa = taxa, 
-        id = id
-      )
-    )
-  }
-)
+  check_recipe(rec)
 
-#' @rdname step_subset_taxa
-#' @export
-#' @autoglobal
-methods::setMethod(
-  f = "step_subset_taxa",
-  signature = c(rec = "PrepRecipe"),
-  definition = function(rec, tax_level, taxa, id) {
-    rlang::abort("This function needs a non-PrepRecipe!")
-  }
-)
+  recipes_pkg_check(
+    required_pkgs_subset_taxa(),
+    "step_subset_taxa()"
+  )
+  
+  add_step(
+    rec,
+    step_subset_taxa_new(
+      tax_level = tax_level, 
+      taxa = taxa, 
+      id = id
+    )
+  )
+}
 
 #' @noRd
 #' @keywords internal
@@ -106,11 +82,10 @@ required_pkgs_subset_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 #' @keywords internal
 #' @autoglobal
 run_subset_taxa <- function(rec, tax_level, taxa) {
-  expr <- paste0(tax_level, ' %in% c(', paste(shQuote(taxa), collapse = ", "), ')')
-  rec@phyloseq <-
-    glue::glue("phyloseq::subset_taxa(get_phy(rec), {expr})") %>%
-    parse(text = .) %>%
-    eval()
+  sym_tax_level <- rlang::sym(tax_level)
+  rec@phyloseq <- rlang::inject(
+    phyloseq::subset_taxa(get_phy(rec), !!sym_tax_level %in% !!taxa)
+  )
   
   rec
 }
