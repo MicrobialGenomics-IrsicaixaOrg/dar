@@ -2,13 +2,15 @@
 
 # File R/"recipe-class.R": @tests
 
-test_that("Function recipe() @ L124", {
+test_that("Function recipe() @ L126", {
   data(metaHIV_phy) 
-  colnames(metaHIV_phy@tax_table) <-
-    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")
     
   expect_error( 
-    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") 
+    recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species") 
+  )
+  
+  expect_error( 
+    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax") 
   )
   
   data(GlobalPatterns, package = "mia")
