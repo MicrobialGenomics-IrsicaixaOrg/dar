@@ -108,19 +108,19 @@ test_that("Function steps_ids() @ L338", {
   rec <- test_prep_rec
   expect_equal(
     steps_ids(rec), 
-    c("subset_taxa__Chatti_Pathiri",
-      "filter_taxa__Fa_gao", 
-      "maaslin__Gundain", 
-      "deseq__Puff_pastry"    
+    c("subset_taxa__Viennoiserie",
+      "filter_taxa__Karakudamono", 
+      "maaslin__Welsh_cake", 
+      "deseq__Coussin_de_Lyon"    
      )
   )
   expect_equal(
     steps_ids(rec, "da"), 
-    c("maaslin__Gundain", "deseq__Puff_pastry")
+    c("maaslin__Welsh_cake", "deseq__Coussin_de_Lyon")
   )
   expect_equal(
     steps_ids(rec, "prepro"), 
-    c("subset_taxa__Chatti_Pathiri", "filter_taxa__Fa_gao")
+    c("subset_taxa__Viennoiserie", "filter_taxa__Karakudamono")
   )
   expect_error(steps_ids(rec, "das"))
   expect_type(steps_ids(rec), "character")
