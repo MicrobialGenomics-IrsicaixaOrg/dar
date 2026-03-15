@@ -79,7 +79,7 @@
 #'  recipe(metaHIV_phy, "RiskGroup2", "Order") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_prevalence() |> 
-#'  step_ancom()
+#'  step_ancom(id = "ancom__Utap")
 #'  
 #' res <- suppressWarnings(prep(test))
 #' expect_s4_class(res, "PrepRecipe")
