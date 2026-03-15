@@ -81,8 +81,9 @@
 #'  step_filter_by_prevalence() |> 
 #'  step_ancom()
 #'  
-#' expect_s4_class(prep(test), "PrepRecipe") |> 
-#'   expect_snapshot()
+#' res <- suppressWarnings(prep(test))
+#' expect_s4_class(res, "PrepRecipe")
+#' expect_snapshot(res)
 #' 
 #' data(test_prep_rec)
 #' expect_error(step_ancom(test_prep_rec, rarefy = TRUE))

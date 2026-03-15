@@ -663,6 +663,7 @@ rarefy_msg <- function(steps) {
 #' Prints detailed information regarding the use of rarefaction in microbiome 
 #' analysis, its implications, and relevant literature.
 #'
+#' @return invisible
 #' @export
 #' @autoglobal
 #' @examples
@@ -681,4 +682,5 @@ rarefaction_help <- function() {
   cli::cli_alert_success("{.strong Reproducibility:} If performed with a {.emph set seed}, it ensures reproducible results, but removes randomness in the subsampling process.")
   cli::cli_alert_info("{.strong More info:} {.url https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2}")
   cli::cli_text("")
+  invisible(TRUE)
 }

@@ -2,7 +2,7 @@
 
 # File R/ancom.R: @tests
 
-test_that("Function step_ancom() @ L113", {
+test_that("Function step_ancom() @ L114", {
   data(metaHIV_phy)
   
   test <-
@@ -11,8 +11,9 @@ test_that("Function step_ancom() @ L113", {
    step_filter_by_prevalence() |> 
    step_ancom()
    
-  expect_s4_class(prep(test), "PrepRecipe") |> 
-    expect_snapshot()
+  res <- suppressWarnings(prep(test))
+  expect_s4_class(res, "PrepRecipe")
+  expect_snapshot(res)
   
   data(test_prep_rec)
   expect_error(step_ancom(test_prep_rec, rarefy = TRUE))
