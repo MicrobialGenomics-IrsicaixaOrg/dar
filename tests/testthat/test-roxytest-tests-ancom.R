@@ -2,17 +2,18 @@
 
 # File R/ancom.R: @tests
 
-test_that("Function step_ancom() @ L113", {
+test_that("Function step_ancom() @ L114", {
   data(metaHIV_phy)
   
   test <-
    recipe(metaHIV_phy, "RiskGroup2", "Order") |>
    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
    step_filter_by_prevalence() |> 
-   step_ancom()
+   step_ancom(id = "ancom__Utap")
    
-  expect_s4_class(prep(test), "PrepRecipe") |> 
-    expect_snapshot()
+  res <- suppressWarnings(prep(test))
+  expect_s4_class(res, "PrepRecipe")
+  expect_snapshot(res)
   
   data(test_prep_rec)
   expect_error(step_ancom(test_prep_rec, rarefy = TRUE))

@@ -2,16 +2,51 @@
 
 # File R/"recipe-class.R": @tests
 
-test_that("Function recipe() @ L124", {
+test_that("Function recipe() @ L159", {
   data(metaHIV_phy) 
-  colnames(metaHIV_phy@tax_table) <-
-    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")
-    
-  expect_error( 
-    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") 
+  data(GlobalPatterns, package = "mia")
+  
+  # 1. Error: Invalid microbiome_object type
+  expect_error(
+    recipe(data.frame(a = 1:5)), 
+    class = "dar_error_invalid_microbiome_object"
   )
   
-  data(GlobalPatterns, package = "mia")
+  # 2. Error: Invalid taxonomy rank names (fails with made-up names)
+  bad_phy <- metaHIV_phy
+  tax_tab <- phyloseq::tax_table(bad_phy)
+  colnames(tax_tab) <- paste0("BadRank", seq_len(ncol(tax_tab)))
+  phyloseq::tax_table(bad_phy) <- tax_tab
+  
+  expect_error(
+    recipe(bad_phy), 
+    class = "dar_error_invalid_rank_names"
+  )
+  
+  # 3. Success: Valid taxonomy ranks in UPPERCASE (tests stringr normalization)
+  upper_phy <- metaHIV_phy
+  tax_tab_up <- phyloseq::tax_table(upper_phy)
+  colnames(tax_tab_up) <- toupper(colnames(tax_tab_up))
+  phyloseq::tax_table(upper_phy) <- tax_tab_up
+  
+  expect_s4_class(recipe(upper_phy), "Recipe")
+    
+  # 4. Error: Invalid var_info missing in metadata
+  expect_error( 
+    recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species"),
+    class = "dar_error_missing_vars"
+  )
+  
+  # 5. Error: Invalid tax_info missing in tax_table
+  expect_error( 
+    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax"),
+    class = "dar_error_missing_tax"
+  )
+  
+  # 6. Success: Valid TreeSummarizedExperiment
   expect_s4_class(recipe(GlobalPatterns), "Recipe")
+  
+  # 7. Success: Valid phyloseq
+  expect_s4_class(recipe(metaHIV_phy), "Recipe")
 })
 

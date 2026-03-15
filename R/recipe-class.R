@@ -70,15 +70,50 @@ methods::setClass(
 #' @autoglobal
 #' @tests 
 #' data(metaHIV_phy) 
-#' colnames(metaHIV_phy@tax_table) <-
-#'   c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Sp")
-#'   
-#' expect_error( 
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") 
+#' data(GlobalPatterns, package = "mia")
+#' 
+#' # 1. Error: Invalid microbiome_object type
+#' expect_error(
+#'   recipe(data.frame(a = 1:5)), 
+#'   class = "dar_error_invalid_microbiome_object"
 #' )
 #' 
-#' data(GlobalPatterns, package = "mia")
+#' # 2. Error: Invalid taxonomy rank names (fails with made-up names)
+#' bad_phy <- metaHIV_phy
+#' tax_tab <- phyloseq::tax_table(bad_phy)
+#' colnames(tax_tab) <- paste0("BadRank", seq_len(ncol(tax_tab)))
+#' phyloseq::tax_table(bad_phy) <- tax_tab
+#' 
+#' expect_error(
+#'   recipe(bad_phy), 
+#'   class = "dar_error_invalid_rank_names"
+#' )
+#' 
+#' # 3. Success: Valid taxonomy ranks in UPPERCASE (tests stringr normalization)
+#' upper_phy <- metaHIV_phy
+#' tax_tab_up <- phyloseq::tax_table(upper_phy)
+#' colnames(tax_tab_up) <- toupper(colnames(tax_tab_up))
+#' phyloseq::tax_table(upper_phy) <- tax_tab_up
+#' 
+#' expect_s4_class(recipe(upper_phy), "Recipe")
+#'   
+#' # 4. Error: Invalid var_info missing in metadata
+#' expect_error( 
+#'   recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species"),
+#'   class = "dar_error_missing_vars"
+#' )
+#' 
+#' # 5. Error: Invalid tax_info missing in tax_table
+#' expect_error( 
+#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax"),
+#'   class = "dar_error_missing_tax"
+#' )
+#' 
+#' # 6. Success: Valid TreeSummarizedExperiment
 #' expect_s4_class(recipe(GlobalPatterns), "Recipe")
+#' 
+#' # 7. Success: Valid phyloseq
+#' expect_s4_class(recipe(metaHIV_phy), "Recipe")
 #' 
 #' @examples
 #' data(metaHIV_phy)
@@ -125,12 +160,6 @@ recipe <- function(microbiome_object = NULL,
                    var_info = NULL, 
                    tax_info = NULL, 
                    steps = list()) {
-
-  var_info <- tibble::tibble(vars = var_info)
-  tax_info <- tibble::tibble(tax_lev = tax_info)
-
-  expected <- c("Kingdom", "Phylum", "Class", "Order", 
-                "Family", "Genus", "Species")
   
   if (!is(microbiome_object, "phyloseq") && 
       !is(microbiome_object, "TreeSummarizedExperiment")) {
@@ -145,18 +174,54 @@ recipe <- function(microbiome_object = NULL,
   if (is(microbiome_object, "TreeSummarizedExperiment")) {
     microbiome_object <- mia::convertToPhyloseq(microbiome_object)
   }
-  
-  tax_names <- colnames(microbiome_object@tax_table) %>% stringr::str_to_sentence()
-  if (!all(tax_names %in% expected)) {
-    cli::cli_abort(c(
-      "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
-      "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} with standard names.",
-      "i" = "Standard names: {.val {expected}}."
-    ),
-    class = "dar_error_invalid_rank_names"
-    )
+
+  if (!is.null(microbiome_object@tax_table)) {
+    tax_names <- phyloseq::rank_names(microbiome_object) %>% stringr::str_to_sentence()
+    tax_tbl <- phyloseq::tax_table(microbiome_object)
+    colnames(tax_tbl) <- tax_names
+    phyloseq::tax_table(microbiome_object) <- tax_tbl
+    tax_expected <- mia::getTaxonomyRanks() %>% stringr::str_to_sentence()
+    if (!all(tax_names %in% tax_expected)) {
+      cli::cli_abort(c(
+        "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
+        "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} or {.cls TreeSummarizedExperiment} with standard names.",
+        "i" = "Standard names: {.val {mia::getTaxonomyRanks()}}."
+      ),
+      class = "dar_error_invalid_rank_names"
+      )
+    }
   }
   
+  if (!is.null(var_info)) {
+    s_data <- as(phyloseq::sample_data(microbiome_object), "data.frame")
+    if (!all(var_info %in% colnames(s_data))) {
+      missing_vars <- setdiff(var_info, colnames(s_data))
+      cli::cli_abort(c(
+        "x" = "Column{?s} {.val {missing_vars}} {?does not/do not} exist in the {.arg microbiome_object} metadata.",
+        "i" = "Available columns: {.val {colnames(s_data)}}."
+      ),
+      class = "dar_error_missing_vars"
+      )
+    }
+  }
+
+  if (!is.null(tax_info)) {
+    tax_info <- stringr::str_to_sentence(tax_info)
+    tax_ranks <- phyloseq::rank_names(microbiome_object)
+    if (!all(tax_info %in% tax_ranks)) {
+      missing_tax <- setdiff(tax_info, tax_ranks)
+      cli::cli_abort(c(
+        "x" = "Taxonomic rank{?s} {.val {missing_tax}} {?does not/do not} exist in the {.arg microbiome_object}.",
+        "i" = "Available ranks: {.val {tax_ranks}}."
+      ),
+      class = "dar_error_missing_tax"
+      )
+    }
+  }
+
+  var_info <- tibble::tibble(vars = var_info)
+  tax_info <- tibble::tibble(tax_lev = tax_info)
+
   methods::new(
     Class = "Recipe",
     phyloseq = microbiome_object,
@@ -463,4 +528,3 @@ methods::setMethod(
     }
   }
 )
-

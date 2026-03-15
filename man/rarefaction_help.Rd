@@ -6,6 +6,9 @@
 \usage{
 rarefaction_help()
 }
+\value{
+invisible
+}
 \description{
 Prints detailed information regarding the use of rarefaction in microbiome
 analysis, its implications, and relevant literature.

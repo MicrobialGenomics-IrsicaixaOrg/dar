@@ -305,19 +305,19 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' rec <- test_prep_rec
 #' expect_equal(
 #'   steps_ids(rec), 
-#'   c("subset_taxa__Chatti_Pathiri",
-#'     "filter_taxa__Fa_gao", 
-#'     "maaslin__Gundain", 
-#'     "deseq__Puff_pastry"    
+#'   c("subset_taxa__Viennoiserie",
+#'     "filter_taxa__Karakudamono", 
+#'     "maaslin__Welsh_cake", 
+#'     "deseq__Coussin_de_Lyon"    
 #'    )
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "da"), 
-#'   c("maaslin__Gundain", "deseq__Puff_pastry")
+#'   c("maaslin__Welsh_cake", "deseq__Coussin_de_Lyon")
 #' )
 #' expect_equal(
 #'   steps_ids(rec, "prepro"), 
-#'   c("subset_taxa__Chatti_Pathiri", "filter_taxa__Fa_gao")
+#'   c("subset_taxa__Viennoiserie", "filter_taxa__Karakudamono")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")
@@ -663,6 +663,7 @@ rarefy_msg <- function(steps) {
 #' Prints detailed information regarding the use of rarefaction in microbiome 
 #' analysis, its implications, and relevant literature.
 #'
+#' @return invisible
 #' @export
 #' @autoglobal
 #' @examples
@@ -681,4 +682,5 @@ rarefaction_help <- function() {
   cli::cli_alert_success("{.strong Reproducibility:} If performed with a {.emph set seed}, it ensures reproducible results, but removes randomness in the subsampling process.")
   cli::cli_alert_info("{.strong More info:} {.url https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2}")
   cli::cli_text("")
+  invisible(TRUE)
 }

@@ -12,8 +12,8 @@
       
       Results:
       
-           v maaslin__Gundain diff_taxa = 41 
-           v deseq__Puff_pastry diff_taxa = 27 
+           v maaslin__Welsh_cake diff_taxa = 41 
+           v deseq__Coussin_de_Lyon diff_taxa = 27 
       
            i 16 taxa are present in all tested methods 
       
@@ -36,12 +36,12 @@
       
       Results:
       
-           v maaslin__Gundain diff_taxa = 41 
-           v deseq__Puff_pastry diff_taxa = 5 
+           v maaslin__Welsh_cake diff_taxa = 41 
+           v deseq__Coussin_de_Lyon diff_taxa = 5 
       
            i 4 taxa are present in all tested methods 
       
       Bakes:
       
-           (*) 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Eccles_cake 
+           (*) 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Carac 
 

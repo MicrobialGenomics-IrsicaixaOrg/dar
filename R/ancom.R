@@ -79,10 +79,11 @@
 #'  recipe(metaHIV_phy, "RiskGroup2", "Order") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_prevalence() |> 
-#'  step_ancom()
+#'  step_ancom(id = "ancom__Utap")
 #'  
-#' expect_s4_class(prep(test), "PrepRecipe") |> 
-#'   expect_snapshot()
+#' res <- suppressWarnings(prep(test))
+#' expect_s4_class(res, "PrepRecipe")
+#' expect_snapshot(res)
 #' 
 #' data(test_prep_rec)
 #' expect_error(step_ancom(test_prep_rec, rarefy = TRUE))
@@ -91,7 +92,7 @@
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
