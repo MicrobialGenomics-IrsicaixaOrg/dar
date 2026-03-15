@@ -175,8 +175,12 @@ recipe <- function(microbiome_object = NULL,
     microbiome_object <- mia::convertToPhyloseq(microbiome_object)
   }
 
-  tax_names <- colnames(microbiome_object@tax_table) %>% stringr::str_to_lower()
-  if (!all(tax_names %in% mia::getTaxonomyRanks())) {
+  tax_names <- phyloseq::rank_names(microbiome_object) %>% stringr::str_to_sentence()
+  tax_tbl <- phyloseq::tax_table(microbiome_object)
+  colnames(tax_tbl) <- tax_names
+  phyloseq::tax_table(microbiome_object) <- tax_tbl
+  tax_expected <- mia::getTaxonomyRanks() %>% stringr::str_to_sentence()
+  if (!all(tax_names %in% tax_expected)) {
     cli::cli_abort(c(
       "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
       "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} or {.cls TreeSummarizedExperiment} with standard names.",
@@ -200,6 +204,7 @@ recipe <- function(microbiome_object = NULL,
     }
   }
 
+  tax_info <- stringr::str_to_sentence(tax_info)
   if (!is.null(tax_info)) {
     tax_ranks <- phyloseq::rank_names(microbiome_object)
     if (!all(tax_info %in% tax_ranks)) {
