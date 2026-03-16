@@ -7,12 +7,6 @@ does the same for checks.
 
 ``` r
 add_step(rec, object)
-
-# S4 method for class 'Recipe'
-add_step(rec, object)
-
-# S4 method for class 'PrepRecipe'
-add_step(rec, object)
 ```
 
 ## Arguments
@@ -20,7 +14,9 @@ add_step(rec, object)
 - rec:
 
   A
-  [`Recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md).
+  [`Recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+  or
+  [`PrepRecipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.md).
 
 - object:
 
@@ -30,4 +26,28 @@ add_step(rec, object)
 
 A updated
 [`Recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+or
+[`PrepRecipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.md)
 with the new operation in the last slot.
+
+## Examples
+
+``` r
+data(metaHIV_phy)
+rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+
+# Internally, step_ functions use add_step to append themselves
+rec <- step_maaslin(rec)
+length(rec@steps) # Returns 1
+#> [1] 1
+
+# If we try to add the exact same step, it will inform us and skip it
+rec <- step_maaslin(rec)
+#> ! This step is already defined with the same parameters and will be skipped.
+#> ℹ `rec %>% step_maaslin(min_abundance = 0, min_prevalence = 0.1, min_variance =
+#>   0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1,
+#>   random_effects = NULL, correction = c('BH'), standardize = TRUE, reference =
+#>   NULL, median_comparison_abundance = TRUE, rarefy = FALSE)`
+length(rec@steps) # Still returns 1
+#> [1] 1
+```

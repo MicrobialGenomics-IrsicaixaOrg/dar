@@ -6,16 +6,13 @@ Returns phyloseq from Recipe-class object
 
 ``` r
 get_phy(rec)
-
-# S4 method for class 'Recipe'
-get_phy(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ Phyloseq class object
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract phyloseq object
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 get_phy(rec)
 #> phyloseq-class experiment-level object
 #> otu_table()   OTU Table:         [ 451 taxa and 156 samples ]

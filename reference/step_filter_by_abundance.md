@@ -15,20 +15,6 @@ step_filter_by_abundance(
   threshold = 0.01,
   id = rand_id("filter_by_abundance")
 )
-
-# S4 method for class 'Recipe'
-step_filter_by_abundance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_abundance")
-)
-
-# S4 method for class 'PrepRecipe'
-step_filter_by_abundance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_abundance")
-)
 ```
 
 ## Arguments
@@ -105,7 +91,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Mooncake 
+#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Puits_damour 
 #> 
 #> DA steps:
 #> 

@@ -6,16 +6,13 @@ Extracts sample_data from phyloseq inside a Recipe
 
 ``` r
 sample_data(rec)
-
-# S4 method for class 'Recipe'
-sample_data(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A Recipe or Recipe step.
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ A tibble
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract sample_data from phyloseq object
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 sample_data(rec)
 #> # A tibble: 156 × 2
 #>    sample_id  RiskGroup2

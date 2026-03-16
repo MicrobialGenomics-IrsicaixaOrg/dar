@@ -11,12 +11,6 @@ taxonomic level matches the provided taxa.
 
 ``` r
 step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
-
-# S4 method for class 'Recipe'
-step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
-
-# S4 method for class 'PrepRecipe'
-step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
 ```
 
 ## Arguments
@@ -80,18 +74,14 @@ rec <- step_subset_taxa(
   tax_level = "Kingdom",
   taxa = c("Bacteria", "Archaea")
 )
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+prep(rec)
+#> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ phyloseq object with 447 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
-#> Preporcessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Kroštule 
-#> 
-#> DA steps:
+#> Results:
 #> 
 ```

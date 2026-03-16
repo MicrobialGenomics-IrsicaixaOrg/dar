@@ -24,32 +24,6 @@ step_deseq(
   rarefy = FALSE,
   id = rand_id("deseq")
 )
-
-# S4 method for class 'Recipe'
-step_deseq(
-  rec,
-  test = "Wald",
-  fitType = "local",
-  betaPrior = FALSE,
-  type = "ashr",
-  max_significance = 0.05,
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("deseq")
-)
-
-# S4 method for class 'PrepRecipe'
-step_deseq(
-  rec,
-  test = "Wald",
-  fitType = "local",
-  betaPrior = FALSE,
-  type = "ashr",
-  max_significance = 0.05,
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("deseq")
-)
 ```
 
 ## Arguments
@@ -145,8 +119,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Gulab_jamun 
-#>      ◉ step_filter_taxa() id = filter_taxa__Sweetheart_cake 
+#>      ◉ step_subset_taxa() id = subset_taxa__Lattice 
+#>      ◉ step_filter_taxa() id = filter_taxa__Empanada 
 #> 
 #> DA steps:
 #> 
@@ -166,7 +140,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ deseq__Linzer_torte diff_taxa = 2 
+#>      ✔ deseq__Hamantash diff_taxa = 2 
 #> 
 #>      ℹ 2 taxa are present in all tested methods 
 #> 
@@ -189,5 +163,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_deseq() id = deseq__Rugelach 
+#>      ◉ step_deseq() id = deseq__Pogača 
 ```

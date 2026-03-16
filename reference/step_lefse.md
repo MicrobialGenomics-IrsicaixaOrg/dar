@@ -23,32 +23,6 @@ step_lefse(
   rarefy = TRUE,
   id = rand_id("lefse")
 )
-
-# S4 method for class 'Recipe'
-step_lefse(
-  rec,
-  kruskal.threshold = 0.05,
-  wilcox.threshold = 0.05,
-  lda.threshold = 2,
-  subclassCol = NULL,
-  assay = 1L,
-  trim.names = FALSE,
-  rarefy = TRUE,
-  id = rand_id("lefse")
-)
-
-# S4 method for class 'PrepRecipe'
-step_lefse(
-  rec,
-  kruskal.threshold = 0.05,
-  wilcox.threshold = 0.05,
-  lda.threshold = 2,
-  subclassCol = NULL,
-  assay = 1L,
-  trim.names = FALSE,
-  rarefy = TRUE,
-  id = rand_id("lefse")
-)
 ```
 
 ## Arguments
@@ -137,14 +111,15 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Canelé 
-#>      ◉ step_filter_taxa() id = filter_taxa__Suncake 
+#>      ◉ step_subset_taxa() id = subset_taxa__Banbury_cake 
+#>      ◉ step_filter_taxa() id = filter_taxa__Tortita_negra 
 #> 
 #> DA steps:
 #> 
 
 ## Define step with default parameters
 rec <- step_lefse(rec) 
+
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -155,18 +130,19 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Canelé 
-#>      ◉ step_filter_taxa() id = filter_taxa__Suncake 
+#>      ◉ step_subset_taxa() id = subset_taxa__Banbury_cake 
+#>      ◉ step_filter_taxa() id = filter_taxa__Tortita_negra 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Cuban_pastelito 
+#>      ◉ step_lefse() id = lefse__Lattice 
 
 ## Running lefse without rarefaction (not recommended)
 rec <- 
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   step_lefse(rarefy = FALSE)
-#> ! Run lefse without rarefaction is not recommended (id = lefse__Dutch_Baby_Pancake)
+#> ! Running lefse without rarefaction is not recommended (`id` =
+#>   "lefse__Sweetheart_cake").
   
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -181,5 +157,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Dutch_Baby_Pancake 
+#>      ◉ step_lefse() id = lefse__Sweetheart_cake 
 ```

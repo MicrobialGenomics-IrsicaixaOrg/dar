@@ -14,31 +14,13 @@ mutual_plt(
   steps = steps_ids(rec, type = "da"),
   top_n = 20
 )
-
-# S4 method for class 'Recipe'
-mutual_plt(
-  rec,
-  count_cutoff = NULL,
-  comparisons = NULL,
-  steps = steps_ids(rec, type = "da"),
-  top_n = 20
-)
-
-# S4 method for class 'PrepRecipe'
-mutual_plt(
-  rec,
-  count_cutoff = NULL,
-  comparisons = NULL,
-  steps = steps_ids(rec, type = "da"),
-  top_n = 20
-)
 ```
 
 ## Arguments
 
 - rec:
 
-  A Recipe or Recipe step.
+  A prepped `Recipe` object.
 
 - count_cutoff:
 
@@ -72,9 +54,10 @@ data(test_prep_rec)
 
 ## Running the function returns a tile plot,
 mutual_plt(test_prep_rec)
-#> ℹ count_cutoff set to 1
-#> ! Taxa present in selected methods are greater than the cutoff top_n = 20
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
+#> ℹ `count_cutoff` set to 1.
+#> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
+#> ℹ The top 20 significant taxa with the greatest overlap between methods will be
+#>   used.
 
 
 ## The count_cutoff indicates the minimum number of methods in which an OTU
@@ -84,24 +67,27 @@ mutual_plt(
   test_prep_rec, 
   count_cutoff = length(steps_ids(test_prep_rec, "da"))
 )
-#> ! Taxa present in selected methods are greater than the cutoff top_n = 20
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
+#> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
+#> ℹ The top 20 significant taxa with the greatest overlap between methods will be
+#>   used.
 
 
 ## A single comparisons can be plotted through the comparison parameter.
 mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
-#> ℹ count_cutoff set to 1
-#> ! Taxa present in selected methods are greater than the cutoff top_n = 20
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
+#> ℹ `count_cutoff` set to 1.
+#> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
+#> ℹ The top 20 significant taxa with the greatest overlap between methods will be
+#>   used.
 
 
 ## If you want to exclude a method for the plot, you can remove it with the
 ## step parameter. In the following example we eliminate from the graph the
 ## results of maaslin.
 mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#> ℹ count_cutoff set to 1
-#> ! Taxa present in selected methods are greater than the cutoff top_n = 20
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be used
+#> ℹ `count_cutoff` set to 1.
+#> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
+#> ℹ The top 20 significant taxa with the greatest overlap between methods will be
+#>   used.
 
 
 ## mutual_plt function needs a PrepRecipe. If you pass a a non-PrepRecipe
@@ -109,10 +95,11 @@ mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 data(test_rec)
 err <- testthat::expect_error(mutual_plt(test_rec))
 err
-#> <error/rlang_error>
-#> Error in `mutual_plt()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then try with mutual_plt()
+#> <error/dar_error_invalid_input>
+#> Error in `check_prep_recipe()`:
+#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
+#> ! You supplied an unprepped <Recipe>.
+#> ℹ Please run `prep()` on your recipe before using this function.
 #> ---
 #> Backtrace:
 #>      ▆
@@ -154,6 +141,6 @@ err
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)
 #>  38.                             │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  39.                             ├─dar::mutual_plt(test_rec)
-#>  40.                             └─dar::mutual_plt(test_rec)
+#>  39.                             └─dar::mutual_plt(test_rec)
+#>  40.                               └─dar:::check_prep_recipe(rec)
 ```

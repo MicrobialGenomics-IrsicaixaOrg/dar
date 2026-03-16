@@ -37,7 +37,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Extract results from defined bake</h1>
-      <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/R/recipe-class.R" class="external-link"><code>R/recipe-class.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/R/recipe-utils.R" class="external-link"><code>R/recipe-utils.R</code></a></small>
       <div class="d-none name"><code>cool.Rd</code></div>
     </div>
 
@@ -47,13 +47,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span>, bake <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Recipe'</span></span>
-<span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span>, bake <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'PrepRecipe'</span></span>
-<span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span>, bake <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span>, bake <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,7 +55,7 @@
 
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
-<dd><p>A <code>Recipe</code> object.</p></dd>
+<dd><p>A <code>PrepRecipe</code> object.</p></dd>
 
 
 <dt id="arg-bake">bake<a class="anchor" aria-label="anchor" href="#arg-bake"></a></dt>
@@ -76,13 +70,9 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## First we need to add bakes (extraction strategies) to the PrepRecipe.</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="bake.html">bake</a></span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Finally we can extract the results with the cool method</span></span></span>
 <span class="r-in"><span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Baking with <span style="color: #00BB00;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 16 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span>
@@ -102,79 +92,6 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Otu_330 Ruthenibacterium</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> Otu_307 Faecalibacterium</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> Otu_433 Haemophilus     </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## By default cool extracts the results of the first bake. If we have more</span></span></span>
-<span class="r-in"><span><span class="co">## bakes we can extract the one that you want with the bake parameter.</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="bake.html">bake</a></span><span class="op">(</span><span class="va">rec</span>, count_cutoff <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">cool</span><span class="op">(</span><span class="va">rec</span>, <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 52 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id taxa           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Otu_78  Bacteroides    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Otu_88  Odoribacter    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Otu_119 Alistipes      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Otu_129 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Otu_125 Parabacteroides</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Otu_96  Prevotella     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Otu_82  Barnesiella    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Otu_94  Paraprevotella </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Otu_79  Bacteroides    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Otu_51  Bacteroides    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 42 more rows</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## bake and cool methods needs a prep-Recipe. If you pass a non-PrepRecipe</span></span></span>
-<span class="r-in"><span><span class="co">## the output is an error.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">err</span> <span class="op">&lt;-</span> <span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/expect_error.html" class="external-link">expect_error</a></span><span class="op">(</span><span class="fu">cool</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">err</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">&lt;error/rlang_error&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in </span><span style="color: #5555FF; font-weight: bold;">`cool()`</span><span style="font-weight: bold;">:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This function needs a PrepRecipe!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Run <span style="background-color: #BB00BB;">prep(rec)</span> and then try with <span style="background-color: #BB00BB;">cool()</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">     </span>▆</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  1. </span>└─<span style="font-weight: bold;">pkgdown</span>::build_site_github_pages(new_process = FALSE, install = FALSE)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  2. </span>  └─pkgdown::build_site(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  3. </span>    └─pkgdown:::build_site_local(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  4. </span>      └─pkgdown::build_reference(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  5. </span>        ├<span style="color: #949494;">─pkgdown:::unwrap_purrr_error(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  6. </span>        │ <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  7. </span>        └─<span style="font-weight: bold;">purrr</span>::map(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  8. </span>          └─purrr:::map_("list", .x, .f, ..., .progress = .progress)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">  9. </span>            ├<span style="color: #949494;">─purrr:::with_indexed_errors(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 10. </span>            │ <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 11. </span>            ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">purrr</span><span style="color: #949494;">:::call_with_cleanup(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 12. </span>            └─<span style="font-weight: bold;">pkgdown</span> (local) .f(.x[[i]], ...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 13. </span>              ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 14. </span>              └─<span style="font-weight: bold;">pkgdown</span>:::data_reference_topic(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 15. </span>                └─pkgdown:::run_examples(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 16. </span>                  └─pkgdown:::highlight_examples(code, topic, env = env)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 17. </span>                    └─<span style="font-weight: bold;">downlit</span>::evaluate_and_highlight(...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 18. </span>                      └─<span style="font-weight: bold;">evaluate</span>::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 19. </span>                        ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withRestarts(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 20. </span>                        │ <span style="color: #949494;">└─base (local) withRestartList(expr, restarts)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 21. </span>                        │   <span style="color: #949494;">├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 22. </span>                        │   <span style="color: #949494;">│ └─base (local) doWithOneRestart(return(expr), restart)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 23. </span>                        │   <span style="color: #949494;">└─base (local) withRestartList(expr, restarts[-nr])</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 24. </span>                        │     <span style="color: #949494;">└─base (local) withOneRestart(expr, restarts[[1L]])</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 25. </span>                        │       <span style="color: #949494;">└─base (local) doWithOneRestart(return(expr), restart)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 26. </span>                        ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">evaluate</span><span style="color: #949494;">:::with_handlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 27. </span>                        │ <span style="color: #949494;">├─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::eval(call)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 28. </span>                        │ <span style="color: #949494;">│ └─base::eval(call)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 29. </span>                        │ <span style="color: #949494;">└─base::withCallingHandlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 30. </span>                        ├<span style="color: #949494;">─base::withVisible(eval(expr, envir))</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 31. </span>                        └─base::eval(expr, envir)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 32. </span>                          └─base::eval(expr, envir)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 33. </span>                            ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">testthat</span><span style="color: #949494;">::expect_error(cool(test_rec))</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 34. </span>                            │ <span style="color: #949494;">└─testthat:::expect_condition_matching_(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 35. </span>                            │   <span style="color: #949494;">└─testthat:::quasi_capture(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 36. </span>                            │     <span style="color: #949494;">├─testthat (local) .capture(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 37. </span>                            │     <span style="color: #949494;">│ └─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 38. </span>                            │     <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">rlang</span><span style="color: #949494;">::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 39. </span>                            ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">dar</span><span style="color: #949494;">::cool(test_rec)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 40. </span>                            └─<span style="color: #5555FF; font-weight: bold;">dar::cool(</span>test_rec<span style="color: #5555FF; font-weight: bold;">)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

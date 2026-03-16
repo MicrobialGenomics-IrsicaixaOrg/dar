@@ -15,26 +15,6 @@ step_wilcox(
   rarefy = FALSE,
   id = rand_id("wilcox")
 )
-
-# S4 method for class 'Recipe'
-step_wilcox(
-  rec,
-  norm_method = "compositional",
-  max_significance = 0.05,
-  p_adj_method = "BH",
-  rarefy = FALSE,
-  id = rand_id("wilcox")
-)
-
-# S4 method for class 'PrepRecipe'
-step_wilcox(
-  rec,
-  norm_method = "compositional",
-  max_significance = 0.05,
-  p_adj_method = "BH",
-  rarefy = FALSE,
-  id = rand_id("wilcox")
-)
 ```
 
 ## Arguments
@@ -61,14 +41,7 @@ step_wilcox(
 
 - rarefy:
 
-  Boolean indicating if OTU counts must be rarefyed. This rarefaction
-  uses the standard R sample function to resample from the abundance
-  values in the otu_table component of the first argument, physeq. Often
-  one of the major goals of this procedure is to achieve parity in total
-  number of counts between samples, as an alternative to other formal
-  normalization procedures, which is why a single value for the
-  sample.size is expected. If 'no_seed', rarefaction is performed
-  without a set seed.
+  Boolean indicating if OTU counts must be rarefyed.
 
 - id:
 
@@ -96,9 +69,13 @@ data(metaHIV_phy)
 ## Init Recipe
 rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea"))
 
+## Define step with default parameters
+rec <- step_wilcox(rec)
+#> Registered S3 method overwritten by 'car':
+#>   method           from
+#>   na.action.merMod lme4
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -109,50 +86,9 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Kifli 
-#>      ◉ step_filter_taxa() id = filter_taxa__Marillenknödel 
+#>      ◉ step_subset_taxa() id = subset_taxa__Cannoli_siciliani 
 #> 
 #> DA steps:
 #> 
-
-## Define step with default parameters and prep
-rec <-
-  step_wilcox(rec) |>
-  prep(parallel = FALSE)
-
-rec
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Results:
-#> 
-#>      ✔ wilcox__Jalebi diff_taxa = 5 
-#> 
-#>      ℹ 5 taxa are present in all tested methods 
-#> 
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-  step_wilcox(rarefy = TRUE)
-#> ! Run wilcox without rarefaction is not recommended (id = wilcox__Nazook)
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Preporcessing steps:
-#> 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_wilcox() id = wilcox__Nazook 
+#>      ◉ step_wilcox() id = wilcox__Schneeball 
 ```

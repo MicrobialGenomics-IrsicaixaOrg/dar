@@ -66,13 +66,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Bear_claw 
-#>      ◉ step_filter_taxa() id = filter_taxa__Spanakopita 
+#>      ◉ step_subset_taxa() id = subset_taxa__Viennoiserie 
+#>      ◉ step_filter_taxa() id = filter_taxa__Karakudamono 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Eccles_cake 
-#>      ◉ step_deseq() id = deseq__Belekoy 
+#>      ◉ step_maaslin() id = maaslin__Welsh_cake 
+#>      ◉ step_deseq() id = deseq__Coussin_de_Lyon 
 
 ## If the json file contains 'bake', the Recipe is automatically prepared.
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
@@ -80,7 +80,7 @@ rec <-
   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
   import_steps(json_file)
 #> ! bakes found in imported recipe
-#> ℹ running prep()
+#> ℹ running `prep()`
 
 rec
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
@@ -92,22 +92,22 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Eccles_cake diff_taxa = 41 
-#>      ✔ deseq__Belekoy diff_taxa = 53 
+#>      ✔ maaslin__Welsh_cake diff_taxa = 41 
+#>      ✔ deseq__Coussin_de_Lyon diff_taxa = 53 
 #> 
 #>      ℹ 27 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Makmur 
+#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Carac 
 cool(rec)
-#> ℹ Bake for count_cutoff = 2
+#> ℹ Baking with count_cutoff = 2
 #> # A tibble: 27 × 2
 #>    taxa_id taxa                        
 #>    <chr>   <chr>                       
 #>  1 Otu_78  Bacteroides_uniformis       
-#>  2 Otu_88  Odoribacter_splanchnicus    
-#>  3 Otu_119 Alistipes_putredinis        
+#>  2 Otu_119 Alistipes_putredinis        
+#>  3 Otu_88  Odoribacter_splanchnicus    
 #>  4 Otu_129 Parabacteroides_merdae      
 #>  5 Otu_125 Parabacteroides_distasonis  
 #>  6 Otu_96  Prevotella_copri            

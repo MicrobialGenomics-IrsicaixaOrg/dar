@@ -36,6 +36,8 @@
 
 - [`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)
   : ALDEx2 analysis
+- [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
+  : ANCOM analysis
 - [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
   : corncob analysis
 - [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md)
@@ -99,8 +101,6 @@
   : Extracts tax_table from phyloseq inside a Recipe
 - [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
   : Returns required pakcages for Recipe object
-- [`zero_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.md)
-  : Extract outs with all 0 values in at least on level of the variable
 
 ## Import and Export
 
@@ -108,14 +108,6 @@
   : Export step parameters as json.
 - [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
   : Import steps from json file
-- [`read_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`read_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`read_file()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  : Loads Phyloseq data
 
 ## Other functions
 
@@ -123,6 +115,8 @@
   : Checks if Recipe contains a rarefaction step
 - [`rand_id()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.md)
   : Make a random identification field for steps
+- [`rarefaction_help()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rarefaction_help.md)
+  : Information about the Rarefaction process
 - [`PrepRecipe-class`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.md)
   : PrepRecipe-class object
 - [`show(`*`<PrepRecipe>`*`)`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.md)

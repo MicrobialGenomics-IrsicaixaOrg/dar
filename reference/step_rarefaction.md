@@ -26,12 +26,6 @@ provide a single positive integer argument as rngseed.
 
 ``` r
 step_rarefaction(rec, id = rand_id("rarefaction"))
-
-# S4 method for class 'Recipe'
-step_rarefaction(rec, id = rand_id("rarefaction"))
-
-# S4 method for class 'PrepRecipe'
-step_rarefaction(rec, id = rand_id("rarefaction"))
 ```
 
 ## Arguments
@@ -58,7 +52,7 @@ data(metaHIV_phy)
 rec <- 
   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))")
+  step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -70,8 +64,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Yurla 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pain_au_chocolat 
+#>      ◉ step_subset_taxa() id = subset_taxa__Mantecadas 
+#>      ◉ step_filter_taxa() id = filter_taxa__Bridie 
 #> 
 #> DA steps:
 #> 
@@ -89,9 +83,9 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Yurla 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pain_au_chocolat 
-#>      ◉ step_rarefaction() id = rarefaction__Bakpia_Pathok 
+#>      ◉ step_subset_taxa() id = subset_taxa__Mantecadas 
+#>      ◉ step_filter_taxa() id = filter_taxa__Bridie 
+#>      ◉ step_rarefaction() id = rarefaction__Curry_puff 
 #> 
 #> DA steps:
 #> 

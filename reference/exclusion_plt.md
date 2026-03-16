@@ -6,19 +6,13 @@ Plot the number of shared DA OTUs between methods.
 
 ``` r
 exclusion_plt(rec, steps = steps_ids(rec, "da"))
-
-# S4 method for class 'Recipe'
-exclusion_plt(rec, steps = steps_ids(rec, "da"))
-
-# S4 method for class 'PrepRecipe'
-exclusion_plt(rec, steps = steps_ids(rec, "da"))
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object.
+  A prepped `Recipe` object.
 
 - steps:
 
@@ -43,15 +37,16 @@ exclusion_plt(test_prep_rec)
 exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
 
 
-## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
+## exclusion_plt function needs a PrepRecipe. If you pass a a non-prep
 ## Recipe the output is an error.
 data(test_rec)
 err <- testthat::expect_error(exclusion_plt(test_rec))
 err
-#> <error/rlang_error>
-#> Error in `exclusion_plt()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then try with exclusion_plt()
+#> <error/dar_error_invalid_input>
+#> Error in `check_prep_recipe()`:
+#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
+#> ! You supplied an unprepped <Recipe>.
+#> ℹ Please run `prep()` on your recipe before using this function.
 #> ---
 #> Backtrace:
 #>      ▆
@@ -93,6 +88,6 @@ err
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)
 #>  38.                             │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  39.                             ├─dar::exclusion_plt(test_rec)
-#>  40.                             └─dar::exclusion_plt(test_rec)
+#>  39.                             └─dar::exclusion_plt(test_rec)
+#>  40.                               └─dar:::check_prep_recipe(rec)
 ```

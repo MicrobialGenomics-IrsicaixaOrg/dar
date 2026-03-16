@@ -37,7 +37,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Extracts otu_table from phyloseq inside a Recipe</h1>
-      <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/R/recipe-class.R" class="external-link"><code>R/recipe-class.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/R/recipe-utils.R" class="external-link"><code>R/recipe-utils.R</code></a></small>
       <div class="d-none name"><code>otu_table.Rd</code></div>
     </div>
 
@@ -47,10 +47,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">otu_table</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Recipe'</span></span>
-<span><span class="fu">otu_table</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">otu_table</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,7 +55,7 @@
 
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
-<dd><p>A Recipe or Recipe step.</p></dd>
+<dd><p>A <code>Recipe</code> or <code>PrepRecipe</code> object.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -69,12 +66,7 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Define recipe</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Extract otu_table from phyloseq object</span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">otu_table</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 451 × 157</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    taxa_id Sample_186 Sample_185 Sample_184 Sample_182 Sample_181 Sample_170</span>

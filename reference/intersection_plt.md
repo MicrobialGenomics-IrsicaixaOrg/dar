@@ -11,24 +11,13 @@ intersection_plt(
   ordered_by = c("freq", "degree"),
   font_size = 2
 )
-
-# S4 method for class 'Recipe'
-intersection_plt(rec, steps, font_size)
-
-# S4 method for class 'PrepRecipe'
-intersection_plt(
-  rec,
-  steps = steps_ids(rec, "da"),
-  ordered_by = c("freq", "degree"),
-  font_size = 2
-)
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object.
+  A prepped `Recipe` object.
 
 - steps:
 
@@ -74,10 +63,11 @@ intersection_plt(test_prep_rec, ordered_by = "degree")
 data(test_rec)
 err <- testthat::expect_error(intersection_plt(test_rec))
 err
-#> <error/rlang_error>
-#> Error in `.local()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then try with intersection_plt()
+#> <error/dar_error_invalid_input>
+#> Error in `check_prep_recipe()`:
+#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
+#> ! You supplied an unprepped <Recipe>.
+#> ℹ Please run `prep()` on your recipe before using this function.
 #> ---
 #> Backtrace:
 #>      ▆
@@ -119,7 +109,6 @@ err
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)
 #>  38.                             │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  39.                             ├─dar::intersection_plt(test_rec)
-#>  40.                             └─dar::intersection_plt(test_rec)
-#>  41.                               └─dar (local) .local(rec, steps, font_size)
+#>  39.                             └─dar::intersection_plt(test_rec)
+#>  40.                               └─dar:::check_prep_recipe(rec)
 ```

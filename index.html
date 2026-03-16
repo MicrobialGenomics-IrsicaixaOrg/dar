@@ -83,7 +83,7 @@
 <p>You can install the development version of dar from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu">pkg_install</span><span class="op">(</span><span class="st">"MicrobialGenomics-IrsicaixaOrg/dar"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pkg_install</a></span><span class="op">(</span><span class="st">"MicrobialGenomics-IrsicaixaOrg/dar"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
@@ -114,13 +114,13 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Komaj_sehen </span></span>
-<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Zlebia </span></span>
+<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Nunt </span></span>
+<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Schaumrolle </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DA steps:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Mille_feuille </span></span>
-<span><span class="co">#&gt;      ◉ step_aldex() id = aldex__Shakarbura</span></span>
+<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Crêpes_Suzette </span></span>
+<span><span class="co">#&gt;      ◉ step_aldex() id = aldex__Pineapple_bun</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -134,8 +134,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Mille_feuille diff_taxa = 52 </span></span>
-<span><span class="co">#&gt;      ✔ aldex__Shakarbura diff_taxa = 96 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 </span></span>
+<span><span class="co">#&gt;      ✔ aldex__Pineapple_bun diff_taxa = 98 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods</span></span>
 <span></span>
@@ -152,14 +152,14 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Mille_feuille diff_taxa = 52 </span></span>
-<span><span class="co">#&gt;      ✔ aldex__Shakarbura diff_taxa = 96 </span></span>
+<span><span class="co">#&gt;      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 </span></span>
+<span><span class="co">#&gt;      ✔ aldex__Pineapple_bun diff_taxa = 98 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Bakes:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Birnbrot</span></span>
+<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Ladies_navels</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
 <span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>

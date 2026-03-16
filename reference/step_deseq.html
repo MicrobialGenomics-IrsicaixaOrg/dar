@@ -81,32 +81,6 @@ be generated using the lfcShrink function.</p>
 <span>  log2FC <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  rarefy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  id <span class="op">=</span> <span class="fu"><a href="rand_id.html">rand_id</a></span><span class="op">(</span><span class="st">"deseq"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Recipe'</span></span>
-<span><span class="fu">step_deseq</span><span class="op">(</span></span>
-<span>  <span class="va">rec</span>,</span>
-<span>  test <span class="op">=</span> <span class="st">"Wald"</span>,</span>
-<span>  fitType <span class="op">=</span> <span class="st">"local"</span>,</span>
-<span>  betaPrior <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"ashr"</span>,</span>
-<span>  max_significance <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  log2FC <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  rarefy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  id <span class="op">=</span> <span class="fu"><a href="rand_id.html">rand_id</a></span><span class="op">(</span><span class="st">"deseq"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'PrepRecipe'</span></span>
-<span><span class="fu">step_deseq</span><span class="op">(</span></span>
-<span>  <span class="va">rec</span>,</span>
-<span>  test <span class="op">=</span> <span class="st">"Wald"</span>,</span>
-<span>  fitType <span class="op">=</span> <span class="st">"local"</span>,</span>
-<span>  betaPrior <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"ashr"</span>,</span>
-<span>  max_significance <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  log2FC <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  rarefy <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  id <span class="op">=</span> <span class="fu"><a href="rand_id.html">rand_id</a></span><span class="op">(</span><span class="st">"deseq"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -204,8 +178,8 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Preporcessing steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Gulab_jamun</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Sweetheart_cake</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Lattice</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Empanada</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -225,7 +199,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> deseq__Linzer_torte <span style="color: #555555;">diff_taxa = 2</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> deseq__Hamantash <span style="color: #555555;">diff_taxa = 2</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 2 taxa are present in all tested methods </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -248,7 +222,7 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Rugelach</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_deseq() <span style="color: #555555;">id = deseq__Pogača</span> </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

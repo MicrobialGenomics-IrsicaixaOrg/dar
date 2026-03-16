@@ -13,9 +13,6 @@ already-trimmed version of the phyloseq object.
 
 ``` r
 step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
-
-# S4 method for class 'Recipe'
-step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
 ```
 
 ## Arguments
@@ -78,7 +75,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pâté_Chaud 
+#>      ◉ step_filter_taxa() id = filter_taxa__Dutch_Baby_Pancake 
 #> 
 #> DA steps:
 #> 

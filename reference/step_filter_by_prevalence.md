@@ -15,20 +15,6 @@ step_filter_by_prevalence(
   threshold = 0.01,
   id = rand_id("filter_by_prevalence")
 )
-
-# S4 method for class 'Recipe'
-step_filter_by_prevalence(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_prevalence")
-)
-
-# S4 method for class 'PrepRecipe'
-step_filter_by_prevalence(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_prevalence")
-)
 ```
 
 ## Arguments
@@ -104,7 +90,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Macaron 
+#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Éclair 
 #> 
 #> DA steps:
 #> 

@@ -1,29 +1,11 @@
 # Define consensus strategies from a Recipe
 
-For a prep Recipe adds a consensus strategies to use for result
+For a prep Recipe adds a consensus strategy to use for result
 extraction.
 
 ## Usage
 
 ``` r
-bake(
-  rec,
-  count_cutoff = NULL,
-  weights = NULL,
-  exclude = NULL,
-  id = rand_id("bake")
-)
-
-# S4 method for class 'PrepRecipe'
-bake(
-  rec,
-  count_cutoff = NULL,
-  weights = NULL,
-  exclude = NULL,
-  id = rand_id("bake")
-)
-
-# S4 method for class 'Recipe'
 bake(
   rec,
   count_cutoff = NULL,
@@ -37,18 +19,18 @@ bake(
 
 - rec:
 
-  A Recipe object. The step will be added to the sequence of operations
-  for this Recipe.
+  A PrepRecipe object. The step will be added to the sequence of
+  operations for this Recipe.
 
 - count_cutoff:
 
   Indicates the minimum number of methods in which an OTU must be
-  present (Default: NULL). If count_cutoff is NULL count_cutoff is equal
-  to `length(steps_ids(rec, "da")) - length(exclude)`
+  present (Default: NULL). If `count_cutoff` is `NULL`, it is set to
+  `length(steps_ids(rec, "da")) - length(exclude)`.
 
 - weights:
 
-  Named vector with the ponderation value for each method.
+  Named numeric vector with the weight for each method.
 
 - exclude:
 
@@ -68,11 +50,11 @@ An object of class `PrepRecipe`
 data(test_prep_rec)
 rec <- test_prep_rec
 
-## Default bake extracts common OTUs in all DA tested methods 
+## Default bake extracts common OTUs in all DA tested methods
 ## (In this case the Recipe contains 3 methods)
 res <- bake(rec)
 cool(res)
-#> ℹ Bake for count_cutoff = 2
+#> ℹ Baking with count_cutoff = 2
 #> # A tibble: 16 × 2
 #>    taxa_id taxa            
 #>    <chr>   <chr>           
@@ -93,15 +75,15 @@ cool(res)
 #> 15 Otu_307 Faecalibacterium
 #> 16 Otu_433 Haemophilus     
 
-## bake and cool methods needs a PrepRecipe. If you pass a non-PrepRecipe
-## the output is an error.
+## bake() requires a PrepRecipe
 data(test_rec)
 err <- testthat::expect_error(bake(test_rec))
 err
-#> <error/rlang_error>
-#> Error in `bake()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then try with bake()
+#> <error/dar_error_invalid_input>
+#> Error in `check_prep_recipe()`:
+#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
+#> ! You supplied an unprepped <Recipe>.
+#> ℹ Please run `prep()` on your recipe before using this function.
 #> ---
 #> Backtrace:
 #>      ▆
@@ -143,14 +125,14 @@ err
 #>  36.                             │     ├─testthat (local) .capture(...)
 #>  37.                             │     │ └─base::withCallingHandlers(...)
 #>  38.                             │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  39.                             ├─dar::bake(test_rec)
-#>  40.                             └─dar::bake(test_rec)
+#>  39.                             └─dar::bake(test_rec)
+#>  40.                               └─dar:::check_prep_recipe(rec)
 
-## We can use the parameter `cout_cutoff` to for example select those OTUs
-## shared with at least two methods
+## We can use the parameter `count_cutoff` to select those OTUs
+## shared by at least two methods
 res <- bake(rec, count_cutoff = 2)
 cool(res)
-#> ℹ Bake for count_cutoff = 2
+#> ℹ Baking with count_cutoff = 2
 #> # A tibble: 16 × 2
 #>    taxa_id taxa            
 #>    <chr>   <chr>           
@@ -171,12 +153,12 @@ cool(res)
 #> 15 Otu_307 Faecalibacterium
 #> 16 Otu_433 Haemophilus     
 
-## Furthermore, we can exclude methods from the consensus strategy with the 
-## `exclude` parameter.
+## Furthermore, we can exclude methods from the consensus strategy
+## with the `exclude` parameter.
 res <- bake(rec, exclude = steps_ids(rec, "da")[1])
 cool(res)
-#> ℹ Bake for count_cutoff = 1
-#> ℹ Results from maaslin__Eccles_cake are excluded
+#> ℹ Baking with count_cutoff = 1
+#> Excluding "maaslin__Welsh_cake".
 #> # A tibble: 27 × 2
 #>    taxa_id taxa           
 #>    <chr>   <chr>          
@@ -197,7 +179,7 @@ weights <- c(2, 1)
 names(weights) <- steps_ids(rec, "da")
 res <- bake(rec, weights = weights)
 cool(res)
-#> ℹ Bake for count_cutoff = 2
+#> ℹ Baking with count_cutoff = 2
 #> # A tibble: 41 × 2
 #>    taxa_id taxa           
 #>    <chr>   <chr>          

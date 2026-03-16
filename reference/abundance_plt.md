@@ -13,33 +13,13 @@ abundance_plt(
   scale = 1,
   top_n = 20
 )
-
-# S4 method for class 'Recipe'
-abundance_plt(
-  rec,
-  taxa_ids = NULL,
-  type = "boxplot",
-  transform = "compositional",
-  scale = 1,
-  top_n = 20
-)
-
-# S4 method for class 'PrepRecipe'
-abundance_plt(
-  rec,
-  taxa_ids = NULL,
-  type = "boxplot",
-  transform = "compositional",
-  scale = 1,
-  top_n = 20
-)
 ```
 
 ## Arguments
 
 - rec:
 
-  A Recipe or Recipe step.
+  A prepped `Recipe` object.
 
 - taxa_ids:
 
@@ -50,7 +30,7 @@ abundance_plt(
 - type:
 
   Character vector indicating the type of the result. Options:
-  c("boxoplot", "heatmap").
+  c("boxplot", "heatmap").
 
 - transform:
 
@@ -70,7 +50,7 @@ abundance_plt(
 
 ## Value
 
-ggplot2
+ggplot2 or HeatmapList
 
 ## Examples
 
@@ -97,10 +77,11 @@ abundance_plt(test_prep_rec)
 data(test_rec)
 err <- testthat::expect_error(abundance_plt(test_rec))
 err
-#> <error/rlang_error>
-#> Error in `abundance_plt()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then try with abundance_plt()
+#> <error/dar_error_invalid_input>
+#> Error in `check_prep_recipe()`:
+#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
+#> ! You supplied an unprepped <Recipe>.
+#> ℹ Please run `prep()` on your recipe before using this function.
 #> ---
 #> Backtrace:
 #>     ▆
@@ -110,6 +91,6 @@ err
 #>  4. │     ├─testthat (local) .capture(...)
 #>  5. │     │ └─base::withCallingHandlers(...)
 #>  6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  7. ├─dar::abundance_plt(test_rec)
-#>  8. └─dar::abundance_plt(test_rec)
+#>  7. └─dar::abundance_plt(test_rec)
+#>  8.   └─dar:::check_prep_recipe(rec)
 ```

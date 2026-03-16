@@ -6,19 +6,13 @@ Returns data.frame with OTU intersection between methods
 
 ``` r
 intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
-
-# S4 method for class 'Recipe'
-intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
-
-# S4 method for class 'PrepRecipe'
-intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object.
+  A `PrepRecipe` object.
 
 - steps:
 
@@ -26,7 +20,7 @@ intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 
 - tidy:
 
-  Boolan indicating if result must be in tidy format.
+  Boolean indicating if result must be in tidy format.
 
 ## Value
 
@@ -36,67 +30,13 @@ data.frame class object
 
 ``` r
 data(test_prep_rec)
-
 df <- intersection_df(test_prep_rec)
 head(df)
-#>   taxa_id maaslin__Eccles_cake deseq__Belekoy
-#> 1   Otu_1                    0              0
-#> 2  Otu_10                    0              0
-#> 3  Otu_18                    0              0
-#> 4  Otu_34                    0              1
-#> 5  Otu_35                    1              1
-#> 6  Otu_37                    1              0
-
-## intersection_df function needs a prep-Recipe. If you pass a a non-prep
-## recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(intersection_df(test_rec))
-err
-#> <error/rlang_error>
-#> Error in `intersection_df()`:
-#> ! This function needs a PrepRecipe!
-#> • Run prep(rec) and then retry last command.
-#> ---
-#> Backtrace:
-#>      ▆
-#>   1. └─pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
-#>   2.   └─pkgdown::build_site(...)
-#>   3.     └─pkgdown:::build_site_local(...)
-#>   4.       └─pkgdown::build_reference(...)
-#>   5.         ├─pkgdown:::unwrap_purrr_error(...)
-#>   6.         │ └─base::withCallingHandlers(...)
-#>   7.         └─purrr::map(...)
-#>   8.           └─purrr:::map_("list", .x, .f, ..., .progress = .progress)
-#>   9.             ├─purrr:::with_indexed_errors(...)
-#>  10.             │ └─base::withCallingHandlers(...)
-#>  11.             ├─purrr:::call_with_cleanup(...)
-#>  12.             └─pkgdown (local) .f(.x[[i]], ...)
-#>  13.               ├─base::withCallingHandlers(...)
-#>  14.               └─pkgdown:::data_reference_topic(...)
-#>  15.                 └─pkgdown:::run_examples(...)
-#>  16.                   └─pkgdown:::highlight_examples(code, topic, env = env)
-#>  17.                     └─downlit::evaluate_and_highlight(...)
-#>  18.                       └─evaluate::evaluate(code, child_env(env), new_device = TRUE, output_handler = output_handler)
-#>  19.                         ├─base::withRestarts(...)
-#>  20.                         │ └─base (local) withRestartList(expr, restarts)
-#>  21.                         │   ├─base (local) withOneRestart(withRestartList(expr, restarts[-nr]), restarts[[nr]])
-#>  22.                         │   │ └─base (local) doWithOneRestart(return(expr), restart)
-#>  23.                         │   └─base (local) withRestartList(expr, restarts[-nr])
-#>  24.                         │     └─base (local) withOneRestart(expr, restarts[[1L]])
-#>  25.                         │       └─base (local) doWithOneRestart(return(expr), restart)
-#>  26.                         ├─evaluate:::with_handlers(...)
-#>  27.                         │ ├─base::eval(call)
-#>  28.                         │ │ └─base::eval(call)
-#>  29.                         │ └─base::withCallingHandlers(...)
-#>  30.                         ├─base::withVisible(eval(expr, envir))
-#>  31.                         └─base::eval(expr, envir)
-#>  32.                           └─base::eval(expr, envir)
-#>  33.                             ├─testthat::expect_error(intersection_df(test_rec))
-#>  34.                             │ └─testthat:::expect_condition_matching_(...)
-#>  35.                             │   └─testthat:::quasi_capture(...)
-#>  36.                             │     ├─testthat (local) .capture(...)
-#>  37.                             │     │ └─base::withCallingHandlers(...)
-#>  38.                             │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  39.                             ├─dar::intersection_df(test_rec)
-#>  40.                             └─dar::intersection_df(test_rec)
+#>   taxa_id maaslin__Welsh_cake deseq__Coussin_de_Lyon
+#> 1   Otu_1                   0                      0
+#> 2  Otu_10                   0                      0
+#> 3  Otu_18                   0                      0
+#> 4  Otu_34                   0                      1
+#> 5  Otu_35                   1                      1
+#> 6  Otu_37                   1                      0
 ```

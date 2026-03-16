@@ -52,17 +52,6 @@
 <span>  steps <span class="op">=</span> <span class="fu"><a href="steps_ids.html">steps_ids</a></span><span class="op">(</span><span class="va">rec</span>, <span class="st">"da"</span><span class="op">)</span>,</span>
 <span>  ordered_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"freq"</span>, <span class="st">"degree"</span><span class="op">)</span>,</span>
 <span>  font_size <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'Recipe'</span></span>
-<span><span class="fu">intersection_plt</span><span class="op">(</span><span class="va">rec</span>, <span class="va">steps</span>, <span class="va">font_size</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for class 'PrepRecipe'</span></span>
-<span><span class="fu">intersection_plt</span><span class="op">(</span></span>
-<span>  <span class="va">rec</span>,</span>
-<span>  steps <span class="op">=</span> <span class="fu"><a href="steps_ids.html">steps_ids</a></span><span class="op">(</span><span class="va">rec</span>, <span class="st">"da"</span><span class="op">)</span>,</span>
-<span>  ordered_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"freq"</span>, <span class="st">"degree"</span><span class="op">)</span>,</span>
-<span>  font_size <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -71,7 +60,7 @@
 
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
-<dd><p>A <code>Recipe</code> object.</p></dd>
+<dd><p>A prepped <code>Recipe</code> object.</p></dd>
 
 
 <dt id="arg-steps">steps<a class="anchor" aria-label="anchor" href="#arg-steps"></a></dt>
@@ -119,10 +108,11 @@ order.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">err</span> <span class="op">&lt;-</span> <span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/expect_error.html" class="external-link">expect_error</a></span><span class="op">(</span><span class="fu">intersection_plt</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">err</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">&lt;error/rlang_error&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in </span><span style="color: #5555FF; font-weight: bold;">`.local()`</span><span style="font-weight: bold;">:</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This function needs a PrepRecipe!</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Run <span style="background-color: #BB00BB;">prep(rec)</span> and then try with <span style="background-color: #BB00BB;">intersection_plt()</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">&lt;error/dar_error_invalid_input&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;"> in </span><span style="color: #5555FF; font-weight: bold;">`check_prep_recipe()`</span><span style="font-weight: bold;">:</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> The argument `rec` must be a prepared <span style="color: #0000BB;">&lt;PrepRecipe&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> You supplied an unprepped <span style="color: #0000BB;">&lt;Recipe&gt;</span>.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please run `prep()` on your recipe before using this function.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Backtrace:</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">     </span>▆</span>
@@ -164,9 +154,8 @@ order.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 36. </span>                            │     <span style="color: #949494;">├─testthat (local) .capture(...)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 37. </span>                            │     <span style="color: #949494;">│ └─</span><span style="color: #949494; font-weight: bold;">base</span><span style="color: #949494;">::withCallingHandlers(...)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 38. </span>                            │     <span style="color: #949494;">└─</span><span style="color: #949494; font-weight: bold;">rlang</span><span style="color: #949494;">::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 39. </span>                            ├<span style="color: #949494;">─</span><span style="color: #949494; font-weight: bold;">dar</span><span style="color: #949494;">::intersection_plt(test_rec)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 40. </span>                            └─dar::intersection_plt(test_rec)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 41. </span>                              └─dar (local) <span style="color: #5555FF; font-weight: bold;">.local(</span>rec, steps, font_size<span style="color: #5555FF; font-weight: bold;">)</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 39. </span>                            └─<span style="font-weight: bold;">dar</span>::intersection_plt(test_rec)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #555555;"> 40. </span>                              └─<span style="color: #5555FF; font-weight: bold;">dar:::check_prep_recipe(</span>rec<span style="color: #5555FF; font-weight: bold;">)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -6,16 +6,13 @@ Extracts tax_table from phyloseq inside a Recipe
 
 ``` r
 tax_table(rec)
-
-# S4 method for class 'Recipe'
-tax_table(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A Recipe or Recipe step.
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ A tibble
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract tax_table from phyloseq object
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 tax_table(rec)
 #> # A tibble: 451 × 2
 #>    taxa_id taxa                         

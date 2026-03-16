@@ -23,42 +23,6 @@ step_maaslin(
   rarefy = FALSE,
   id = rand_id("maaslin")
 )
-
-# S4 method for class 'Recipe'
-step_maaslin(
-  rec,
-  min_abundance = 0,
-  min_prevalence = 0.1,
-  min_variance = 0,
-  normalization = "TSS",
-  transform = "LOG",
-  max_significance = 0.1,
-  random_effects = NULL,
-  correction = "BH",
-  standardize = TRUE,
-  reference = NULL,
-  median_comparison_abundance = TRUE,
-  rarefy = FALSE,
-  id = rand_id("maaslin")
-)
-
-# S4 method for class 'PrepRecipe'
-step_maaslin(
-  rec,
-  min_abundance = 0,
-  min_prevalence = 0.1,
-  min_variance = 0,
-  normalization = "TSS",
-  transform = "LOG",
-  max_significance = 0.1,
-  random_effects = NULL,
-  correction = "BH",
-  standardize = TRUE,
-  reference = NULL,
-  median_comparison_abundance = TRUE,
-  rarefy = FALSE,
-  id = rand_id("maaslin")
-)
 ```
 
 ## Arguments
@@ -162,8 +126,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Puff_pastry 
-#>      ◉ step_filter_taxa() id = filter_taxa__Kūčiukai 
+#>      ◉ step_subset_taxa() id = subset_taxa__Prekmurska_gibanica 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cherry_pie 
 #> 
 #> DA steps:
 #> 
@@ -183,9 +147,9 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Paxlava diff_taxa = 37 
+#>      ✔ maaslin__Kürtőskalács diff_taxa = 36 
 #> 
-#>      ℹ 37 taxa are present in all tested methods 
+#>      ℹ 36 taxa are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
@@ -206,5 +170,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Maamoul 
+#>      ◉ step_maaslin() id = maaslin__Gözleme 
 ```

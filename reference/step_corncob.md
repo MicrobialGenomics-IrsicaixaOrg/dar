@@ -25,44 +25,6 @@ step_corncob(
   rarefy = FALSE,
   id = rand_id("corncob")
 )
-
-# S4 method for class 'Recipe'
-step_corncob(
-  rec,
-  phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
-  link = "logit",
-  phi.link = "logit",
-  test = "Wald",
-  boot = FALSE,
-  B = 1000,
-  filter_discriminant = TRUE,
-  fdr_cutoff = 0.05,
-  fdr = "fdr",
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("corncob")
-)
-
-# S4 method for class 'PrepRecipe'
-step_corncob(
-  rec,
-  phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
-  link = "logit",
-  phi.link = "logit",
-  test = "Wald",
-  boot = FALSE,
-  B = 1000,
-  filter_discriminant = TRUE,
-  fdr_cutoff = 0.05,
-  fdr = "fdr",
-  log2FC = 0,
-  rarefy = FALSE,
-  id = rand_id("corncob")
-)
 ```
 
 ## Arguments
@@ -188,8 +150,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Ensaïmada 
-#>      ◉ step_filter_taxa() id = filter_taxa__Mandelkubb 
+#>      ◉ step_subset_taxa() id = subset_taxa__Baklava 
+#>      ◉ step_filter_taxa() id = filter_taxa__Kanafeh 
 #> 
 #> DA steps:
 #> 
@@ -209,7 +171,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ corncob__Pain_au_chocolat diff_taxa = 4 
+#>      ✔ corncob__Éclair diff_taxa = 4 
 #> 
 #>      ℹ 4 taxa are present in all tested methods 
 #> 

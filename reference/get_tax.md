@@ -6,16 +6,13 @@ Returns tax_info from Recipe-class object
 
 ``` r
 get_tax(rec)
-
-# S4 method for class 'Recipe'
-get_tax(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ Tibble containing `tax_info`.
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract taxonomic level
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 get_tax(rec)
 #> # A tibble: 1 × 1
 #>   tax_lev

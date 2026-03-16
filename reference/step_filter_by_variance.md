@@ -15,20 +15,6 @@ step_filter_by_variance(
   threshold = 0.01,
   id = rand_id("filter_by_variance")
 )
-
-# S4 method for class 'Recipe'
-step_filter_by_variance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_variance")
-)
-
-# S4 method for class 'PrepRecipe'
-step_filter_by_variance(
-  rec,
-  threshold = 0.01,
-  id = rand_id("filter_by_variance")
-)
 ```
 
 ## Arguments
@@ -54,8 +40,8 @@ A Recipe object that has been filtered based on variance.
 
 The function calculates the variance of all taxa in the phyloseq object.
 It then compares this variance to the variance of each individual taxon.
-If a taxon's variance is less than the threshold, that taxon is removed
-from the phyloseq object.
+If a taxon's variance is less than or equal to the threshold, that taxon
+is removed from the phyloseq object.
 
 ## Note
 
@@ -101,7 +87,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_variance() id = filter_by_variance__Kroštule 
+#>      ◉ step_filter_by_variance() id = filter_by_variance__Gulab_jamun 
 #> 
 #> DA steps:
 #> 

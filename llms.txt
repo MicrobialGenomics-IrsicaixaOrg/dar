@@ -57,13 +57,13 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Komaj_sehen 
-#>      ◉ step_filter_taxa() id = filter_taxa__Zlebia 
+#>      ◉ step_subset_taxa() id = subset_taxa__Nunt 
+#>      ◉ step_filter_taxa() id = filter_taxa__Schaumrolle 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Mille_feuille 
-#>      ◉ step_aldex() id = aldex__Shakarbura
+#>      ◉ step_maaslin() id = maaslin__Crêpes_Suzette 
+#>      ◉ step_aldex() id = aldex__Pineapple_bun
 
 ## Prep recipe
 da_results <- prep(rec, parallel = TRUE)
@@ -77,8 +77,8 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
-#>      ✔ aldex__Shakarbura diff_taxa = 96 
+#>      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 
+#>      ✔ aldex__Pineapple_bun diff_taxa = 98 
 #> 
 #>      ℹ 35 taxa are present in all tested methods
 
@@ -95,14 +95,14 @@ da_results
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Mille_feuille diff_taxa = 52 
-#>      ✔ aldex__Shakarbura diff_taxa = 96 
+#>      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 
+#>      ✔ aldex__Pineapple_bun diff_taxa = 98 
 #> 
 #>      ℹ 35 taxa are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Birnbrot
+#>      ◉ 1 -> count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Ladies_navels
 
 ## Results
 cool(da_results)
@@ -181,6 +181,8 @@ By contributing to this project, you agree to abide by its terms.
 
 - [`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)
   : ALDEx2 analysis
+- [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
+  : ANCOM analysis
 - [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
   : corncob analysis
 - [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md)
@@ -244,8 +246,6 @@ By contributing to this project, you agree to abide by its terms.
   : Extracts tax_table from phyloseq inside a Recipe
 - [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
   : Returns required pakcages for Recipe object
-- [`zero_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/zero_otu.md)
-  : Extract outs with all 0 values in at least on level of the variable
 
 ## Import and Export
 
@@ -253,14 +253,6 @@ By contributing to this project, you agree to abide by its terms.
   : Export step parameters as json.
 - [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
   : Import steps from json file
-- [`read_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_otu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`validate_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`read_phyloseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  [`read_file()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/read_data.md)
-  : Loads Phyloseq data
 
 ## Other functions
 
@@ -268,6 +260,8 @@ By contributing to this project, you agree to abide by its terms.
   : Checks if Recipe contains a rarefaction step
 - [`rand_id()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.md)
   : Make a random identification field for steps
+- [`rarefaction_help()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rarefaction_help.md)
+  : Information about the Rarefaction process
 - [`PrepRecipe-class`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.md)
   : PrepRecipe-class object
 - [`show(`*`<PrepRecipe>`*`)`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.md)

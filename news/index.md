@@ -126,7 +126,8 @@
 ### Bug Fixes
 
 - Unconventional package installation methods have been avoided, for
-  example, `pak::pkg_install`.
+  example,
+  [`pak::pkg_install`](https://pak.r-lib.org/reference/pkg_install.html).
 - The setting of a seed within a function (`run_aldex`) has been
   addressed.
 - The name of the data in the `R/data.R` documentation has been

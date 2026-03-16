@@ -6,16 +6,13 @@ Extracts otu_table from phyloseq inside a Recipe
 
 ``` r
 otu_table(rec)
-
-# S4 method for class 'Recipe'
-otu_table(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A Recipe or Recipe step.
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ A tibble
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract otu_table from phyloseq object
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 otu_table(rec)
 #> # A tibble: 451 × 157
 #>    taxa_id Sample_186 Sample_185 Sample_184 Sample_182 Sample_181 Sample_170

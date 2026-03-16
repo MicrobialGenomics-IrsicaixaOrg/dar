@@ -34,52 +34,6 @@ step_ancom(
   rarefy = FALSE,
   id = rand_id("ancom")
 )
-
-# S4 method for class 'Recipe'
-step_ancom(
-  rec,
-  fix_formula = get_var(rec)[[1]],
-  rand_formula = NULL,
-  p_adj_method = "holm",
-  prv_cut = 0.1,
-  lib_cut = 0,
-  s0_perc = 0.05,
-  group = NULL,
-  struc_zero = FALSE,
-  neg_lb = FALSE,
-  alpha = 0.05,
-  n_cl = 1,
-  verbose = FALSE,
-  global = FALSE,
-  pairwise = FALSE,
-  dunnet = FALSE,
-  trend = FALSE,
-  rarefy = FALSE,
-  id = rand_id("ancom")
-)
-
-# S4 method for class 'PrepRecipe'
-step_ancom(
-  rec,
-  fix_formula = get_var(rec)[[1]],
-  rand_formula = NULL,
-  p_adj_method = "holm",
-  prv_cut = 0.1,
-  lib_cut = 0,
-  s0_perc = 0.05,
-  group = NULL,
-  struc_zero = FALSE,
-  neg_lb = FALSE,
-  alpha = 0.05,
-  n_cl = 1,
-  verbose = FALSE,
-  global = FALSE,
-  pairwise = FALSE,
-  dunnet = FALSE,
-  trend = FALSE,
-  rarefy = FALSE,
-  id = rand_id("ancom")
-)
 ```
 
 ## Arguments
@@ -216,23 +170,69 @@ Other Diff taxa steps:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 data(metaHIV_phy)
 
 ## Init Recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
 rec
+#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Genus 
+#> 
+#> Preporcessing steps:
+#> 
+#>      ◉ step_subset_taxa() id = subset_taxa__Punschkrapfen 
+#>      ◉ step_filter_taxa() id = filter_taxa__Bethmännchen 
+#> 
+#> DA steps:
+#> 
 
 ## Define step with default parameters and prep
 rec <-
   step_ancom(rec) |>
   prep(parallel = FALSE)
+#> Warning: The number of taxa used for estimating sample-specific biases is: 41
+#> A large number of taxa (>50) is required for the consistent estimation of biases
+#> Loading required package: foreach
+#> Loading required package: rngtools
+#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
+#> For taxa that are significant but do not pass the sensitivity analysis,
+#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
+#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
+#> Warning: The number of taxa used for estimating sample-specific biases is: 38
+#> A large number of taxa (>50) is required for the consistent estimation of biases
+#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
+#> For taxa that are significant but do not pass the sensitivity analysis,
+#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
+#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
+#> Warning: The number of taxa used for estimating sample-specific biases is: 38
+#> A large number of taxa (>50) is required for the consistent estimation of biases
+#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
+#> For taxa that are significant but do not pass the sensitivity analysis,
+#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
+#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
 
 rec
+#> ── DAR Results ─────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 76 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Genus 
+#> 
+#> Results:
+#> 
+#>      ✔ ancom__Shakarbura diff_taxa = 19 
+#> 
+#>      ℹ 0 taxa are present in all tested methods 
+#> 
 
 ## Wearing rarefaction only for this step
 rec <-
@@ -240,5 +240,17 @@ rec <-
   step_ancom(rarefy = TRUE)
 
 rec
-} # }
+#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Species 
+#> 
+#> Preporcessing steps:
+#> 
+#> 
+#> DA steps:
+#> 
+#>      ◉ step_ancom() id = ancom__Rugelach 
 ```

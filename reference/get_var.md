@@ -6,16 +6,13 @@ Returns var_info from Recipe-class object
 
 ``` r
 get_var(rec)
-
-# S4 method for class 'Recipe'
-get_var(rec)
 ```
 
 ## Arguments
 
 - rec:
 
-  A `Recipe` object
+  A `Recipe` or `PrepRecipe` object.
 
 ## Value
 
@@ -25,12 +22,7 @@ Tibble containing `var_info`.
 
 ``` r
 data(metaHIV_phy)
-
-## Define recipe
-rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-
-## Extract variable of interest
+rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
 get_var(rec)
 #> # A tibble: 1 × 1
 #>   vars      

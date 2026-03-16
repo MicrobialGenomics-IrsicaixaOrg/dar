@@ -6,9 +6,6 @@ Returns required pakcages for Recipe object
 
 ``` r
 required_deps(rec)
-
-# S4 method for class 'Recipe'
-required_deps(rec)
 ```
 
 ## Arguments

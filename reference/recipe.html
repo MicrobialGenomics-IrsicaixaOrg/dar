@@ -120,7 +120,7 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Bake for <span style="color: #0000BB;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Baking with <span style="color: #00BB00;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id taxa         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
@@ -157,14 +157,15 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span><span class="co">## returns an information message.</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="step_aldex.html">step_aldex</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="step_aldex.html">step_aldex</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This step is already defined with the same parameters and will be skipped: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">rec %&gt;% step_aldex(max_significance = 0.05, mc.samples = 128, denom = c('all'), rarefy = FALSE)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This step is already defined with the same parameters and will be skipped.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `rec %&gt;% step_aldex(max_significance = 0.05, mc.samples = 128, denom =</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   c('all'), rarefy = FALSE)`</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## The same with bake</span></span></span>
 <span class="r-in"><span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="bake.html">bake</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="bake.html">bake</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This step is already defined with the same parameters and will be skipped: </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">rec %&gt;% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> This step is already defined with the same parameters and will be skipped.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> `rec %&gt;% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)`</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

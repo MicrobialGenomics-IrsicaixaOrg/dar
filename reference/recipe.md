@@ -75,7 +75,7 @@ da_results <- bake(da_results, count_cutoff = n_methods)
 
 ## Results
 cool(da_results)
-#> ℹ Bake for count_cutoff = 2
+#> ℹ Baking with count_cutoff = 2
 #> # A tibble: 1 × 2
 #>   taxa_id taxa         
 #>   <chr>   <chr>        
@@ -112,12 +112,13 @@ rec
 ## returns an information message.
 rec <- step_aldex(rec)
 rec <- step_aldex(rec)
-#> ! This step is already defined with the same parameters and will be skipped: 
-#> rec %>% step_aldex(max_significance = 0.05, mc.samples = 128, denom = c('all'), rarefy = FALSE)
+#> ! This step is already defined with the same parameters and will be skipped.
+#> ℹ `rec %>% step_aldex(max_significance = 0.05, mc.samples = 128, denom =
+#>   c('all'), rarefy = FALSE)`
 
 ## The same with bake
 da_results <- bake(da_results)
 da_results <- bake(da_results)
-#> ! This step is already defined with the same parameters and will be skipped: 
-#> rec %>% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)
+#> ! This step is already defined with the same parameters and will be skipped.
+#> ℹ `rec %>% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)`
 ```

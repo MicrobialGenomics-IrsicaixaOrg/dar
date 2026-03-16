@@ -23,26 +23,6 @@ step_aldex(
   rarefy = FALSE,
   id = rand_id("aldex")
 )
-
-# S4 method for class 'Recipe'
-step_aldex(
-  rec,
-  max_significance = 0.05,
-  mc.samples = 128,
-  denom = "all",
-  rarefy = FALSE,
-  id = rand_id("aldex")
-)
-
-# S4 method for class 'PrepRecipe'
-step_aldex(
-  rec,
-  max_significance = 0.05,
-  mc.samples = 128,
-  denom = "all",
-  rarefy = FALSE,
-  id = rand_id("aldex")
-)
 ```
 
 ## Arguments
@@ -143,8 +123,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Chorley_cake 
-#>      ◉ step_filter_taxa() id = filter_taxa__Chouquette 
+#>      ◉ step_subset_taxa() id = subset_taxa__Cannoli_siciliani 
+#>      ◉ step_filter_taxa() id = filter_taxa__Fig_roll 
 #> 
 #> DA steps:
 #> 
@@ -164,9 +144,9 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ aldex__Empanada diff_taxa = 43 
+#>      ✔ aldex__Samosa diff_taxa = 3 
 #> 
-#>      ℹ 43 taxa are present in all tested methods 
+#>      ℹ 3 taxa are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
@@ -187,5 +167,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_aldex() id = aldex__Belekoy 
+#>      ◉ step_aldex() id = aldex__Linzer_torte 
 ```

@@ -4,18 +4,12 @@ This is a convenience function around the filter_taxa function. It is
 designed to speed up filtering complex experimental objects with one
 function call. In the case of run_filter_by_rarity, the filtering will
 be based on the rarity of each taxon. The taxa retained in the dataset
-are those where the sum of their rarity is less than the provided
-threshold.
+are those where the prevalence (proportion of samples where present) is
+LESS than the provided threshold.
 
 ## Usage
 
 ``` r
-step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
-
-# S4 method for class 'Recipe'
-step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
-
-# S4 method for class 'PrepRecipe'
 step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
 ```
 
@@ -43,10 +37,11 @@ A Recipe object that has been filtered based on rarity.
 
 ## Details
 
-The function calculates the rarity of all taxa in the phyloseq object as
-the proportion of samples in which they are present. It then compares
-this rarity to the threshold. If a taxon's rarity is greater than the
-threshold, that taxon is removed from the phyloseq object.
+The function calculates the prevalence of all taxa in the phyloseq
+object as the proportion of samples in which they are present. It then
+compares this prevalence to the threshold. If a taxon's prevalence is
+greater than or equal to the threshold, that taxon is removed (filtered
+out) from the phyloseq object, leaving only the "rare" taxa.
 
 ## Note
 
@@ -92,7 +87,7 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Kolache 
+#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Shakarbura 
 #> 
 #> DA steps:
 #> 
