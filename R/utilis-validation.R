@@ -12,6 +12,8 @@
 #' @param arg_name The name of the argument in the calling function.
 #'
 #' @return Invisible NULL if valid, throws error otherwise.
+#' @noRd
+#' @keywords internal
 check_recipe <- function(rec, arg_name = "rec") {
   
   if (!checkmate::test_class(rec, "Recipe")) {
@@ -43,8 +45,8 @@ check_recipe <- function(rec, arg_name = "rec") {
 #'
 #' @param rec The object to check.
 #' @param arg_name The name of the argument in the calling function.
-#'
-#' @return Invisible NULL if valid, throws error otherwise.
+#' @noRd
+#' @keywords internal
 check_prep_recipe <- function(rec, arg_name = "rec") {
   
   if (!checkmate::test_class(rec, "PrepRecipe")) {
@@ -78,6 +80,8 @@ check_prep_recipe <- function(rec, arg_name = "rec") {
 #' @param arg_name The name of the argument in the calling function.
 #'
 #' @return Invisible NULL if valid, throws error otherwise.
+#' @noRd
+#' @keywords internal
 check_any_recipe <- function(rec, arg_name = "rec") {
   
   # Since PrepRecipe inherits from Recipe, we only need to check the base class.

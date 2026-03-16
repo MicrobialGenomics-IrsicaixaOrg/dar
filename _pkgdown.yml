@@ -22,7 +22,7 @@ reference:
 - title: "Step Functions - Differential Abundance Methods"
   contents:
   - step_aldex
-  # - step_ancom
+  - step_ancom
   - step_corncob
   - step_deseq
   - step_lefse
@@ -51,16 +51,15 @@ reference:
   - steps_ids
   - tax_table
   - required_deps
-  - zero_otu
 - title: "Import and Export"
   contents:
   - export_steps
   - import_steps
-  - read_data
 - title: "Other functions"
   contents:
   - contains_rarefaction
   - rand_id
+  - rarefaction_help
   - PrepRecipe-class
   - phyloseq_or_null-class
 - title: "Data"
