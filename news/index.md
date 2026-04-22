@@ -1,5 +1,7 @@
 # Changelog
 
+## dar 1.7.1
+
 ## dar 1.5.6
 
 - CHANGED: Mark step_metagenomeseq as defunct and remove its
