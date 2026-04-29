@@ -250,7 +250,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-04-22
+#>  date     2026-04-29
 #>  pandoc   3.8.2.1 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.7.32 @ /usr/local/bin/quarto
 #> 
@@ -286,7 +286,7 @@ devtools::session_info()
 #>  coda                       0.19-4.1   2024-01-31 [1] RSPM (R 4.5.0)
 #>  codetools                  0.2-20     2024-03-31 [3] CRAN (R 4.5.2)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.5.0)
-#>  dar                      * 1.7.1      2026-04-22 [1] Bioconductor
+#>  dar                      * 1.9.0      2026-04-29 [1] Bioconductor
 #>  data.table                 1.18.2.1   2026-01-27 [1] RSPM (R 4.5.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.5.0)
 #>  DECIPHER                   3.6.0      2025-10-29 [1] Bioconductor 3.22 (R 4.5.2)
@@ -316,7 +316,7 @@ devtools::session_info()
 #>  GenomicRanges              1.62.1     2025-12-08 [1] Bioconductor 3.22 (R 4.5.2)
 #>  ggbeeswarm                 0.7.3      2025-11-29 [1] RSPM (R 4.5.0)
 #>  ggnewscale                 0.5.2      2025-06-20 [1] RSPM (R 4.5.0)
-#>  ggplot2                    4.0.2      2026-02-03 [1] RSPM (R 4.5.0)
+#>  ggplot2                    4.0.3      2026-04-22 [1] RSPM (R 4.5.0)
 #>  ggrepel                    0.9.8      2026-03-17 [1] RSPM (R 4.5.0)
 #>  ggtext                     0.1.2      2022-09-16 [1] RSPM (R 4.5.0)
 #>  globals                    0.19.1     2026-03-13 [1] RSPM (R 4.5.0)
@@ -368,7 +368,7 @@ devtools::session_info()
 #>  pkgbuild                   1.4.8      2025-05-26 [2] RSPM (R 4.5.0)
 #>  pkgconfig                  2.0.3      2019-09-22 [2] RSPM (R 4.5.0)
 #>  pkgdown                    2.2.0      2025-11-06 [2] RSPM (R 4.5.0)
-#>  pkgload                    1.5.1      2026-04-01 [2] RSPM (R 4.5.0)
+#>  pkgload                    1.5.2      2026-04-22 [2] RSPM (R 4.5.0)
 #>  plotly                     4.12.0     2026-01-24 [1] RSPM (R 4.5.0)
 #>  plyr                       1.8.9      2023-10-02 [1] RSPM (R 4.5.0)
 #>  purrr                      1.2.2      2026-04-10 [2] RSPM (R 4.5.0)
@@ -377,7 +377,7 @@ devtools::session_info()
 #>  rappdirs                   0.3.4      2026-01-17 [2] RSPM (R 4.5.0)
 #>  rbiom                      2.2.1      2025-06-27 [1] RSPM (R 4.5.0)
 #>  RColorBrewer               1.1-3      2022-04-03 [1] RSPM (R 4.5.0)
-#>  Rcpp                       1.1.1-1    2026-04-16 [2] RSPM (R 4.5.0)
+#>  Rcpp                       1.1.1-1.1  2026-04-24 [2] RSPM (R 4.5.0)
 #>  readr                      2.2.0      2026-02-19 [1] RSPM (R 4.5.0)
 #>  readxl                     1.4.5      2025-03-07 [1] RSPM (R 4.5.0)
 #>  registry                   0.5-1      2019-03-05 [1] RSPM (R 4.5.0)
