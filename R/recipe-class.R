@@ -233,11 +233,138 @@ recipe <- function(microbiome_object = NULL,
 
 ## validity ----
 
-## validity ----
+#' Validate the structural invariants of a Recipe
+#'
+#' `var_info` and `tax_info` may be unset because users can add them after
+#' creating a recipe. When present, however, their values must describe the
+#' data stored in the recipe.
+#'
+#' @param object A `Recipe` object.
+#'
+#' @return `TRUE` when the object is valid, otherwise a character vector with
+#'   every detected problem.
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+#' @tests
+#' data(metaHIV_phy)
+#'
+#' complete_rec <- recipe(
+#'   metaHIV_phy,
+#'   var_info = "RiskGroup2",
+#'   tax_info = "Species"
+#' )
+#' incomplete_rec <- recipe(metaHIV_phy)
+#'
+#' expect_true(methods::validObject(complete_rec, test = TRUE))
+#' expect_true(methods::validObject(incomplete_rec, test = TRUE))
+#'
+#' invalid_var <- complete_rec
+#' invalid_var@var_info <- tibble::tibble(vars = "missing_variable")
+#' expect_match(
+#'   methods::validObject(invalid_var, test = TRUE),
+#'   "missing_variable"
+#' )
+#'
+#' invalid_tax <- complete_rec
+#' invalid_tax@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
+#' expect_match(
+#'   methods::validObject(invalid_tax, test = TRUE),
+#'   "Missing_rank"
+#' )
+#'
+#' malformed_var <- complete_rec
+#' malformed_var@var_info <- tibble::tibble(wrong = "RiskGroup2")
+#' expect_match(
+#'   methods::validObject(malformed_var, test = TRUE),
+#'   "var_info"
+#' )
+#'
+#' malformed_tax <- complete_rec
+#' malformed_tax@tax_info <- tibble::tibble(wrong = "Species")
+#' expect_match(
+#'   methods::validObject(malformed_tax, test = TRUE),
+#'   "tax_info"
+#' )
+#'
+#' testthat::local_mocked_bindings(
+#'   nsamples = function(x) 0,
+#'   ntaxa = function(x) 0,
+#'   .package = "phyloseq"
+#' )
+#' empty_problems <- recipe_validity_problems(complete_rec)
+#' expect_true(any(grepl("at least one sample", empty_problems)))
+#' expect_true(any(grepl("at least one taxon", empty_problems)))
+recipe_validity_problems <- function(object) {
+  problems <- character()
+  phy <- object@phyloseq
+
+  if (is.null(phy)) {
+    problems <- c(problems, "`phyloseq` must not be NULL")
+    return(problems)
+  }
+
+  if (phyloseq::nsamples(phy) < 1) {
+    problems <- c(problems, "`phyloseq` must contain at least one sample")
+  }
+  if (phyloseq::ntaxa(phy) < 1) {
+    problems <- c(problems, "`phyloseq` must contain at least one taxon")
+  }
+
+  var_info <- object@var_info
+  if (!is.null(var_info) && ncol(var_info) > 0) {
+    if (!identical(names(var_info), "vars")) {
+      problems <- c(
+        problems,
+        "`var_info` must contain only a `vars` column"
+      )
+    } else if (!is.character(var_info$vars)) {
+      problems <- c(problems, "`var_info$vars` must be a character vector")
+    } else {
+      sample_vars <- tryCatch(
+        colnames(as(phyloseq::sample_data(phy), "data.frame")),
+        error = function(cnd) character()
+      )
+      missing_vars <- setdiff(var_info$vars, sample_vars)
+      if (length(missing_vars) > 0) {
+        problems <- c(
+          problems,
+          glue::glue(
+            "Variables not found in `sample_data`: {paste(missing_vars, collapse = ', ')}"
+          )
+        )
+      }
+    }
+  }
+
+  tax_info <- object@tax_info
+  if (!is.null(tax_info) && ncol(tax_info) > 0) {
+    if (!identical(names(tax_info), "tax_lev")) {
+      problems <- c(
+        problems,
+        "`tax_info` must contain only a `tax_lev` column"
+      )
+    } else if (!is.character(tax_info$tax_lev)) {
+      problems <- c(problems, "`tax_info$tax_lev` must be a character vector")
+    } else {
+      missing_tax <- setdiff(tax_info$tax_lev, phyloseq::rank_names(phy))
+      if (length(missing_tax) > 0) {
+        problems <- c(
+          problems,
+          glue::glue(
+            "Taxonomic ranks not found in `tax_table`: {paste(missing_tax, collapse = ', ')}"
+          )
+        )
+      }
+    }
+  }
+
+  if (length(problems) == 0) TRUE else problems
+}
 
 methods::setValidity(
   Class = "Recipe",
-  method = function(object) { TRUE }
+  method = recipe_validity_problems
 )
 
 ## printing ----
@@ -372,6 +499,19 @@ methods::setClass(
 #' @autoglobal
 #' @keywords internal
 #' @aliases PrepRecipe
+#' @tests
+#' data(metaHIV_phy)
+#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#'
+#' prepped <- prep_recipe(rec, results = list(), bakes = list())
+#' expect_s4_class(prepped, "PrepRecipe")
+#' expect_true(methods::validObject(prepped, test = TRUE))
+#'
+#' rec@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
+#' expect_error(
+#'   prep_recipe(rec, results = list(), bakes = list()),
+#'   regexp = "Missing_rank"
+#' )
 prep_recipe <- function(rec, results, bakes) {
   methods::new(
     Class = "PrepRecipe",
@@ -380,13 +520,6 @@ prep_recipe <- function(rec, results, bakes) {
     rec
   )
 }
-
-## validity ----
-
-methods::setValidity(
-  Class = "PrepRecipe",
-  method = function(object) { TRUE }
-)
 
 ## printing ----
 
