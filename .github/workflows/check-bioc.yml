@@ -44,7 +44,7 @@ env:
   ## Valid options are:
   ##    "bioc-release"
   ##    "bioc-devel"
-  ##    or a specific number like "3.20"
+  ##    or a specific number like "3.23"
 
 jobs:
   bioc-config:
@@ -56,19 +56,25 @@ jobs:
       ## https://runs-on.com/github-actions/the-matrix-strategy/#dynamic-matrix-generation
       - id: set-bioc-matrix
         run: |
-         bioc=$(curl -L https://bioconductor.org/config.yaml)
+         bioc=$(curl -fsSL https://bioconductor.org/config.yaml)
+         bioc_config_value() {
+           echo "$bioc" | awk -F': ' -v key="$1" '$1 == key { gsub(/"/, "", $2); print $2; exit }'
+         }
+         r_major_minor() {
+           echo "$1" | grep -Eo '^[0-9]+\.[0-9]+'
+         }
          if [[ "$bioc_version" == "bioc-release" ]]; then
            echo "Finding the latest BioC release version and the corresponding R version"
-           biocversion=$(echo "$bioc" | grep "release_version: " | grep -Eo "[0-9]{1}\.[0-9]{2}")
-           rversion=$(echo "$bioc" | grep "r_version_associated_with_release: " | grep -Eo "[0-9]{1}\.[0-9]{1}")
+           biocversion=$(bioc_config_value "release_version")
+           rversion=$(r_major_minor "$(bioc_config_value "r_version_associated_with_release")")
            biocmajor=$(echo "$biocversion" | cut -c 1-1)
            biocminor=$(echo "$biocversion" | cut -c 3-4)
            bioccont=$(echo "bioconductor/bioconductor_docker:RELEASE_${biocmajor}_${biocminor}")
          elif [[ "$bioc_version" == "bioc-devel" ]]; then
            echo "Finding the latest BioC devel version and the corresponding R version"
-           biocversion=$(echo "$bioc" | grep "devel_version: " | grep -Eo "[0-9]{1}\.[0-9]{2}")
-           rversion_release=$(echo "$bioc" | grep "r_version_associated_with_release: " | grep -Eo "[0-9]{1}\.[0-9]{1}")
-           rversion_devel=$(echo "$bioc" | grep "r_version_associated_with_devel: " | grep -Eo "[0-9]{1}\.[0-9]{1}")
+           biocversion=$(bioc_config_value "devel_version")
+           rversion_release=$(r_major_minor "$(bioc_config_value "r_version_associated_with_release")")
+           rversion_devel=$(r_major_minor "$(bioc_config_value "r_version_associated_with_devel")")
            if [[ "$rversion_release" == "$rversion_devel" ]]; then
              rversion=$(echo "$rversion_devel")
            else
@@ -78,10 +84,15 @@ jobs:
          else
            echo "Finding the the R version for bioc version ${bioc_version}"
            biocversion=$(echo "$bioc_version")
-           rversion=$(echo "$bioc" | sed -En "/r_ver_for_bioc_ver/,/release_dates/p" | grep "$bioc_version\":" | grep -Eo ": \"[0-9]{1}\.[0-9]{1}" | grep -Eo "[0-9]{1}\.[0-9]{1}")
+           rversion=$(echo "$bioc" | sed -En "/r_ver_for_bioc_ver:/,/release_dates:/p" | awk -F': ' -v key="  \"${bioc_version}\"" '$1 == key { gsub(/"/, "", $2); print $2; exit }')
+           rversion=$(r_major_minor "$rversion")
            biocmajor=$(echo "$biocversion" | cut -c 1-1)
            biocminor=$(echo "$biocversion" | cut -c 3-4)
            bioccont=$(echo "bioconductor/bioconductor_docker:RELEASE_${biocmajor}_${biocminor}")
+         fi
+         if [[ -z "$biocversion" || -z "$rversion" || -z "$bioccont" ]]; then
+           echo "Failed to resolve Bioconductor matrix from https://bioconductor.org/config.yaml"
+           exit 1
          fi
          echo "Found these settings:"
          echo "Bioconductor version: $biocversion, R version: $rversion, Bioconductor docker name: $bioccont"
@@ -138,8 +149,8 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ matrix.config.os }}-${{ matrix.config.r }}-${{ matrix.config.bioc }}-${{ inputs.cache-version }}
-          restore-keys: ${{ matrix.config.os }}-${{ matrix.config.r }}-${{ matrix.config.bioc }}--${{ inputs.cache-version }}
+          key: ${{ matrix.config.os }}-${{ matrix.config.r }}-${{ matrix.config.bioc }}-${{ env.cache-version }}
+          restore-keys: ${{ matrix.config.os }}-${{ matrix.config.r }}-${{ matrix.config.bioc }}-${{ env.cache-version }}
 
       ## remotes is needed for isntalling the Linux system dependencies
       ## as well as other R packages later on.
