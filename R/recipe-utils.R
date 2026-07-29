@@ -249,8 +249,15 @@ prep <- function(rec,
   }
   
   check_any_recipe(rec)
-  
-  check <- utils::capture.output(required_deps(rec))
+
+  initial_da_steps <- purrr::keep(rec@steps, is_da_step)
+  static_status <- model_steps_status(rec)
+  static_compatible <- static_status$step_id[static_status$compatible]
+  dependency_steps <- purrr::keep(rec@steps, function(step) {
+    !is_da_step(step) || step[["id"]] %in% static_compatible
+  })
+
+  check <- utils::capture.output(required_deps(rec, dependency_steps))
   if (length(check) > 0) {
     cli::cli_abort(
       c(
@@ -293,11 +300,48 @@ prep <- function(rec,
       context = glue::glue("Validation failed after preprocessing step `{step_id}`.")
     )
   }
+
+  resolved <- NULL
+  if (!is.null(get_model(rec))) {
+    modeled <- apply_model_to_recipe(rec)
+    rec <- modeled$rec
+    resolved <- modeled$resolved
+    validate_recipe_object(
+      rec,
+      context = "Validation failed after applying the centralized model cohort."
+    )
+  }
   
   ## DA steps
-  da_steps <- 
-    rec@steps %>% 
-    purrr::discard(~ stringr::str_detect(.x[["id"]], "subset|filter|rarefaction")) %>%
+  final_status <- model_steps_status(rec, resolved)
+  skipped <- dplyr::filter(final_status, !.data$compatible)
+  executed_ids <- final_status$step_id[final_status$compatible]
+
+  if (nrow(skipped) > 0L) {
+    cli::cli_warn(
+      c(
+        "!" = "{nrow(skipped)} differential-abundance step{?s} {?was/were} skipped because {?it is/they are} incompatible with the centralized model.",
+        stats::setNames(
+          paste0(skipped$step_id, ": ", skipped$reason),
+          rep("i", nrow(skipped))
+        )
+      ),
+      class = "dar_warning_model_step_skipped"
+    )
+  }
+
+  if (length(initial_da_steps) > 0L && length(executed_ids) == 0L) {
+    cli::cli_abort(
+      c(
+        "x" = "No differential-abundance step can execute the centralized model.",
+        "i" = "Simplify the model or add a compatible method."
+      ),
+      class = "dar_error_no_compatible_steps"
+    )
+  }
+
+  da_steps <- rec@steps %>%
+    purrr::keep(~ is_da_step(.x) && .x[["id"]] %in% executed_ids) %>%
     rarefy_msg()
 
   da_names <- purrr::map_chr(da_steps, ~ .x[["id"]])
@@ -333,7 +377,21 @@ prep <- function(rec,
     names(res) <- da_names
   }
   
-  prep_recipe(rec, res, list())
+  if (!is.null(get_model(rec))) {
+    for (step_id in names(res)) {
+      res[[step_id]] <- harmonize_model_output(res[[step_id]], rec)
+      validate_model_result_contract(flatten_model_output(res[[step_id]]), rec, step_id)
+    }
+  }
+
+  execution <- list(
+    contrasts = if (is.null(resolved)) NULL else resolved$contrast_plan,
+    dropped_samples = if (is.null(resolved)) character() else resolved$dropped_samples,
+    executed_steps = names(res),
+    skipped_steps = skipped
+  )
+
+  prep_recipe(rec, res, list(), execution = execution)
 }
 
 
@@ -356,6 +414,28 @@ prep <- function(rec,
 intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
   
   check_prep_recipe(rec)
+
+  if (!is.null(get_model(rec))) {
+    keys <- c("taxa_id", "contrast_id", "effect")
+    df <- .otu_effect_direction(rec) %>%
+      dplyr::filter(.data$method %in% steps) %>%
+      dplyr::distinct(dplyr::across(dplyr::all_of(c(keys, "method")))) %>%
+      dplyr::mutate(value = 1L) %>%
+      tidyr::pivot_wider(
+        id_cols = dplyr::all_of(keys), names_from = "method",
+        values_from = "value", values_fill = 0L
+      )
+    for (step_id in setdiff(steps, names(df))) {
+      df[[step_id]] <- 0L
+    }
+    df <- dplyr::select(df, dplyr::all_of(c(keys, steps)))
+    if (tidy) {
+      df <- tidyr::pivot_longer(
+        df, dplyr::all_of(steps), names_to = "name", values_to = "value"
+      )
+    }
+    return(as.data.frame(df))
+  }
   
   df <- 
     names(rec@results) %>%

@@ -180,6 +180,22 @@ run_ancom <- function(rec,
                       trend,
                       rarefy,
                       id) {
+
+  if (!is.null(get_model(rec))) {
+    return(run_ancom_model(
+      rec = rec,
+      p_adj_method = p_adj_method,
+      prv_cut = prv_cut,
+      lib_cut = lib_cut,
+      s0_perc = s0_perc,
+      struc_zero = struc_zero,
+      neg_lb = neg_lb,
+      alpha = alpha,
+      n_cl = n_cl,
+      verbose = verbose,
+      rarefy = rarefy
+    ))
+  }
   
   vars <- get_var(rec)[[1]]
   tax_level <- get_tax(rec)[[1]]

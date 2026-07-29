@@ -49,6 +49,7 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 #' Returns required pakcages for Recipe object
 #'
 #' @param rec A `Recipe` object
+#' @param steps Optional list of steps whose dependencies should be checked.
 #'
 #' @aliases required_deps
 #' @return character
@@ -64,9 +65,9 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 #' ## The function also works with PrepRecipe-class objects
 #' data(test_prep_rec)
 #' dar:::required_deps(test_prep_rec)
-required_deps <- function(rec) {
+required_deps <- function(rec, steps = rec@steps) {
   check_any_recipe(rec)
-  purrr::walk(rec@steps, function(step_obj) {
+  purrr::walk(steps, function(step_obj) {
     id <- stringr::str_remove_all(class(step_obj)[[1]], "step_")
     req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
     if (!is.null(req_fun)) {

@@ -126,6 +126,13 @@ run_lefse <- function(rec,
                       rarefy,
                       id) {
 
+  if (!is.null(get_model(rec))) {
+    return(run_lefse_model(
+      rec, kruskal.threshold, wilcox.threshold, lda.threshold,
+      assay, trim.names, rarefy
+    ))
+  }
+
   lefse_mat <- prepro_lefse(rec, rarefy)
   vars <- get_var(rec)
   vars %>%
@@ -255,4 +262,3 @@ kruskal_test <- function(se, levels, assay = 1L) {
     dplyr::rename(pvalue = value) %>%
     dplyr::mutate(adjp = stats::p.adjust(pvalue, method = "BH"))
 }
-

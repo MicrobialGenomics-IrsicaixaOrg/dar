@@ -131,6 +131,22 @@ run_maaslin <- function(rec,
                         rarefy,
                         id) {
 
+  if (!is.null(get_model(rec))) {
+    return(run_maaslin_model(
+      rec = rec,
+      min_abundance = min_abundance,
+      min_prevalence = min_prevalence,
+      min_variance = min_variance,
+      normalization = normalization,
+      transform = transform,
+      max_significance = max_significance,
+      correction = correction,
+      standardize = standardize,
+      median_comparison_abundance = median_comparison_abundance,
+      rarefy = rarefy
+    ))
+  }
+
   # MaAsLin3 writes output to disk, so we use a temp dir
   output_dir <- glue::glue("{tempdir()}/maaslin3_output")
   if (!dir.exists(output_dir)) dir.create(output_dir)

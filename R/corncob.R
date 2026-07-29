@@ -137,6 +137,20 @@ run_corncob <- function(rec,
                         log2FC,
                         rarefy,
                         id) {
+
+  if (!is.null(get_model(rec))) {
+    return(run_corncob_model(
+      rec = rec,
+      phi.formula = phi.formula,
+      link = link,
+      phi.link = phi.link,
+      filter_discriminant = filter_discriminant,
+      fdr_cutoff = fdr_cutoff,
+      fdr = fdr,
+      log2FC = log2FC,
+      rarefy = rarefy
+    ))
+  }
   
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
