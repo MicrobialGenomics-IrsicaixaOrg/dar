@@ -1,6 +1,16 @@
 # Changelog
 
-## dar 1.7.1
+## dar 1.9.1
+
+- IMPROVED: Enforce structural invariants for `Recipe` and inherited
+  `PrepRecipe` objects through S4 validity checks
+  ([\#124](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124)).
+- IMPROVED: Validate
+  [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
+  [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md),
+  and preprocessing results early, with contextual errors that identify
+  the failing step
+  ([\#124](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124)).
 
 ## dar 1.5.6
 
