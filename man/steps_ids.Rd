@@ -4,12 +4,15 @@
 \alias{steps_ids}
 \title{Get step_ids from recipe}
 \usage{
-steps_ids(rec, type = "all")
+steps_ids(rec, type = "all", include_skipped = FALSE)
 }
 \arguments{
 \item{rec}{A Recipe object.}
 
 \item{type}{character vector indicating the type class. Options \code{c("all", "da", "prepro")}.}
+
+\item{include_skipped}{For a prepared modeled recipe, include DA steps that
+were declared but skipped as statistically incompatible.}
 }
 \value{
 character vector

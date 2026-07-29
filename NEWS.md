@@ -1,3 +1,19 @@
+# dar 1.9.2
+
+* NEW: Add a centralized statistical model with `add_model()` and
+  `get_model()`, including fixed confounders, target-time interactions,
+  supported random effects, explicit references, and a shared missing-value
+  policy (#130).
+* NEW: Generate deterministic condition-within-time, time-within-condition and
+  optional difference-in-differences contrasts, with a common result contract
+  across DESeq2, ALDEx2, ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe
+  (#130).
+* IMPROVED: Record executed and skipped methods in prepared recipes, validate
+  engine capabilities before execution, and keep consensus results separated
+  by contrast and effect direction (#130).
+* IMPROVED: Preserve centralized model specifications when exporting and
+  importing recipe steps (#130).
+
 # dar 1.9.1
 
 * IMPROVED: Enforce structural invariants for `Recipe` and inherited

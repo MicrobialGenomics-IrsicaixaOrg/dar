@@ -160,7 +160,11 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' expect_equal(call_formula[[1]], run_deseq)
 #' expect_true(inherits(rlang::call_args(call_formula)$design, "formula"))
 step_to_call <- function(step) {
-  method <- stringr::str_remove_all(step[["id"]], "__.*")
+  method <- if (inherits(step, "step")) {
+    stringr::str_remove(class(step)[[1]], "^step_")
+  } else {
+    stringr::str_remove_all(step[["id"]], "__.*")
+  }
   fn_obj <- paste0("run_", method) %>% get(envir = asNamespace("dar"))
   args <- step
   args[["id"]] <- NULL
@@ -226,9 +230,11 @@ step_to_expr <- function(step) {
     stringr::str_c(collapse = ", ")
 
   # Extraemos el nombre real de la función (quitando el sufijo aleatorio)
-  method <-
-    step[["id"]] %>%
-    stringr::str_remove_all("__.*")
+  method <- if (inherits(step, "step")) {
+    stringr::str_remove(class(step)[[1]], "^step_")
+  } else {
+    step[["id"]] %>% stringr::str_remove_all("__.*")
+  }
 
   # Construimos el string final con el pipeline
   glue::glue("rec %>% run_{method}({params})")
@@ -275,8 +281,24 @@ step_to_expr <- function(step) {
 #' 
 #' intersections
 find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
-  intersection_df(rec, steps) %>%
-    tibble::as_tibble() %>%
+  df <- intersection_df(rec, steps) %>% tibble::as_tibble()
+  if (!is.null(get_model(rec))) {
+    return(
+      df %>%
+        tidyr::pivot_longer(
+          dplyr::all_of(steps), names_to = "name", values_to = "value"
+        ) %>%
+        dplyr::filter(.data$value == 1) %>%
+        dplyr::group_by(.data$taxa_id, .data$contrast_id, .data$effect) %>%
+        dplyr::summarise(
+          step_ids = paste(sort(unique(.data$name)), collapse = ", "),
+          sum_methods = sum(.data$value), .groups = "drop"
+        ) %>%
+        dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+        dplyr::arrange(dplyr::desc(.data$sum_methods))
+    )
+  }
+  df %>%
     tidyr::pivot_longer(cols = -1) %>%
     dplyr::filter(value == 1) %>%
     dplyr::group_by(taxa_id) %>%
@@ -295,6 +317,8 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' @param rec A Recipe object.
 #' @param type character vector indicating the type class. Options `c("all",
 #'   "da", "prepro")`.
+#' @param include_skipped For a prepared modeled recipe, include DA steps that
+#'   were declared but skipped as statistically incompatible.
 #'
 #' @return character vector
 #' @export
@@ -335,7 +359,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' 
 #' prepro_ids <- steps_ids(test_rec, type = "prepro")
 #' prepro_ids
-steps_ids <- function(rec, type = "all") {
+steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
   if (!type %in% c("all", "da", "prepro")) {
     cli::cli_abort(
       c(
@@ -348,6 +372,11 @@ steps_ids <- function(rec, type = "all") {
   }
 
   out <- purrr::map_chr(rec@steps, ~ .x[["id"]])
+  if (methods::is(rec, "PrepRecipe") && !include_skipped &&
+      length(rec@execution) > 0L && type %in% c("all", "da")) {
+    skipped <- rec@execution$skipped_steps$step_id %||% character()
+    out <- setdiff(out, skipped)
+  }
   switch(
     type,
     "all" = out,
@@ -398,7 +427,12 @@ export_steps <- function(rec, file_name) {
   inp <- rec@steps
   if (methods::is(rec, "PrepRecipe")) {
     inp <- c(rec@steps, rec@bakes)
-  } 
+  }
+  if (!is.null(get_model(rec))) {
+    model <- get_model(rec)
+    model$id <- "model__central"
+    inp <- c(list(model), inp)
+  }
   
   to_cat <-
     inp %>%
@@ -417,8 +451,11 @@ export_steps <- function(rec, file_name) {
           
           # characters & factors
           } else if (is.character(val) || is.factor(val)) {
-            val <- 
-              glue::double_quote(val) %>% 
+            val <- glue::double_quote(val)
+            if (!is.null(names(.x[[.y]])) && all(nzchar(names(.x[[.y]])))) {
+              val <- paste0(names(.x[[.y]]), " = ", val)
+            }
+            val <- val %>%
               stringr::str_c(collapse = ", ") %>%
               stringr::str_c("[c(", ., ")]")
 
@@ -500,10 +537,20 @@ import_steps <- function(
       stringr::str_remove_all("__.*") %>%
       stringr::str_replace_all("\\[|\\]|c\\(", "")
 
-    extract_instructions(lines[low_idx:id_idx[i]]) %>%
+    constructor <- if (identical(fun_name, "model")) {
+      "add_model"
+    } else {
+      paste0("step_", fun_name)
+    }
+    instruction_lines <- lines[low_idx:id_idx[i]]
+    if (identical(fun_name, "model")) {
+      instruction_lines <- instruction_lines[-length(instruction_lines)]
+    }
+
+    extract_instructions(instruction_lines) %>%
       stringr::str_replace_all("\\[|\\]", "") %>%
       stringr::str_c(collapse = ", ") %>%
-      stringr::str_c("rec <<- step_", fun_name, "(rec, ", ., ")") %>%
+      stringr::str_c("rec <<- ", constructor, "(rec, ", ., ")") %>%
       parse(text = .) %>%
       eval()
   }

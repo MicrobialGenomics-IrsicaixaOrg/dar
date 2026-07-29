@@ -4,6 +4,7 @@
 \name{phyloseq_or_null-class}
 \alias{phyloseq_or_null-class}
 \alias{tibble_or_NULL-class}
+\alias{list_or_NULL-class}
 \alias{Recipe-class}
 \alias{show,PrepRecipe-method}
 \title{Recipe-class object}
@@ -32,5 +33,8 @@ set. This initially defaults to the same data contained in \code{var_info}.}
 that will be used in the analysis.}
 
 \item{\code{steps}}{List of step-class objects that will be used by DA.}
+
+\item{\code{model}}{Optional centralized statistical model specification created by
+\code{\link[=add_model]{add_model()}}.}
 }}
 
