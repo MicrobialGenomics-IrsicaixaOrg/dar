@@ -74,6 +74,72 @@ test_that("temporal contrast plan contains both simple-effect directions", {
   expect_equal(sum(all_plan$contrast_type == "difference_in_differences"), 3)
 })
 
+test_that("temporal contrast weights reproduce an independent algebraic truth", {
+  rec <- recipe(make_longitudinal_phy(), "condition", "Species") |>
+    add_model(
+      ~ condition * time + batch,
+      time = "time",
+      contrasts = "all"
+    )
+  compiled <- dar:::compile_model(rec, "deseq")
+  plan <- compiled$contrasts
+
+  coefficients <- stats::setNames(
+    rep(0, ncol(compiled$matrix)), colnames(compiled$matrix)
+  )
+  coefficients[c(
+    "conditiontreated", "time1", "time2", "batchB",
+    "conditiontreated:time1", "conditiontreated:time2"
+  )] <- c(2, 1, 3, 17, 1, 3)
+
+  expected <- c(
+    "condition[treated-control]@time[0]" = 2,
+    "condition[treated-control]@time[1]" = 3,
+    "condition[treated-control]@time[2]" = 5,
+    "time[1-0]@condition[control]" = 1,
+    "time[2-0]@condition[control]" = 3,
+    "time[2-1]@condition[control]" = 2,
+    "time[1-0]@condition[treated]" = 2,
+    "time[2-0]@condition[treated]" = 6,
+    "time[2-1]@condition[treated]" = 4,
+    "condition[treated-control]:time[1-0]" = 1,
+    "condition[treated-control]:time[2-0]" = 3,
+    "condition[treated-control]:time[2-1]" = 2
+  )
+  observed <- vapply(
+    plan$weights,
+    function(weights) sum(weights * coefficients),
+    numeric(1)
+  )
+  names(observed) <- as.character(plan$contrast_id)
+
+  expect_setequal(names(observed), names(expected))
+  expect_equal(observed[names(expected)], expected, tolerance = 1e-12)
+
+  parameterized <- purrr::map(
+    seq_len(nrow(plan)),
+    ~ dar:::reparameterize_model_contrast(
+      compiled, plan[.x, , drop = FALSE]
+    )
+  )
+  expected_coefficients <- c(
+    rep("conditiontreated", 3),
+    "time1", "time2", "time2",
+    "time1", "time2", "time2",
+    "conditiontreated:time1",
+    "conditiontreated:time2",
+    "conditiontreated:time2"
+  )
+  expect_equal(
+    vapply(parameterized, `[[`, character(1), "coefficient"),
+    expected_coefficients
+  )
+  expect_equal(
+    vapply(parameterized, `[[`, numeric(1), "sign"),
+    rep(1, nrow(plan))
+  )
+})
+
 test_that("time factorization is bounded and does not mutate the input", {
   phy <- make_longitudinal_phy()
   original <- as(phyloseq::sample_data(phy), "data.frame")$time

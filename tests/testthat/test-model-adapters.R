@@ -23,15 +23,18 @@ test_that("DESeq2 compiles and executes a centralized contrast", {
     rec, "Wald", "mean", FALSE, "normal", 0.05, 0, FALSE
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("ALDEx2 compiles and executes a centralized contrast", {
   skip_if_not_installed("ALDEx2")
+  withr::local_seed(130)
   rec <- model_smoke_recipe()
   result <- suppressWarnings(
     dar:::run_aldex_model(rec, 0.05, 8, "all", FALSE)
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("ANCOM-BC2 compiles and executes a centralized contrast", {
@@ -43,6 +46,7 @@ test_that("ANCOM-BC2 compiles and executes a centralized contrast", {
     )
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("corncob compiles and executes a centralized contrast", {
@@ -52,6 +56,7 @@ test_that("corncob compiles and executes a centralized contrast", {
     rec, ~ 1, "logit", "logit", TRUE, 0.05, "fdr", 0, FALSE
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("MaAsLin3 compiles and executes a centralized contrast", {
@@ -61,6 +66,7 @@ test_that("MaAsLin3 compiles and executes a centralized contrast", {
     rec, 0, 0.1, 0, "TSS", "LOG", 0.1, "BH", TRUE, TRUE, FALSE
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("Wilcoxon executes only its supported simple model", {
@@ -70,13 +76,16 @@ test_that("Wilcoxon executes only its supported simple model", {
     rec, "compositional", 0.05, "BH", FALSE
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
 
 test_that("LEfSe executes only its supported simple model", {
   skip_if_not_installed("lefser")
+  withr::local_seed(130)
   rec <- model_smoke_recipe()
   result <- suppressWarnings(
     dar:::run_lefse_model(rec, 0.05, 0.05, 2, 1L, FALSE, FALSE)
   )
   expect_complete_model_result(result, rec)
+  expect_model_directions(result)
 })
