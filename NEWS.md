@@ -1,3 +1,10 @@
+# dar 1.9.1
+
+* IMPROVED: Enforce structural invariants for `Recipe` and inherited
+  `PrepRecipe` objects through S4 validity checks (#124).
+* IMPROVED: Validate `add_var()`, `add_tax()`, and preprocessing results early,
+  with contextual errors that identify the failing step (#124).
+
 # dar 1.5.6
 
 * CHANGED: Mark step_metagenomeseq as defunct and remove its implementation and related references.

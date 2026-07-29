@@ -147,7 +147,7 @@ To convert data from the `qiime` format to the `TreeSummarizedExperiment` format
 you can use the `mia::importQIIME2()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
-```{r}
+```{r eval = FALSE}
 # Import QIIME data to tse
 tse_qiime <- mia::importQIIME2(
   featureTableFile = system.file("extdata", "table.qza", package = "mia"),

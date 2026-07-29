@@ -68,9 +68,19 @@ get_phy <- function(rec) {
 #' rec <- recipe(metaHIV_phy)
 #' rec <- add_var(rec, var_info = "RiskGroup2")
 #' rec
+#' @tests
+#' data(metaHIV_phy)
+#' rec <- recipe(metaHIV_phy)
+#'
+#' expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe")
+#' expect_error(
+#'   add_var(rec, "missing_variable"),
+#'   class = "dar_error_invalid_recipe"
+#' )
 add_var <- function(rec, var_info) {
   check_recipe(rec) 
   rec@var_info <- tibble::tibble(vars = var_info)
+  validate_recipe_object(rec)
   rec
 }
 
@@ -89,9 +99,19 @@ add_var <- function(rec, var_info) {
 #' rec <- recipe(metaHIV_phy)
 #' rec <- add_tax(rec, tax_info = "Species")
 #' rec
+#' @tests
+#' data(metaHIV_phy)
+#' rec <- recipe(metaHIV_phy)
+#'
+#' expect_s4_class(add_tax(rec, "Species"), "Recipe")
+#' expect_error(
+#'   add_tax(rec, "Missing_rank"),
+#'   class = "dar_error_invalid_recipe"
+#' )
 add_tax <- function(rec, tax_info) {
   check_recipe(rec) 
   rec@tax_info <- tibble::tibble(tax_lev = tax_info)
+  validate_recipe_object(rec)
   rec
 }
 
@@ -185,6 +205,34 @@ required_pkgs_prep <- function(x, ...) { c("furrr", "future") }
 #'   step_maaslin()
 #'
 #' da_results <- prep(rec)
+#'
+#' @tests
+#' data(metaHIV_phy)
+#' invalid_rec <- recipe(
+#'   metaHIV_phy,
+#'   var_info = "RiskGroup2",
+#'   tax_info = "Species"
+#' )
+#' invalid_rec@var_info <- tibble::tibble(vars = "missing_variable")
+#' expect_error(
+#'   prep(invalid_rec, parallel = FALSE),
+#'   class = "dar_error_invalid_recipe"
+#' )
+#'
+#' empty_filter_rec <- recipe(
+#'   metaHIV_phy,
+#'   var_info = "RiskGroup2",
+#'   tax_info = "Species"
+#' ) |>
+#'   step_filter_taxa(
+#'     .f = function(x) FALSE,
+#'     id = "filter_taxa__empty"
+#'   )
+#' expect_error(
+#'   prep(empty_filter_rec, parallel = FALSE),
+#'   regexp = "filter_taxa__empty",
+#'   class = "dar_error_preprocessing_step"
+#' )
 prep <- function(rec,
                  parallel = TRUE,
                  workers = future::availableCores(constraints = "connections-16"),
@@ -214,19 +262,37 @@ prep <- function(rec,
   }
   
   ## Phyloseq preprocessing steps
-  calls_filter <- 
+  filter_steps <-
     rec@steps %>%
-    purrr::keep(~ stringr::str_detect(.x[["id"]], "subset|filter")) %>% 
-    purrr::map(step_to_call)
+    purrr::keep(~ stringr::str_detect(.x[["id"]], "subset|filter"))
   
-  calls_rarefaction <- 
+  rarefaction_steps <-
     rec@steps %>%
-    purrr::keep(~ stringr::str_detect(.x[["id"]], "run_rarefaction")) %>%
-    purrr::map(step_to_call) 
+    purrr::keep(~ stringr::str_detect(.x[["id"]], "run_rarefaction"))
 
-  to_execute <- c(calls_filter, calls_rarefaction)
-  
-  for (.x in to_execute) { rec <- base::eval(.x) }
+  preprocessing_steps <- c(filter_steps, rarefaction_steps)
+  to_execute <- purrr::map(preprocessing_steps, step_to_call)
+
+  for (.i in seq_along(to_execute)) {
+    step_id <- preprocessing_steps[[.i]][["id"]]
+    rec <- tryCatch(
+      base::eval(to_execute[[.i]]),
+      error = function(cnd) {
+        cli::cli_abort(
+          c(
+            "x" = "Preprocessing step {.val {step_id}} failed.",
+            "i" = "The preprocessing operation could not be completed."
+          ),
+          class = "dar_error_preprocessing_step",
+          parent = cnd
+        )
+      }
+    )
+    validate_recipe_object(
+      rec,
+      context = glue::glue("Validation failed after preprocessing step `{step_id}`.")
+    )
+  }
   
   ## DA steps
   da_steps <- 

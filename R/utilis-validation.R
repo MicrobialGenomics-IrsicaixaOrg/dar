@@ -1,10 +1,35 @@
-#' @title Internal Validation Helpers
-#' @description
-#' Helper functions to validate arguments across the package.
-#' Centralizes error messages and reduces boilerplate.
+# Internal validation helpers -------------------------------------------------
+
+#' Abort when a Recipe violates its S4 invariants
 #'
+#' @param rec A `Recipe` or `PrepRecipe` object.
+#' @param arg_name The name of the argument in the calling function.
+#' @param context Optional context describing where validation failed.
+#'
+#' @return Invisible `NULL` if valid, otherwise throws an error.
 #' @noRd
 #' @keywords internal
+validate_recipe_object <- function(rec, arg_name = "rec", context = NULL) {
+  problems <- methods::validObject(rec, test = TRUE, complete = TRUE)
+
+  if (isTRUE(problems)) {
+    return(invisible(NULL))
+  }
+
+  bullets <- stats::setNames(as.character(problems), rep("!", length(problems)))
+  messages <- c(
+    "x" = "The argument {.arg {arg_name}} is an invalid {.cls Recipe} object.",
+    bullets
+  )
+  if (!is.null(context)) {
+    messages <- c(messages, "i" = context)
+  }
+
+  cli::cli_abort(
+    messages,
+    class = "dar_error_invalid_recipe"
+  )
+}
 
 #' Check if object is a valid Recipe (and NOT Prepped)
 #'
@@ -37,6 +62,8 @@ check_recipe <- function(rec, arg_name = "rec") {
       class = "dar_error_invalid_input"
     )
   }
+
+  validate_recipe_object(rec, arg_name = arg_name)
   
   invisible(NULL)
 }
@@ -70,6 +97,8 @@ check_prep_recipe <- function(rec, arg_name = "rec") {
       class = "dar_error_invalid_input"
     )
   }
+
+  validate_recipe_object(rec, arg_name = arg_name)
   
   invisible(NULL)
 }
@@ -95,6 +124,8 @@ check_any_recipe <- function(rec, arg_name = "rec") {
       class = "dar_error_invalid_input"
     )
   }
+
+  validate_recipe_object(rec, arg_name = arg_name)
   
   invisible(NULL)
 }
