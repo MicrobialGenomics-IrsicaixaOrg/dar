@@ -107,6 +107,7 @@ add_step <- function(rec, object) {
     rec@bakes[[length(rec@bakes) + 1]] <- object
   } else {
     rec@steps[[length(rec@steps) + 1]] <- object
+    report_model_step_warnings(rec, object)
   }
   
   rec
