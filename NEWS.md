@@ -1,5 +1,9 @@
 # dar 1.7.1
 
+* IMPROVED: Added structural validity checks for `Recipe` and `PrepRecipe`
+  objects, including early validation of public setters and preprocessing
+  results (#124).
+
 # dar 1.5.6
 
 * CHANGED: Mark step_metagenomeseq as defunct and remove its implementation and related references.
