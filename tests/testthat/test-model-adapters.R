@@ -89,3 +89,22 @@ test_that("LEfSe executes only its supported simple model", {
   expect_complete_model_result(result, rec)
   expect_model_directions(result)
 })
+
+test_that("LEfSe executes every pairwise contrast for multilevel targets", {
+  skip_if_not_installed("lefser")
+  withr::local_seed(130)
+  rec <- recipe(make_multilevel_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
+  result <- suppressWarnings(
+    dar:::run_lefse_model(rec, 0.05, 0.05, 2, 1L, FALSE, FALSE)
+  )
+
+  expect_complete_model_result(result, rec)
+  table <- dar:::flatten_model_output(result)
+  expect_length(unique(table$contrast_id), 3L)
+  expect_identical(
+    anyDuplicated(dplyr::select(table, "taxa_id", "contrast_id")),
+    0L
+  )
+  expect_true(all(is.finite(table$effect)))
+})

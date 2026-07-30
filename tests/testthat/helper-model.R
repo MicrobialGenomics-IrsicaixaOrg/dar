@@ -39,6 +39,39 @@ make_longitudinal_phy <- function() {
   )
 }
 
+make_multilevel_phy <- function() {
+  metadata <- tidyr::crossing(
+    condition = c("control", "rescue", "treated"),
+    replicate = seq_len(4)
+  ) |>
+    dplyr::mutate(sample_id = paste(condition, replicate, sep = "_"))
+  group <- match(metadata$condition, c("control", "rescue", "treated"))
+  sample_offset <- rep(c(0, 2, 1, 3), times = 3)
+  counts <- rbind(
+    taxon_1 = c(20, 40, 70)[group] + sample_offset,
+    taxon_2 = c(70, 40, 20)[group] + sample_offset,
+    taxon_3 = c(20, 70, 40)[group] + sample_offset,
+    taxon_4 = 30 + sample_offset,
+    taxon_5 = c(25, 35, 45)[group] + rev(sample_offset),
+    taxon_6 = c(45, 35, 25)[group] + rev(sample_offset)
+  )
+  colnames(counts) <- metadata$sample_id
+  taxonomy <- matrix(
+    paste0("Species_", seq_len(nrow(counts))),
+    ncol = 1,
+    dimnames = list(rownames(counts), "Species")
+  )
+
+  phyloseq::phyloseq(
+    phyloseq::otu_table(counts, taxa_are_rows = TRUE),
+    phyloseq::tax_table(taxonomy),
+    phyloseq::sample_data(data.frame(
+      condition = metadata$condition,
+      row.names = metadata$sample_id
+    ))
+  )
+}
+
 model_direction_truth <- c(taxon_1 = 1, taxon_2 = -1)
 
 expect_model_directions <- function(

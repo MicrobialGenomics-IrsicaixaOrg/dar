@@ -12,6 +12,9 @@
 * IMPROVED: Legacy centralized models, serialized recipes and imported step
   files are normalized to the new model representation without changing the
   original microbiome metadata (#142).
+* FIXED: Modeled exclusion plots preserve contrast and effect-direction keys,
+  and LEfSe executes every planned pairwise contrast for multilevel targets
+  (#142).
 
 # dar 1.9.2
 

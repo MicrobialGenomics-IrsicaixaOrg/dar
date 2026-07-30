@@ -448,6 +448,49 @@ test_that("model consensus never mixes contrasts or effect directions", {
   expect_equal(intersections$sum_methods, 2)
 })
 
+test_that("modeled exclusion plots preserve contrast and effect keys", {
+  rec <- recipe(make_multilevel_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
+  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__one"))
+  rec <- dar:::add_step(rec, dar:::step("maaslin", id = "maaslin__two"))
+  contrasts <- dar:::resolve_model(rec)$contrast_plan$contrast_id[1:2]
+  rows <- tibble::tibble(
+    taxa_id = "taxon_1",
+    taxa = "Species_1",
+    contrast_id = contrasts,
+    comparison = contrasts,
+    contrast_type = "main",
+    var = "condition",
+    effect = c(1, -1),
+    padj = 0.01,
+    signif = TRUE
+  )
+  results <- list(
+    deseq__one = list(model = rows),
+    maaslin__two = list(model = dplyr::slice(rows, 1))
+  )
+  prepared <- dar:::prep_recipe(rec, results, list())
+
+  plot <- exclusion_plt(prepared)
+  expect_s3_class(plot, "ggplot")
+  expect_equal(
+    dplyr::filter(plot$data, .data$method == "deseq__one") |>
+      dplyr::arrange(.data$sum) |>
+      dplyr::select("sum", "n", "total"),
+    tibble::tibble(sum = c(1L, 2L), n = c(1L, 1L), total = c(2L, 2L))
+  )
+  expect_equal(
+    dplyr::filter(plot$data, .data$method == "maaslin__two") |>
+      dplyr::select("sum", "n", "total"),
+    tibble::tibble(sum = 2L, n = 1L, total = 1L)
+  )
+
+  subset_plot <- exclusion_plt(prepared, steps = "deseq__one")
+  expect_equal(unique(subset_plot$data$method), "deseq__one")
+  expect_equal(subset_plot$data$sum, 1L)
+  expect_equal(subset_plot$data$n, 2L)
+})
+
 test_that("model result harmonization is idempotent", {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")

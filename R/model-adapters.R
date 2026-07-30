@@ -520,51 +520,58 @@ run_wilcox_model <- function(rec, norm_method, max_significance,
 run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
                             lda.threshold, assay, trim.names, rarefy) {
   compiled <- compile_model(rec, "lefse")
-  contrast <- compiled$contrasts[1, , drop = FALSE]
-  target <- contrast$var[[1]]
-  numerator <- contrast$numerator[[1]]
-  denominator <- contrast$denominator[[1]]
-  metadata <- compiled$data
-  metadata[[target]] <- factor(metadata[[target]], levels = c(denominator, numerator))
   lefse_mat <- prepro_lefse(rec, rarefy)
-  se <- SummarizedExperiment::SummarizedExperiment(
-    assays = list(counts = lefse_mat[, metadata$sample_id, drop = FALSE]),
-    colData = data.frame(metadata, row.names = metadata$sample_id)
-  ) |>
-    lefser::relativeAb()
-  raw <- lefser::lefser(
-    se,
-    classCol = target,
-    kruskal.threshold = 1,
-    wilcox.threshold = 1,
-    lda.threshold = 0,
-    subclassCol = NULL,
-    assay = assay,
-    trim.names = trim.names
-  ) |>
-    tibble::as_tibble() |>
-    dplyr::rename(lefse_id = "features") |>
-    dplyr::mutate(lefse_id = stringr::str_remove_all(.data$lefse_id, "`"))
-  tests <- kruskal_test(se, metadata[[target]])
-  abundance <- SummarizedExperiment::assay(se, i = assay)
-  direction <- apply(abundance, 1, function(values) {
-    sign(stats::median(values[metadata[[target]] == numerator]) -
-         stats::median(values[metadata[[target]] == denominator]))
-  })
-  out <- raw |>
-    dplyr::left_join(tests, by = c("lefse_id" = "otu")) |>
-    dplyr::mutate(
-      taxa = stringr::str_remove_all(.data$lefse_id, ".*[|]"),
-      effect = abs(.data$scores) * direction[.data$lefse_id],
-      padj = .data$adjp,
-      signif = !is.na(.data$padj) & .data$padj < kruskal.threshold &
-        abs(.data$effect) >= lda.threshold,
-      contrast_id = contrast$contrast_id[[1]],
-      comparison = contrast$comparison[[1]],
-      contrast_type = contrast$contrast_type[[1]],
-      var = target
+  out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
+    contrast <- compiled$contrasts[index, , drop = FALSE]
+    target <- contrast$var[[1]]
+    numerator <- contrast$numerator[[1]]
+    denominator <- contrast$denominator[[1]]
+    metadata <- compiled$data %>%
+      dplyr::filter(.data[[target]] %in% c(.env$denominator, .env$numerator))
+    metadata[[target]] <- factor(
+      metadata[[target]],
+      levels = c(denominator, numerator)
+    )
+    se <- SummarizedExperiment::SummarizedExperiment(
+      assays = list(counts = lefse_mat[, metadata$sample_id, drop = FALSE]),
+      colData = data.frame(metadata, row.names = metadata$sample_id)
     ) |>
-    dplyr::left_join(tax_table(rec), by = "taxa") |>
-    dplyr::relocate("taxa_id", "taxa")
+      lefser::relativeAb()
+    raw <- lefser::lefser(
+      se,
+      classCol = target,
+      kruskal.threshold = 1,
+      wilcox.threshold = 1,
+      lda.threshold = 0,
+      subclassCol = NULL,
+      assay = assay,
+      trim.names = trim.names
+    ) |>
+      tibble::as_tibble() |>
+      dplyr::rename(lefse_id = "features") |>
+      dplyr::mutate(lefse_id = stringr::str_remove_all(.data$lefse_id, "`"))
+    tests <- kruskal_test(se, metadata[[target]])
+    abundance <- SummarizedExperiment::assay(se, i = assay)
+    direction <- apply(abundance, 1, function(values) {
+      sign(stats::median(values[metadata[[target]] == numerator]) -
+           stats::median(values[metadata[[target]] == denominator]))
+    })
+
+    raw |>
+      dplyr::left_join(tests, by = c("lefse_id" = "otu")) |>
+      dplyr::mutate(
+        taxa = stringr::str_remove_all(.data$lefse_id, ".*[|]"),
+        effect = abs(.data$scores) * direction[.data$lefse_id],
+        padj = .data$adjp,
+        signif = !is.na(.data$padj) & .data$padj < kruskal.threshold &
+          abs(.data$effect) >= lda.threshold,
+        contrast_id = contrast$contrast_id[[1]],
+        comparison = contrast$comparison[[1]],
+        contrast_type = contrast$contrast_type[[1]],
+        var = target
+      ) |>
+      dplyr::left_join(tax_table(rec), by = "taxa") |>
+      dplyr::relocate("taxa_id", "taxa")
+  })
   list(model = out)
 }
