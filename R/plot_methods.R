@@ -715,15 +715,25 @@ mutual_plt <- function(rec,
 #' @keywords internal
 #' @autoglobal
 .all_stats <- function(rec) {
-  rec@results %>% 
-    names() %>% 
-    purrr::map_dfr(~ {
-      rec@results[[.x]][[1]] %>%
-        dplyr::select(taxa_id, comparison, effect_v = effect, dplyr::any_of(c(
-          "padj" = "pajd",
-          "padj" = "adjp",
-          "padj" = "padj"
-        ))) %>%
-        dplyr::mutate(method = .x)
+  rec@results %>%
+    names() %>%
+    purrr::map_dfr(function(step_id) {
+      result <- if (is.null(get_model(rec))) {
+        rec@results[[step_id]][[1]]
+      } else {
+        flatten_model_output(rec@results[[step_id]])
+      }
+      adjusted_column <- intersect(
+        c("padj", "adjp", "pajd"),
+        names(result)
+      )
+      stats <- result %>%
+        dplyr::select(taxa_id, comparison, effect_v = effect)
+      if (length(adjusted_column) > 0L) {
+        stats <- stats %>%
+          dplyr::mutate(padj = result[[adjusted_column[[1]]]])
+      }
+      stats %>%
+        dplyr::mutate(method = step_id)
     })
 }

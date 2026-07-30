@@ -491,6 +491,38 @@ test_that("modeled exclusion plots preserve contrast and effect keys", {
   expect_equal(subset_plot$data$n, 2L)
 })
 
+test_that("modeled mutual plots normalize adjusted p-value aliases", {
+  rec <- recipe(make_multilevel_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
+  rec <- dar:::add_step(rec, dar:::step("lefse", id = "lefse__stats"))
+  contrast <- dar:::resolve_model(rec)$contrast_plan$contrast_id[[1]]
+  rows <- tibble::tibble(
+    taxa_id = c("taxon_1", "taxon_2"),
+    taxa = c("Species_1", "Species_2"),
+    contrast_id = contrast,
+    comparison = contrast,
+    contrast_type = "main",
+    var = "condition",
+    effect = c(1, -1),
+    adjp = c(0.02, 0.03),
+    padj = c(0.01, 0.015),
+    signif = TRUE
+  )
+  prepared <- dar:::prep_recipe(
+    rec,
+    list(lefse__stats = list(model = rows)),
+    list()
+  )
+
+  stats <- dar:::.all_stats(prepared)
+  expect_named(stats, c("taxa_id", "comparison", "effect_v", "padj", "method"))
+  expect_equal(stats$padj, rows$padj)
+  expect_s3_class(
+    suppressMessages(mutual_plt(prepared, count_cutoff = 1)),
+    "ggplot"
+  )
+})
+
 test_that("model result harmonization is idempotent", {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")
