@@ -2,7 +2,7 @@
 title: "Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Data Import}
+  %\VignetteIndexEntry{Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -70,7 +70,8 @@ phyloseq::sample_data(phy)
 phyloseq::tax_table(phy)
 
 # Recipe init
-rec <- dar::recipe(phy, var_info = "BODY_SITE", tax_info = "Genus")
+rec <- dar::recipe(phy) |>
+  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
 
 rec
 ```
@@ -105,7 +106,8 @@ colnames(rowData(tse)) <-
 rowData(tse)
 
 # Recipe init
-rec <- dar::recipe(tse, var_info = "BODY_SITE", tax_info = "Genus")
+rec <- dar::recipe(tse) |>
+  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
 
 rec
 ```
@@ -135,7 +137,8 @@ phy_qiime <- phyloseq::import_qiime(
 phy_qiime
 
 # Recipe init
-rec <- dar::recipe(phy_qiime, var_info = "SampleType", tax_info = "Genus")
+rec <- dar::recipe(phy_qiime) |>
+  dar::add_model(~ SampleType, targets = "SampleType", tax_level = "Genus")
 
 rec
 ```
@@ -160,7 +163,8 @@ tse_qiime <- mia::importQIIME2(
 tse_qiime
 
 # Recipe init
-rec <- dar::recipe(tse_qiime, var_info = "body.site", tax_info = "genus")
+rec <- dar::recipe(tse_qiime) |>
+  dar::add_model(~ body.site, targets = "body.site", tax_level = "Genus")
 
 rec
 ```
@@ -213,7 +217,8 @@ tse_mothur <- mia::importMothur(
 tse_mothur
 
 # Recipe init
-rec <- dar::recipe(tse_mothur, var_info = "drug", tax_info = "Genus")
+rec <- dar::recipe(tse_mothur) |>
+  dar::add_model(~ drug, targets = "drug", tax_level = "Genus")
 
 rec
 ```
@@ -246,7 +251,8 @@ tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
     dplyr::mutate(condition = rep(c("A", "B"), times = 3))
 )
 
-rec <- dar::recipe(tse_metaphlan, var_info = "condition", tax_info = "Genus")
+rec <- dar::recipe(tse_metaphlan) |>
+  dar::add_model(~ condition, targets = "condition", tax_level = "Genus")
 
 rec
 ```

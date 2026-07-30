@@ -45,7 +45,7 @@ This function modifies \code{rec} in place, you might want to make a copy of
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
+rec <- recipe(metaHIV_phy)
 rec
 
 ## Define step_filter_by_prevalence step with default parameters
@@ -55,10 +55,10 @@ rec
 \seealso{
 \code{\link[phyloseq]{filter_taxa}}
 
-Other filter phy steps: 
-\code{\link{step_filter_by_abundance}()},
-\code{\link{step_filter_by_rarity}()},
-\code{\link{step_filter_by_variance}()},
-\code{\link{step_filter_taxa}()}
+Other filter phy steps:
+\code{\link[=step_filter_by_abundance]{step_filter_by_abundance()}},
+\code{\link[=step_filter_by_rarity]{step_filter_by_rarity()}},
+\code{\link[=step_filter_by_variance]{step_filter_by_variance()}},
+\code{\link[=step_filter_taxa]{step_filter_taxa()}}
 }
 \concept{filter phy steps}

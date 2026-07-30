@@ -54,7 +54,8 @@ data set.
 The easiest way to create the initial recipe is:
 
 ```{r first_rec}
-rec_obj <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") 
+rec_obj <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec_obj
 ```
 
@@ -185,4 +186,3 @@ cool(da_results)
 ```{r}
 devtools::session_info()
 ```
-

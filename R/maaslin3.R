@@ -38,14 +38,14 @@
 #' data(metaHIV_phy)
 #'
 #' test <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'   suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_by_abundance() |>
 #'   step_maaslin() |>
 #'   step_maaslin(rarefy = TRUE) |>
 #'   step_maaslin(rarefy = "no_seed")
 #'
-#' expect_s4_class(prep(test), "PrepRecipe") |>
+#' expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe") |>
 #'   expect_snapshot()
 #'
 #' data(test_prep_rec)
@@ -55,7 +55,8 @@
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
@@ -70,7 +71,8 @@
 #'
 #' ## Wearing rarefaction only for this step
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
 #'   step_maaslin(rarefy = TRUE)
 #'
 #' rec
@@ -151,8 +153,8 @@ run_maaslin <- function(rec,
   output_dir <- glue::glue("{tempdir()}/maaslin3_output")
   if (!dir.exists(output_dir)) dir.create(output_dir)
 
-  vars <- get_var(rec)
-  tax_level <- get_tax(rec)
+  vars <- recipe_targets(rec)
+  tax_level <- recipe_tax_level(rec)
   phy <- get_phy(rec) %>% use_rarefy(rarefy) 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   vars %>%

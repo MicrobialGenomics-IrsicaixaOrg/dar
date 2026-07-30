@@ -4,7 +4,7 @@
 model_phyloseq <- function(rec, rarefy = FALSE) {
   phy <- get_phy(rec) |>
     use_rarefy(rarefy) |>
-    phyloseq::tax_glom(taxrank = get_tax(rec)[[1]], NArm = FALSE)
+    phyloseq::tax_glom(taxrank = recipe_tax_level(rec), NArm = FALSE)
   metadata <- resolve_model(rec)$data |>
     tibble::column_to_rownames("sample_id") |>
     data.frame(check.names = FALSE) |>
@@ -258,7 +258,7 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
       phyloseq::sample_data()
     fit <- ANCOMBC::ancombc2(
       data = mia::convertFromPhyloseq(contrast_phy),
-      tax_level = get_tax(rec)[[1]],
+      tax_level = recipe_tax_level(rec),
       fix_formula = compiled$fix_formula,
       rand_formula = compiled$rand_formula,
       p_adj_method = p_adj_method,

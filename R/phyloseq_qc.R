@@ -44,13 +44,14 @@
 #' data(metaHIV_phy)
 #'
 #' ## 1. Init Recipe
-#' rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' 
 #' ## 2. Get QC metrics
 #' phy_qc(rec)
 phy_qc <- function(rec) {  
   check_recipe(rec)
-  var_name <- get_var(rec)[[1]]
+  var_name <- recipe_targets(rec)[[1]]
   zero_groups <- .zero_groups(rec)
   count_summary <- .count_summary(rec)
   .zero_stats(rec) %>% 
@@ -67,7 +68,7 @@ phy_qc <- function(rec) {
 #' @keywords internal
 #' @autoglobal
 .zero_prepro <- function(rec) {
-  var <- get_var(rec)[[1]]
+  var <- recipe_targets(rec)[[1]]
   otu_table(rec) %>%
     tidyr::pivot_longer(-1, names_to = "sample_id") %>%
     dplyr::left_join(sample_data(rec), by = "sample_id") %>% 
@@ -80,7 +81,7 @@ phy_qc <- function(rec) {
 #' @keywords internal
 #' @autoglobal
 .zero_stats <- function(rec) {
-  var <- get_var(rec)[[1]]
+  var <- recipe_targets(rec)[[1]]
   .zero_prepro(rec) %>%
     dplyr::group_by(!!dplyr::sym(var)) %>%
     dplyr::summarise(
@@ -96,7 +97,7 @@ phy_qc <- function(rec) {
 #' @keywords internal
 #' @autoglobal
 .zero_groups <- function(rec) {
-  var <- get_var(rec)[[1]]
+  var <- recipe_targets(rec)[[1]]
   .zero_prepro(rec) %>% 
     dplyr::mutate(no_zero = dplyr::if_else(value == 0, FALSE, TRUE)) %>% 
     dplyr::group_by(!!dplyr::sym(var), taxa_id) %>% 
@@ -121,7 +122,7 @@ phy_qc <- function(rec) {
 #' @autoglobal
 .count_summary <- function(rec) {
   .zero_prepro(rec) %>% 
-    dplyr::group_by(!!dplyr::sym(get_var(rec)[[1]]), sample_id) %>% 
+    dplyr::group_by(!!dplyr::sym(recipe_targets(rec)[[1]]), sample_id) %>%
     dplyr::summarise(
       lib_size = sum(value),     
       count_mean = mean(value), 

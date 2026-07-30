@@ -19,10 +19,10 @@ methods::setClassUnion("list_or_NULL", c("list", "NULL"))
 #' to prepare it for data analysis.
 #'
 #' @slot phyloseq Phyloseq-class object.
-#' @slot var_info A tibble that contains the current set of terms in the data
-#'   set. This initially defaults to the same data contained in `var_info`.
-#' @slot tax_info A tibble that contains the current set of taxonomic levels
-#'   that will be used in the analysis.
+#' @slot var_info Deprecated compatibility storage synchronized from
+#'   `model$targets` for modeled recipes.
+#' @slot tax_info Deprecated compatibility storage synchronized from
+#'   `model$tax_level` for modeled recipes.
 #' @slot steps List of step-class objects that will be used by DA.
 #' @slot model Optional centralized statistical model specification created by
 #'   [add_model()].
@@ -60,74 +60,78 @@ methods::setClass(
 #' @param microbiome_object Phyloseq-class object or
 #'   TreeSummarizedExperiment-class object.
 #' @param var_info A character string of column names corresponding to variables
-#'   that will be used in any context.
+#'   that will be used in any context. Deprecated; supply `targets` to
+#'   [add_model()] instead.
 #' @param tax_info A character string of taxonomic levels that will be used in
-#'   any context.
+#'   any context. Deprecated; supply `tax_level` to [add_model()] instead.
 #' @param steps list with steps.
 #'
-#' @return An object of class `Recipe` with sub-objects: \item{phyloseq}{object
-#'   of class `phyloseq` with taxa abundance information.} \item{var_info}{A
-#'   tibble that contains the current set of terms in the data set. This
-#'   initially defaults to the same data contained in `var_info`.}
-#'   \item{tax_info}{A tibble that contains the current set of taxonomic levels
-#'   that will be used in the analysis.}
+#' @return An object of class `Recipe` containing the microbiome object, an
+#'   optional centralized model and the configured processing or DA steps.
+#'   Legacy selector slots are retained for compatibility during the
+#'   deprecation cycle.
 #'
 #' @aliases Recipe
 #' @export
 #' @autoglobal
-#' @tests 
-#' data(metaHIV_phy) 
+#' @tests
+#' data(metaHIV_phy)
 #' data(GlobalPatterns, package = "mia")
-#' 
+#'
 #' # 1. Error: Invalid microbiome_object type
 #' expect_error(
-#'   recipe(data.frame(a = 1:5)), 
+#'   recipe(data.frame(a = 1:5)),
 #'   class = "dar_error_invalid_microbiome_object"
 #' )
-#' 
+#'
 #' # 2. Error: Invalid taxonomy rank names (fails with made-up names)
 #' bad_phy <- metaHIV_phy
 #' tax_tab <- phyloseq::tax_table(bad_phy)
 #' colnames(tax_tab) <- paste0("BadRank", seq_len(ncol(tax_tab)))
 #' phyloseq::tax_table(bad_phy) <- tax_tab
-#' 
+#'
 #' expect_error(
-#'   recipe(bad_phy), 
+#'   recipe(bad_phy),
 #'   class = "dar_error_invalid_rank_names"
 #' )
-#' 
+#'
 #' # 3. Success: Valid taxonomy ranks in UPPERCASE (tests stringr normalization)
 #' upper_phy <- metaHIV_phy
 #' tax_tab_up <- phyloseq::tax_table(upper_phy)
 #' colnames(tax_tab_up) <- toupper(colnames(tax_tab_up))
 #' phyloseq::tax_table(upper_phy) <- tax_tab_up
-#' 
+#'
 #' expect_s4_class(recipe(upper_phy), "Recipe")
-#'   
+#'
 #' # 4. Error: Invalid var_info missing in metadata
-#' expect_error( 
-#'   recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species"),
+#' expect_error(
+#'   suppressWarnings(
+#'     recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species")
+#'   ),
 #'   class = "dar_error_missing_vars"
 #' )
-#' 
+#'
 #' # 5. Error: Invalid tax_info missing in tax_table
-#' expect_error( 
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax"),
+#' expect_error(
+#'   suppressWarnings(
+#'     recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax")
+#'   ),
 #'   class = "dar_error_missing_tax"
 #' )
-#' 
+#'
 #' # 6. Success: Valid TreeSummarizedExperiment
 #' expect_s4_class(recipe(GlobalPatterns), "Recipe")
-#' 
+#'
 #' # 7. Success: Valid phyloseq
 #' expect_s4_class(recipe(metaHIV_phy), "Recipe")
-#' 
+#'
 #' @examples
 #' data(metaHIV_phy)
 #'
 #' ## Define recipe
 #' rec <-
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
 #'   step_deseq() |>
@@ -143,15 +147,14 @@ methods::setClass(
 #' ## Results
 #' cool(da_results)
 #'
-#' ## You can also crate a recipe without var and tax info
+#' ## A recipe without a model can be used for preprocessing
 #' rec <- recipe(metaHIV_phy)
 #'
 #' rec
 #'
-#' ## And define them later
+#' ## Define the complete analysis configuration later
 #' rec <- rec |>
-#'   add_var("RiskGroup2") |>
-#'   add_tax("Genus")
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
 #'
 #' rec
 #'
@@ -163,12 +166,12 @@ methods::setClass(
 #' ## The same with bake
 #' da_results <- bake(da_results)
 #' da_results <- bake(da_results)
-recipe <- function(microbiome_object = NULL, 
-                   var_info = NULL, 
-                   tax_info = NULL, 
+recipe <- function(microbiome_object = NULL,
+                   var_info = NULL,
+                   tax_info = NULL,
                    steps = list()) {
-  
-  if (!is(microbiome_object, "phyloseq") && 
+
+  if (!is(microbiome_object, "phyloseq") &&
       !is(microbiome_object, "TreeSummarizedExperiment")) {
     cli::cli_abort(c(
       "x" = "{.arg microbiome_object} must be a {.cls phyloseq} or {.cls TreeSummarizedExperiment} object.",
@@ -177,9 +180,23 @@ recipe <- function(microbiome_object = NULL,
     class = "dar_error_invalid_microbiome_object"
     )
   }
-  
+
   if (is(microbiome_object, "TreeSummarizedExperiment")) {
     microbiome_object <- mia::convertToPhyloseq(microbiome_object)
+  }
+
+  deprecated_arguments <- c(
+    if (!is.null(var_info)) "var_info",
+    if (!is.null(tax_info)) "tax_info"
+  )
+  if (length(deprecated_arguments) > 0L) {
+    cli::cli_warn(
+      c(
+        "!" = "Recipe argument{?s} {.arg {deprecated_arguments}} {?is/are} deprecated.",
+        "i" = "Create the recipe without selectors, then define {.arg targets} and {.arg tax_level} with {.fun add_model}."
+      ),
+      class = "dar_warning_deprecated_recipe_argument"
+    )
   }
 
   if (!is.null(microbiome_object@tax_table)) {
@@ -198,7 +215,7 @@ recipe <- function(microbiome_object = NULL,
       )
     }
   }
-  
+
   if (!is.null(var_info)) {
     s_data <- as(phyloseq::sample_data(microbiome_object), "data.frame")
     if (!all(var_info %in% colnames(s_data))) {
@@ -243,9 +260,9 @@ recipe <- function(microbiome_object = NULL,
 
 #' Validate the structural invariants of a Recipe
 #'
-#' `var_info` and `tax_info` may be unset because users can add them after
-#' creating a recipe. When present, however, their values must describe the
-#' data stored in the recipe.
+#' Legacy `var_info` and `tax_info` may be unset for preprocessing-only recipes.
+#' When a model is present they must agree with its targets and taxonomic level;
+#' all configured values must describe the data stored in the recipe.
 #'
 #' @param object A `Recipe` object.
 #'
@@ -257,11 +274,11 @@ recipe <- function(microbiome_object = NULL,
 #' @tests
 #' data(metaHIV_phy)
 #'
-#' complete_rec <- recipe(
+#' complete_rec <- suppressWarnings(recipe(
 #'   metaHIV_phy,
 #'   var_info = "RiskGroup2",
 #'   tax_info = "Species"
-#' )
+#' ))
 #' incomplete_rec <- recipe(metaHIV_phy)
 #'
 #' expect_true(methods::validObject(complete_rec, test = TRUE))
@@ -369,6 +386,17 @@ recipe_validity_problems <- function(object) {
 
   if (!is.null(object@model)) {
     problems <- c(problems, model_validity_problems(object))
+    if ("targets" %in% names(object@model) &&
+        !identical(object@model$targets, object@var_info$vars)) {
+      problems <- c(problems, "`model$targets` and legacy `var_info` must agree")
+    }
+    if ("tax_level" %in% names(object@model) &&
+        !identical(
+          stringr::str_to_sentence(object@model$tax_level),
+          object@tax_info$tax_lev
+        )) {
+      problems <- c(problems, "`model$tax_level` and legacy `tax_info` must agree")
+    }
   }
 
   if (length(problems) == 0) TRUE else problems
@@ -399,16 +427,17 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
 
   ## Variable
 
-  if (length(get_var(object)) == 0) {
+  targets <- recipe_targets(object)
+  if (length(targets) == 0) {
     cat(
       glue::glue(
-        "     {cross()} undefined variable of interest. Use ",
-        "{crayon::bgMagenta('add_var()')} to add it to Recipe!"
+        "     {cross()} undefined analysis target. Use ",
+        "{crayon::bgMagenta('add_model()')} to define the analysis!"
       ),
       "\n"
     )
   } else {
-    var <- get_var(object) %>% dplyr::pull(1)
+    var <- targets[[1]]
     var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
     if (is.character(var_vals) | is.factor(var_vals)) {
       levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
@@ -425,17 +454,18 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
   }
 
   ## Taxa
-  if (length(get_tax(object)) == 0) {
+  tax_level <- recipe_tax_level(object)
+  if (length(tax_level) == 0) {
     cat(
       glue::glue(
         "     {cross()} undefined taxonomic level. Use ",
-        "{crayon::bgMagenta('add_tax()')} to add it to Recipe!"
+        "{crayon::bgMagenta('add_model()')} to define the analysis!"
       ),
       "\n"
     )
   } else {
     cat(glue::glue(
-      "     {info()} taxonomic level {crayon::blue(get_tax(object))}"),
+      "     {info()} taxonomic level {crayon::blue(tax_level)}"),
       "\n\n"
     )
   }
@@ -522,7 +552,7 @@ methods::setClass(
 #' @aliases PrepRecipe
 #' @tests
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Species"))
 #'
 #' prepped <- prep_recipe(rec, results = list(), bakes = list())
 #' expect_s4_class(prepped, "PrepRecipe")
@@ -546,7 +576,7 @@ prep_recipe <- function(rec, results, bakes, execution = list()) {
 ## printing ----
 
 #' @param object A Recipe object.
-#' 
+#'
 #' @rdname Recipe-class
 #' @autoglobal
 methods::setMethod(
@@ -555,35 +585,33 @@ methods::setMethod(
   definition = function(object) {
     cli::cat_rule(crayon::blue("DAR Results"))
     cat("Inputs:\n\n")
-    
+
     ## Phyloseq
     phy <- get_phy(object)
     ntax <- phyloseq::ntaxa(phy)
     nsam <- phyloseq::nsamples(phy)
     cat(
       glue::glue(
-        "     {info()} phyloseq object with {crayon::blue(ntax)} taxa and ", 
+        "     {info()} phyloseq object with {crayon::blue(ntax)} taxa and ",
         "{crayon::blue(nsam)} samples"
       ),
       "\n"
     )
-    
+
     ## Variable
-    var <- NULL
-    if (nrow(get_var(object)) > 0) {
-      var <- get_var(object) %>% dplyr::pull(vars)
-    }
-    
+    targets <- recipe_targets(object)
+    var <- if (length(targets) > 0L) targets else NULL
+
     if (is.null(var)) {
       cat(
         glue::glue(
-          "     {cross()} undefined variable of interest. Use ", 
-          "{crayon::bgMagenta('add_var()')} to add it to Recipe!"
+          "     {cross()} undefined analysis target. Use ",
+          "{crayon::bgMagenta('add_model()')} to define the analysis!"
         ),
         "\n"
       )
     } else {
-      var <- get_var(object) %>% dplyr::pull(1)
+      var <- targets[[1]]
       var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
       if (is.character(var_vals) | is.factor(var_vals)) {
         levs <-
@@ -597,28 +625,26 @@ methods::setMethod(
         "     {info()} variable of interes {crayon::blue(var)} ({msg})"),
         "\n")
     }
-    
+
     ## Taxa
-    var <- NULL
-    if (nrow(get_tax(object)) > 0) {
-      var <- get_tax(object) %>% dplyr::pull(tax_lev)
-    }
-    
+    tax_level <- recipe_tax_level(object)
+    var <- if (length(tax_level) > 0L) tax_level else NULL
+
     if (is.null(var)) {
       cat(
         glue::glue(
-          "     {cross()} undefined taxonomic level. Use ", 
-          "{crayon::bgMagenta('add_tax()')} to add it to Recipe!"
+          "     {cross()} undefined taxonomic level. Use ",
+          "{crayon::bgMagenta('add_model()')} to define the analysis!"
         ),
         "\n"
       )
     } else {
       cat(glue::glue(
-        "     {info()} taxonomic level {crayon::blue(get_tax(object))}"
+        "     {info()} taxonomic level {crayon::blue(tax_level)}"
       ),
       "\n\n")
     }
-    
+
     ## Results
     cat("Results:\n\n")
     names(object@results) %>%
@@ -626,13 +652,13 @@ methods::setMethod(
       purrr::walk( ~ {
         n_taxa <-
           object@results[[.x]][[1]] %>%
-          dplyr::filter(signif == TRUE) %>% 
+          dplyr::filter(signif == TRUE) %>%
           dplyr::pull(taxa_id) %>%
           unique() %>%
           length()
-        
+
         n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
-        
+
         cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
       })
 
@@ -646,7 +672,7 @@ methods::setMethod(
         }
       )
     }
-    
+
     if (length(object@results) > 0) {
       n_overlap <-
         find_intersections(object) %>%
@@ -654,7 +680,7 @@ methods::setMethod(
           sum_methods == length(steps_ids(object, type = "da"))
         ) %>%
         nrow()
-      
+
       cli::cat_line()
       overlap_unit <- if (is.null(get_model(object))) "taxa" else
         "taxon-contrast effects"
@@ -663,11 +689,11 @@ methods::setMethod(
         "\n\n"
       )
     }
-    
+
     ## Bakes
     if (length(object@bakes) > 0) {
       cat("Bakes:\n\n")
-      
+
       object@bakes %>%
         purrr::iwalk(~ {
           msg <-
@@ -677,17 +703,17 @@ methods::setMethod(
                 .x <- "NULL"
               }
               if (.y == "weights" & .x != "NULL") {
-                .x <- 
+                .x <-
                   glue::glue("{names(.x)} = {.x}") %>%
                   stringr::str_c(collapse = ", ") %>%
                   stringr::str_c("c(", ., ")")
               }
               glue::glue("{.y}: {.x}")
             }) %>% stringr::str_c(collapse = ", ")
-          
+
           cat(c(
             glue::glue(
-              "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} ", 
+              "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} ",
               "{crayon::silver(msg)}"
             ),
             "\n"

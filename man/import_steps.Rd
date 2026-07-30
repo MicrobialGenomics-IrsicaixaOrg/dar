@@ -31,7 +31,8 @@ Import steps from json file
 data(metaHIV_phy)
 
 ## Initialize the Recipe with a phyloseq object
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec
 
 ## Import steps
@@ -42,7 +43,8 @@ rec
 ## If the json file contains 'bake', the Recipe is automatically prepared.
 json_file <- system.file("extdata", "test_bake.json", package = "dar")
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   import_steps(json_file)
 
 rec

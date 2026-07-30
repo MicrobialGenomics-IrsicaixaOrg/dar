@@ -28,7 +28,7 @@
 #' data(metaHIV_phy)
 #' 
 #' ## Init Recipe
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
+#' rec <- recipe(metaHIV_phy)
 #' rec
 #' 
 #' ## Define filter taxa step with default parameters

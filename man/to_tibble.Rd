@@ -20,7 +20,7 @@ Wrapper to convert phyloseq slots to tibble
 }
 \examples{
 data(test_rec)
-otu_table <- 
+otu_table <-
   get_phy(test_rec) |>
   phyloseq::otu_table()
 

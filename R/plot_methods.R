@@ -554,7 +554,7 @@ mutual_plt <- function(rec,
   .annotated_counts(t_rec) %>% 
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
-    ggplot(aes(taxa, value, fill = !!dplyr::sym(get_var(rec)[[1]]))) +
+    ggplot(aes(taxa, value, fill = !!dplyr::sym(recipe_targets(rec)[[1]]))) +
     geom_boxplot(alpha = 0.7) +
     theme_minimal(base_size = 10) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
@@ -628,7 +628,7 @@ mutual_plt <- function(rec,
     as.matrix()
   
   annot <- 
-    dplyr::select(df, sample_id, get_var(rec)[[1]]) %>% 
+    dplyr::select(df, sample_id, recipe_targets(rec)[[1]]) %>%
     dplyr::distinct() %>% 
     data.frame(row.names = 1) %>% 
     ComplexHeatmap::HeatmapAnnotation(

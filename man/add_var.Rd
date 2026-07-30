@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{add_var}
 \alias{add_var}
-\title{Adds variable of interest to the Recipe}
+\title{Add legacy variables of interest to a recipe}
 \usage{
 add_var(rec, var_info)
 }
@@ -16,11 +16,11 @@ that will be used in any context.}
 A \code{Recipe} object.
 }
 \description{
-Adds variable of interest to the Recipe
+\code{add_var()} is deprecated. Supply \code{targets} to \code{\link[=add_model]{add_model()}} instead.
 }
 \examples{
 data(metaHIV_phy)
 rec <- recipe(metaHIV_phy)
-rec <- add_var(rec, var_info = "RiskGroup2")
+rec <- suppressWarnings(add_var(rec, var_info = "RiskGroup2"))
 rec
 }

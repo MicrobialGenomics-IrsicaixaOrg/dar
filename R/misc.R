@@ -9,7 +9,7 @@
 #' @tests
 #' set.seed(123)
 #' expect_equal(rand_id(), "step__Filo")
-#' 
+#'
 #' @examples
 #' rand_id("step")
 rand_id <- function(prefix = "step") {
@@ -27,23 +27,23 @@ rand_id <- function(prefix = "step") {
 #' @return tibble or list
 #' @keywords internal
 #' @autoglobal
-#' 
+#'
 #' @tests
 #' data("metaHIV_phy")
 #' phy <- metaHIV_phy
 #' var <- "RiskGroup2"
-#' 
+#'
 #' is_list <- get_comparisons(var, phy)
 #' is_tibb <- get_comparisons(var, phy, as_list = FALSE)
 #' filtered <- get_comparisons(var, phy, n_cut = 30)
-#' 
+#'
 #' expect_equal(class(is_list), "list")
 #' expect_s3_class(is_tibb, "tbl_df")
 #' expect_length(is_list, 3)
 #' expect_equal(nrow(is_tibb), 3)
 #' expect_length(filtered, 1)
-#' 
-#' @examples 
+#'
+#' @examples
 #' data(test_rec)
 #' dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
 get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
@@ -75,27 +75,27 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #' @return tibble
 #' @keywords internal
 #' @autoglobal
-#' 
+#'
 #' @tests
 #' data("metaHIV_phy")
 #' phy <- metaHIV_phy
 #' df <- phyloseq::otu_table(phy)
-#' 
+#'
 #' test_1 <- to_tibble(df)
 #' test_2 <- to_tibble(df, id_name = "random_id")
-#' 
+#'
 #' expect_length(test_1, 157)
 #' expect_s3_class(test_1, "tbl_df")
 #' expect_s3_class(test_2, "tbl_df")
 #' expect_equal(names(test_1)[1], "otu_id")
 #' expect_equal(names(test_2)[1], "random_id")
-#' 
+#'
 #' @examples
 #' data(test_rec)
-#' otu_table <- 
+#' otu_table <-
 #'   get_phy(test_rec) |>
 #'   phyloseq::otu_table()
-#' 
+#'
 #' dar:::to_tibble(otu_table)
 to_tibble <- function(df, id_name = "otu_id") {
   df %>%
@@ -109,52 +109,52 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' This function takes a step from a `Recipe` and converts it into a native R
 #' call (language object) using `rlang::call2`. This avoids the pitfalls of
 #' pasting strings and parsing them, handling complex R objects like functions
-#' or formulas naturally. The resulting call will have `rec` as its first 
+#' or formulas naturally. The resulting call will have `rec` as its first
 #' argument, followed by the parameters defined in the step.
 #'
 #' @param step A list or `step` class object containing the parameters for the
 #'   operation, including an `id` string (e.g., `"method__randomstring"`).
 #'
 #' @return An unevaluated call (language object).
-#' 
+#'
 #' @noRd
 #' @keywords internal
 #' @autoglobal
 #' @tests
 #' # 1. Test standard string and numeric parameters
 #' step_standard <- list(
-#'   id = "maaslin__123", 
-#'   transform = "LOG", 
+#'   id = "maaslin__123",
+#'   transform = "LOG",
 #'   min_abundance = 0.1
 #' )
 #' call_standard <- step_to_call(step_standard)
-#' 
+#'
 #' expect_true(is.call(call_standard))
 #' expect_true(is.function(call_standard[[1]]))
 #' expect_equal(call_standard[[1]], run_maaslin)
 #' expect_equal(rlang::call_args(call_standard)$transform, "LOG")
 #' expect_equal(rlang::call_args(call_standard)$min_abundance, 0.1)
-#' 
+#'
 #' # 2. Test with a function parameter (The main reason for this refactor)
 #' my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
 #' step_func <- list(
-#'   id = "filter_taxa__abc", 
+#'   id = "filter_taxa__abc",
 #'   .f = my_fun
 #' )
 #' call_func <- step_to_call(step_func)
-#' 
+#'
 #' expect_true(is.call(call_func))
 #' expect_true(is.function(call_func[[1]]))
 #' expect_equal(call_func[[1]], run_filter_taxa)
 #' expect_true(is.function(rlang::call_args(call_func)$.f))
-#' 
+#'
 #' # 3. Test with a formula parameter
 #' step_formula <- list(
-#'   id = "deseq__xyz", 
+#'   id = "deseq__xyz",
 #'   design = ~ RiskGroup2
 #' )
 #' call_formula <- step_to_call(step_formula)
-#' 
+#'
 #' expect_true(is.call(call_formula))
 #' expect_true(is.function(call_formula[[1]]))
 #' expect_equal(call_formula[[1]], run_deseq)
@@ -182,7 +182,7 @@ step_to_call <- function(step) {
 #' @param step A list or `step` class object containing the parameters for the
 #'   operation, including an `id` string (e.g., `"method__randomstring"`).
 #'
-#' @return A character string containing the formatted R code (e.g., 
+#' @return A character string containing the formatted R code (e.g.,
 #'   `"rec %>% run_method(param = 'value')"`) ready to be parsed and evaluated.
 #'
 #' @noRd
@@ -193,37 +193,37 @@ step_to_expr <- function(step) {
     step %>%
     purrr::discard(names(.) == "id") %>%
     purrr::map2_chr(names(.), ~ {
-      
+
       # 1. Manejo de NULL
-      if (is.null(.x)) { 
+      if (is.null(.x)) {
         return(glue::glue("{.y} = NULL"))
       }
-      
+
       # 2. Manejo de Caracteres
-      if (is.character(.x)) { 
+      if (is.character(.x)) {
         .x <- stringr::str_c("'", .x, "'", collapse = ", ")
         return(glue::glue("{.y} = c({.x})"))
       }
-      
+
       # 3. Manejo de Fórmulas
-      if (inherits(.x, "formula")) { 
-        return(paste0(.y, " = ", paste0(.x, collapse = ""))) 
+      if (inherits(.x, "formula")) {
+        return(paste0(.y, " = ", paste0(.x, collapse = "")))
       }
-      
+
       # 4. Manejo de Funciones (Parche de seguridad)
       if (is.function(.x)) {
         func_str <- paste(deparse(.x), collapse = " ")
         return(glue::glue("{.y} = {func_str}"))
       }
-      
+
       # 5. Manejo especial de Weights para bakes
       if (.y == "weights" && inherits(step, "step_bake") && !is.null(.x)) {
-        text <- .x %>% 
-          purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>% 
+        text <- .x %>%
+          purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>%
           stringr::str_c(collapse = ", ")
         return(glue::glue("{.y} = c({text})"))
       }
-      
+
       # 6. Fallback general (numéricos, lógicos, etc.)
       glue::glue("{.y} = {.x}")
     }) %>%
@@ -248,7 +248,7 @@ step_to_expr <- function(step) {
 #' @return tibble
 #' @export
 #' @autoglobal
-#' 
+#'
 #' @tests
 #' data(test_prep_rec)
 #' res_1 <- find_intersections(
@@ -260,25 +260,25 @@ step_to_expr <- function(step) {
 #' res_3 <- find_intersections(
 #'   test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2]
 #' )
-#' 
+#'
 #' expect_equal(nrow(res_1), 52)
 #' expect_equal(nrow(res_2), 27)
 #' expect_equal(nrow(res_3), 41)
 #' expect_s3_class(res_1, "tbl_df")
-#' 
-#' @examples 
+#'
+#' @examples
 #' data(test_prep_rec)
-#' 
+#'
 #' ## From a PrepRecipe we can extract a tibble with all intersections
 #' intersections <- find_intersections(test_prep_rec)
 #' intersections
-#' 
+#'
 #' ## Additionally, we can exclude some methods form the table
 #' intersections <- find_intersections(
-#'   test_prep_rec, 
+#'   test_prep_rec,
 #'   steps = steps_ids(test_prep_rec, "da")[-1]
 #' )
-#' 
+#'
 #' intersections
 find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
   df <- intersection_df(rec, steps) %>% tibble::as_tibble()
@@ -303,8 +303,8 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
     dplyr::filter(value == 1) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(
-      step_ids = 
-        purrr::map_chr(name, ~ .x) %>% 
+      step_ids =
+        purrr::map_chr(name, ~ .x) %>%
         stringr::str_c(collapse = ", "),
       sum_methods = sum(value)
     ) %>%
@@ -328,35 +328,35 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' print(test_prep_rec) |> expect_snapshot()
 #' rec <- test_prep_rec
 #' expect_equal(
-#'   steps_ids(rec), 
+#'   steps_ids(rec),
 #'   c("subset_taxa__Viennoiserie",
-#'     "filter_taxa__Karakudamono", 
-#'     "maaslin__Welsh_cake", 
-#'     "deseq__Coussin_de_Lyon"    
+#'     "filter_taxa__Karakudamono",
+#'     "maaslin__Welsh_cake",
+#'     "deseq__Coussin_de_Lyon"
 #'    )
 #' )
 #' expect_equal(
-#'   steps_ids(rec, "da"), 
+#'   steps_ids(rec, "da"),
 #'   c("maaslin__Welsh_cake", "deseq__Coussin_de_Lyon")
 #' )
 #' expect_equal(
-#'   steps_ids(rec, "prepro"), 
+#'   steps_ids(rec, "prepro"),
 #'   c("subset_taxa__Viennoiserie", "filter_taxa__Karakudamono")
 #' )
 #' expect_error(steps_ids(rec, "das"))
 #' expect_type(steps_ids(rec), "character")
-#' 
-#' @examples 
+#'
+#' @examples
 #' data(test_rec)
-#' 
+#'
 #' ## We can extract the step identifiers from a Recipe with `step_ids`
 #' ids <- steps_ids(test_rec)
 #' ids
-#' 
+#'
 #' ## With the `type` parameter, extract the prepro and da steps separately.
 #' da_ids <- steps_ids(test_rec, type = "da")
 #' da_ids
-#' 
+#'
 #' prepro_ids <- steps_ids(test_rec, type = "prepro")
 #' prepro_ids
 steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
@@ -433,7 +433,7 @@ export_steps <- function(rec, file_name) {
     model$id <- "model__central"
     inp <- c(list(model), inp)
   }
-  
+
   to_cat <-
     inp %>%
     purrr::map_chr(~ {
@@ -441,14 +441,14 @@ export_steps <- function(rec, file_name) {
         names(.x) %>%
         purrr::map_chr(function(.y) {
           val <- .x[[.y]]
-          
+
           # functions & formulas
           if (is.function(val) || inherits(val, "formula")) {
-            val <- 
-              paste(deparse(val), collapse = " ") %>% 
-              stringr::str_squish() %>% 
+            val <-
+              paste(deparse(val), collapse = " ") %>%
+              stringr::str_squish() %>%
               glue::double_quote()
-          
+
           # characters & factors
           } else if (is.character(val) || is.factor(val)) {
             val <- glue::double_quote(val)
@@ -465,15 +465,15 @@ export_steps <- function(rec, file_name) {
           }
 
           stringr::str_c(
-            "   ", 
-            glue::double_quote(.y), ": ", paste0(val, collapse = ""), 
+            "   ",
+            glue::double_quote(.y), ": ", paste0(val, collapse = ""),
             ","
           )
         }) %>% stringr::str_c(collapse = "\n")
 
       stringr::str_c("{\n", params, "\n}")
     })
-  
+
   writeLines(to_cat, file_name)
 }
 
@@ -490,14 +490,20 @@ export_steps <- function(rec, file_name) {
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-#'  import_steps(system.file("extdata", "test_bake.json", package = "dar")) |>
+#' suppressWarnings(
+#'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+#'     import_steps(
+#'       system.file("extdata", "test_bake.json", package = "dar"),
+#'       parallel = FALSE
+#'     )
+#' ) |>
 #'  expect_snapshot()
 #' @examples
 #' data(metaHIV_phy)
 #'
 #' ## Initialize the Recipe with a phyloseq object
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' rec
 #'
 #' ## Import steps
@@ -508,7 +514,8 @@ export_steps <- function(rec, file_name) {
 #' ## If the json file contains 'bake', the Recipe is automatically prepared.
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
 #'   import_steps(json_file)
 #'
 #' rec
@@ -594,26 +601,26 @@ extract_instructions <- function(lines) {
     purrr::map_chr(function(.x) {
       params <- .x %>%
         stringr::str_squish() %>%
-        stringr::str_split(pattern = ": ", n = 2) %>% 
+        stringr::str_split(pattern = ": ", n = 2) %>%
         unlist()
-      
+
       param <- params[[1]] %>%
         stringr::str_remove_all("\\\"")
-      
+
       value <- params[[2]] %>%
         stringr::str_squish() %>%
         stringr::str_remove_all(",$")
-      
+
       if (stringr::str_detect(value, "%in%")) {
         value <- stringr::str_remove_all(value, "\\\"") %>%
           stringr::str_replace_all("\\\\", "\\\"")
-        
+
         value <- encodeString(value, quote = "'")
       }
-      
+
       if (stringr::str_count(value) == 0) { value <- expression(NULL) }
       stringr::str_c(param, " = ", paste0(value, sep = ""))
-    }) 
+    })
 }
 
 #' Checks if Recipe contains a rarefaction step
@@ -630,7 +637,7 @@ extract_instructions <- function(lines) {
 #'   phyloseq::subset_samples(
 #'     GlobalPatterns, SampleType %in% c("Soil", "Skin")
 #'   ) |>
-#'   recipe(var_info  = "SampleType", tax_info = "Genus") |>
+#'   recipe() |>
 #'   step_rarefaction()
 #'
 #' contains_rarefaction(rec)
@@ -661,16 +668,16 @@ contains_rarefaction <- function(rec) {
 #' @keywords internal
 #' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## With seed
 #' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
-#' 
+#'
 #' ## Witout seed
 #' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
 use_rarefy <- function(phy, rarefy) {
   if (isTRUE(rarefy)) {
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
-  } 
+  }
   if (rarefy == "no_seed") {
     phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE)
   }
@@ -683,31 +690,31 @@ use_rarefy <- function(phy, rarefy) {
 rarefy_msg <- function(steps) {
   info_rarefy <- "Rarefaction is a process that randomly subsamples the data..."
   rarefy_vals <- purrr::map(steps, ~ .x[["rarefy"]])
-  
+
   has_true <- any(purrr::map_lgl(rarefy_vals, ~ isTRUE(.x) || identical(.x, quote(T))))
   has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
-  
-  if (has_true) { 
+
+  if (has_true) {
     cli::cli_inform(c(
-      "!" = "Rarefaction is enabled (with set seed).", 
+      "!" = "Rarefaction is enabled (with set seed).",
       "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
     ))
   }
 
   if (has_no_seed) {
     cli::cli_inform(c(
-      "!" = "Rarefaction is enabled (without set seed).", 
+      "!" = "Rarefaction is enabled (without set seed).",
       "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
     ))
   }
-  
+
   steps
 }
 
 
 #' Information about the Rarefaction process
 #'
-#' Prints detailed information regarding the use of rarefaction in microbiome 
+#' Prints detailed information regarding the use of rarefaction in microbiome
 #' analysis, its implications, and relevant literature.
 #'
 #' @return invisible
@@ -717,7 +724,7 @@ rarefy_msg <- function(steps) {
 #' rarefaction_help()
 rarefaction_help <- function() {
   cli::cli_rule(left = "{.strong Rarefaction in Microbiome Analysis}")
-  cli::cli_text("") 
+  cli::cli_text("")
   cli::cli_alert_info(c("{.strong What is Rarefaction?} It is a process that randomly subsamples the data to a specified depth to account for differences in sequencing depth between samples."))
   cli::cli_text("")
   cli::cli_alert_warning("{.strong The Controversy:}")

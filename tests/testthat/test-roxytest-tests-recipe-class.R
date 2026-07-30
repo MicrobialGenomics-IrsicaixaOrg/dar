@@ -2,7 +2,7 @@
 
 # File R/"recipe-class.R": @tests
 
-test_that("Function recipe() @ L166", {
+test_that("Function recipe() @ L169", {
   data(metaHIV_phy)
   data(GlobalPatterns, package = "mia")
 
@@ -33,13 +33,17 @@ test_that("Function recipe() @ L166", {
 
   # 4. Error: Invalid var_info missing in metadata
   expect_error(
-    recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species"),
+    suppressWarnings(
+      recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species")
+    ),
     class = "dar_error_missing_vars"
   )
 
   # 5. Error: Invalid tax_info missing in tax_table
   expect_error(
-    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax"),
+    suppressWarnings(
+      recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax")
+    ),
     class = "dar_error_missing_tax"
   )
 
@@ -51,14 +55,14 @@ test_that("Function recipe() @ L166", {
 })
 
 
-test_that("Function recipe_validity_problems() @ L306", {
+test_that("Function recipe_validity_problems() @ L323", {
   data(metaHIV_phy)
 
-  complete_rec <- recipe(
+  complete_rec <- suppressWarnings(recipe(
     metaHIV_phy,
     var_info = "RiskGroup2",
     tax_info = "Species"
-  )
+  ))
   incomplete_rec <- recipe(metaHIV_phy)
 
   expect_true(methods::validObject(complete_rec, test = TRUE))
@@ -103,9 +107,9 @@ test_that("Function recipe_validity_problems() @ L306", {
 })
 
 
-test_that("Function prep_recipe() @ L536", {
+test_that("Function prep_recipe() @ L566", {
   data(metaHIV_phy)
-  rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+  rec <- suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Species"))
 
   prepped <- prep_recipe(rec, results = list(), bakes = list())
   expect_s4_class(prepped, "PrepRecipe")

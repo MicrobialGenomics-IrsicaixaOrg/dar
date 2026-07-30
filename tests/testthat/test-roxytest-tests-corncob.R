@@ -2,15 +2,15 @@
 
 # File R/corncob.R: @tests
 
-test_that("Function step_corncob() @ L81", {
+test_that("Function step_corncob() @ L82", {
   data(metaHIV_phy)
   
   test <-
-   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+   suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
    step_filter_by_abundance() |> 
-   step_corncob() |> 
-   prep()
+   step_corncob()
+  test <- suppressWarnings(prep(test, parallel = FALSE))
    
   expect_s4_class(test, "PrepRecipe")
   

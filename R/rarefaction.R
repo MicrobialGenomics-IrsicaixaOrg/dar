@@ -35,7 +35,7 @@
 #' data(metaHIV_phy)
 #' data(test_prep_rec)
 #' test <- 
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+#'   recipe(metaHIV_phy) |>
 #'   step_rarefaction() 
 #'   
 #' expect_s4_class(prep(test), "PrepRecipe")
@@ -45,7 +45,7 @@
 #' 
 #' ## Init Recipe
 #' rec <- 
-#'   recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+#'   recipe(metaHIV_phy) |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 #' 

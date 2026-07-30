@@ -2,7 +2,7 @@
 
 # File R/phyloseq_qc.R: @tests
 
-test_that("Function phy_qc() @ L51", {
+test_that("Function phy_qc() @ L52", {
   data(test_rec)
   test <- phy_qc(test_rec)
   

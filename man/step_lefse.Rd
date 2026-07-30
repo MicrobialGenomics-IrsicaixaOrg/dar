@@ -65,32 +65,34 @@ assigned and used within the analysis.
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+rec <-
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 
 rec
 
 ## Define step with default parameters
-rec <- step_lefse(rec) 
+rec <- step_lefse(rec)
 
 rec
 
 ## Running lefse without rarefaction (not recommended)
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+rec <-
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_lefse(rarefy = FALSE)
-  
+
 rec
 }
 \seealso{
-Other Diff taxa steps: 
-\code{\link{step_aldex}()},
-\code{\link{step_ancom}()},
-\code{\link{step_corncob}()},
-\code{\link{step_deseq}()},
-\code{\link{step_maaslin}()},
-\code{\link{step_wilcox}()}
+Other Diff taxa steps:
+\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_ancom]{step_ancom()}},
+\code{\link[=step_corncob]{step_corncob()}},
+\code{\link[=step_deseq]{step_deseq()}},
+\code{\link[=step_maaslin]{step_maaslin()}},
+\code{\link[=step_wilcox]{step_wilcox()}}
 }
 \concept{Diff taxa steps}

@@ -42,7 +42,7 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <- 
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+  recipe(metaHIV_phy) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 

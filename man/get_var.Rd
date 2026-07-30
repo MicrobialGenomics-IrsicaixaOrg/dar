@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{get_var}
 \alias{get_var}
-\title{Returns var_info from Recipe-class object}
+\title{Return legacy target information from a recipe}
 \usage{
 get_var(rec)
 }
@@ -13,10 +13,11 @@ get_var(rec)
 Tibble containing \code{var_info}.
 }
 \description{
-Returns var_info from Recipe-class object
+\code{get_var()} is deprecated. Use \code{get_model(rec)$targets} for modeled recipes.
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-get_var(rec)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+suppressWarnings(get_var(rec))
 }

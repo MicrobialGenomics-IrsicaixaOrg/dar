@@ -1,3 +1,18 @@
+# dar 1.9.3
+
+## BREAKING CHANGES
+
+* CHANGED: `add_model()` is now the single source of truth for differential
+  abundance analysis targets and taxonomic resolution through its new
+  `targets` and `tax_level` arguments (#142).
+* DEPRECATED: `add_var()`, `add_tax()`, `get_var()`, `get_tax()`, the
+  `var_info` and `tax_info` arguments to `recipe()`, and model-free DA
+  execution now emit classified migration warnings. They remain functional
+  during this first Bioconductor deprecation cycle (#142).
+* IMPROVED: Legacy centralized models, serialized recipes and imported step
+  files are normalized to the new model representation without changing the
+  original microbiome metadata (#142).
+
 # dar 1.9.2
 
 * NEW: Add a centralized statistical model with `add_model()` and

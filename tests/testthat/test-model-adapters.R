@@ -1,6 +1,6 @@
 model_smoke_recipe <- function() {
-  recipe(make_longitudinal_phy(), "condition", "Species") |>
-    add_model(~ condition)
+  recipe(make_longitudinal_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
 }
 
 expect_complete_model_result <- function(result, rec) {

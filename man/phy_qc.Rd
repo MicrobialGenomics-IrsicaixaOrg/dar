@@ -39,7 +39,8 @@ to all rows of the dataset (without splitting by categorical levels).
 data(metaHIV_phy)
 
 ## 1. Init Recipe
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
 ## 2. Get QC metrics
 phy_qc(rec)

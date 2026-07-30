@@ -95,8 +95,6 @@ utils::globalVariables(c(
   # <Recipe-class>
   # <find_intersections>
   "sum_methods",
-  # <Recipe-class>
-  "tax_lev",
   # <corncob_stats_tbl>
   # <mutual_plt>
   # <.abundance_boxplot>

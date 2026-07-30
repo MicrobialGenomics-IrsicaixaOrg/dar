@@ -57,7 +57,12 @@ data("metaHIV_phy")
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(
+    ~ RiskGroup2,
+    targets = "RiskGroup2",
+    tax_level = "Species"
+  ) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
   step_maaslin() |>
@@ -89,5 +94,4 @@ cool(da_results)
 ## Code of Conduct
 
 Please note that the dar project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
-
 

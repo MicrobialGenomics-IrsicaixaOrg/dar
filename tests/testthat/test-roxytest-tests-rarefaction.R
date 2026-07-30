@@ -6,7 +6,7 @@ test_that("Function step_rarefaction() @ L58", {
   data(metaHIV_phy)
   data(test_prep_rec)
   test <- 
-    recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+    recipe(metaHIV_phy) |>
     step_rarefaction() 
     
   expect_s4_class(prep(test), "PrepRecipe")

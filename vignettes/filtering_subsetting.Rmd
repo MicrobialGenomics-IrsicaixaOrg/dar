@@ -51,7 +51,8 @@ object.
 library(dar)
 data("metaHIV_phy")
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
   prep()
@@ -66,7 +67,8 @@ dataset are those where the sum of their abundance is greater than the product
 of the total abundance and the provided threshold.
 
 ```{r step_filter_by_abundance}
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_abundance(rec, threshold = 0.01) |> 
   prep()
@@ -78,7 +80,8 @@ This function filters OTUs based on their prevalence. The taxa retained in the
 dataset are those where the prevalence is greater than the provided threshold.
 
 ```{r step_filter_by_prevalence}
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_prevalence(rec, threshold = 0.01) |> 
   prep()
@@ -91,7 +94,8 @@ dataset are those where the sum of their rarity is less than the provided
 threshold.
 
 ```{r step_filter_by_rarity}
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_rarity(rec, threshold = 0.01) |> 
   prep()
@@ -104,7 +108,8 @@ dataset are those where the variance of their abundance is greater than the
 provided threshold.
 
 ```{r step_filter_by_variance}
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_variance(rec, threshold = 0.01) |> 
   prep()
@@ -117,7 +122,8 @@ taxa retained in the dataset are those where the taxonomic level matches the
 provided taxa.
 
 ```{r subset_taxa}
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <-
   step_subset_taxa(rec, tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   prep()

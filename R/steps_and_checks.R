@@ -13,7 +13,9 @@
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |> step_maaslin() 
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
+#'   step_maaslin()
 #'     
 #' expect_s4_class(rec, "Recipe")
 #' expect_equal(length(rec@steps), 1)
@@ -40,7 +42,8 @@ check <- function(subclass, ..., .prefix = "check_") {
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' 
 #' # Internally, step_ functions use add_step to append themselves
 #' rec <- step_maaslin(rec)
@@ -54,7 +57,8 @@ check <- function(subclass, ..., .prefix = "check_") {
 #' data(metaHIV_phy)
 #' 
 #' # 1. Test adding steps to a normal Recipe
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' rec <- step_maaslin(rec, id = "test_1")
 #' expect_equal(length(rec@steps), 1)
 #' 

@@ -21,5 +21,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Francesc Catala-Moll \email{fcatala@irsicaixa.es} (\href{https://orcid.org/0000-0002-2354-8648}{ORCID})
 
+Authors:
+\itemize{
+  \item Francesc Catala-Moll \email{fcatala@irsicaixa.es} (\href{https://orcid.org/0000-0002-2354-8648}{ORCID})
+}
+
 }
 \keyword{internal}

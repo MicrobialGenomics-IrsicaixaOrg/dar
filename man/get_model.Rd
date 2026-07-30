@@ -11,14 +11,15 @@ get_model(rec)
 }
 \value{
 \code{NULL} when no model is defined, otherwise a list containing the
-formula and its contrast, reference, missing-value and time controls.
+formula, targets, taxonomic level, and its contrast, reference,
+missing-value and time controls.
 }
 \description{
 Get the centralized statistical model from a recipe
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-  add_model(~ RiskGroup2)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 get_model(rec)
 }
