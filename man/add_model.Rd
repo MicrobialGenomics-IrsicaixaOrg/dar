@@ -7,6 +7,8 @@
 add_model(
   rec,
   formula,
+  targets = NULL,
+  tax_level = NULL,
   time = NULL,
   reference = NULL,
   contrasts = c("simple", "all"),
@@ -18,6 +20,12 @@ add_model(
 \item{rec}{An unprepared \code{\link[=Recipe]{Recipe()}} object.}
 
 \item{formula}{A one-sided formula or \code{NULL} to remove the model.}
+
+\item{targets}{One or more categorical metadata columns that define the
+statistical targets. Every target must occur in the fixed formula.}
+
+\item{tax_level}{A single taxonomic rank used by differential-abundance
+methods.}
 
 \item{time}{Optional single metadata column identifying time.}
 
@@ -38,13 +46,23 @@ The updated \code{Recipe}.
 }
 \description{
 The model is the single source of truth for statistical design arguments.
-Variables in \code{var_info} are the targets of inference; other fixed terms are
-adjustment variables. When \code{time} is supplied, numeric values are treated as
-ordered categorical time points while compiling the model.
+\code{targets} are the variables of inference; other fixed terms are adjustment
+variables. \code{tax_level} defines the taxonomic resolution used by DA methods.
+When \code{time} is supplied, numeric values are treated as ordered categorical
+time points while compiling the model.
+}
+\details{
+For compatibility with recipes created before version 1.9.3, omitted
+\code{targets} or \code{tax_level} values are recovered from the deprecated selector
+slots when available. New recipes must supply both arguments explicitly.
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-  add_model(~ RiskGroup2 + Cluster)
+rec <- recipe(metaHIV_phy) |>
+  add_model(
+    ~ RiskGroup2 + Cluster,
+    targets = "RiskGroup2",
+    tax_level = "Species"
+  )
 get_model(rec)
 }

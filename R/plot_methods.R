@@ -156,25 +156,28 @@ intersection_plt <- function(rec,
 exclusion_plt <- function(rec, steps = steps_ids(rec, "da")) {
   
   check_prep_recipe(rec)
-  
-  df <-
-    steps_ids(rec, "da") %>%
-    purrr::map_dfr(~ {
-      df <-
-        intersection_df(rec, steps = steps) %>%
-        tidyr::pivot_longer(cols = -1)
-      
-      to_retain <-
-        df %>%
-        dplyr::filter(name == .x & value == 1) %>%
-        dplyr::pull(taxa_id)
-      
-      df %>%
-        dplyr::filter(taxa_id %in% to_retain) %>%
-        dplyr::group_by(taxa_id) %>%
-        dplyr::summarise(sum = sum(value)) %>%
-        dplyr::count(sum) %>%
-        dplyr::mutate(method = .x, total = sum(n))
+
+  intersections <- intersection_df(rec, steps = steps)
+  key_columns <- setdiff(names(intersections), steps)
+  intersections <- intersections %>%
+    tidyr::pivot_longer(
+      cols = dplyr::all_of(steps),
+      names_to = "name",
+      values_to = "value"
+    )
+
+  df <- steps %>%
+    purrr::map_dfr(function(step_id) {
+      retained_keys <- intersections %>%
+        dplyr::filter(.data$name == .env$step_id, .data$value == 1L) %>%
+        dplyr::distinct(dplyr::across(dplyr::all_of(key_columns)))
+
+      intersections %>%
+        dplyr::semi_join(retained_keys, by = key_columns) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(key_columns))) %>%
+        dplyr::summarise(sum = sum(.data$value), .groups = "drop") %>%
+        dplyr::count(.data$sum) %>%
+        dplyr::mutate(method = .env$step_id, total = sum(.data$n))
     })
   
   df %>%
@@ -554,7 +557,7 @@ mutual_plt <- function(rec,
   .annotated_counts(t_rec) %>% 
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
-    ggplot(aes(taxa, value, fill = !!dplyr::sym(get_var(rec)[[1]]))) +
+    ggplot(aes(taxa, value, fill = !!dplyr::sym(recipe_targets(rec)[[1]]))) +
     geom_boxplot(alpha = 0.7) +
     theme_minimal(base_size = 10) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
@@ -628,7 +631,7 @@ mutual_plt <- function(rec,
     as.matrix()
   
   annot <- 
-    dplyr::select(df, sample_id, get_var(rec)[[1]]) %>% 
+    dplyr::select(df, sample_id, recipe_targets(rec)[[1]]) %>%
     dplyr::distinct() %>% 
     data.frame(row.names = 1) %>% 
     ComplexHeatmap::HeatmapAnnotation(
@@ -712,15 +715,25 @@ mutual_plt <- function(rec,
 #' @keywords internal
 #' @autoglobal
 .all_stats <- function(rec) {
-  rec@results %>% 
-    names() %>% 
-    purrr::map_dfr(~ {
-      rec@results[[.x]][[1]] %>%
-        dplyr::select(taxa_id, comparison, effect_v = effect, dplyr::any_of(c(
-          "padj" = "pajd",
-          "padj" = "adjp",
-          "padj" = "padj"
-        ))) %>%
-        dplyr::mutate(method = .x)
+  rec@results %>%
+    names() %>%
+    purrr::map_dfr(function(step_id) {
+      result <- if (is.null(get_model(rec))) {
+        rec@results[[step_id]][[1]]
+      } else {
+        flatten_model_output(rec@results[[step_id]])
+      }
+      adjusted_column <- intersect(
+        c("padj", "adjp", "pajd"),
+        names(result)
+      )
+      stats <- result %>%
+        dplyr::select(taxa_id, comparison, effect_v = effect)
+      if (length(adjusted_column) > 0L) {
+        stats <- stats %>%
+          dplyr::mutate(padj = result[[adjusted_column[[1]]]])
+      }
+      stats %>%
+        dplyr::mutate(method = step_id)
     })
 }

@@ -46,7 +46,8 @@ data(metaHIV_phy)
 
 # Create a recipe with steps
 rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
   step_maaslin()
@@ -70,7 +71,8 @@ Here's an example of how to use the `import_steps` function:
 
 ```{r}
 # Initialize a recipe with a phyloseq object
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
 # Import the steps from a JSON file
 json_file <- out_file

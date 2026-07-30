@@ -26,11 +26,11 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_variance() |> 
-#'  step_wilcox() |> 
-#'  prep()
+#'  step_wilcox()
+#' test <- suppressWarnings(prep(test, parallel = FALSE))
 #'  
 #' expect_s4_class(test, "PrepRecipe")
 #' 
@@ -41,7 +41,8 @@
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea"))
 #'
 #' ## Define step with default parameters
@@ -101,7 +102,7 @@ run_wilcox <- function(rec,
   }
 
   phy <- get_phy(rec) %>% use_rarefy(rarefy)
-  tax_level <- get_tax(rec)
+  tax_level <- recipe_tax_level(rec)
 
   prepro_df <- phy %>%
     phyloseq::tax_glom(taxrank = tax_level, NArm = FALSE) %>%
@@ -111,7 +112,7 @@ run_wilcox <- function(rec,
     to_tibble("sample_id") %>%
     dplyr::left_join(sample_data(rec), ., by = "sample_id")
 
-  vars <- get_var(rec)
+  vars <- recipe_targets(rec)
   
   vars %>%
     purrr::set_names() %>%

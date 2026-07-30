@@ -15,16 +15,20 @@ library(dar)
 ```
 
 `add_model()` defines one statistical design shared by every compatible
-differential-abundance step. Variables stored in `var_info` remain the targets
-of inference; other fixed terms adjust for confounding. Method-specific
-thresholds, normalization and rarefaction settings remain active.
+differential-abundance step. Its `targets` and `tax_level` arguments are the
+single source of truth for the analysis configuration; other fixed terms adjust
+for confounding. Method-specific thresholds, normalization and rarefaction
+settings remain active. A model-free recipe remains valid for preprocessing,
+but differential-abundance execution without a model is deprecated.
 
 ## Cross-sectional adjustment
 
 ```{r cross-sectional, eval=FALSE}
-rec <- recipe(phy, var_info = "condition", tax_info = "Species") |>
+rec <- recipe(phy) |>
   add_model(
     ~ condition + batch + age,
+    targets = "condition",
+    tax_level = "Species",
     reference = c(condition = "control"),
     na_action = "error"
   ) |>
@@ -47,13 +51,11 @@ Numeric time values are converted internally to a factor whose levels are
 sorted by numeric value. The original sample metadata are not modified.
 
 ```{r longitudinal, eval=FALSE}
-longitudinal <- recipe(
-  longitudinal_phy,
-  var_info = "condition",
-  tax_info = "Species"
-) |>
+longitudinal <- recipe(longitudinal_phy) |>
   add_model(
     ~ condition * visit + batch + (1 | subject),
+    targets = "condition",
+    tax_level = "Species",
     time = "visit",
     reference = c(condition = "control", visit = "0"),
     contrasts = "all",
@@ -93,7 +95,29 @@ Prepared modeled results contain `contrast_id`, `comparison`, `contrast_type`
 and `var`. Consensus operations group by `contrast_id` and effect direction, so
 different longitudinal hypotheses cannot contribute to the same vote.
 
-`export_steps()` and `import_steps()` preserve the formula, time column,
-references, contrast mode, missing-value policy and time-level limit. Files
-created by older versions without a model continue to import through the
-legacy path.
+`export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
+level, time column, references, contrast mode, missing-value policy and
+time-level limit. Files created by older versions without a model continue to
+import through the legacy path.
+
+## Migrating legacy selectors
+
+The former `recipe(..., var_info=, tax_info=)`, `add_var()`, `add_tax()`,
+`get_var()` and `get_tax()` interfaces remain available during the first
+Bioconductor deprecation cycle. They emit classified warnings and synchronize
+with the centralized model where applicable. New code should inspect
+`get_model(rec)$targets` and `get_model(rec)$tax_level` instead. Legacy recipes
+can be migrated by moving both selectors into `add_model()`:
+
+```{r migration, eval=FALSE}
+# Deprecated
+old <- recipe(phy, var_info = "condition", tax_info = "Species")
+
+# Current API
+current <- recipe(phy) |>
+  add_model(
+    ~ condition,
+    targets = "condition",
+    tax_level = "Species"
+  )
+```

@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{add_tax}
 \alias{add_tax}
-\title{Adds taxonomic level of interest in the Recipe.}
+\title{Add a legacy taxonomic level of interest to a recipe}
 \usage{
 add_tax(rec, tax_info)
 }
@@ -16,11 +16,11 @@ any context.}
 A \code{Recipe} object.
 }
 \description{
-Adds taxonomic level of interest in the Recipe.
+\code{add_tax()} is deprecated. Supply \code{tax_level} to \code{\link[=add_model]{add_model()}} instead.
 }
 \examples{
 data(metaHIV_phy)
 rec <- recipe(metaHIV_phy)
-rec <- add_tax(rec, tax_info = "Species")
+rec <- suppressWarnings(add_tax(rec, tax_info = "Species"))
 rec
 }

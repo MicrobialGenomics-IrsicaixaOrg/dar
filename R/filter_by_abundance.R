@@ -35,7 +35,7 @@
 #' data(metaHIV_phy)
 #'
 #' ## Init Recipe
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
+#' rec <- recipe(metaHIV_phy)
 #' rec
 #'
 #' ## Define filter_by_abundance step with default parameters

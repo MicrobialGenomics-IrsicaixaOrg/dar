@@ -17,6 +17,7 @@ Extracts otu_table from phyloseq inside a Recipe
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 otu_table(rec)
 }

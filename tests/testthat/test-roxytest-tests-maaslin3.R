@@ -2,18 +2,18 @@
 
 # File R/maaslin3.R: @tests
 
-test_that("Function step_maaslin() @ L77", {
+test_that("Function step_maaslin() @ L79", {
   data(metaHIV_phy)
   
   test <-
-    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+    suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
     step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
     step_filter_by_abundance() |>
     step_maaslin() |>
     step_maaslin(rarefy = TRUE) |>
     step_maaslin(rarefy = "no_seed")
   
-  expect_s4_class(prep(test), "PrepRecipe") |>
+  expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe") |>
     expect_snapshot()
   
   data(test_prep_rec)

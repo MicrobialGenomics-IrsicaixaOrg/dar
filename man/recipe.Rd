@@ -17,20 +17,19 @@ recipe(
 TreeSummarizedExperiment-class object.}
 
 \item{var_info}{A character string of column names corresponding to variables
-that will be used in any context.}
+that will be used in any context. Deprecated; supply \code{targets} to
+\code{\link[=add_model]{add_model()}} instead.}
 
 \item{tax_info}{A character string of taxonomic levels that will be used in
-any context.}
+any context. Deprecated; supply \code{tax_level} to \code{\link[=add_model]{add_model()}} instead.}
 
 \item{steps}{list with steps.}
 }
 \value{
-An object of class \code{Recipe} with sub-objects: \item{phyloseq}{object
-of class \code{phyloseq} with taxa abundance information.} \item{var_info}{A
-tibble that contains the current set of terms in the data set. This
-initially defaults to the same data contained in \code{var_info}.}
-\item{tax_info}{A tibble that contains the current set of taxonomic levels
-that will be used in the analysis.}
+An object of class \code{Recipe} containing the microbiome object, an
+optional centralized model and the configured processing or DA steps.
+Legacy selector slots are retained for compatibility during the
+deprecation cycle.
 }
 \description{
 A Recipe is a description of the steps to be applied to a data set in order
@@ -41,7 +40,8 @@ data(metaHIV_phy)
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
   step_deseq() |>
@@ -57,15 +57,14 @@ da_results <- bake(da_results, count_cutoff = n_methods)
 ## Results
 cool(da_results)
 
-## You can also crate a recipe without var and tax info
+## A recipe without a model can be used for preprocessing
 rec <- recipe(metaHIV_phy)
 
 rec
 
-## And define them later
+## Define the complete analysis configuration later
 rec <- rec |>
-  add_var("RiskGroup2") |>
-  add_tax("Genus")
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
 
 rec
 

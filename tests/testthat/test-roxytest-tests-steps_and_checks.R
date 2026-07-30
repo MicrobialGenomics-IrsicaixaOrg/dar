@@ -2,20 +2,23 @@
 
 # File R/steps_and_checks.R: @tests
 
-test_that("Function step() @ L20", {
+test_that("Function step() @ L22", {
   data(metaHIV_phy)
-  rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |> step_maaslin() 
+  rec <- recipe(metaHIV_phy) |>
+    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
+    step_maaslin()
       
   expect_s4_class(rec, "Recipe")
   expect_equal(length(rec@steps), 1)
 })
 
 
-test_that("Function add_step() @ L81", {
+test_that("Function add_step() @ L85", {
   data(metaHIV_phy)
   
   # 1. Test adding steps to a normal Recipe
-  rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+  rec <- recipe(metaHIV_phy) |>
+    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
   rec <- step_maaslin(rec, id = "test_1")
   expect_equal(length(rec@steps), 1)
   

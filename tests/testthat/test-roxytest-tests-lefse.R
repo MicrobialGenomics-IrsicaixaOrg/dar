@@ -2,20 +2,20 @@
 
 # File R/lefse.R: @tests
 
-test_that("Function step_lefse() @ L81", {
+test_that("Function step_lefse() @ L83", {
   data(metaHIV_phy)
   
   expect_condition(
-   test <- 
-     recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+   test <-
+     suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
      step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-     step_filter_by_prevalence() |> 
-     step_lefse() |> 
+     step_filter_by_prevalence() |>
+     step_lefse() |>
      step_lefse(rarefy = FALSE),
    "lefse.*without rarefaction"
   )
-   
-  expect_s4_class(prep(test), "PrepRecipe") |> 
+  
+  expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe") |>
     expect_snapshot()
   
   data(test_prep_rec)

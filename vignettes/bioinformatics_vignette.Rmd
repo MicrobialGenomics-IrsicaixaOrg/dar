@@ -4,7 +4,7 @@ output: rmarkdown::html_vignette
 description: |
   
 vignette: >
-  %\VignetteIndexEntry{Workflow with real data}
+  %\VignetteIndexEntry{dar: Case of Study}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -48,7 +48,8 @@ To begin the analysis process with the `dar` package, the first step is to initi
 
 ```{r}
 # Recipe Initialization
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec
 ```
 

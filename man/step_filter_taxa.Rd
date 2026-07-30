@@ -32,7 +32,7 @@ FALSE, it returns the already-trimmed version of the phyloseq object.
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
+rec <- recipe(metaHIV_phy)
 rec
 
 ## Define filter taxa step with default parameters
@@ -42,10 +42,10 @@ rec <-
 rec
 }
 \seealso{
-Other filter phy steps: 
-\code{\link{step_filter_by_abundance}()},
-\code{\link{step_filter_by_prevalence}()},
-\code{\link{step_filter_by_rarity}()},
-\code{\link{step_filter_by_variance}()}
+Other filter phy steps:
+\code{\link[=step_filter_by_abundance]{step_filter_by_abundance()}},
+\code{\link[=step_filter_by_prevalence]{step_filter_by_prevalence()}},
+\code{\link[=step_filter_by_rarity]{step_filter_by_rarity()}},
+\code{\link[=step_filter_by_variance]{step_filter_by_variance()}}
 }
 \concept{filter phy steps}

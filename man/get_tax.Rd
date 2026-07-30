@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{get_tax}
 \alias{get_tax}
-\title{Returns tax_info from Recipe-class object}
+\title{Return legacy taxonomic information from a recipe}
 \usage{
 get_tax(rec)
 }
@@ -13,10 +13,12 @@ get_tax(rec)
 Tibble containing \code{tax_info}.
 }
 \description{
-Returns tax_info from Recipe-class object
+\code{get_tax()} is deprecated. Use \code{get_model(rec)$tax_level} for modeled
+recipes.
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-get_tax(rec)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+suppressWarnings(get_tax(rec))
 }

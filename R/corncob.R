@@ -51,11 +51,11 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_abundance() |> 
-#'  step_corncob() |> 
-#'  prep()
+#'  step_corncob()
+#' test <- suppressWarnings(prep(test, parallel = FALSE))
 #'  
 #' expect_s4_class(test, "PrepRecipe")
 #' 
@@ -66,7 +66,8 @@
 #' 
 #' ## Init Recipe
 #' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 #' 
@@ -152,8 +153,8 @@ run_corncob <- function(rec,
     ))
   }
   
-  vars <- get_var(rec)
-  tax_level <- get_tax(rec)
+  vars <- recipe_targets(rec)
+  tax_level <- recipe_tax_level(rec)
   phy <- get_phy(rec) %>% use_rarefy(rarefy)
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
   
@@ -189,7 +190,7 @@ run_corncob <- function(rec,
           signif_taxa <- corncob::otu_to_taxonomy(
             OTU = corncob_res$significant_taxa,
             data = corncob_res$data,
-            level = tax_level %>% dplyr::pull()
+            level = tax_level
           ) %>% stringr::str_c(" (", corncob_res$significant_taxa, ")")
           
           corncob_stats_tbl(

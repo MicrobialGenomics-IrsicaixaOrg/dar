@@ -26,11 +26,11 @@ to prepare it for data analysis.
 \describe{
 \item{\code{phyloseq}}{Phyloseq-class object.}
 
-\item{\code{var_info}}{A tibble that contains the current set of terms in the data
-set. This initially defaults to the same data contained in \code{var_info}.}
+\item{\code{var_info}}{Deprecated compatibility storage synchronized from
+\code{model$targets} for modeled recipes.}
 
-\item{\code{tax_info}}{A tibble that contains the current set of taxonomic levels
-that will be used in the analysis.}
+\item{\code{tax_info}}{Deprecated compatibility storage synchronized from
+\code{model$tax_level} for modeled recipes.}
 
 \item{\code{steps}}{List of step-class objects that will be used by DA.}
 

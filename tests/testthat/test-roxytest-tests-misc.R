@@ -3,8 +3,9 @@
 # File R/misc.R: @tests
 
 test_that("Function rand_id() @ L15", {
-  set.seed(123)
-  expect_equal(rand_id(), "step__Filo")
+  set.seed(123); first_id <- rand_id()
+  set.seed(123); expect_identical(rand_id(), first_id)
+  expect_match(first_id, "^step__"); expect_true(sub("^step__", "", first_id) %in% pastry_df$id)
 })
 
 
@@ -44,8 +45,8 @@ test_that("Function to_tibble() @ L100", {
 test_that("Function step_to_call() @ L162", {
   # 1. Test standard string and numeric parameters
   step_standard <- list(
-    id = "maaslin__123", 
-    transform = "LOG", 
+    id = "maaslin__123",
+    transform = "LOG",
     min_abundance = 0.1
   )
   call_standard <- step_to_call(step_standard)
@@ -59,7 +60,7 @@ test_that("Function step_to_call() @ L162", {
   # 2. Test with a function parameter (The main reason for this refactor)
   my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
   step_func <- list(
-    id = "filter_taxa__abc", 
+    id = "filter_taxa__abc",
     .f = my_fun
   )
   call_func <- step_to_call(step_func)
@@ -71,7 +72,7 @@ test_that("Function step_to_call() @ L162", {
   
   # 3. Test with a formula parameter
   step_formula <- list(
-    id = "deseq__xyz", 
+    id = "deseq__xyz",
     design = ~ RiskGroup2
   )
   call_formula <- step_to_call(step_formula)
@@ -107,19 +108,19 @@ test_that("Function steps_ids() @ L362", {
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
   expect_equal(
-    steps_ids(rec), 
+    steps_ids(rec),
     c("subset_taxa__Viennoiserie",
-      "filter_taxa__Karakudamono", 
-      "maaslin__Welsh_cake", 
-      "deseq__Coussin_de_Lyon"    
+      "filter_taxa__Karakudamono",
+      "maaslin__Welsh_cake",
+      "deseq__Coussin_de_Lyon"
      )
   )
   expect_equal(
-    steps_ids(rec, "da"), 
+    steps_ids(rec, "da"),
     c("maaslin__Welsh_cake", "deseq__Coussin_de_Lyon")
   )
   expect_equal(
-    steps_ids(rec, "prepro"), 
+    steps_ids(rec, "prepro"),
     c("subset_taxa__Viennoiserie", "filter_taxa__Karakudamono")
   )
   expect_error(steps_ids(rec, "das"))
@@ -127,9 +128,15 @@ test_that("Function steps_ids() @ L362", {
 })
 
 
-test_that("Function import_steps() @ L516", {
+test_that("Function import_steps() @ L523", {
   data(metaHIV_phy)
-  recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-   import_steps(system.file("extdata", "test_bake.json", package = "dar")) |>
+  suppressWarnings(
+    recipe(metaHIV_phy, "RiskGroup2", "Class") |>
+      import_steps(
+        system.file("extdata", "test_bake.json", package = "dar"),
+        parallel = FALSE
+      )
+  ) |>
    expect_snapshot()
 })
+

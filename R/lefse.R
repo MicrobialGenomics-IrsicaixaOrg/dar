@@ -29,7 +29,7 @@
 #'   Often one of the major goals of this procedure is to achieve parity in
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
-#'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
+#'   is expected. If 'no_seed', rarefaction is performed without a set seed.
 #' @param id A character string that is unique to this step to identify it.
 #'
 #' @include recipe-class.R
@@ -40,43 +40,45 @@
 #' @autoglobal
 #' @tests
 #' data(metaHIV_phy)
-#' 
+#'
 #' expect_condition(
-#'  test <- 
-#'    recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#'  test <-
+#'    suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
 #'    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'    step_filter_by_prevalence() |> 
-#'    step_lefse() |> 
+#'    step_filter_by_prevalence() |>
+#'    step_lefse() |>
 #'    step_lefse(rarefy = FALSE),
 #'  "lefse.*without rarefaction"
 #' )
-#'  
-#' expect_s4_class(prep(test), "PrepRecipe") |> 
+#'
+#' expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe") |>
 #'   expect_snapshot()
-#' 
+#'
 #' data(test_prep_rec)
 #' expect_error(step_lefse(test_prep_rec))
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
+#'
 #' ## Init Recipe
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+#' rec <-
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
-#' 
-#' rec
-#' 
-#' ## Define step with default parameters
-#' rec <- step_lefse(rec) 
 #'
 #' rec
-#' 
+#'
+#' ## Define step with default parameters
+#' rec <- step_lefse(rec)
+#'
+#' rec
+#'
 #' ## Running lefse without rarefaction (not recommended)
-#' rec <- 
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#' rec <-
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
 #'   step_lefse(rarefy = FALSE)
-#'   
+#'
 #' rec
 step_lefse <- function(rec,
                        kruskal.threshold = 0.05,
@@ -87,16 +89,16 @@ step_lefse <- function(rec,
                        trim.names = FALSE,
                        rarefy = TRUE,
                        id = rand_id("lefse")) {
-  
+
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")
-  
+
   if (!rarefy & !contains_rarefaction(rec)) {
     cli::cli_inform(c(
       "!" = "Running {.pkg lefse} without rarefaction is not recommended ({.arg id} = {.val {id}})."
     ))
   }
-  
+
   add_step(
     rec,
     step(
@@ -134,15 +136,15 @@ run_lefse <- function(rec,
   }
 
   lefse_mat <- prepro_lefse(rec, rarefy)
-  vars <- get_var(rec)
+  vars <- recipe_targets(rec)
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
       get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
-          sample_data <- 
+          sample_data <-
             dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
-         
+
           se <- SummarizedExperiment::SummarizedExperiment(
             assays = list(counts = lefse_mat[, sample_data$sample_id]),
             colData = sample_data
@@ -160,9 +162,9 @@ run_lefse <- function(rec,
             assay = assay,
             trim.names = trim.names
           )
-          
+
           adjpval <- ifelse(is.null(subclassCol), kruskal.threshold, wilcox.threshold)
-          
+
           lefse_res %>%
             tibble::as_tibble() %>%
             dplyr::rename(otu = features) %>%
@@ -174,7 +176,7 @@ run_lefse <- function(rec,
             dplyr::mutate(
               comparison = stringr::str_c(comparison, collapse = "_"),
               var = var,
-              taxa = stringr::str_remove_all(otu, ".*[|]"), 
+              taxa = stringr::str_remove_all(otu, ".*[|]"),
               effect = scores,
               signif = ifelse(
                 adjp < adjpval & abs(scores) >= lda.threshold,
@@ -183,7 +185,7 @@ run_lefse <- function(rec,
               )
             ) %>%
             dplyr::left_join(tax_table(rec), by = "taxa") %>%
-            dplyr::rename(lefse_id = otu) %>% 
+            dplyr::rename(lefse_id = otu) %>%
             dplyr::relocate(taxa_id, .before = 1)
         })
     })
@@ -191,8 +193,8 @@ run_lefse <- function(rec,
 
 #' @noRd
 #' @keywords internal
-required_pkgs_lefse <- function(x, ...) { 
-  c("bioc::lefser", "bioc::SummarizedExperiment") 
+required_pkgs_lefse <- function(x, ...) {
+  c("bioc::lefser", "bioc::SummarizedExperiment")
 }
 
 #' @noRd
@@ -200,16 +202,16 @@ required_pkgs_lefse <- function(x, ...) {
 #' @keywords internal
 prepro_lefse <- function(rec, rarefy) {
 
-  tax_level <- get_tax(rec)[[1]]
-  phy <- 
-    get_phy(rec) %>% 
+  tax_level <- recipe_tax_level(rec)
+  phy <-
+    get_phy(rec) %>%
     use_rarefy(rarefy)
 
   # Defining iterating tax levels -------------------------------------------
-  tax_otp <- 
-    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species") %>% 
+  tax_otp <-
+    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species") %>%
     .[. %in% colnames(phy@tax_table)]
-  
+
   tax_lev_f <- tax_otp[seq_len(match(tax_level, tax_otp))]
 
   # Computing output table --------------------------------------------------
@@ -226,7 +228,7 @@ prepro_lefse <- function(rec, rarefy) {
         dplyr::mutate(dplyr::across(
           dplyr::everything(),
           .fns = function(x) stringr::str_replace_all(x, " |[.]|-", "_")
-        )) 
+        ))
 
       if (it == 1) {
         tax_lev_names <- tax_lev_names %>% dplyr::pull(!!tax)

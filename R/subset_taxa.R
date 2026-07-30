@@ -32,7 +32,7 @@
 #' data(metaHIV_phy)
 #'
 #' ## Init Recipe
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+#' rec <- recipe(metaHIV_phy)
 #' rec
 #'
 #' ## Define step_subset_taxa step with default parameters

@@ -1,7 +1,7 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.2
-Date: 2026-07-29
+Version: 1.9.3
+Date: 2026-07-30
 Authors@R: 
     c(person(given = "Francesc",
              family = "Catala-Moll",
@@ -121,4 +121,4 @@ VignetteBuilder: knitr
 Config/roxyglobals/filename: globals.R
 Config/roxyglobals/unique: TRUE
 Config/testthat/parallel: true
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

@@ -17,6 +17,6 @@ Returns phyloseq from Recipe-class object
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy)
 get_phy(rec)
 }

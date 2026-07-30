@@ -76,12 +76,12 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  recipe(metaHIV_phy, "RiskGroup2", "Order") |>
+#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Order")) |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_prevalence() |> 
 #'  step_ancom(id = "ancom__Utap")
 #'  
-#' res <- suppressWarnings(prep(test))
+#' res <- suppressWarnings(prep(test, parallel = FALSE))
 #' expect_s4_class(res, "PrepRecipe")
 #' expect_snapshot(res)
 #' 
@@ -92,7 +92,8 @@
 #'
 #' ## Init Recipe
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 #'
@@ -107,12 +108,13 @@
 #'
 #' ## Wearing rarefaction only for this step
 #' rec <-
-#'   recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
 #'   step_ancom(rarefy = TRUE)
 #'
 #' rec
 step_ancom <- function(rec,
-                       fix_formula = get_var(rec)[[1]],
+                       fix_formula = recipe_targets(rec),
                        rand_formula = NULL,
                        p_adj_method = "holm",
                        prv_cut = 0.1,
@@ -197,8 +199,8 @@ run_ancom <- function(rec,
     ))
   }
   
-  vars <- get_var(rec)[[1]]
-  tax_level <- get_tax(rec)[[1]]
+  vars <- recipe_targets(rec)
+  tax_level <- recipe_tax_level(rec)
   phy <- 
     get_phy(rec) %>% 
     use_rarefy(rarefy) %>%

@@ -5,28 +5,38 @@
 #' @param rec A [Recipe()] or [PrepRecipe()] object.
 #'
 #' @return `NULL` when no model is defined, otherwise a list containing the
-#'   formula and its contrast, reference, missing-value and time controls.
+#'   formula, targets, taxonomic level, and its contrast, reference,
+#'   missing-value and time controls.
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'   add_model(~ RiskGroup2)
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' get_model(rec)
 get_model <- function(rec) {
   check_any_recipe(rec)
-  rec@model
+  normalize_model_spec(rec, rec@model)
 }
 
 #' Add a centralized statistical model to a recipe
 #'
 #' The model is the single source of truth for statistical design arguments.
-#' Variables in `var_info` are the targets of inference; other fixed terms are
-#' adjustment variables. When `time` is supplied, numeric values are treated as
-#' ordered categorical time points while compiling the model.
+#' `targets` are the variables of inference; other fixed terms are adjustment
+#' variables. `tax_level` defines the taxonomic resolution used by DA methods.
+#' When `time` is supplied, numeric values are treated as ordered categorical
+#' time points while compiling the model.
+#'
+#' For compatibility with recipes created before version 1.9.3, omitted
+#' `targets` or `tax_level` values are recovered from the deprecated selector
+#' slots when available. New recipes must supply both arguments explicitly.
 #'
 #' @param rec An unprepared [Recipe()] object.
 #' @param formula A one-sided formula or `NULL` to remove the model.
+#' @param targets One or more categorical metadata columns that define the
+#'   statistical targets. Every target must occur in the fixed formula.
+#' @param tax_level A single taxonomic rank used by differential-abundance
+#'   methods.
 #' @param time Optional single metadata column identifying time.
 #' @param reference Optional named character vector defining factor reference
 #'   levels.
@@ -42,11 +52,17 @@ get_model <- function(rec) {
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy, "RiskGroup2", "Species") |>
-#'   add_model(~ RiskGroup2 + Cluster)
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(
+#'     ~ RiskGroup2 + Cluster,
+#'     targets = "RiskGroup2",
+#'     tax_level = "Species"
+#'   )
 #' get_model(rec)
 add_model <- function(rec,
                       formula,
+                      targets = NULL,
+                      tax_level = NULL,
                       time = NULL,
                       reference = NULL,
                       contrasts = c("simple", "all"),
@@ -64,8 +80,21 @@ add_model <- function(rec,
   na_action <- match.arg(na_action)
   formula <- coerce_model_formula(formula)
 
+  if (is.null(targets) && !is.null(rec@var_info) && "vars" %in% names(rec@var_info)) {
+    targets <- rec@var_info$vars
+  }
+  if (is.null(tax_level) && !is.null(rec@tax_info) &&
+      "tax_lev" %in% names(rec@tax_info)) {
+    tax_level <- rec@tax_info$tax_lev
+  }
+  if (!is.null(tax_level)) {
+    tax_level <- stringr::str_to_sentence(tax_level)
+  }
+
   candidate <- list(
     formula = formula,
+    targets = targets,
+    tax_level = tax_level,
     time = time,
     reference = reference,
     contrasts = contrasts,
@@ -75,9 +104,45 @@ add_model <- function(rec,
 
   validate_model_spec(rec, candidate)
   rec@model <- candidate
+  rec@var_info <- tibble::tibble(vars = targets)
+  rec@tax_info <- tibble::tibble(tax_lev = tax_level)
   validate_recipe_object(rec)
   report_model_step_warnings(rec)
   rec
+}
+
+#' Normalize models created before targets and taxonomic resolution were owned
+#' by add_model()
+#' @noRd
+normalize_model_spec <- function(rec, model) {
+  if (is.null(model)) {
+    return(NULL)
+  }
+  if (!"targets" %in% names(model)) {
+    model$targets <- if (!is.null(rec@var_info) && "vars" %in% names(rec@var_info)) {
+      rec@var_info$vars
+    } else {
+      NULL
+    }
+  }
+  if (!"tax_level" %in% names(model)) {
+    model$tax_level <- if (!is.null(rec@tax_info) && "tax_lev" %in% names(rec@tax_info)) {
+      rec@tax_info$tax_lev
+    } else {
+      NULL
+    }
+  }
+  if (!is.null(model$tax_level)) {
+    model$tax_level <- stringr::str_to_sentence(model$tax_level)
+  }
+  canonical <- c(
+    "formula", "targets", "tax_level", "time", "reference", "contrasts",
+    "na_action", "max_time_levels"
+  )
+  if (setequal(names(model), canonical)) {
+    model <- model[canonical]
+  }
+  model
 }
 
 #' @noRd
@@ -113,23 +178,29 @@ model_metadata <- function(rec) {
 #' Return model validity problems without throwing
 #' @noRd
 model_validity_problems <- function(object) {
-  model <- object@model
-  if (is.null(model)) {
+  stored_model <- object@model
+  if (is.null(stored_model)) {
     return(character())
   }
 
-  required <- c(
+  legacy <- c(
     "formula", "time", "reference", "contrasts", "na_action",
     "max_time_levels"
   )
+  required <- c(
+    "formula", "targets", "tax_level", "time", "reference", "contrasts",
+    "na_action", "max_time_levels"
+  )
   problems <- character()
 
-  if (!identical(names(model), required)) {
+  if (!identical(names(stored_model), required) &&
+      !identical(names(stored_model), legacy)) {
     problems <- c(
       problems,
       paste0("`model` must contain exactly: ", paste(required, collapse = ", "))
     )
   }
+  model <- normalize_model_spec(object, stored_model)
   if (!inherits(model$formula, "formula") || length(model$formula) != 2L) {
     problems <- c(problems, "`model$formula` must be a one-sided formula")
   }
@@ -170,6 +241,7 @@ model_validity_problems <- function(object) {
 
 #' @noRd
 validate_model_spec <- function(rec, model) {
+  model <- normalize_model_spec(rec, model)
   formula <- model$formula
   metadata <- model_metadata(rec)
   variables <- all.vars(formula)
@@ -213,18 +285,56 @@ validate_model_spec <- function(rec, model) {
     )
   }
 
-  targets <- rec@var_info$vars
-  if (length(targets) > 0L) {
-    missing_targets <- setdiff(targets, all.vars(fixed_formula))
-    if (length(missing_targets) > 0L) {
-      cli::cli_abort(
-        c(
-          "x" = "Target variable{?s} {.val {missing_targets}} from {.arg var_info} {?is/are} absent from the fixed model.",
-          "i" = "Every target must appear in {.arg formula}."
-        ),
-        class = "dar_error_invalid_model"
-      )
-    }
+  targets <- model$targets
+  if (!is.character(targets) || length(targets) < 1L || anyNA(targets) ||
+      any(targets == "") || anyDuplicated(targets)) {
+    cli::cli_abort(
+      "{.arg targets} must be a non-empty character vector with unique column names.",
+      class = "dar_error_invalid_model"
+    )
+  }
+  missing_targets <- setdiff(targets, names(metadata))
+  if (length(missing_targets) > 0L) {
+    cli::cli_abort(
+      "Target variable{?s} {.val {missing_targets}} {?is/are} missing from sample metadata.",
+      class = c("dar_error_missing_vars", "dar_error_invalid_model")
+    )
+  }
+  numeric_targets <- targets[vapply(targets, function(target) {
+    is.numeric(metadata[[target]]) || is.integer(metadata[[target]])
+  }, logical(1))]
+  if (length(numeric_targets) > 0L) {
+    cli::cli_abort(
+      "Target variable{?s} {.val {numeric_targets}} must be categorical.",
+      class = "dar_error_invalid_model"
+    )
+  }
+  missing_targets <- setdiff(targets, all.vars(fixed_formula))
+  if (length(missing_targets) > 0L) {
+    cli::cli_abort(
+      c(
+        "x" = "Target variable{?s} {.val {missing_targets}} {?is/are} absent from the fixed model.",
+        "i" = "Every target must appear in {.arg formula}."
+      ),
+      class = "dar_error_invalid_model"
+    )
+  }
+
+  if (!is.character(model$tax_level) || length(model$tax_level) != 1L ||
+      is.na(model$tax_level) || model$tax_level == "") {
+    cli::cli_abort(
+      "{.arg tax_level} must be a single taxonomic rank.",
+      class = "dar_error_invalid_model"
+    )
+  }
+  if (!model$tax_level %in% phyloseq::rank_names(rec@phyloseq)) {
+    cli::cli_abort(
+      c(
+        "x" = "Taxonomic rank {.val {model$tax_level}} is missing from the microbiome object.",
+        "i" = "Available ranks: {.val {phyloseq::rank_names(rec@phyloseq)}}."
+      ),
+      class = c("dar_error_missing_tax", "dar_error_invalid_model")
+    )
   }
 
   for (label in labels) {
@@ -354,7 +464,7 @@ resolve_model <- function(rec, check_design = TRUE) {
   }
   metadata <- metadata[complete, , drop = FALSE]
 
-  targets <- get_var(rec)$vars
+  targets <- model$targets
   for (target in targets) {
     if (is.numeric(metadata[[target]]) || is.integer(metadata[[target]])) {
       cli::cli_abort(
@@ -476,6 +586,7 @@ resolve_model <- function(rec, check_design = TRUE) {
   confounders <- setdiff(fixed_vars, c(targets, model$time))
   resolved <- list(
     formula = model$formula,
+    tax_level = model$tax_level,
     fixed_formula = fixed_formula,
     random_terms = random_terms,
     target_vars = targets,
@@ -673,6 +784,21 @@ is_da_step <- function(step) {
   !stringr::str_detect(step[["id"]], "subset|filter|rarefaction")
 }
 
+#' Warn when differential abundance still uses the legacy selector path
+#' @noRd
+warn_model_free_da <- function(rec) {
+  if (is.null(rec@model) && any(vapply(rec@steps, is_da_step, logical(1)))) {
+    cli::cli_warn(
+      c(
+        "!" = "Model-free differential-abundance execution is deprecated.",
+        "i" = "Define the statistical design, targets and taxonomic resolution with {.fun add_model}."
+      ),
+      class = "dar_warning_deprecated_legacy_da"
+    )
+  }
+  invisible(NULL)
+}
+
 #' @noRd
 model_step_status <- function(rec, step, resolved = NULL) {
   if (is.null(get_model(rec)) || !is_da_step(step)) {
@@ -855,14 +981,20 @@ harmonize_model_result <- function(result, rec) {
   }
   plan <- resolve_model(rec)$contrast_plan |>
     dplyr::select(
-      "contrast_id", "contrast_type", planned_var = "var", "numerator",
+      "contrast_id", "contrast_type", "var", "numerator",
       "denominator", "at_var", "at_level"
     )
-  result <- dplyr::left_join(result, plan, by = "contrast_id")
-  if (!"var" %in% names(result)) {
-    result$var <- result$planned_var
+  missing_plan_columns <- setdiff(names(plan), names(result))
+  if (length(missing_plan_columns) > 0L) {
+    result <- dplyr::left_join(
+      result,
+      dplyr::select(
+        plan, "contrast_id", dplyr::all_of(missing_plan_columns)
+      ),
+      by = "contrast_id"
+    )
   }
-  dplyr::select(result, -dplyr::any_of("planned_var"))
+  result
 }
 
 #' Validate that an engine returned every planned contrast
