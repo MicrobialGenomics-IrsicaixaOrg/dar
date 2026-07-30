@@ -129,6 +129,12 @@ run_deseq <- function(rec,
                       rarefy,
                       id) {
 
+  if (!is.null(get_model(rec))) {
+    return(run_deseq_model(
+      rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy
+    ))
+  }
+
   vars <- get_var(rec)
   tax_level <- get_tax(rec)
   phy <- 

@@ -5,7 +5,7 @@
 \alias{PrepRecipe}
 \title{Create a PrepRecipe.}
 \usage{
-prep_recipe(rec, results, bakes)
+prep_recipe(rec, results, bakes, execution = list())
 }
 \arguments{
 \item{rec}{A Recipe object.}

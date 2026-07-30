@@ -17,5 +17,8 @@ in the Recipe.
 \item{\code{results}}{Contains the results of all defined analysis in the Recipe.}
 
 \item{\code{bakes}}{Contains the executed bakes.}
+
+\item{\code{execution}}{Manifest containing resolved contrasts, samples removed by
+the missing-value policy, and executed or skipped methods.}
 }}
 

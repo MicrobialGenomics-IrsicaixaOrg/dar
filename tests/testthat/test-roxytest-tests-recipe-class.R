@@ -2,7 +2,7 @@
 
 # File R/"recipe-class.R": @tests
 
-test_that("Function recipe() @ L159", {
+test_that("Function recipe() @ L166", {
   data(metaHIV_phy)
   data(GlobalPatterns, package = "mia")
 
@@ -51,7 +51,7 @@ test_that("Function recipe() @ L159", {
 })
 
 
-test_that("Function recipe_validity_problems() @ L298", {
+test_that("Function recipe_validity_problems() @ L306", {
   data(metaHIV_phy)
 
   complete_rec <- recipe(
@@ -103,7 +103,7 @@ test_that("Function recipe_validity_problems() @ L298", {
 })
 
 
-test_that("Function prep_recipe() @ L515", {
+test_that("Function prep_recipe() @ L536", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
 

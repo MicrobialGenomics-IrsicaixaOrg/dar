@@ -94,6 +94,12 @@ run_wilcox <- function(rec,
                        rarefy,
                        id) {
 
+  if (!is.null(get_model(rec))) {
+    return(run_wilcox_model(
+      rec, norm_method, max_significance, p_adj_method, rarefy
+    ))
+  }
+
   phy <- get_phy(rec) %>% use_rarefy(rarefy)
   tax_level <- get_tax(rec)
 

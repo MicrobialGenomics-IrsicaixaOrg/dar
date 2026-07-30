@@ -668,14 +668,21 @@ mutual_plt <- function(rec,
 .otu_effect_direction <- function(rec) {
   names(rec@results) %>% 
     purrr::map_dfr( ~ {
-      rec@results %>% 
-        purrr::pluck(.x, 1) %>% 
+      result <- if (is.null(get_model(rec))) {
+        rec@results %>% purrr::pluck(.x, 1)
+      } else {
+        flatten_model_output(rec@results[[.x]])
+      }
+      result %>%
         dplyr::filter(signif == TRUE) %>% 
         dplyr::mutate(
           effect = dplyr::if_else(effect > 0, "up", "down"), 
           method = .x
         ) %>% 
-        dplyr::select(taxa_id, taxa, comparison, effect, method)
+        dplyr::select(
+          taxa_id, taxa, comparison, effect, method,
+          dplyr::any_of(c("contrast_id", "contrast_type", "var"))
+        )
     }) 
 }
 
@@ -683,6 +690,17 @@ mutual_plt <- function(rec,
 #' @keywords internal
 #' @autoglobal
 .all_significant <- function(rec) {
+  if (!is.null(get_model(rec))) {
+    return(
+      .otu_effect_direction(rec) %>%
+        dplyr::group_by(
+          .data$taxa_id, .data$taxa, .data$contrast_id,
+          .data$comparison, .data$contrast_type, .data$var, .data$effect
+        ) %>%
+        dplyr::mutate(method_count = dplyr::n_distinct(.data$method)) %>%
+        dplyr::ungroup()
+    )
+  }
   dplyr::left_join(
     .otu_effect_direction(rec), 
     .otu_method_count(rec),

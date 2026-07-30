@@ -129,6 +129,12 @@ run_aldex <- function(rec,
                       rarefy,
                       id) {
 
+  if (!is.null(get_model(rec))) {
+    return(run_aldex_model(
+      rec, max_significance, mc.samples, denom, rarefy
+    ))
+  }
+
   vars <- get_var(rec)[[1]]
   tax_level <- get_tax(rec)[[1]]
   

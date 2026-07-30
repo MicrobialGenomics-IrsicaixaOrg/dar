@@ -167,13 +167,33 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
     )
   }
 
-  res <- 
-    .all_significant(rec) %>% 
-    dplyr::filter(.data$method %in% ids) %>% 
-    dplyr::left_join(df_weights, by = "method") %>% 
-    dplyr::mutate(method_count = .data$method_count * .data$ponderation) %>% 
-    dplyr::filter(.data$method_count >= count_cutoff) %>% 
-    dplyr::distinct(.data$taxa_id, .data$taxa)
+  significant <- .all_significant(rec) %>%
+    dplyr::filter(.data$method %in% ids) %>%
+    dplyr::left_join(df_weights, by = "method")
+
+  if (is.null(get_model(rec))) {
+    res <- significant %>%
+      dplyr::mutate(method_count = .data$method_count * .data$ponderation) %>%
+      dplyr::filter(.data$method_count >= count_cutoff) %>%
+      dplyr::distinct(.data$taxa_id, .data$taxa)
+  } else {
+    res <- significant %>%
+      dplyr::distinct(
+        .data$taxa_id, .data$taxa, .data$contrast_id, .data$comparison,
+        .data$contrast_type, .data$var, .data$effect, .data$method,
+        .keep_all = TRUE
+      ) %>%
+      dplyr::group_by(
+        .data$taxa_id, .data$taxa, .data$contrast_id, .data$comparison,
+        .data$contrast_type, .data$var, .data$effect
+      ) %>%
+      dplyr::summarise(
+        method_count = sum(.data$ponderation),
+        methods = paste(sort(unique(.data$method)), collapse = ", "),
+        .groups = "drop"
+      ) %>%
+      dplyr::filter(.data$method_count >= count_cutoff)
+  }
 
   cli::cli_inform(c(
     "i" = "Baking with {.field count_cutoff =} {.val {count_cutoff}}",

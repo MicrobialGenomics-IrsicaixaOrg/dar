@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.1
+Version: 1.9.2
 Date: 2026-07-29
 Authors@R: 
     c(person(given = "Francesc",
@@ -46,6 +46,7 @@ Imports:
     phyloseq,
     purrr,
     readr,
+    reformulas,
     rlang (>= 0.4.11),
     scales,
     stringr,
@@ -102,6 +103,8 @@ Collate:
     'maaslin3.R'
     'metagenomeseq.R'
     'misc.R'
+    'model-adapters.R'
+    'model.R'
     'phyloseq_qc.R'
     'pkg_check.R'
     'plot_methods.R'

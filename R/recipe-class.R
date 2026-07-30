@@ -8,6 +8,9 @@ methods::setClassUnion("phyloseq_or_null", c("phyloseq", "NULL"))
 #' @rdname Recipe-class
 methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 
+#' @rdname Recipe-class
+methods::setClassUnion("list_or_NULL", c("list", "NULL"))
+
 ## class def ----
 
 #' Recipe-class object
@@ -21,6 +24,8 @@ methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
 #' @slot tax_info A tibble that contains the current set of taxonomic levels
 #'   that will be used in the analysis.
 #' @slot steps List of step-class objects that will be used by DA.
+#' @slot model Optional centralized statistical model specification created by
+#'   [add_model()].
 #'
 #' @name Recipe-class
 #' @rdname Recipe-class
@@ -33,12 +38,14 @@ methods::setClass(
     phyloseq = "phyloseq_or_null",
     var_info = "tibble_or_NULL",
     tax_info = "tibble_or_NULL",
+    model = "list_or_NULL",
     steps = "list"
   ),
   prototype = list(
     phyloseq = NULL,
     var_info = NULL,
     tax_info = NULL,
+    model = NULL,
     steps = list()
   )
 )
@@ -227,6 +234,7 @@ recipe <- function(microbiome_object = NULL,
     phyloseq = microbiome_object,
     var_info = var_info,
     tax_info = tax_info,
+    model = NULL,
     steps = steps
   )
 }
@@ -359,6 +367,10 @@ recipe_validity_problems <- function(object) {
     }
   }
 
+  if (!is.null(object@model)) {
+    problems <- c(problems, model_validity_problems(object))
+  }
+
   if (length(problems) == 0) TRUE else problems
 }
 
@@ -428,6 +440,12 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
     )
   }
 
+  if (!is.null(get_model(object))) {
+    model_text <- paste(deparse(get_model(object)$formula), collapse = " ")
+    cat("Statistical model:\n\n")
+    cat(glue::glue("     {info()} {crayon::blue(model_text)}"), "\n\n")
+  }
+
   ## Steps
   if (length(object@steps) > 0) {
     cat("Preporcessing steps:\n\n")
@@ -472,6 +490,8 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
 #'
 #' @slot results Contains the results of all defined analysis in the Recipe.
 #' @slot bakes Contains the executed bakes.
+#' @slot execution Manifest containing resolved contrasts, samples removed by
+#'   the missing-value policy, and executed or skipped methods.
 #'
 #' @name PrepRecipe-class
 #' @rdname PrepRecipe-class
@@ -481,7 +501,8 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
 methods::setClass(
   Class = "PrepRecipe",
   contains = "Recipe",
-  slots = c(results = "list", bakes = "list")
+  slots = c(results = "list", bakes = "list", execution = "list"),
+  prototype = list(execution = list())
 )
 
 ## constructor ----
@@ -512,11 +533,12 @@ methods::setClass(
 #'   prep_recipe(rec, results = list(), bakes = list()),
 #'   regexp = "Missing_rank"
 #' )
-prep_recipe <- function(rec, results, bakes) {
+prep_recipe <- function(rec, results, bakes, execution = list()) {
   methods::new(
     Class = "PrepRecipe",
     results = results,
     bakes = bakes,
+    execution = execution,
     rec
   )
 }
@@ -613,6 +635,17 @@ methods::setMethod(
         
         cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
       })
+
+    if (length(object@execution$skipped_steps) > 0L &&
+        nrow(object@execution$skipped_steps) > 0L) {
+      cat("\nSkipped methods:\n\n")
+      purrr::pwalk(
+        object@execution$skipped_steps,
+        function(step_id, engine, compatible, reason, ...) {
+          cat(glue::glue("     {cross()} {step_id}: {reason}"), "\n")
+        }
+      )
+    }
     
     if (length(object@results) > 0) {
       n_overlap <-
@@ -623,8 +656,10 @@ methods::setMethod(
         nrow()
       
       cli::cat_line()
+      overlap_unit <- if (is.null(get_model(object))) "taxa" else
+        "taxon-contrast effects"
       cat(glue::glue(
-        "     {info()} {n_overlap} taxa are present in all tested methods"),
+        "     {info()} {n_overlap} {overlap_unit} are present in all tested methods"),
         "\n\n"
       )
     }

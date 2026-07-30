@@ -4,7 +4,7 @@
       rec <- step_maaslin(rec, id = "test_2")
     Message
       ! This step is already defined with the same parameters and will be skipped.
-      i `rec %>% step_test_2(min_abundance = 0, min_prevalence = 0.1, min_variance = 0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1, random_effects = NULL, correction = c('BH'), standardize = TRUE, reference = NULL, median_comparison_abundance = TRUE, rarefy = FALSE)`
+      i `rec %>% step_maaslin(min_abundance = 0, min_prevalence = 0.1, min_variance = 0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1, random_effects = NULL, correction = c('BH'), standardize = TRUE, reference = NULL, median_comparison_abundance = TRUE, rarefy = FALSE)`
 
 ---
 
