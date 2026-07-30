@@ -5,7 +5,7 @@
 test_that("Function add_var() @ L128", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
-
+  
   expect_warning(
     expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe"),
     class = "dar_warning_deprecated_selector"
@@ -16,10 +16,11 @@ test_that("Function add_var() @ L128", {
   )
 })
 
+
 test_that("Function add_tax() @ L174", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
-
+  
   expect_warning(
     expect_s4_class(add_tax(rec, "Species"), "Recipe"),
     class = "dar_warning_deprecated_selector"
@@ -43,7 +44,7 @@ test_that("Function prep() @ L315", {
     prep(invalid_rec, parallel = FALSE),
     class = "dar_error_invalid_recipe"
   )
-
+  
   empty_filter_rec <- suppressWarnings(recipe(
     metaHIV_phy,
     var_info = "RiskGroup2",
@@ -59,3 +60,4 @@ test_that("Function prep() @ L315", {
     class = "dar_error_preprocessing_step"
   )
 })
+

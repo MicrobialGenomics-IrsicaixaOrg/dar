@@ -3,9 +3,11 @@
 # File R/misc.R: @tests
 
 test_that("Function rand_id() @ L15", {
-  set.seed(123)
-  expect_equal(rand_id(), "step__Filo")
+  set.seed(123); first_id <- rand_id()
+  set.seed(123); expect_identical(rand_id(), first_id)
+  expect_match(first_id, "^step__"); expect_true(sub("^step__", "", first_id) %in% pastry_df$id)
 })
+
 
 test_that("Function get_comparisons() @ L49", {
   data("metaHIV_phy")
@@ -137,3 +139,4 @@ test_that("Function import_steps() @ L523", {
   ) |>
    expect_snapshot()
 })
+

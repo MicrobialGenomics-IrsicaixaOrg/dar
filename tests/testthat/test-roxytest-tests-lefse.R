@@ -4,7 +4,7 @@
 
 test_that("Function step_lefse() @ L83", {
   data(metaHIV_phy)
-
+  
   expect_condition(
    test <-
      suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
@@ -14,10 +14,10 @@ test_that("Function step_lefse() @ L83", {
      step_lefse(rarefy = FALSE),
    "lefse.*without rarefaction"
   )
-
+  
   expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe") |>
     expect_snapshot()
-
+  
   data(test_prep_rec)
   expect_error(step_lefse(test_prep_rec))
 })

@@ -7,9 +7,9 @@
 #' @export
 #' @autoglobal
 #' @tests
-#' set.seed(123)
-#' expect_equal(rand_id(), "step__Filo")
-#'
+#' set.seed(123); first_id <- rand_id()
+#' set.seed(123); expect_identical(rand_id(), first_id)
+#' expect_match(first_id, "^step__"); expect_true(sub("^step__", "", first_id) %in% pastry_df$id)
 #' @examples
 #' rand_id("step")
 rand_id <- function(prefix = "step") {

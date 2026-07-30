@@ -41,7 +41,7 @@ test_that("Function exclusion_plt() @ L156", {
 })
 
 
-test_that("Function abundance_plt() @ L274", {
+test_that("Function abundance_plt() @ L277", {
   data(test_rec)
   data(test_prep_rec)
   taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
@@ -77,7 +77,7 @@ test_that("Function abundance_plt() @ L274", {
 })
 
 
-test_that("Function mutual_plt() @ L374", {
+test_that("Function mutual_plt() @ L377", {
   data(test_rec)
   data(test_prep_rec)
   
