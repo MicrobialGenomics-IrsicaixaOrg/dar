@@ -5,6 +5,7 @@
 .DS_Store
 inst/doc
 docs
+/validation-results/
 /doc/
 /Meta/
 dar.Rproj

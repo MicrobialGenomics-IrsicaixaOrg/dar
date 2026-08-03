@@ -1,0 +1,207 @@
+name: Scientific validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Monte Carlo profile
+        required: true
+        default: quick
+        type: choice
+        options:
+          - quick
+          - full
+      engine:
+        description: Engine to validate
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - deseq
+          - aldex
+          - ancom
+          - corncob
+          - maaslin
+          - wilcox
+          - lefse
+  schedule:
+    - cron: "0 3 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  bioc-config:
+    runs-on: ubuntu-latest
+    outputs:
+      bioc: ${{ steps.config.outputs.bioc }}
+      r: ${{ steps.config.outputs.r }}
+      container: ${{ steps.config.outputs.container }}
+      matrix: ${{ steps.config.outputs.matrix }}
+      profile: ${{ steps.config.outputs.profile }}
+    steps:
+      - id: config
+        name: Resolve the active Bioconductor release
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SELECTED_ENGINE: ${{ inputs.engine }}
+          SELECTED_PROFILE: ${{ inputs.profile }}
+        run: |
+          config=$(curl -fsSL https://bioconductor.org/config.yaml)
+          value() {
+            echo "$config" | awk -F': ' -v key="$1" '$1 == key { gsub(/"/, "", $2); print $2; exit }'
+          }
+          bioc=$(value "release_version")
+          r=$(value "r_version_associated_with_release" | grep -Eo '^[0-9]+\.[0-9]+')
+          major=$(echo "$bioc" | cut -d. -f1)
+          minor=$(echo "$bioc" | cut -d. -f2)
+          if [[ -z "$bioc" || -z "$r" ]]; then
+            echo "Unable to resolve the active Bioconductor release"
+            exit 1
+          fi
+          echo "bioc=$bioc" >> "$GITHUB_OUTPUT"
+          echo "r=$r" >> "$GITHUB_OUTPUT"
+          echo "container=bioconductor/bioconductor_docker:RELEASE_${major}_${minor}" >> "$GITHUB_OUTPUT"
+          if [[ "$EVENT_NAME" == "schedule" || "$SELECTED_ENGINE" == "all" ]]; then
+            engines='["deseq","aldex","ancom","corncob","maaslin","wilcox","lefse"]'
+          else
+            engines="[\"$SELECTED_ENGINE\"]"
+          fi
+          if [[ "$EVENT_NAME" == "schedule" ]]; then
+            profile="full"
+          else
+            profile="$SELECTED_PROFILE"
+          fi
+          echo "matrix={\"engine\":$engines}" >> "$GITHUB_OUTPUT"
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+
+  validate:
+    needs: bioc-config
+    runs-on: ubuntu-latest
+    container: ${{ needs.bioc-config.outputs.container }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.bioc-config.outputs.matrix) }}
+    env:
+      R_LIBS_USER: /__w/_temp/ScientificValidationLibrary
+      VALIDATION_PROFILE: ${{ needs.bioc-config.outputs.profile }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create validation library
+        shell: bash
+        run: mkdir -p "$R_LIBS_USER"
+
+      - name: Restore validation package cache
+        uses: actions/cache@v5
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: scientific-validation-${{ matrix.engine }}-R${{ needs.bioc-config.outputs.r }}-Bioc${{ needs.bioc-config.outputs.bioc }}-${{ hashFiles('DESCRIPTION', 'dev/scientific-validation/profiles.csv') }}
+
+      - name: Install validation dependencies
+        shell: Rscript {0}
+        run: |
+          install.packages(c("remotes", "pkgload", "testthat"))
+          remotes::install_cran("BiocManager")
+          BiocManager::install(
+            version = "${{ needs.bioc-config.outputs.bioc }}",
+            ask = FALSE,
+            force = TRUE
+          )
+          remotes::install_local(
+            dependencies = c("Depends", "Imports", "LinkingTo"),
+            build_vignettes = FALSE,
+            upgrade = "never"
+          )
+
+      - name: Apply the temporary CVXR workaround
+        if: matrix.engine == 'ancom'
+        shell: Rscript {0}
+        run: |
+          remotes::install_version(
+            "CVXR", version = "1.0.15",
+            repos = "https://cran.rstudio.com/", upgrade = "never"
+          )
+
+      - name: Install engine dependencies
+        shell: Rscript {0}
+        run: |
+          source("dev/scientific-validation/R/engines.R")
+          BiocManager::install(
+            validation_engine("${{ matrix.engine }}")$packages,
+            ask = FALSE,
+            update = FALSE
+          )
+
+      - name: Apply the temporary Rfast workaround
+        if: matrix.engine == 'aldex'
+        shell: Rscript {0}
+        run: |
+          remotes::install_cran(
+            "Rfast", repos = "https://cloud.r-project.org",
+            type = "source", upgrade = "never", force = TRUE
+          )
+          library(Rfast)
+
+      - name: Test validation infrastructure
+        shell: Rscript {0}
+        run: source("dev/scientific-validation/tests/testthat.R")
+
+      - name: Run scientific validation
+        shell: bash
+        run: |
+          Rscript --vanilla dev/scientific-validation/run-validation.R \
+            --profile="$VALIDATION_PROFILE" \
+            --engine="${{ matrix.engine }}" \
+            --scenario=all \
+            --output_dir="validation-results/${{ matrix.engine }}" \
+            --strict=true
+
+      - name: Upload engine artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scientific-validation-${{ matrix.engine }}
+          path: validation-results/${{ matrix.engine }}
+          if-no-files-found: warn
+          retention-days: 30
+
+  report:
+    needs: [bioc-config, validate]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ needs.bioc-config.outputs.r }}
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Install report dependencies
+        shell: Rscript {0}
+        run: install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown"))
+
+      - name: Download engine artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: scientific-validation-*
+          path: validation-artifacts
+
+      - name: Aggregate and render the scientific report
+        shell: bash
+        run: |
+          Rscript --vanilla dev/scientific-validation/aggregate-validation.R \
+            validation-artifacts validation-report
+
+      - name: Upload aggregate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scientific-validation-report
+          path: validation-report
+          if-no-files-found: error
+          retention-days: 30
