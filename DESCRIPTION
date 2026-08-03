@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.6
+Version: 1.9.7
 Date: 2026-08-03
 Authors@R: 
     c(person(given = "Francesc",
@@ -109,11 +109,11 @@ Collate:
     'misc.R'
     'model-adapters.R'
     'model.R'
-    'phyloseq_qc.R'
     'pkg_check.R'
     'plot_methods.R'
     'rarefaction.R'
     'recipe-utils.R'
+    'recipe_qc.R'
     'result-contract.R'
     'steps_and_checks.R'
     'subset_taxa.R'

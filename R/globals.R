@@ -8,7 +8,6 @@ utils::globalVariables(c(
   # <step_to_expr>
   # <find_intersections>
   # <import_steps>
-  # <.zero_prepro>
   # <recipes_pkg_check>
   # <corr_heatmap>
   # <mutual_plt>
@@ -25,10 +24,6 @@ utils::globalVariables(c(
   "coef",
   # <mutual_plt>
   "comparison",
-  # <.count_summary>
-  "count_max",
-  # <.count_summary>
-  "count_mean",
   # <run_aldex>
   # <mutual_plt>
   "effect",
@@ -48,8 +43,6 @@ utils::globalVariables(c(
   "Kingdom",
   # <ancom_stats_tbl>
   "lfc",
-  # <.count_summary>
-  "lib_size",
   # <run_deseq>
   "log2FoldChange",
   # <exclusion_plt>
@@ -59,12 +52,8 @@ utils::globalVariables(c(
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   "method_count",
-  # <.zero_stats>
-  "n_zero",
   # <find_intersections>
   "name",
-  # <.zero_groups>
-  "no_zero",
   # <run_lefse>
   "otu",
   # <rm_zero_variance>
@@ -84,7 +73,6 @@ utils::globalVariables(c(
   "qval_individual",
   # <prepro_lefse>
   "RTC",
-  # <.count_summary>
   # <.abundance_heatmap>
   # <sample_data>
   # <run_wilcox>
@@ -103,7 +91,6 @@ utils::globalVariables(c(
   # <run_lefse>
   # <run_maaslin>
   # <find_intersections>
-  # <.zero_groups>
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
@@ -119,9 +106,6 @@ utils::globalVariables(c(
   # <rm_zero_variance>
   # <kruskal_test>
   # <find_intersections>
-  # <.zero_stats>
-  # <.zero_groups>
-  # <.count_summary>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <.otu_method_count>
