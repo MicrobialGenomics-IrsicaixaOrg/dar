@@ -26,3 +26,30 @@ testthat::test_that("per-engine artifacts aggregate without mixing rows", {
   testthat::expect_setequal(aggregate$artifacts$results$engine, c("deseq", "wilcox"))
   testthat::expect_true(file.exists(file.path(output, "validation-results.rds")))
 })
+
+testthat::test_that("report aggregation records failures without masking rendering", {
+  fixture <- validation_metric_fixture()
+  input <- tempfile("dar-validation-failing-input-")
+  runs <- data.frame(
+    engine = "ancom", scenario = "cross_sectional_signal", replicate = 1L,
+    status = "engine_error", reason = "runtime failure", warnings = "",
+    duration_seconds = 1
+  )
+  gates <- data.frame(status = "fail")
+  write_validation_artifacts(
+    file.path(input, "ancom"), fixture$results, runs, fixture$truth,
+    data.frame(), data.frame(), data.frame(), gates
+  )
+
+  relaxed <- aggregate_validation_artifacts(
+    input, tempfile("dar-validation-relaxed-"), render = FALSE, strict = FALSE
+  )
+  strict <- aggregate_validation_artifacts(
+    input, tempfile("dar-validation-strict-"), render = FALSE, strict = TRUE
+  )
+
+  testthat::expect_true(relaxed$engine_failure)
+  testthat::expect_true(relaxed$gate_failure)
+  testthat::expect_identical(relaxed$status, 0L)
+  testthat::expect_identical(strict$status, 1L)
+})

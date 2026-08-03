@@ -290,6 +290,20 @@ test_that("non-estimable fixed designs and empty interaction cells fail", {
   expect_error(dar:::resolve_model(missing_cell), class = "dar_error_non_estimable_model")
 })
 
+test_that("saturated random-slope designs fail before engine execution", {
+  rec <- recipe(make_longitudinal_phy()) |>
+    add_model(
+      ~ condition * time + batch + (time | subject),
+      targets = "condition", tax_level = "Species", time = "time"
+    )
+
+  expect_error(
+    dar:::resolve_model(rec),
+    "requires 12 random effects for 12 observations",
+    class = "dar_error_non_estimable_model"
+  )
+})
+
 test_that("capability checks skip only unsupported statistical designs", {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(

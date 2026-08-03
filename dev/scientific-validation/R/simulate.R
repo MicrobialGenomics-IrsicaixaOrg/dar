@@ -111,15 +111,8 @@ simulate_validation_scenario <- function(
       nrow = length(subject_levels),
       dimnames = list(subject_levels, rownames(coefficients))
     )
-    random_slopes <- matrix(
-      stats::rnorm(length(subject_levels) * n_taxa, sd = 0.12),
-      nrow = length(subject_levels),
-      dimnames = list(subject_levels, rownames(coefficients))
-    )
     subject_index <- match(metadata_complete$subject, subject_levels)
-    numeric_time <- as.numeric(as.character(metadata_complete$time))
-    latent <- latent + random_intercepts[subject_index, , drop = FALSE] +
-      random_slopes[subject_index, , drop = FALSE] * numeric_time
+    latent <- latent + random_intercepts[subject_index, , drop = FALSE]
   }
 
   latent <- latent + matrix(

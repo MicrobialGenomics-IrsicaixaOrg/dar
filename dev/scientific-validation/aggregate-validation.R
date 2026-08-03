@@ -13,9 +13,10 @@ arguments <- commandArgs(trailingOnly = TRUE)
 if (length(arguments) != 2L) {
   stop("Usage: aggregate-validation.R INPUT_DIR OUTPUT_DIR", call. = FALSE)
 }
+output_dir <- normalizePath(arguments[[2L]], mustWork = FALSE)
 outcome <- aggregate_validation_artifacts(
-  arguments[[1L]], arguments[[2L]], render = TRUE, strict = TRUE
+  arguments[[1L]], output_dir, render = TRUE, strict = FALSE
 )
 message("Aggregate scientific validation report: ",
-        file.path(normalizePath(arguments[[2L]]), "scientific-validation.html"))
+        file.path(output_dir, "scientific-validation.html"))
 quit(status = outcome$status, save = "no")

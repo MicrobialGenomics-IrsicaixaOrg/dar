@@ -563,6 +563,18 @@ resolve_model <- function(rec, check_design = TRUE) {
           class = "dar_error_non_estimable_model"
         )
       }
+      random_formula <- stats::as.formula(call("~", term[[2]]))
+      random_matrix <- stats::model.matrix(random_formula, data = metadata)
+      random_effects <- ncol(random_matrix) * length(group_sizes)
+      if (nrow(metadata) <= random_effects) {
+        cli::cli_abort(
+          c(
+            "x" = "Random-effects term {.code {deparse(term)}} is not estimable.",
+            "i" = "It requires {random_effects} random effects for {nrow(metadata)} observations."
+          ),
+          class = "dar_error_non_estimable_model"
+        )
+      }
       slopes <- setdiff(all.vars(term[[2]]), "1")
       for (slope in slopes) {
         distinct_per_group <- tapply(

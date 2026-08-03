@@ -11,7 +11,7 @@ validation_engine_registry <- function() {
       truth_multiplier = NA_real_, comparable = FALSE
     ),
     ancom = list(
-      packages = c("ANCOMBC", "mia"),
+      packages = c("ANCOMBC", "mia", "microbiome"),
       confounders = TRUE, time_interaction = TRUE, random = TRUE,
       truth_multiplier = 1, comparable = TRUE
     ),

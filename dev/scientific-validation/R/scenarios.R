@@ -66,7 +66,7 @@ validation_scenario_registry <- function() {
       missing = FALSE
     ),
     longitudinal_random_effect = list(
-      formula = ~ condition * time + batch + (time | subject),
+      formula = ~ condition * time + batch + (1 | subject),
       time = "time",
       contrasts = "all",
       na_action = "error",

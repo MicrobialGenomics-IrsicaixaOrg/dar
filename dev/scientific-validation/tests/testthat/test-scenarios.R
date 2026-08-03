@@ -66,6 +66,18 @@ testthat::test_that("missing and unbalanced data retain an estimable cohort", {
   )
 })
 
+testthat::test_that("the random-effect validation scenario is estimable", {
+  simulation <- simulate_validation_scenario("longitudinal_random_effect", 1L)
+  resolved <- dar:::resolve_model(simulation$recipe)
+
+  testthat::expect_match(
+    paste(deparse(resolved$formula), collapse = " "),
+    "\\(1 \\| subject\\)"
+  )
+  testthat::expect_length(resolved$random_terms, 1L)
+  testthat::expect_equal(simulation$manifest$samples, 72L)
+})
+
 testthat::test_that("quick and full profiles cover every registered scenario", {
   scenarios <- names(validation_scenario_registry())
   testthat::expect_setequal(names(validation_profile("quick")$replicates), scenarios)

@@ -9,6 +9,13 @@ testthat::test_that("engine capabilities match centralized model support", {
   testthat::expect_false(validation_engine_compatible(complex, "deseq")$compatible)
 })
 
+testthat::test_that("ANCOM installs every runtime validation dependency", {
+  testthat::expect_contains(
+    validation_engine("ancom")$packages,
+    "microbiome"
+  )
+})
+
 testthat::test_that("normalization preserves unique scientific keys", {
   simulation <- simulate_validation_scenario("cross_sectional_signal", 1L)
   raw <- data.frame(
