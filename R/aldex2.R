@@ -51,6 +51,9 @@
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native `clr`,
+#'   `fit`, or `effect` stage. Arguments managed by dar or exposed above cannot
+#'   be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -103,7 +106,8 @@ step_aldex <- function(rec,
                        mc.samples = 128,
                        denom = "all",
                        rarefy = FALSE,
-                       id = rand_id("aldex")) {
+                       id = rand_id("aldex"),
+                       engine_args = list()) {
   
   check_recipe(rec)
   recipes_pkg_check(c("bioc::ALDEx2"), "step_aldex()")
@@ -116,7 +120,8 @@ step_aldex <- function(rec,
       mc.samples = mc.samples,
       denom = denom,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("aldex", engine_args)
     )
   )
 }
@@ -129,11 +134,16 @@ run_aldex <- function(rec,
                       mc.samples,
                       denom,
                       rarefy,
-                      id) {
+                      id,
+                      engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "aldex", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_aldex_model(
-      rec, max_significance, mc.samples, denom, rarefy
+      rec, max_significance, mc.samples, denom, rarefy, engine_args
     ))
   }
 

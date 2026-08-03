@@ -31,6 +31,9 @@
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed.
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native
+#'   `transform` or `fit` stage. Arguments managed by dar or exposed above
+#'   cannot be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -88,7 +91,8 @@ step_lefse <- function(rec,
                        assay = 1L,
                        trim.names = FALSE,
                        rarefy = TRUE,
-                       id = rand_id("lefse")) {
+                       id = rand_id("lefse"),
+                       engine_args = list()) {
 
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")
@@ -110,7 +114,8 @@ step_lefse <- function(rec,
       assay = assay,
       trim.names = trim.names,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("lefse", engine_args)
     )
   )
 }
@@ -126,12 +131,17 @@ run_lefse <- function(rec,
                       assay,
                       trim.names,
                       rarefy,
-                      id) {
+                      id,
+                      engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "lefse", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_lefse_model(
       rec, kruskal.threshold, wilcox.threshold, lda.threshold,
-      assay, trim.names, rarefy
+      assay, trim.names, rarefy, engine_args
     ))
   }
 

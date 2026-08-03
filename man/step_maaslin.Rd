@@ -18,7 +18,8 @@ step_maaslin(
   reference = NULL,
   median_comparison_abundance = TRUE,
   rarefy = FALSE,
-  id = rand_id("maaslin")
+  id = rand_id("maaslin"),
+  engine_args = list()
 )
 }
 \arguments{
@@ -58,6 +59,10 @@ the features. Recommended for relative abundance (default: TRUE).}
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{engine_args}{Named lists of advanced arguments for the native \code{fit} or
+\code{contrast} stage. Arguments managed by dar or exposed above cannot be
+overridden.}
 }
 \value{
 An object of class \code{Recipe}

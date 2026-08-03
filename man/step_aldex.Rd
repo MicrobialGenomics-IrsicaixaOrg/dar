@@ -10,7 +10,8 @@ step_aldex(
   mc.samples = 128,
   denom = "all",
   rarefy = FALSE,
-  id = rand_id("aldex")
+  id = rand_id("aldex"),
+  engine_args = list()
 )
 }
 \arguments{
@@ -51,6 +52,10 @@ normalization procedures, which is why a single value for the sample.size
 is expected. If 'no_seed', rarefaction is performed without a set seed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{engine_args}{Named lists of advanced arguments for the native \code{clr},
+\code{fit}, or \code{effect} stage. Arguments managed by dar or exposed above cannot
+be overridden.}
 }
 \value{
 An object of class \code{Recipe}

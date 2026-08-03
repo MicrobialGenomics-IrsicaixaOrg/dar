@@ -13,7 +13,8 @@ step_lefse(
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
-  id = rand_id("lefse")
+  id = rand_id("lefse"),
+  engine_args = list()
 )
 }
 \arguments{
@@ -47,6 +48,10 @@ normalization procedures, which is why a single value for the sample.size
 is expected. If 'no_seed', rarefaction is performed without a set seed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{engine_args}{Named lists of advanced arguments for the native
+\code{transform} or \code{fit} stage. Arguments managed by dar or exposed above
+cannot be overridden.}
 }
 \value{
 An object of class \code{Recipe}

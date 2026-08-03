@@ -114,6 +114,12 @@ tidy_results(da_results) |>
     adj_p_value, significant, method, step_id
   )
 
+## Advanced native options remain explicit and reproducible
+rec <- step_deseq(
+  rec,
+  engine_args = list(fit = list(minReplicatesForReplace = Inf))
+)
+
 ## Consensus strategy
 n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)

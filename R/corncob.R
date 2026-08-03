@@ -39,6 +39,8 @@
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native `fit`
+#'   stage. Arguments managed by dar or exposed above cannot be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -93,7 +95,8 @@ step_corncob <- function(rec,
                          fdr = "fdr",
                          log2FC = 0,
                          rarefy = FALSE,
-                         id = rand_id("corncob")) {
+                         id = rand_id("corncob"),
+                         engine_args = list()) {
   
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_corncob(), "step_corncob()")
@@ -115,7 +118,8 @@ step_corncob <- function(rec,
       fdr = fdr,
       log2FC = log2FC,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("corncob", engine_args)
     )
   )
 }
@@ -137,7 +141,12 @@ run_corncob <- function(rec,
                         fdr,
                         log2FC,
                         rarefy,
-                        id) {
+                        id,
+                        engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "corncob", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_corncob_model(
@@ -149,7 +158,8 @@ run_corncob <- function(rec,
       fdr_cutoff = fdr_cutoff,
       fdr = fdr,
       log2FC = log2FC,
-      rarefy = rarefy
+      rarefy = rarefy,
+      engine_args = engine_args
     ))
   }
   
