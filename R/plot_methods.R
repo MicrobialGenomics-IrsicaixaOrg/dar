@@ -668,25 +668,18 @@ mutual_plt <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.otu_effect_direction <- function(rec) {
-  names(rec@results) %>% 
-    purrr::map_dfr( ~ {
-      result <- if (is.null(get_model(rec))) {
-        rec@results %>% purrr::pluck(.x, 1)
-      } else {
-        flatten_model_output(rec@results[[.x]])
-      }
-      result %>%
-        dplyr::filter(signif == TRUE) %>% 
-        dplyr::mutate(
-          effect = dplyr::if_else(effect > 0, "up", "down"), 
-          method = .x
-        ) %>% 
-        dplyr::select(
-          taxa_id, taxa, comparison, effect, method,
-          dplyr::any_of(c("contrast_id", "contrast_type", "var"))
-        )
-    }) 
+.otu_effect_direction <- function(rec, steps = steps_ids(rec, "da")) {
+  tidy_results(rec, steps = steps, significant_only = TRUE) %>%
+    dplyr::transmute(
+      taxa_id = .data$taxa_id,
+      taxa = .data$taxa,
+      comparison = .data$comparison,
+      effect = dplyr::if_else(.data$effect_size > 0, "up", "down"),
+      method = .data$step_id,
+      contrast_id = .data$contrast_id,
+      contrast_type = .data$contrast_type,
+      var = .data$var
+    )
 }
 
 #' @noRd
@@ -715,25 +708,12 @@ mutual_plt <- function(rec,
 #' @keywords internal
 #' @autoglobal
 .all_stats <- function(rec) {
-  rec@results %>%
-    names() %>%
-    purrr::map_dfr(function(step_id) {
-      result <- if (is.null(get_model(rec))) {
-        rec@results[[step_id]][[1]]
-      } else {
-        flatten_model_output(rec@results[[step_id]])
-      }
-      adjusted_column <- intersect(
-        c("padj", "adjp", "pajd"),
-        names(result)
-      )
-      stats <- result %>%
-        dplyr::select(taxa_id, comparison, effect_v = effect)
-      if (length(adjusted_column) > 0L) {
-        stats <- stats %>%
-          dplyr::mutate(padj = result[[adjusted_column[[1]]]])
-      }
-      stats %>%
-        dplyr::mutate(method = step_id)
-    })
+  tidy_results(rec) %>%
+    dplyr::transmute(
+      taxa_id = .data$taxa_id,
+      comparison = .data$comparison,
+      effect_v = .data$effect_size,
+      padj = .data$adj_p_value,
+      method = .data$step_id
+    )
 }

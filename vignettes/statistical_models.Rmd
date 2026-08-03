@@ -95,6 +95,33 @@ Prepared modeled results contain `contrast_id`, `comparison`, `contrast_type`
 and `var`. Consensus operations group by `contrast_id` and effect direction, so
 different longitudinal hypotheses cannot contribute to the same vote.
 
+## A uniform tidy result contract
+
+`tidy_results()` exposes the same columns for every DA engine while preserving
+the engine-specific tables in `fit@results`. The `method` column identifies the
+stable engine (`deseq`, `aldex`, and so on), whereas `step_id` identifies the
+configured instance and therefore distinguishes repeated configurations of one
+engine.
+
+```{r tidy-results, eval=FALSE}
+results <- tidy_results(
+  fit,
+  steps = c("ancom__primary", "maaslin__sensitivity"),
+  significant_only = TRUE
+)
+
+results |>
+  dplyr::select(
+    taxa_id, contrast_id, comparison, effect_size, effect_metric,
+    adj_p_value, significant, method, step_id
+  )
+```
+
+Effect values retain their native scientific scale. Use `effect_metric` when
+interpreting them: for example, a DESeq2 log2 fold change and an ALDEx2
+standardized CLR effect are labelled explicitly but are not converted to a
+common scale and should not be compared numerically.
+
 `export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
 level, time column, references, contrast mode, missing-value policy and
 time-level limit. Files created by older versions without a model continue to
@@ -120,4 +147,8 @@ current <- recipe(phy) |>
     targets = "condition",
     tax_level = "Species"
   )
+```
+
+```{r session-info}
+sessionInfo()
 ```

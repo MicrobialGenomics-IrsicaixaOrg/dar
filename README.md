@@ -107,6 +107,13 @@ da_results
 #> 
 #>      ℹ 35 taxa are present in all tested methods
 
+## Uniform, reproducible results across engines
+tidy_results(da_results) |>
+  dplyr::select(
+    taxa_id, comparison, effect_size, effect_metric,
+    adj_p_value, significant, method, step_id
+  )
+
 ## Consensus strategy
 n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)

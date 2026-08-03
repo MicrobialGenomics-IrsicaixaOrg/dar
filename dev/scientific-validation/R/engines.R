@@ -3,44 +3,37 @@ validation_engine_registry <- function() {
     deseq = list(
       packages = c("DESeq2", "SummarizedExperiment"),
       confounders = TRUE, time_interaction = TRUE, random = FALSE,
-      effect_metric = "log2_fold_change", truth_multiplier = 1 / log(2),
-      comparable = TRUE
+      truth_multiplier = 1 / log(2), comparable = TRUE
     ),
     aldex = list(
       packages = "ALDEx2",
       confounders = TRUE, time_interaction = TRUE, random = FALSE,
-      effect_metric = "standardized_clr_effect", truth_multiplier = NA_real_,
-      comparable = FALSE
+      truth_multiplier = NA_real_, comparable = FALSE
     ),
     ancom = list(
       packages = c("ANCOMBC", "mia"),
       confounders = TRUE, time_interaction = TRUE, random = TRUE,
-      effect_metric = "bias_corrected_log_fold_change", truth_multiplier = 1,
-      comparable = TRUE
+      truth_multiplier = 1, comparable = TRUE
     ),
     corncob = list(
       packages = "corncob",
       confounders = TRUE, time_interaction = TRUE, random = FALSE,
-      effect_metric = "logit_mean_abundance", truth_multiplier = NA_real_,
-      comparable = FALSE
+      truth_multiplier = NA_real_, comparable = FALSE
     ),
     maaslin = list(
       packages = "maaslin3",
       confounders = TRUE, time_interaction = TRUE, random = TRUE,
-      effect_metric = "transformed_abundance_coefficient",
       truth_multiplier = NA_real_, comparable = FALSE
     ),
     wilcox = list(
       packages = c("microbiome", "rstatix"),
       confounders = FALSE, time_interaction = FALSE, random = FALSE,
-      effect_metric = "median_compositional_difference",
       truth_multiplier = NA_real_, comparable = FALSE
     ),
     lefse = list(
       packages = c("lefser", "SummarizedExperiment"),
       confounders = FALSE, time_interaction = FALSE, random = FALSE,
-      effect_metric = "lda_score", truth_multiplier = NA_real_,
-      comparable = FALSE
+      truth_multiplier = NA_real_, comparable = FALSE
     )
   )
 }
@@ -111,9 +104,11 @@ validation_numeric_column <- function(result, candidates) {
   as.numeric(result[[candidate]])
 }
 
-normalize_validation_result <- function(result, engine, simulation) {
-  result <- dar:::flatten_model_output(result)
-  required <- c("taxa_id", "contrast_id", "effect")
+normalize_validation_result <- function(result, engine, simulation,
+                                        raw_result = NULL) {
+  required <- c(
+    "taxa_id", "contrast_id", "effect_size", "effect_metric", "adj_p_value"
+  )
   if (!all(required %in% names(result))) {
     stop(
       "Engine result is missing required modeled columns: ",
@@ -126,22 +121,34 @@ normalize_validation_result <- function(result, engine, simulation) {
     stop("Engine result contains duplicated taxon-contrast keys.", call. = FALSE)
   }
   config <- validation_engine(engine)
-  standard_error <- validation_numeric_column(
-    result,
-    c("lfcSE", "stderr", "std_error", "se")
-  )
+  standard_error <- rep(NA_real_, nrow(result))
+  if (!is.null(raw_result)) {
+    raw_result <- dar:::flatten_model_output(raw_result)
+    raw_standard_error <- validation_numeric_column(
+      raw_result, c("lfcSE", "stderr", "std_error", "se")
+    )
+    raw_keys <- data.frame(
+      taxa_id = as.character(raw_result$taxa_id),
+      contrast_id = as.character(raw_result$contrast_id),
+      std_error = raw_standard_error,
+      stringsAsFactors = FALSE
+    )
+    matched <- match(
+      paste(result$taxa_id, result$contrast_id, sep = "\r"),
+      paste(raw_keys$taxa_id, raw_keys$contrast_id, sep = "\r")
+    )
+    standard_error <- raw_keys$std_error[matched]
+  }
   data.frame(
     engine = engine,
     scenario = simulation$manifest$scenario,
     replicate = simulation$manifest$replicate,
     taxa_id = as.character(result$taxa_id),
     contrast_id = as.character(result$contrast_id),
-    effect = as.numeric(result$effect),
-    padj = validation_numeric_column(
-      result, c("padj", "adj_p_value", "qval", "adjp")
-    ),
+    effect = as.numeric(result$effect_size),
+    padj = as.numeric(result$adj_p_value),
     std_error = standard_error,
-    effect_metric = config$effect_metric,
+    effect_metric = as.character(result$effect_metric),
     truth_multiplier = config$truth_multiplier,
     comparable = config$comparable,
     stringsAsFactors = FALSE
@@ -195,7 +202,10 @@ run_validation_case <- function(simulation, engine, profile) {
         prepared <- dar::prep(rec, parallel = FALSE)
         step_id <- paste0(engine, "__scientific_validation")
         normalize_validation_result(
-          prepared@results[[step_id]], engine, simulation
+          dar::tidy_results(prepared, steps = step_id),
+          engine,
+          simulation,
+          raw_result = prepared@results[[step_id]]
         )
       },
       warning = function(cnd) {

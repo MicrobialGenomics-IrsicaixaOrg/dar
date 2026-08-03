@@ -74,6 +74,13 @@ rec
 da_results <- prep(rec, parallel = TRUE)
 da_results
 
+## Uniform, reproducible results across engines
+tidy_results(da_results) |>
+  dplyr::select(
+    taxa_id, comparison, effect_size, effect_metric,
+    adj_p_value, significant, method, step_id
+  )
+
 ## Consensus strategy
 n_methods <- 2
 da_results <- bake(da_results, count_cutoff = n_methods)
@@ -94,4 +101,3 @@ cool(da_results)
 ## Code of Conduct
 
 Please note that the dar project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
-
