@@ -33,7 +33,7 @@ rec <- recipe(metaHIV_phy) |>
 get_model(rec)
 #> $formula
 #> ~RiskGroup2
-#> <environment: 0x56410772a998>
+#> <environment: 0x5556cfec3160>
 #> 
 #> $targets
 #> [1] "RiskGroup2"
