@@ -2,7 +2,7 @@
 
 # File R/deseq2.R: @tests
 
-test_that("Function step_deseq() @ L88", {
+test_that("Function step_deseq() @ L100", {
   data(metaHIV_phy)
   
   test <-

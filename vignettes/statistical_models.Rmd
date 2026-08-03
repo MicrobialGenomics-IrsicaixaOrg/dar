@@ -34,7 +34,8 @@ rec <- recipe(phy) |>
   ) |>
   step_deseq() |>
   step_aldex() |>
-  step_ancom()
+  step_ancom() |>
+  step_linda()
 
 get_model(rec)
 fit <- prep(rec)
@@ -62,6 +63,7 @@ longitudinal <- recipe(longitudinal_phy) |>
     na_action = "drop"
   ) |>
   step_ancom() |>
+  step_linda() |>
   step_maaslin()
 
 fit <- prep(longitudinal)
@@ -82,6 +84,7 @@ difference-in-differences. More than 12 time points requires an explicit larger
 | ALDEx2 | yes | yes | no |
 | ANCOM-BC2 | yes | yes | yes |
 | corncob | yes | yes | no |
+| LinDA | yes | yes | yes |
 | MaAsLin3 | yes | yes | yes |
 | Wilcoxon | no | no | no |
 | LEfSe | no | no | no |
@@ -124,7 +127,7 @@ common scale and should not be compared numerically.
 
 ## Advanced native-engine arguments
 
-The seven DA steps accept `engine_args`, a named list grouped by native-call
+The eight DA steps accept `engine_args`, a named list grouped by native-call
 stage. This keeps advanced settings attached to the configured step and avoids
 an ambiguous `...`. For example:
 
@@ -144,12 +147,12 @@ rec |>
 ```
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr`, `fit`, and `effect` for ALDEx2; `fit` for ANCOM-BC2 and
-corncob; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon; and
-`transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths and
-arguments already exposed by each dar wrapper are protected. Non-empty
-`engine_args` require a centralized model. A configured stage that is not used
-by the selected execution route is reported as an error.
+DESeq2; `clr`, `fit`, and `effect` for ALDEx2; `fit` for ANCOM-BC2,
+corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon;
+and `transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths
+and arguments already exposed by each dar wrapper are protected. Non-empty
+`engine_args` require a centralized model. A configured stage that is not
+used by the selected execution route is reported as an error.
 
 `export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
 level, time column, references, contrast mode, missing-value policy and

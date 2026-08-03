@@ -2,7 +2,7 @@
 
 # File R/aldex2.R: @tests
 
-test_that("Function step_aldex() @ L101", {
+test_that("Function step_aldex() @ L104", {
   data(metaHIV_phy)
   
   test <-

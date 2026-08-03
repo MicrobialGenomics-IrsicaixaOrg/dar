@@ -1,4 +1,4 @@
-# Function step_maaslin() @ L79
+# Function step_maaslin() @ L82
 
     Code
       expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe")

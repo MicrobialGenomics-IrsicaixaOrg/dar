@@ -118,3 +118,15 @@ expect_model_directions <- function(
 
   invisible(result)
 }
+
+expect_complete_model_result <- function(result, rec) {
+  table <- dar:::flatten_model_output(result)
+  testthat::expect_setequal(
+    unique(table$contrast_id),
+    dar:::resolve_model(rec)$contrast_plan$contrast_id
+  )
+  testthat::expect_true(all(c(
+    "taxa_id", "effect", "padj", "signif", "contrast_id", "comparison",
+    "contrast_type", "var"
+  ) %in% names(table)))
+}

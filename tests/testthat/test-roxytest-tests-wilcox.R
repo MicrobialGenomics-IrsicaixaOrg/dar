@@ -2,7 +2,7 @@
 
 # File R/wilcox.R: @tests
 
-test_that("Function step_wilcox() @ L51", {
+test_that("Function step_wilcox() @ L53", {
   data(metaHIV_phy)
   
   test <-

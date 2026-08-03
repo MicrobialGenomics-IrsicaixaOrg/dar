@@ -2,7 +2,7 @@
 
 # File R/corncob.R: @tests
 
-test_that("Function step_corncob() @ L82", {
+test_that("Function step_corncob() @ L84", {
   data(metaHIV_phy)
   
   test <-

@@ -115,6 +115,10 @@ da_result_registry <- function() {
       effect_metric = "logit_mean_abundance_coefficient",
       p_value = c("pval"), adj_p_value = c("padj")
     ),
+    linda = list(
+      effect_metric = "bias_corrected_log2_fold_change",
+      p_value = c("pvalue"), adj_p_value = c("padj")
+    ),
     maaslin = list(
       effect_metric = "transformed_abundance_coefficient",
       p_value = c("pval"), adj_p_value = c("padj", "qval")

@@ -433,6 +433,106 @@ run_corncob_model <- function(rec, phi.formula, link, phi.link,
   list(model = out)
 }
 
+# LINDA -----------------------------------------------------------------------
+
+#' Resolve a LinDA coefficient name against a model-matrix coefficient
+#' @noRd
+match_linda_coefficient <- function(candidates, coefficient) {
+  normalize <- function(x) gsub("[^[:alnum:]]", "", tolower(x))
+  matches <- candidates[normalize(candidates) == normalize(coefficient)]
+  if (length(matches) != 1L) {
+    cli::cli_abort(
+      "LinDA did not return coefficient {.val {coefficient}}.",
+      class = "dar_error_invalid_result_contract"
+    )
+  }
+  matches[[1L]]
+}
+
+#' @noRd
+run_linda_model <- function(rec, prev_filter, mean_abund_filter,
+                            max_abund_filter, winsorize, outlier_pct,
+                            adaptive, zero_handling, pseudo_count, corr_cut,
+                            p_adj_method, alpha, n_cpus, rarefy,
+                            engine_args = list()) {
+  compiled <- compile_model(rec, "linda")
+  phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("linda", engine_args, "fit")
+  feature_data <- as(phyloseq::otu_table(phy), "matrix")
+  if (!phyloseq::taxa_are_rows(phy)) {
+    feature_data <- t(feature_data)
+  }
+  feature_data <- feature_data[, compiled$data$sample_id, drop = FALSE]
+
+  out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
+    contrast <- compiled$contrasts[index, , drop = FALSE]
+    parameterized <- reparameterize_model_contrast(compiled, contrast)
+    metadata <- data.frame(
+      parameterized$data,
+      row.names = parameterized$data$sample_id,
+      check.names = FALSE
+    )
+    metadata$sample_id <- NULL
+    fit <- exec_engine_stage(
+      "linda", "fit", engine_args,
+      fixed = list(
+        feature.dat = feature_data[, rownames(metadata), drop = FALSE],
+        meta.dat = metadata,
+        formula = compiled$formula_text,
+        feature.dat.type = "count",
+        prev.filter = prev_filter,
+        mean.abund.filter = mean_abund_filter,
+        max.abund.filter = max_abund_filter,
+        is.winsor = winsorize,
+        outlier.pct = outlier_pct,
+        adaptive = adaptive,
+        zero.handling = zero_handling,
+        pseudo.cnt = pseudo_count,
+        corr.cut = corr_cut,
+        p.adj.method = p_adj_method,
+        alpha = alpha,
+        n.cores = n_cpus
+      ),
+      defaults = list(verbose = FALSE)
+    )
+    coefficient <- match_linda_coefficient(
+      names(fit$output), parameterized$coefficient
+    )
+    result <- fit$output[[coefficient]]
+    required <- c("log2FoldChange", "pvalue", "padj", "reject")
+    if (!inherits(result, "data.frame") || nrow(result) == 0L ||
+        !all(required %in% names(result))) {
+      cli::cli_abort(
+        c(
+          "x" = "LinDA returned an invalid result for coefficient {.val {coefficient}}.",
+          "i" = "Required columns: {.field {required}}."
+        ),
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    result <- tibble::as_tibble(result, rownames = "taxa_id")
+    if (anyDuplicated(result$taxa_id)) {
+      cli::cli_abort(
+        "LinDA returned duplicated taxa for coefficient {.val {coefficient}}.",
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    result |>
+      dplyr::mutate(
+        contrast_id = contrast$contrast_id[[1]],
+        comparison = contrast$comparison[[1]],
+        contrast_type = contrast$contrast_type[[1]],
+        var = contrast$var[[1]],
+        effect = .data$log2FoldChange * parameterized$sign,
+        signif = as.logical(.data$reject)
+      )
+  }) |>
+    dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+    dplyr::relocate("taxa_id", "taxa")
+
+  list(model = out)
+}
+
 # MAASLIN3 --------------------------------------------------------------------
 
 #' @noRd

@@ -81,7 +81,7 @@ rec
 
 ## Define Differential Analysis (DA) steps
 
-Once data is preprocessed and cleaned, the next step is to add the da steps. The dar package incorporates multiple methods to analyze the data, including: `ALDEx2`, `ANCOM-BC`, `corncob`, `DESeq2`, `Lefse`, `MAaslin3`, and `Wilcox.` These methods provide a range of options for uncovering potential microbial biomarkers associated with the variable of interest. To ensure consistency across methods, we decided not to use default parameters, but to set the `min_prevalence` parameter to 0 for `MAaslin2`. This approach ensured that the analysis was consistent across all methods and that the results were interpretable.
+Once data is preprocessed and cleaned, the next step is to add the da steps. The dar package incorporates multiple methods to analyze the data, including: `ALDEx2`, `ANCOM-BC`, `corncob`, `DESeq2`, `Lefse`, `LinDA`, `MaAsLin3`, and `Wilcox`. These methods provide a range of options for uncovering potential microbial biomarkers associated with the variable of interest. To ensure consistency across methods, we decided not to use default parameters, but to set the `min_prevalence` parameter to 0 for `MaAsLin3`. This approach ensured that the analysis was consistent across methods and that the results were interpretable.
 
 ```{r}
 # DA steps definition

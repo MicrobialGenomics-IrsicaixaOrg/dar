@@ -2,7 +2,7 @@
 
 # File R/lefse.R: @tests
 
-test_that("Function step_lefse() @ L83", {
+test_that("Function step_lefse() @ L86", {
   data(metaHIV_phy)
   
   expect_condition(

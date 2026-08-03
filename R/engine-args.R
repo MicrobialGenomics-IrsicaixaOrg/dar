@@ -82,6 +82,25 @@ engine_args_registry <- function() {
         )
       )
     ),
+    linda = list(
+      public = c(
+        "prev_filter", "mean_abund_filter", "max_abund_filter",
+        "winsorize", "outlier_pct", "adaptive", "zero_handling",
+        "pseudo_count", "corr_cut", "p_adj_method", "alpha", "n_cpus",
+        "rarefy", "id", "engine_args"
+      ),
+      stages = list(
+        fit = list(
+          package = "MicrobiomeStat", fun = "linda",
+          protected = c(
+            "feature.dat", "meta.dat", "formula", "feature.dat.type",
+            "prev.filter", "mean.abund.filter", "max.abund.filter",
+            "is.winsor", "outlier.pct", "adaptive", "zero.handling",
+            "pseudo.cnt", "corr.cut", "p.adj.method", "alpha", "n.cores"
+          )
+        )
+      )
+    ),
     maaslin = list(
       public = c(
         "min_abundance", "min_prevalence", "min_variance", "normalization",

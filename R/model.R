@@ -782,6 +782,7 @@ model_engine_capabilities <- list(
   corncob = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
   deseq = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
   lefse = list(confounders = FALSE, time_interaction = FALSE, random = FALSE),
+  linda = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
   maaslin = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
   wilcox = list(confounders = FALSE, time_interaction = FALSE, random = FALSE)
 )

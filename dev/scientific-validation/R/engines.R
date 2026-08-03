@@ -20,6 +20,11 @@ validation_engine_registry <- function() {
       confounders = TRUE, time_interaction = TRUE, random = FALSE,
       truth_multiplier = NA_real_, comparable = FALSE
     ),
+    linda = list(
+      packages = "MicrobiomeStat",
+      confounders = TRUE, time_interaction = TRUE, random = TRUE,
+      truth_multiplier = 1 / log(2), comparable = TRUE
+    ),
     maaslin = list(
       packages = "maaslin3",
       confounders = TRUE, time_interaction = TRUE, random = TRUE,
@@ -84,6 +89,10 @@ add_validation_engine <- function(rec, engine, profile) {
     ),
     corncob = dar::step_corncob(
       rec, filter_discriminant = FALSE, id = id
+    ),
+    linda = dar::step_linda(
+      rec, prev_filter = 0, winsorize = FALSE, adaptive = FALSE,
+      id = id
     ),
     maaslin = dar::step_maaslin(
       rec, min_prevalence = 0, standardize = FALSE, id = id
