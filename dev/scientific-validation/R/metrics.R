@@ -7,11 +7,14 @@ score_validation_results <- function(results, truth, alpha = 0.05) {
   if (!nrow(results)) {
     return(data.frame())
   }
-  keys <- c("scenario", "replicate", "taxa_id", "contrast_id")
-  if (anyDuplicated(results[keys])) {
+  scientific_keys <- c(
+    "engine", "scenario", "replicate", "taxa_id", "contrast_id"
+  )
+  truth_keys <- c("scenario", "replicate", "taxa_id", "contrast_id")
+  if (anyDuplicated(results[scientific_keys])) {
     stop("Validation results contain duplicated scientific keys.", call. = FALSE)
   }
-  joined <- dplyr::left_join(results, truth, by = keys)
+  joined <- dplyr::left_join(results, truth, by = truth_keys)
   if (any(is.na(joined$is_null))) {
     stop("Validation results contain keys absent from the truth table.", call. = FALSE)
   }
@@ -141,6 +144,9 @@ summarize_validation_metrics <- function(metrics) {
         data$value,
         bounded = !identical(key$metric, "abs_relative_bias")
       )
+      if (identical(key$metric, "abs_relative_bias")) {
+        interval[["lower"]] <- max(0, interval[["lower"]])
+      }
       data.frame(
         estimate = unname(interval[["mean"]]),
         lower = unname(interval[["lower"]]),

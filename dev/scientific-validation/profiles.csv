@@ -6,10 +6,10 @@ quick,fixed_confounder,2,8,0.05
 quick,longitudinal_interaction,2,8,0.05
 quick,longitudinal_random_effect,2,8,0.05
 quick,missing_unbalanced,2,8,0.05
-full,cross_sectional_null,100,32,0.05
-full,cross_sectional_signal,50,32,0.05
-full,sparse_zero_inflated,40,32,0.05
-full,fixed_confounder,40,32,0.05
-full,longitudinal_interaction,30,32,0.05
-full,longitudinal_random_effect,30,32,0.05
-full,missing_unbalanced,30,32,0.05
+full,cross_sectional_null,100,128,0.05
+full,cross_sectional_signal,50,128,0.05
+full,sparse_zero_inflated,40,128,0.05
+full,fixed_confounder,40,128,0.05
+full,longitudinal_interaction,30,128,0.05
+full,longitudinal_random_effect,30,128,0.05
+full,missing_unbalanced,30,128,0.05

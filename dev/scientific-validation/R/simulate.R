@@ -92,7 +92,7 @@ simulate_validation_scenario <- function(
     scenario_id,
     replicate = 1L,
     base_seed = 140L,
-    n_taxa = 30L
+    n_taxa = 60L
 ) {
   spec <- validation_scenario(scenario_id)
   seed <- validation_seed(scenario_id, replicate, base_seed)

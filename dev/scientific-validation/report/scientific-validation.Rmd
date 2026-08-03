@@ -1,0 +1,121 @@
+---
+title: "dar scientific validation"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M UTC', tz = 'UTC')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+params:
+  data_dir: null
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+read_artifact <- function(name) {
+  path <- file.path(params$data_dir, paste0(name, ".csv"))
+  if (!file.exists(path) || file.info(path)$size == 0L) return(data.frame())
+  tryCatch(utils::read.csv(path, stringsAsFactors = FALSE), error = function(cnd) data.frame())
+}
+runs <- read_artifact("runs")
+manifests <- read_artifact("manifests")
+summary <- read_artifact("summary")
+gates <- read_artifact("gates")
+```
+
+## Scope
+
+This report characterizes repeated-sampling behavior of the centralized differential-abundance models. It is development evidence, not a ranking of engines. P-values and effect magnitudes are never compared directly across methods with different estimands.
+
+## Simulation manifest
+
+```{r manifest}
+if (nrow(manifests)) {
+  manifest_summary <- manifests |>
+    dplyr::group_by(.data$scenario) |>
+    dplyr::summarise(
+      replicates = dplyr::n_distinct(.data$replicate),
+      samples_min = min(.data$samples),
+      samples_max = max(.data$samples),
+      taxa = max(.data$taxa),
+      contrasts = max(.data$contrasts),
+      .groups = "drop"
+    )
+  knitr::kable(manifest_summary)
+} else {
+  cat("No simulation manifests were available.")
+}
+```
+
+## Engine execution
+
+```{r execution}
+if (nrow(runs)) {
+  execution <- runs |>
+    dplyr::count(.data$engine, .data$scenario, .data$status, name = "runs")
+  knitr::kable(execution)
+} else {
+  cat("No engine runs were available.")
+}
+```
+
+## Statistical gates
+
+```{r gates-table}
+if (nrow(gates)) {
+  gate_counts <- gates |>
+    dplyr::count(.data$engine, .data$status, name = "gates")
+  knitr::kable(gate_counts)
+} else {
+  cat("No statistical gates were evaluated.")
+}
+```
+
+```{r failed-gates}
+if (nrow(gates) && any(gates$status == "fail")) {
+  failed <- gates |>
+    dplyr::filter(.data$status == "fail") |>
+    dplyr::select(
+      .data$engine, .data$scenario, .data$contrast_id, .data$metric,
+      .data$estimate, .data$lower, .data$upper, .data$limit, .data$n_replicates
+    )
+  knitr::kable(failed)
+} else {
+  cat("No evaluated gate failed.")
+}
+```
+
+## Metric estimates
+
+```{r metric-plot, fig.width=11, fig.height=8}
+if (nrow(summary)) {
+  plotted <- summary |>
+    dplyr::filter(.data$metric %in% c(
+      "type1_error", "fdr", "power", "direction_recovery",
+      "finite_rate", "execution_rate", "coverage"
+    ))
+  if (nrow(plotted)) {
+    ggplot2::ggplot(
+      plotted,
+      ggplot2::aes(x = .data$engine, y = .data$estimate, colour = .data$scenario)
+    ) +
+      ggplot2::geom_point(position = ggplot2::position_dodge(width = 0.5)) +
+      ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = .data$lower, ymax = .data$upper),
+        width = 0.2,
+        position = ggplot2::position_dodge(width = 0.5)
+      ) +
+      ggplot2::facet_wrap(~ metric, scales = "free_y") +
+      ggplot2::coord_cartesian(ylim = c(0, 1)) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+  }
+}
+```
+
+## Interpretation limits
+
+- Monte Carlo intervals quantify uncertainty between independent simulation replicates.
+- Bias and coverage are evaluated only when the reported effect and simulation truth share a documented scale.
+- `not_applicable` is intentional for incompatible estimands or unavailable uncertainty estimates.
+- `informational` means the selected profile did not reach the minimum replicate count for a regression gate.
+- Expected capability skips are not engine failures; errors from compatible models are failures.
