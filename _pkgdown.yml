@@ -33,10 +33,12 @@ reference:
   - step_corncob
   - step_deseq
   - step_lefse
+  - step_linda
   - step_maaslin
-  - step_wilcox 
+  - step_wilcox
 - title: "Exploration"
   contents:
+  - tidy_results
   - abundance_plt
   - corr_heatmap
   - exclusion_plt

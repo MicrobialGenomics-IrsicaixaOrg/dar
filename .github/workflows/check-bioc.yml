@@ -268,9 +268,14 @@ jobs:
         shell: Rscript {0}
 
       - name: Install pkgdown
-        if: github.ref == 'refs/heads/devel' && env.run_pkgdown == 'true' && runner.os == 'Linux'
+        if: env.run_pkgdown == 'true' && runner.os == 'Linux' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/devel')
         run: |
           remotes::install_cran("pkgdown")
+        shell: Rscript {0}
+
+      - name: Validate pkgdown configuration
+        if: env.run_pkgdown == 'true' && runner.os == 'Linux' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/devel')
+        run: source("dev/check-pkgdown.R")
         shell: Rscript {0}
 
       - name: Session info
