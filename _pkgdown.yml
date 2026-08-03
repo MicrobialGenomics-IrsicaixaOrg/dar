@@ -10,6 +10,10 @@ reference:
   - prep
   - bake
   - cool
+- title: "Model Configuration"
+  contents:
+  - add_model
+  - get_model
 - title: "Step Functions - Data Preprocessing"
   contents:
   - step_filter_taxa
@@ -68,4 +72,3 @@ reference:
   - pastry_df
   - test_rec
   - test_prep_rec
-
