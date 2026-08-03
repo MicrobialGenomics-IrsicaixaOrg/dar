@@ -1,5 +1,6 @@
 library(testthat)
 
+Sys.setenv(TESTTHAT_PARALLEL = "FALSE")
 pkgload::load_all(".", quiet = TRUE)
 
 test_dir(

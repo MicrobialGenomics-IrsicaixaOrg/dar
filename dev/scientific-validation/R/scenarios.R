@@ -102,27 +102,31 @@ validation_scenario <- function(id) {
   c(list(id = id), scenarios[[id]])
 }
 
+validation_root_path <- function() {
+  root <- getOption("dar.validation.root", Sys.getenv("DAR_VALIDATION_ROOT", ""))
+  if (!nzchar(root)) {
+    root <- file.path("dev", "scientific-validation")
+  }
+  normalizePath(root, mustWork = TRUE)
+}
+
 validation_profile <- function(profile = c("quick", "full")) {
   profile <- match.arg(profile)
+  config <- utils::read.csv(
+    file.path(validation_root_path(), "profiles.csv"),
+    stringsAsFactors = FALSE
+  )
+  config <- config[config$profile == profile, , drop = FALSE]
   scenarios <- names(validation_scenario_registry())
-  replicates <- if (identical(profile, "quick")) {
-    stats::setNames(rep(2L, length(scenarios)), scenarios)
-  } else {
-    c(
-      cross_sectional_null = 100L,
-      cross_sectional_signal = 50L,
-      sparse_zero_inflated = 40L,
-      fixed_confounder = 40L,
-      longitudinal_interaction = 30L,
-      longitudinal_random_effect = 30L,
-      missing_unbalanced = 30L
-    )
+  if (!setequal(config$scenario, scenarios)) {
+    stop("The profile does not configure every validation scenario.", call. = FALSE)
   }
+  replicates <- stats::setNames(as.integer(config$replicates), config$scenario)
   list(
     name = profile,
     replicates = replicates,
-    aldex_mc_samples = if (identical(profile, "quick")) 8L else 32L,
-    alpha = 0.05
+    aldex_mc_samples = unique(as.integer(config$aldex_mc_samples)),
+    alpha = unique(config$alpha)
   )
 }
 
