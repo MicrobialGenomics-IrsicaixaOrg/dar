@@ -231,8 +231,10 @@ jobs:
         continue-on-error: true
         shell: Rscript {0}
 
-      - name: Rebuild Rfast from source on Linux
-        if: runner.os == 'Linux'
+      ## Temporary workaround tracked in #141: repository binaries fail to
+      ## load on Linux (TBB symbol mismatch) and Windows (LoadLibrary error).
+      - name: Rebuild Rfast from source on affected platforms
+        if: runner.os == 'Linux' || runner.os == 'Windows'
         run: |
           message(paste('****', Sys.time(), 'rebuilding Rfast from source ****'))
           remotes::install_cran(
