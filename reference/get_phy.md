@@ -22,7 +22,7 @@ Phyloseq class object
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy)
 get_phy(rec)
 #> phyloseq-class experiment-level object
 #> otu_table()   OTU Table:         [ 451 taxa and 156 samples ]

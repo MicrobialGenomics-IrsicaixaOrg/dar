@@ -28,14 +28,19 @@ Recipe-class object
 
 - `var_info`:
 
-  A tibble that contains the current set of terms in the data set. This
-  initially defaults to the same data contained in `var_info`.
+  Deprecated compatibility storage synchronized from `model$targets` for
+  modeled recipes.
 
 - `tax_info`:
 
-  A tibble that contains the current set of taxonomic levels that will
-  be used in the analysis.
+  Deprecated compatibility storage synchronized from `model$tax_level`
+  for modeled recipes.
 
 - `steps`:
 
   List of step-class objects that will be used by DA.
+
+- `model`:
+
+  Optional centralized statistical model specification created by
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md).

@@ -16,3 +16,8 @@ PrepRecipe-class object
 - `bakes`:
 
   Contains the executed bakes.
+
+- `execution`:
+
+  Manifest containing resolved contrasts, samples removed by the
+  missing-value policy, and executed or skipped methods.

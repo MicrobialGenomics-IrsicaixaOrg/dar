@@ -9,7 +9,7 @@ to prepare it for data analysis."><meta property="og:image" content="https://mic
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,7 @@ to prepare it for data analysis."><meta property="og:image" content="https://mic
     <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -69,12 +70,13 @@ TreeSummarizedExperiment-class object.</p></dd>
 
 <dt id="arg-var-info">var_info<a class="anchor" aria-label="anchor" href="#arg-var-info"></a></dt>
 <dd><p>A character string of column names corresponding to variables
-that will be used in any context.</p></dd>
+that will be used in any context. Deprecated; supply <code>targets</code> to
+<code><a href="add_model.html">add_model()</a></code> instead.</p></dd>
 
 
 <dt id="arg-tax-info">tax_info<a class="anchor" aria-label="anchor" href="#arg-tax-info"></a></dt>
 <dd><p>A character string of taxonomic levels that will be used in
-any context.</p></dd>
+any context. Deprecated; supply <code>tax_level</code> to <code><a href="add_model.html">add_model()</a></code> instead.</p></dd>
 
 
 <dt id="arg-steps">steps<a class="anchor" aria-label="anchor" href="#arg-steps"></a></dt>
@@ -83,20 +85,11 @@ any context.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>Recipe</code> with sub-objects:</p>
-<dl><dt>phyloseq</dt>
-<dd><p>object
-of class <code>phyloseq</code> with taxa abundance information.</p></dd>
- <dt>var_info</dt>
-<dd><p>A
-tibble that contains the current set of terms in the data set. This
-initially defaults to the same data contained in <code>var_info</code>.</p></dd>
-
-<dt>tax_info</dt>
-<dd><p>A tibble that contains the current set of taxonomic levels
-that will be used in the analysis.</p></dd>
-
-</dl></div>
+    <p>An object of class <code>Recipe</code> containing the microbiome object, an
+optional centralized model and the configured processing or DA steps.
+Legacy selector slots are retained for compatibility during the
+deprecation cycle.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -104,7 +97,8 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Define recipe</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.3 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="step_deseq.html">step_deseq</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
@@ -112,6 +106,8 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Prep recipe</span></span></span>
 <span class="r-in"><span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Estimated rdf &lt; 1.0; not estimating variance</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Estimated rdf &lt; 1.0; not estimating variance</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Estimated rdf &lt; 1.0; not estimating variance</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Consensus strategy</span></span></span>
@@ -121,12 +117,13 @@ that will be used in the analysis.</p></dd>
 <span class="r-in"><span><span class="co">## Results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Baking with <span style="color: #00BB00;">count_cutoff =</span> <span style="color: #0000BB;">2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 2</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id taxa         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Otu_96  Bacteroidetes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id taxa    contrast_id comparison contrast_type var   effect method_count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Otu_96  Bacter… RiskGroup2… RiskGroup… main          Risk… down              2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: methods &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## You can also crate a recipe without var and tax info</span></span></span>
+<span class="r-in"><span><span class="co">## A recipe without a model can be used for preprocessing</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">recipe</span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
@@ -134,14 +131,13 @@ that will be used in the analysis.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #BB0000;">✖</span> undefined variable of interest. Use <span style="background-color: #BB00BB;">add_var()</span> to add it to Recipe! </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_tax()</span> to add it to Recipe! </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #BB0000;">✖</span> undefined analysis target. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis! </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis! </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## And define them later</span></span></span>
+<span class="r-in"><span><span class="co">## Define the complete analysis configuration later</span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="va">rec</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_var.html">add_var</a></span><span class="op">(</span><span class="st">"RiskGroup2"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_tax.html">add_tax</a></span><span class="op">(</span><span class="st">"Genus"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rec</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
@@ -150,6 +146,10 @@ that will be used in the analysis.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Statistical model:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~RiskGroup2</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

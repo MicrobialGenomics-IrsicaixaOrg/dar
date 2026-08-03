@@ -5,7 +5,7 @@ Returns required pakcages for Recipe object
 ## Usage
 
 ``` r
-required_deps(rec)
+required_deps(rec, steps = rec@steps)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ required_deps(rec)
 - rec:
 
   A `Recipe` object
+
+- steps:
+
+  Optional list of steps whose dependencies should be checked.
 
 ## Value
 

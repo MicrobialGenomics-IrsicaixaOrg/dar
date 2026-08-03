@@ -15,7 +15,7 @@ trend test.
 ``` r
 step_ancom(
   rec,
-  fix_formula = get_var(rec)[[1]],
+  fix_formula = recipe_targets(rec),
   rand_formula = NULL,
   p_adj_method = "holm",
   prv_cut = 0.1,
@@ -174,7 +174,8 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Genus") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
@@ -186,10 +187,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Genus 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Punschkrapfen 
-#>      ◉ step_filter_taxa() id = filter_taxa__Bethmännchen 
+#>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
 #> 
 #> DA steps:
 #> 
@@ -198,6 +203,9 @@ rec
 rec <-
   step_ancom(rec) |>
   prep(parallel = FALSE)
+#> Warning: ! The centralized model overrides design arguments in 1 step.
+#> ℹ ancom__Öçpoçmaq: fix_formula
+#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
 #> Warning: The number of taxa used for estimating sample-specific biases is: 41
 #> A large number of taxa (>50) is required for the consistent estimation of biases
 #> Loading required package: foreach
@@ -206,13 +214,13 @@ rec <-
 #> For taxa that are significant but do not pass the sensitivity analysis,
 #> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
 #> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
-#> Warning: The number of taxa used for estimating sample-specific biases is: 38
+#> Warning: The number of taxa used for estimating sample-specific biases is: 41
 #> A large number of taxa (>50) is required for the consistent estimation of biases
 #> Conducting sensitivity analysis for pseudo-count addition to 0s ...
 #> For taxa that are significant but do not pass the sensitivity analysis,
 #> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
 #> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
-#> Warning: The number of taxa used for estimating sample-specific biases is: 38
+#> Warning: The number of taxa used for estimating sample-specific biases is: 41
 #> A large number of taxa (>50) is required for the consistent estimation of biases
 #> Conducting sensitivity analysis for pseudo-count addition to 0s ...
 #> For taxa that are significant but do not pass the sensitivity analysis,
@@ -224,20 +232,24 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Genus 
 #> 
 #> Results:
 #> 
-#>      ✔ ancom__Shakarbura diff_taxa = 19 
+#>      ✔ ancom__Öçpoçmaq diff_taxa = 13 
 #> 
-#>      ℹ 0 taxa are present in all tested methods 
+#>      ℹ 21 taxon-contrast effects are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_ancom(rarefy = TRUE)
+#> Warning: ! The centralized model overrides design arguments in 1 step.
+#> ℹ ancom__Sufganiyah: fix_formula
+#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -247,10 +259,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_ancom() id = ancom__Rugelach 
+#>      ◉ step_ancom() id = ancom__Sufganiyah 
 ```

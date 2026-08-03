@@ -23,12 +23,16 @@ recipe(
 - var_info:
 
   A character string of column names corresponding to variables that
-  will be used in any context.
+  will be used in any context. Deprecated; supply `targets` to
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  instead.
 
 - tax_info:
 
   A character string of taxonomic levels that will be used in any
-  context.
+  context. Deprecated; supply `tax_level` to
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  instead.
 
 - steps:
 
@@ -36,21 +40,10 @@ recipe(
 
 ## Value
 
-An object of class `Recipe` with sub-objects:
-
-- phyloseq:
-
-  object of class `phyloseq` with taxa abundance information.
-
-- var_info:
-
-  A tibble that contains the current set of terms in the data set. This
-  initially defaults to the same data contained in `var_info`.
-
-- tax_info:
-
-  A tibble that contains the current set of taxonomic levels that will
-  be used in the analysis.
+An object of class `Recipe` containing the microbiome object, an
+optional centralized model and the configured processing or DA steps.
+Legacy selector slots are retained for compatibility during the
+deprecation cycle.
 
 ## Examples
 
@@ -59,7 +52,8 @@ data(metaHIV_phy)
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
   step_deseq() |>
@@ -67,6 +61,8 @@ rec <-
 
 ## Prep recipe
 da_results <- prep(rec)
+#> Warning: Estimated rdf < 1.0; not estimating variance
+#> Warning: Estimated rdf < 1.0; not estimating variance
 #> Warning: Estimated rdf < 1.0; not estimating variance
 
 ## Consensus strategy
@@ -76,12 +72,13 @@ da_results <- bake(da_results, count_cutoff = n_methods)
 ## Results
 cool(da_results)
 #> ℹ Baking with count_cutoff = 2
-#> # A tibble: 1 × 2
-#>   taxa_id taxa         
-#>   <chr>   <chr>        
-#> 1 Otu_96  Bacteroidetes
+#> # A tibble: 1 × 9
+#>   taxa_id taxa    contrast_id comparison contrast_type var   effect method_count
+#>   <chr>   <chr>   <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#> 1 Otu_96  Bacter… RiskGroup2… RiskGroup… main          Risk… down              2
+#> # ℹ 1 more variable: methods <chr>
 
-## You can also crate a recipe without var and tax info
+## A recipe without a model can be used for preprocessing
 rec <- recipe(metaHIV_phy)
 
 rec
@@ -89,14 +86,13 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined variable of interest. Use add_var() to add it to Recipe! 
-#>      ✖ undefined taxonomic level. Use add_tax() to add it to Recipe! 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> 
 
-## And define them later
+## Define the complete analysis configuration later
 rec <- rec |>
-  add_var("RiskGroup2") |>
-  add_tax("Genus")
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -105,6 +101,10 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
 #> 
 #> 
 

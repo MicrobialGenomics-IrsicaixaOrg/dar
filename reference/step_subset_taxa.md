@@ -57,15 +57,14 @@ This function modifies `rec` in place, you might want to make a copy of
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy)
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> 
 
 ## Define step_subset_taxa step with default parameters
@@ -79,9 +78,8 @@ prep(rec)
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 447 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Results:
 #> 
 ```

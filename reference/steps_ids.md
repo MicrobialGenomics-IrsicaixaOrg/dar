@@ -5,7 +5,7 @@ Get step_ids from recipe
 ## Usage
 
 ``` r
-steps_ids(rec, type = "all")
+steps_ids(rec, type = "all", include_skipped = FALSE)
 ```
 
 ## Arguments
@@ -18,6 +18,11 @@ steps_ids(rec, type = "all")
 
   character vector indicating the type class. Options
   `c("all", "da", "prepro")`.
+
+- include_skipped:
+
+  For a prepared modeled recipe, include DA steps that were declared but
+  skipped as statistically incompatible.
 
 ## Value
 

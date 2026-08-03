@@ -47,14 +47,19 @@ analysis at the species level.
 ``` r
 
 ## Recipe initialization
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species
+#>      ℹ taxonomic level Species 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2
 ```
 
 ## Recipe QC and preprocessing steps definition
@@ -128,6 +133,10 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Puff_pastry 
@@ -168,6 +177,10 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Puff_pastry 
@@ -204,15 +217,15 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
 #> 
-#>      ✔ deseq__Spina_santa diff_taxa = 174 
-#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 58 
+#>      ✔ deseq__Spina_santa diff_taxa = 158 
+#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 44 
 #> 
-#>      ℹ 31 taxa are present in all tested methods
+#>      ℹ 33 taxon-contrast effects are present in all tested methods
 ```
 
 ## Default results extraction
@@ -232,20 +245,21 @@ results <-
   cool()
 
 results
-#> # A tibble: 31 × 2
-#>    taxa_id taxa                        
-#>    <chr>   <chr>                       
-#>  1 Otu_35  Collinsella_aerofaciens     
-#>  2 Otu_37  Collinsella_stercoris       
-#>  3 Otu_47  Bacteroides_cellulosilyticus
-#>  4 Otu_48  Bacteroides_clarus          
-#>  5 Otu_63  Bacteroides_plebeius        
-#>  6 Otu_69  Bacteroides_sp_CAG_530      
-#>  7 Otu_78  Bacteroides_uniformis       
-#>  8 Otu_82  Barnesiella_intestinihominis
-#>  9 Otu_96  Prevotella_copri            
-#> 10 Otu_102 Prevotella_sp_AM42_24       
-#> # ℹ 21 more rows
+#> # A tibble: 33 × 9
+#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
+#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  8 Otu_130 Parab… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  9 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                2
+#> 10 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                2
+#> # ℹ 23 more rows
+#> # ℹ 1 more variable: methods <chr>
 ```
 
 However, `dar` allows for complex consensus strategies based on the
@@ -372,15 +386,15 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
 #> 
-#>      ✔ deseq__Spina_santa diff_taxa = 174 
-#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 58 
+#>      ✔ deseq__Spina_santa diff_taxa = 158 
+#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 44 
 #> 
-#>      ℹ 31 taxa are present in all tested methods 
+#>      ℹ 33 taxon-contrast effects are present in all tested methods 
 #> 
 #> Bakes:
 #> 
@@ -401,20 +415,21 @@ consensus strategies, you can change it to extract the desired results).
 f_results <- cool(da_results, bake = 1)
 
 f_results
-#> # A tibble: 31 × 2
-#>    taxa_id taxa                        
-#>    <chr>   <chr>                       
-#>  1 Otu_35  Collinsella_aerofaciens     
-#>  2 Otu_37  Collinsella_stercoris       
-#>  3 Otu_47  Bacteroides_cellulosilyticus
-#>  4 Otu_48  Bacteroides_clarus          
-#>  5 Otu_63  Bacteroides_plebeius        
-#>  6 Otu_69  Bacteroides_sp_CAG_530      
-#>  7 Otu_78  Bacteroides_uniformis       
-#>  8 Otu_82  Barnesiella_intestinihominis
-#>  9 Otu_96  Prevotella_copri            
-#> 10 Otu_102 Prevotella_sp_AM42_24       
-#> # ℹ 21 more rows
+#> # A tibble: 33 × 9
+#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
+#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
+#>  8 Otu_130 Parab… RiskGroup2… RiskGroup… main          Risk… up                2
+#>  9 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                2
+#> 10 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                2
+#> # ℹ 23 more rows
+#> # ℹ 1 more variable: methods <chr>
 ```
 
 To further visualize the results, the
@@ -451,7 +466,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-07-29
+#>  date     2026-08-03
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -481,15 +496,15 @@ devtools::session_info()
 #>  cachem                     1.1.0      2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4      2026-02-03 [1] RSPM (R 4.6.0)
 #>  cli                        3.6.6      2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.2    2026-02-05 [3] CRAN (R 4.6.1)
+#>  cluster                    2.1.8.3    2026-07-30 [3] RSPM (R 4.6.0)
 #>  coda                       0.19-4.1   2024-01-31 [1] RSPM (R 4.6.0)
 #>  codetools                  0.2-20     2024-03-31 [3] CRAN (R 4.6.1)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.1      2026-07-29 [1] Bioconductor
+#>  dar                      * 1.9.3      2026-08-03 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.8.0      2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
+#>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
 #>  decontam                   1.32.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedArray               0.38.2     2026-05-26 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedMatrixStats         1.34.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
@@ -569,8 +584,11 @@ devtools::session_info()
 #>  R6                         2.6.1      2025-02-15 [2] RSPM (R 4.6.0)
 #>  ragg                       1.5.2      2026-03-23 [2] RSPM (R 4.6.0)
 #>  rappdirs                   0.3.4      2026-01-17 [2] RSPM (R 4.6.0)
+#>  rbibutils                  2.4.1      2026-01-21 [1] RSPM (R 4.6.0)
 #>  RColorBrewer               1.1-3      2022-04-03 [1] RSPM (R 4.6.0)
 #>  Rcpp                       1.1.2      2026-07-05 [2] RSPM (R 4.6.0)
+#>  Rdpack                     2.6.6      2026-02-08 [1] RSPM (R 4.6.0)
+#>  reformulas                 0.4.4      2026-02-02 [1] RSPM (R 4.6.0)
 #>  registry                   0.5-1      2019-03-05 [1] RSPM (R 4.6.0)
 #>  reshape2                   1.4.5      2025-11-12 [1] RSPM (R 4.6.0)
 #>  rlang                      1.3.0      2026-07-05 [2] RSPM (R 4.6.0)

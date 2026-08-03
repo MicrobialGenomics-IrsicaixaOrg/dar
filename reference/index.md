@@ -14,6 +14,13 @@
 - [`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
   : Extract results from defined bake
 
+## Model Configuration
+
+- [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  : Add a centralized statistical model to a recipe
+- [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
+  : Get the centralized statistical model from a recipe
+
 ## Step Functions - Data Preprocessing
 
 - [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
@@ -80,15 +87,15 @@
 ## Recipe Getters and Adders
 
 - [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
-  : Adds taxonomic level of interest in the Recipe.
+  : Add a legacy taxonomic level of interest to a recipe
 - [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
-  : Adds variable of interest to the Recipe
+  : Add legacy variables of interest to a recipe
 - [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
   : Returns phyloseq from Recipe-class object
 - [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-  : Returns tax_info from Recipe-class object
+  : Return legacy taxonomic information from a recipe
 - [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
-  : Returns var_info from Recipe-class object
+  : Return legacy target information from a recipe
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
   : Extracts otu_table from phyloseq inside a Recipe
 - [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)

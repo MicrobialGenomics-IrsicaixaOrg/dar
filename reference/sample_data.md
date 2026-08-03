@@ -22,7 +22,8 @@ A tibble
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 sample_data(rec)
 #> # A tibble: 156 × 2
 #>    sample_id  RiskGroup2

@@ -1,6 +1,7 @@
-# Returns tax_info from Recipe-class object
+# Return legacy taxonomic information from a recipe
 
-Returns tax_info from Recipe-class object
+`get_tax()` is deprecated. Use `get_model(rec)$tax_level` for modeled
+recipes.
 
 ## Usage
 
@@ -22,8 +23,9 @@ Tibble containing `tax_info`.
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-get_tax(rec)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+suppressWarnings(get_tax(rec))
 #> # A tibble: 1 × 1
 #>   tax_lev
 #>   <chr>  

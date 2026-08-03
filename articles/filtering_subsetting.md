@@ -29,7 +29,8 @@ already-trimmed version of the phyloseq object.
 library(dar)
 data("metaHIV_phy")
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
   prep()
@@ -45,7 +46,8 @@ than the product of the total abundance and the provided threshold.
 
 ``` r
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_abundance(rec, threshold = 0.01) |> 
   prep()
@@ -59,7 +61,8 @@ provided threshold.
 
 ``` r
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_prevalence(rec, threshold = 0.01) |> 
   prep()
@@ -73,7 +76,8 @@ provided threshold.
 
 ``` r
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_rarity(rec, threshold = 0.01) |> 
   prep()
@@ -87,7 +91,8 @@ than the provided threshold.
 
 ``` r
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <- 
   step_filter_by_variance(rec, threshold = 0.01) |> 
   prep()
@@ -101,7 +106,8 @@ matches the provided taxa.
 
 ``` r
 
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec <-
   step_subset_taxa(rec, tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   prep()
@@ -132,7 +138,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-07-29
+#>  date     2026-08-03
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -158,13 +164,13 @@ devtools::session_info()
 #>  cachem                     1.1.0   2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4   2026-02-03 [1] RSPM (R 4.6.0)
 #>  cli                        3.6.6   2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.2 2026-02-05 [3] CRAN (R 4.6.1)
+#>  cluster                    2.1.8.3 2026-07-30 [3] RSPM (R 4.6.0)
 #>  codetools                  0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
 #>  crayon                     1.5.3   2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                      * 1.9.1   2026-07-29 [1] Bioconductor
+#>  dar                      * 1.9.3   2026-08-03 [1] Bioconductor
 #>  data.table                 1.18.4  2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0   2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.8.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
+#>  DECIPHER                   3.8.1   2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
 #>  decontam                   1.32.0  2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedArray               0.38.2  2026-05-26 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedMatrixStats         1.34.0  2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
@@ -233,8 +239,11 @@ devtools::session_info()
 #>  R6                         2.6.1   2025-02-15 [2] RSPM (R 4.6.0)
 #>  ragg                       1.5.2   2026-03-23 [2] RSPM (R 4.6.0)
 #>  rappdirs                   0.3.4   2026-01-17 [2] RSPM (R 4.6.0)
+#>  rbibutils                  2.4.1   2026-01-21 [1] RSPM (R 4.6.0)
 #>  RColorBrewer               1.1-3   2022-04-03 [1] RSPM (R 4.6.0)
 #>  Rcpp                       1.1.2   2026-07-05 [2] RSPM (R 4.6.0)
+#>  Rdpack                     2.6.6   2026-02-08 [1] RSPM (R 4.6.0)
+#>  reformulas                 0.4.4   2026-02-02 [1] RSPM (R 4.6.0)
 #>  registry                   0.5-1   2019-03-05 [1] RSPM (R 4.6.0)
 #>  reshape2                   1.4.5   2025-11-12 [1] RSPM (R 4.6.0)
 #>  rlang                      1.3.0   2026-07-05 [2] RSPM (R 4.6.0)

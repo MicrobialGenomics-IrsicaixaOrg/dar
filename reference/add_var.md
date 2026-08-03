@@ -1,6 +1,8 @@
-# Adds variable of interest to the Recipe
+# Add legacy variables of interest to a recipe
 
-Adds variable of interest to the Recipe
+`add_var()` is deprecated. Supply `targets` to
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+instead.
 
 ## Usage
 
@@ -28,13 +30,13 @@ A `Recipe` object.
 ``` r
 data(metaHIV_phy)
 rec <- recipe(metaHIV_phy)
-rec <- add_var(rec, var_info = "RiskGroup2")
+rec <- suppressWarnings(add_var(rec, var_info = "RiskGroup2"))
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ✖ undefined taxonomic level. Use add_tax() to add it to Recipe! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> 
 ```

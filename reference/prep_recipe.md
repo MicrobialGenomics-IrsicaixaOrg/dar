@@ -6,7 +6,7 @@ defined in the Recipe.
 ## Usage
 
 ``` r
-prep_recipe(rec, results, bakes)
+prep_recipe(rec, results, bakes, execution = list())
 ```
 
 ## Arguments

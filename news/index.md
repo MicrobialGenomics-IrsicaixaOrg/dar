@@ -1,5 +1,58 @@
 # Changelog
 
+## dar 1.9.3
+
+### BREAKING CHANGES
+
+- CHANGED:
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  is now the single source of truth for differential abundance analysis
+  targets and taxonomic resolution through its new `targets` and
+  `tax_level` arguments
+  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
+- DEPRECATED:
+  [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
+  [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md),
+  [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md),
+  [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md),
+  the `var_info` and `tax_info` arguments to
+  [`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md),
+  and model-free DA execution now emit classified migration warnings.
+  They remain functional during this first Bioconductor deprecation
+  cycle
+  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
+- IMPROVED: Legacy centralized models, serialized recipes and imported
+  step files are normalized to the new model representation without
+  changing the original microbiome metadata
+  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
+- FIXED: Modeled exclusion and mutual plots preserve contrast and
+  effect-direction keys, normalize adjusted p-value aliases without
+  duplicate columns, and LEfSe executes every planned pairwise contrast
+  for multilevel targets
+  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
+
+## dar 1.9.2
+
+- NEW: Add a centralized statistical model with
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  and
+  [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md),
+  including fixed confounders, target-time interactions, supported
+  random effects, explicit references, and a shared missing-value policy
+  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
+- NEW: Generate deterministic condition-within-time,
+  time-within-condition and optional difference-in-differences
+  contrasts, with a common result contract across DESeq2, ALDEx2,
+  ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe
+  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
+- IMPROVED: Record executed and skipped methods in prepared recipes,
+  validate engine capabilities before execution, and keep consensus
+  results separated by contrast and effect direction
+  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
+- IMPROVED: Preserve centralized model specifications when exporting and
+  importing recipe steps
+  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
+
 ## dar 1.9.1
 
 - IMPROVED: Enforce structural invariants for `Recipe` and inherited

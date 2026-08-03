@@ -1,6 +1,7 @@
-# Returns var_info from Recipe-class object
+# Return legacy target information from a recipe
 
-Returns var_info from Recipe-class object
+`get_var()` is deprecated. Use `get_model(rec)$targets` for modeled
+recipes.
 
 ## Usage
 
@@ -22,8 +23,9 @@ Tibble containing `var_info`.
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
-get_var(rec)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+suppressWarnings(get_var(rec))
 #> # A tibble: 1 × 1
 #>   vars      
 #>   <chr>     

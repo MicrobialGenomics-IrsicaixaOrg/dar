@@ -68,15 +68,14 @@ Other filter phy steps:
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Phylum")
+rec <- recipe(metaHIV_phy)
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> 
 
 ## Define filter_by_abundance step with default parameters
@@ -86,12 +85,11 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Puits_damour 
+#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Welsh_cake 
 #> 
 #> DA steps:
 #> 

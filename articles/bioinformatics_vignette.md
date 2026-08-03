@@ -49,14 +49,19 @@ analysis at the species level.
 ``` r
 
 # Recipe Initialization
-rec <- recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species
+#>      ℹ taxonomic level Species 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2
 ```
 
 ## Recipe QC and Preprocessing Steps Definition
@@ -129,6 +134,10 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Bridie 
@@ -161,6 +170,9 @@ rec <-
   step_corncob(filter_discriminant = FALSE) |> 
   step_maaslin(min_prevalence = 0) |> 
   step_lefse()
+#> Warning: ! The centralized model overrides design arguments in 1 step.
+#> ℹ corncob__Muskazine: formula_null
+#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -169,6 +181,10 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
 #> 
 #> Preporcessing steps:
 #> 
@@ -205,34 +221,594 @@ provisional overview of the results and a comparison between methods.
 
 # Execute in parallel
 da_results <- prep(rec, parallel = TRUE)
-#> Warning in lefser::lefser(se, classCol = var, kruskal.threshold = 1,
-#> wilcox.threshold = 1, : Variables in the input are collinear. Try only with the
-#> terminal nodes using `get_terminal_nodes` function
-#> Warning in lefser::lefser(se, classCol = var, kruskal.threshold = 1,
-#> wilcox.threshold = 1, : Variables in the input are collinear. Try only with the
-#> terminal nodes using `get_terminal_nodes` function
-#> Warning in lefser::lefser(se, classCol = var, kruskal.threshold = 1,
-#> wilcox.threshold = 1, : Variables in the input are collinear. Try only with the
-#> terminal nodes using `get_terminal_nodes` function
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning: Separation detected in abundance model!
+#> Likely, one of your covariates/experimental conditions is such that
+#> there are all zero counts within a group. The results of this model should
+#> be interpreted with care because there is insufficient data to distinguish between groups.
+#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
+#> Variables in the input are collinear. Try only with the terminal nodes using
+#> `get_terminal_nodes` function
+#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
+#> Variables in the input are collinear. Try only with the terminal nodes using
+#> `get_terminal_nodes` function
+#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
+#> Variables in the input are collinear. Try only with the terminal nodes using
+#> `get_terminal_nodes` function
 
 da_results
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
 #> 
-#>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 183 
-#>      ✔ aldex__Klobasnek diff_taxa = 93 
-#>      ✔ deseq__Kroštule diff_taxa = 174 
+#>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 186 
+#>      ✔ aldex__Klobasnek diff_taxa = 100 
+#>      ✔ deseq__Kroštule diff_taxa = 158 
 #>      ✔ corncob__Muskazine diff_taxa = 135 
-#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 58 
-#>      ✔ lefse__Poffertjes diff_taxa = 117 
+#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 44 
+#>      ✔ lefse__Poffertjes diff_taxa = 70 
 #> 
-#>      ℹ 19 taxa are present in all tested methods
+#>      ℹ 24 taxon-contrast effects are present in all tested methods
 ```
 
 ## Default results extraction
@@ -252,28 +828,21 @@ results <-
   cool()
 
 results
-#> # A tibble: 19 × 2
-#>    taxa_id taxa                        
-#>    <chr>   <chr>                       
-#>  1 Otu_35  Collinsella_aerofaciens     
-#>  2 Otu_47  Bacteroides_cellulosilyticus
-#>  3 Otu_63  Bacteroides_plebeius        
-#>  4 Otu_69  Bacteroides_sp_CAG_530      
-#>  5 Otu_78  Bacteroides_uniformis       
-#>  6 Otu_82  Barnesiella_intestinihominis
-#>  7 Otu_96  Prevotella_copri            
-#>  8 Otu_102 Prevotella_sp_AM42_24       
-#>  9 Otu_115 Alistipes_finegoldii        
-#> 10 Otu_119 Alistipes_putredinis        
-#> 11 Otu_130 Parabacteroides_sp_CAG_409  
-#> 12 Otu_234 Eubacterium_ramulus         
-#> 13 Otu_255 Ruminococcus_torques        
-#> 14 Otu_258 Coprococcus_catus           
-#> 15 Otu_259 Coprococcus_comes           
-#> 16 Otu_261 Dorea_formicigenerans       
-#> 17 Otu_262 Dorea_longicatena           
-#> 18 Otu_332 Catenibacterium_mitsuokai   
-#> 19 Otu_365 Mitsuokella_jalaludinii
+#> # A tibble: 24 × 9
+#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
+#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  8 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  9 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                6
+#> 10 Otu_261 Dorea… RiskGroup2… RiskGroup… main          Risk… up                6
+#> # ℹ 14 more rows
+#> # ℹ 1 more variable: methods <chr>
 ```
 
 However, `dar` allows for complex consensus strategies based on the
@@ -400,19 +969,19 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
 #> 
-#>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 183 
-#>      ✔ aldex__Klobasnek diff_taxa = 93 
-#>      ✔ deseq__Kroštule diff_taxa = 174 
+#>      ✔ wilcox__Paper_wrapped_cake diff_taxa = 186 
+#>      ✔ aldex__Klobasnek diff_taxa = 100 
+#>      ✔ deseq__Kroštule diff_taxa = 158 
 #>      ✔ corncob__Muskazine diff_taxa = 135 
-#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 58 
-#>      ✔ lefse__Poffertjes diff_taxa = 117 
+#>      ✔ maaslin__Milk_cream_strudel diff_taxa = 44 
+#>      ✔ lefse__Poffertjes diff_taxa = 70 
 #> 
-#>      ℹ 19 taxa are present in all tested methods 
+#>      ℹ 24 taxon-contrast effects are present in all tested methods 
 #> 
 #> Bakes:
 #> 
@@ -433,28 +1002,21 @@ consensus strategies, you can change it to extract the desired results).
 f_results <- cool(da_results, bake = 1)
 
 f_results
-#> # A tibble: 19 × 2
-#>    taxa_id taxa                        
-#>    <chr>   <chr>                       
-#>  1 Otu_35  Collinsella_aerofaciens     
-#>  2 Otu_47  Bacteroides_cellulosilyticus
-#>  3 Otu_63  Bacteroides_plebeius        
-#>  4 Otu_69  Bacteroides_sp_CAG_530      
-#>  5 Otu_78  Bacteroides_uniformis       
-#>  6 Otu_82  Barnesiella_intestinihominis
-#>  7 Otu_96  Prevotella_copri            
-#>  8 Otu_102 Prevotella_sp_AM42_24       
-#>  9 Otu_115 Alistipes_finegoldii        
-#> 10 Otu_119 Alistipes_putredinis        
-#> 11 Otu_130 Parabacteroides_sp_CAG_409  
-#> 12 Otu_234 Eubacterium_ramulus         
-#> 13 Otu_255 Ruminococcus_torques        
-#> 14 Otu_258 Coprococcus_catus           
-#> 15 Otu_259 Coprococcus_comes           
-#> 16 Otu_261 Dorea_formicigenerans       
-#> 17 Otu_262 Dorea_longicatena           
-#> 18 Otu_332 Catenibacterium_mitsuokai   
-#> 19 Otu_365 Mitsuokella_jalaludinii
+#> # A tibble: 24 × 9
+#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
+#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              6
+#>  8 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                6
+#>  9 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                6
+#> 10 Otu_261 Dorea… RiskGroup2… RiskGroup… main          Risk… up                6
+#> # ℹ 14 more rows
+#> # ℹ 1 more variable: methods <chr>
 ```
 
 To further visualize the results, the
@@ -500,7 +1062,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-07-29
+#>  date     2026-08-03
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -526,7 +1088,7 @@ devtools::session_info()
 #>  BiocSingular               1.28.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  biomformat                 1.40.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  Biostrings                 2.80.1     2026-05-22 [1] Bioconductor 3.23 (R 4.6.1)
-#>  bitops                     1.0-9      2024-10-03 [1] RSPM (R 4.6.0)
+#>  bitops                     1.1-0      2026-07-30 [1] RSPM (R 4.6.0)
 #>  bluster                    1.22.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  brio                       1.1.5      2024-04-24 [2] RSPM (R 4.6.0)
 #>  broom                      1.0.13     2026-05-14 [1] RSPM (R 4.6.0)
@@ -540,7 +1102,7 @@ devtools::session_info()
 #>  circlize                   0.4.18     2026-04-04 [1] RSPM (R 4.6.0)
 #>  cli                        3.6.6      2026-04-09 [2] RSPM (R 4.6.0)
 #>  clue                       0.3-68     2026-03-26 [1] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.2    2026-02-05 [3] CRAN (R 4.6.1)
+#>  cluster                    2.1.8.3    2026-07-30 [3] RSPM (R 4.6.0)
 #>  coda                       0.19-4.1   2024-01-31 [1] RSPM (R 4.6.0)
 #>  codetools                  0.2-20     2024-03-31 [3] CRAN (R 4.6.1)
 #>  coin                       1.4-5      2026-07-10 [1] RSPM (R 4.6.0)
@@ -549,10 +1111,10 @@ devtools::session_info()
 #>  corncob                    0.4.2      2025-03-29 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.1      2026-07-29 [1] Bioconductor
+#>  dar                      * 1.9.3      2026-08-03 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.8.0      2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
+#>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
 #>  decontam                   1.32.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedArray               0.38.2     2026-05-26 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedMatrixStats         1.34.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
@@ -661,9 +1223,12 @@ devtools::session_info()
 #>  R6                         2.6.1      2025-02-15 [2] RSPM (R 4.6.0)
 #>  ragg                       1.5.2      2026-03-23 [2] RSPM (R 4.6.0)
 #>  rappdirs                   0.3.4      2026-01-17 [2] RSPM (R 4.6.0)
+#>  rbibutils                  2.4.1      2026-01-21 [1] RSPM (R 4.6.0)
 #>  RColorBrewer               1.1-3      2022-04-03 [1] RSPM (R 4.6.0)
 #>  Rcpp                       1.1.2      2026-07-05 [2] RSPM (R 4.6.0)
-#>  RcppParallel               6.1.1      2026-07-27 [1] RSPM (R 4.6.0)
+#>  RcppParallel               6.2.0      2026-07-30 [1] RSPM (R 4.6.0)
+#>  Rdpack                     2.6.6      2026-02-08 [1] RSPM (R 4.6.0)
+#>  reformulas                 0.4.4      2026-02-02 [1] RSPM (R 4.6.0)
 #>  registry                   0.5-1      2019-03-05 [1] RSPM (R 4.6.0)
 #>  reshape2                   1.4.5      2025-11-12 [1] RSPM (R 4.6.0)
 #>  Rfast                      2.1.5.2    2025-10-10 [1] CRAN (R 4.6.1)
@@ -722,7 +1287,7 @@ devtools::session_info()
 #>  yulab.utils                0.2.4      2026-02-02 [1] RSPM (R 4.6.0)
 #>  zCompositions              1.6.2      2026-06-23 [1] RSPM (R 4.6.0)
 #>  zigg                       0.0.2      2025-02-07 [1] RSPM (R 4.6.0)
-#>  zoo                        1.8-15     2025-12-15 [1] RSPM (R 4.6.0)
+#>  zoo                        1.9-0      2026-07-31 [1] RSPM (R 4.6.0)
 #> 
 #>  [1] /__w/_temp/Library
 #>  [2] /usr/local/lib/R/site-library

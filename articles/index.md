@@ -26,3 +26,6 @@
 
 - [Reproducibility in Microbiome Data
   Analysis](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
+
+- [Central statistical models and longitudinal
+  contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):

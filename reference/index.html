@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -83,6 +84,29 @@
 
         </dt>
         <dd>Extract results from defined bake</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-configuration">Model Configuration<a class="anchor" aria-label="anchor" href="#model-configuration"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_model.html">add_model()</a></code>
+
+        </dt>
+        <dd>Add a centralized statistical model to a recipe</dd>
+
+        <dt>
+
+          <code><a href="get_model.html">get_model()</a></code>
+
+        </dt>
+        <dd>Get the centralized statistical model from a recipe</dd>
       </dl></div><div class="section level2">
       <h2 id="step-functions-data-preprocessing">Step Functions - Data Preprocessing<a class="anchor" aria-label="anchor" href="#step-functions-data-preprocessing"></a></h2>
 
@@ -279,14 +303,14 @@
           <code><a href="add_tax.html">add_tax()</a></code>
 
         </dt>
-        <dd>Adds taxonomic level of interest in the Recipe.</dd>
+        <dd>Add a legacy taxonomic level of interest to a recipe</dd>
 
         <dt>
 
           <code><a href="add_var.html">add_var()</a></code>
 
         </dt>
-        <dd>Adds variable of interest to the Recipe</dd>
+        <dd>Add legacy variables of interest to a recipe</dd>
 
         <dt>
 
@@ -300,14 +324,14 @@
           <code><a href="get_tax.html">get_tax()</a></code>
 
         </dt>
-        <dd>Returns tax_info from Recipe-class object</dd>
+        <dd>Return legacy taxonomic information from a recipe</dd>
 
         <dt>
 
           <code><a href="get_var.html">get_var()</a></code>
 
         </dt>
-        <dd>Returns var_info from Recipe-class object</dd>
+        <dd>Return legacy target information from a recipe</dd>
 
         <dt>
 

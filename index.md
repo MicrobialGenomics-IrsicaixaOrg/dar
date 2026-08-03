@@ -41,7 +41,12 @@ data("metaHIV_phy")
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(
+    ~ RiskGroup2,
+    targets = "RiskGroup2",
+    tax_level = "Species"
+  ) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
   step_maaslin() |>
@@ -55,6 +60,10 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#>
+#>      ℹ ~RiskGroup2
+#>
 #> Preporcessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Nunt 

@@ -75,7 +75,8 @@ phyloseq::tax_table(phy)
 #> GG_OTU_5 "Enterobacteriaceae" "Escherichia"    NA
 
 # Recipe init
-rec <- dar::recipe(phy, var_info = "BODY_SITE", tax_info = "Genus")
+rec <- dar::recipe(phy) |>
+  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -83,7 +84,11 @@ rec
 #> 
 #>      ℹ phyloseq object with 5 taxa and 6 samples 
 #>      ℹ variable of interes BODY_SITE (class: character, levels: gut, skin) 
-#>      ℹ taxonomic level Genus
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~BODY_SITE
 ```
 
 ### To TreeSummarizedExperiment
@@ -187,7 +192,8 @@ rowData(tse)
 #> GG_OTU_5                    s__
 
 # Recipe init
-rec <- dar::recipe(tse, var_info = "BODY_SITE", tax_info = "Genus")
+rec <- dar::recipe(tse) |>
+  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -195,7 +201,11 @@ rec
 #> 
 #>      ℹ phyloseq object with 5 taxa and 6 samples 
 #>      ℹ variable of interes BODY_SITE (class: character, levels: gut, skin) 
-#>      ℹ taxonomic level Genus
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~BODY_SITE
 ```
 
 ## Importing Data from `qiime` Format
@@ -239,7 +249,8 @@ phy_qiime
 #> phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]
 
 # Recipe init
-rec <- dar::recipe(phy_qiime, var_info = "SampleType", tax_info = "Genus")
+rec <- dar::recipe(phy_qiime) |>
+  dar::add_model(~ SampleType, targets = "SampleType", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -247,7 +258,11 @@ rec
 #> 
 #>      ℹ phyloseq object with 500 taxa and 26 samples 
 #>      ℹ variable of interes SampleType (class: character, levels: Feces, Freshwater, Freshwater (creek), Mock, Ocean, Sediment (estuary), Skin, Soil, Tongue) 
-#>      ℹ taxonomic level Genus
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~SampleType
 ```
 
 ### To TreeSummarizedExperiment
@@ -272,7 +287,8 @@ tse_qiime <- mia::importQIIME2(
 tse_qiime
 
 # Recipe init
-rec <- dar::recipe(tse_qiime, var_info = "body.site", tax_info = "genus")
+rec <- dar::recipe(tse_qiime) |>
+  dar::add_model(~ body.site, targets = "body.site", tax_level = "Genus")
 
 rec
 ```
@@ -313,8 +329,8 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 591 taxa and 3 samples 
-#>      ✖ undefined variable of interest. Use add_var() to add it to Recipe! 
-#>      ✖ undefined taxonomic level. Use add_tax() to add it to Recipe!
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis!
 ```
 
 ### To TreeSummarizedExperiment
@@ -352,7 +368,8 @@ tse_mothur
 #> colTree: NULL
 
 # Recipe init
-rec <- dar::recipe(tse_mothur, var_info = "drug", tax_info = "Genus")
+rec <- dar::recipe(tse_mothur) |>
+  dar::add_model(~ drug, targets = "drug", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -360,7 +377,11 @@ rec
 #> 
 #>      ℹ phyloseq object with 100 taxa and 100 samples 
 #>      ℹ variable of interes drug (class: character, levels: A, B) 
-#>      ℹ taxonomic level Genus
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~drug
 ```
 
 ## Importing Data from `metaphlan` Format
@@ -393,7 +414,8 @@ tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
     dplyr::mutate(condition = rep(c("A", "B"), times = 3))
 )
 
-rec <- dar::recipe(tse_metaphlan, var_info = "condition", tax_info = "Genus")
+rec <- dar::recipe(tse_metaphlan) |>
+  dar::add_model(~ condition, targets = "condition", tax_level = "Genus")
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -401,7 +423,11 @@ rec
 #> 
 #>      ℹ phyloseq object with 16 taxa and 6 samples 
 #>      ℹ variable of interes condition (class: character, levels: A, B) 
-#>      ℹ taxonomic level Genus
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~condition
 ```
 
 ## Conclusion
@@ -437,7 +463,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-07-29
+#>  date     2026-08-03
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -463,13 +489,13 @@ devtools::session_info()
 #>  cachem                     1.1.0   2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4   2026-02-03 [1] RSPM (R 4.6.0)
 #>  cli                        3.6.6   2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.2 2026-02-05 [3] CRAN (R 4.6.1)
+#>  cluster                    2.1.8.3 2026-07-30 [3] RSPM (R 4.6.0)
 #>  codetools                  0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
 #>  crayon                     1.5.3   2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                        1.9.1   2026-07-29 [1] Bioconductor
+#>  dar                        1.9.3   2026-08-03 [1] Bioconductor
 #>  data.table                 1.18.4  2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0   2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.8.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
+#>  DECIPHER                   3.8.1   2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
 #>  decontam                   1.32.0  2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedArray               0.38.2  2026-05-26 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedMatrixStats         1.34.0  2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
@@ -533,8 +559,11 @@ devtools::session_info()
 #>  R6                         2.6.1   2025-02-15 [2] RSPM (R 4.6.0)
 #>  ragg                       1.5.2   2026-03-23 [2] RSPM (R 4.6.0)
 #>  rappdirs                   0.3.4   2026-01-17 [2] RSPM (R 4.6.0)
+#>  rbibutils                  2.4.1   2026-01-21 [1] RSPM (R 4.6.0)
 #>  RColorBrewer               1.1-3   2022-04-03 [1] RSPM (R 4.6.0)
 #>  Rcpp                       1.1.2   2026-07-05 [2] RSPM (R 4.6.0)
+#>  Rdpack                     2.6.6   2026-02-08 [1] RSPM (R 4.6.0)
+#>  reformulas                 0.4.4   2026-02-02 [1] RSPM (R 4.6.0)
 #>  registry                   0.5-1   2019-03-05 [1] RSPM (R 4.6.0)
 #>  reshape2                   1.4.5   2025-11-12 [1] RSPM (R 4.6.0)
 #>  rlang                      1.3.0   2026-07-05 [2] RSPM (R 4.6.0)

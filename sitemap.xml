@@ -11,12 +11,14 @@
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/index.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/authors.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/index.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/news/index.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/PrepRecipe-class.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_step.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.html</loc></url>
@@ -29,6 +31,7 @@
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/find_intersections.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_comparisons.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.html</loc></url>

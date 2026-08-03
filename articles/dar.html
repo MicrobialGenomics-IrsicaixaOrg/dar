@@ -32,7 +32,7 @@ usage, steps, exploration and bakes.
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,7 @@ usage, steps, exploration and bakes.
     <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -115,14 +116,19 @@ specify the processing and differential analysis steps.</p>
 variables in a data set.</p>
 <p>The easiest way to create the initial recipe is:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> </span>
+<code class="sourceCode R"><span><span class="va">rec_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
 <span><span class="va">rec_obj</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Inputs:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~RiskGroup2</span></span></span></code></pre></div>
 <p>The <code>var_info</code> argument corresponds to the variable to be
 considered in the modeling process and <code>tax_info</code> indicates
 the taxonomic level that will be used for the analyses.</p>
@@ -187,6 +193,10 @@ least 3% of the samples have counts greater than 0.</p>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~RiskGroup2</span> </span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Puff_pastry</span> </span></span>
@@ -213,6 +223,10 @@ parameters (those defined by the authors of each method).</p>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~RiskGroup2</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -249,15 +263,15 @@ time using the <code>prep</code> function.</p>
 <span><span class="co">#&gt; Inputs:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">278</span> taxa and <span style="color: #0000BB;">156</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: factor, levels: hts, msm, pwid) </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Results:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Spina_santa <span style="color: #555555;">diff_taxa = 166</span> </span></span>
-<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Dutch_Baby_Pancake <span style="color: #555555;">diff_taxa = 51</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> deseq__Spina_santa <span style="color: #555555;">diff_taxa = 155</span> </span></span>
+<span><span class="co">#&gt;      <span style="color: #00BB00;">✔</span> maaslin__Dutch_Baby_Pancake <span style="color: #555555;">diff_taxa = 41</span> </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 27 taxa are present in all tested methods</span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> 34 taxon-contrast effects are present in all tested methods</span></span></code></pre></div>
 <p>Note that the resulting object print shows information about the
 amount of differentially abundant OTUs in each of the methods, as well
 as the number of OTUs that have been detected by all methods
@@ -280,20 +294,21 @@ detected as differentially abundant in the three methods used.</p>
 <code>cool</code> function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 27 × 2</span></span></span>
-<span><span class="co">#&gt;    taxa_id taxa                        </span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Otu_35  Collinsella_aerofaciens     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Otu_37  Collinsella_stercoris       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Otu_38  Enorma_massiliensis         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Otu_47  Bacteroides_cellulosilyticus</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Otu_48  Bacteroides_clarus          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Otu_63  Bacteroides_plebeius        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Otu_69  Bacteroides_sp_CAG_530      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Otu_78  Bacteroides_uniformis       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Otu_82  Barnesiella_intestinihominis</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Otu_96  Prevotella_copri            </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 17 more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 34 × 9</span></span></span>
+<span><span class="co">#&gt;    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Otu_130 Parab… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                2</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 24 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: methods &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
@@ -310,7 +325,7 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2026-07-29</span></span>
+<span><span class="co">#&gt;  date     2026-08-03</span></span>
 <span><span class="co">#&gt;  pandoc   3.10 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt;  quarto   1.9.38 @ /usr/local/bin/quarto</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -340,14 +355,14 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  cachem                     1.1.0      <span style="color: #555555;">2024-05-16</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  checkmate                  2.3.4      <span style="color: #555555;">2026-02-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  cli                        3.6.6      <span style="color: #555555;">2026-04-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cluster                    2.1.8.2    <span style="color: #555555;">2026-02-05</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
+<span><span class="co">#&gt;  cluster                    2.1.8.3    <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[3]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  coda                       0.19-4.1   <span style="color: #555555;">2024-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  codetools                  0.2-20     <span style="color: #555555;">2024-03-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  crayon                     1.5.3      <span style="color: #555555;">2024-06-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  dar                      * 1.9.1      <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  dar                      * 1.9.3      <span style="color: #555555;">2026-08-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  data.table                 1.18.4     <span style="color: #555555;">2026-05-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  DBI                        1.3.0      <span style="color: #555555;">2026-02-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DECIPHER                   3.8.0      <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
+<span><span class="co">#&gt;  DECIPHER                   3.8.1      <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  decontam                   1.32.0     <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  DelayedArray               0.38.2     <span style="color: #555555;">2026-05-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  DelayedMatrixStats         1.34.0     <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
@@ -425,8 +440,11 @@ detected as differentially abundant in the three methods used.</p>
 <span><span class="co">#&gt;  R6                         2.6.1      <span style="color: #555555;">2025-02-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  ragg                       1.5.2      <span style="color: #555555;">2026-03-23</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  rappdirs                   0.3.4      <span style="color: #555555;">2026-01-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  rbibutils                  2.4.1      <span style="color: #555555;">2026-01-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  RColorBrewer               1.1-3      <span style="color: #555555;">2022-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  Rcpp                       1.1.2      <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  Rdpack                     2.6.6      <span style="color: #555555;">2026-02-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  reformulas                 0.4.4      <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  registry                   0.5-1      <span style="color: #555555;">2019-03-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  reshape2                   1.4.5      <span style="color: #555555;">2025-11-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  rlang                      1.3.0      <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>

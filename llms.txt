@@ -41,7 +41,12 @@ data("metaHIV_phy")
 
 ## Define recipe
 rec <-
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(
+    ~ RiskGroup2,
+    targets = "RiskGroup2",
+    tax_level = "Species"
+  ) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
   step_maaslin() |>
@@ -55,6 +60,10 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#>
+#>      ℹ ~RiskGroup2
+#>
 #> Preporcessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Nunt 
@@ -159,6 +168,13 @@ By contributing to this project, you agree to abide by its terms.
 - [`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
   : Extract results from defined bake
 
+## Model Configuration
+
+- [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  : Add a centralized statistical model to a recipe
+- [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
+  : Get the centralized statistical model from a recipe
+
 ## Step Functions - Data Preprocessing
 
 - [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
@@ -225,15 +241,15 @@ By contributing to this project, you agree to abide by its terms.
 ## Recipe Getters and Adders
 
 - [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
-  : Adds taxonomic level of interest in the Recipe.
+  : Add a legacy taxonomic level of interest to a recipe
 - [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
-  : Adds variable of interest to the Recipe
+  : Add legacy variables of interest to a recipe
 - [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
   : Returns phyloseq from Recipe-class object
 - [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-  : Returns tax_info from Recipe-class object
+  : Return legacy taxonomic information from a recipe
 - [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
-  : Returns var_info from Recipe-class object
+  : Return legacy target information from a recipe
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
   : Extracts otu_table from phyloseq inside a Recipe
 - [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)
@@ -306,3 +322,6 @@ By contributing to this project, you agree to abide by its terms.
 
 - [Reproducibility in Microbiome Data
   Analysis](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
+
+- [Central statistical models and longitudinal
+  contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):

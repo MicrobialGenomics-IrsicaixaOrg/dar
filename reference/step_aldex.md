@@ -109,7 +109,8 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
@@ -120,6 +121,10 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
 #> 
 #> Preporcessing steps:
 #> 
@@ -139,19 +144,20 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
 #> Results:
 #> 
 #>      ✔ aldex__Samosa diff_taxa = 3 
 #> 
-#>      ℹ 3 taxa are present in all tested methods 
+#>      ℹ 4 taxon-contrast effects are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_aldex(rarefy = TRUE)
 
 rec
@@ -162,10 +168,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_aldex() id = aldex__Linzer_torte 
+#>      ◉ step_aldex() id = aldex__Bakpia_Pathok 
 ```

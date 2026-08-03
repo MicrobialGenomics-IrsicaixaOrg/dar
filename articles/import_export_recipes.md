@@ -26,7 +26,8 @@ data(metaHIV_phy)
 
 # Create a recipe with steps
 rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
   step_maaslin()
@@ -51,7 +52,8 @@ Here’s an example of how to use the `import_steps` function:
 ``` r
 
 # Initialize a recipe with a phyloseq object
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
 # Import the steps from a JSON file
 json_file <- out_file
@@ -63,6 +65,10 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
 #> 
 #> Preporcessing steps:
 #> 
@@ -91,18 +97,18 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 101 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Spina_santa diff_taxa = 41 
+#>      ✔ maaslin__Spina_santa diff_taxa = 36 
 #> 
-#>      ℹ 41 taxa are present in all tested methods 
+#>      ℹ 54 taxon-contrast effects are present in all tested methods 
 #> 
 #> Bakes:
 #> 
-#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Spanakopita
+#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Bossche_bol
 ```
 
 ## Limitations and Considerations
@@ -154,7 +160,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-07-29
+#>  date     2026-08-03
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -182,14 +188,14 @@ devtools::session_info()
 #>  cachem                     1.1.0    2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4    2026-02-03 [1] RSPM (R 4.6.0)
 #>  cli                        3.6.6    2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.2  2026-02-05 [3] CRAN (R 4.6.1)
+#>  cluster                    2.1.8.3  2026-07-30 [3] RSPM (R 4.6.0)
 #>  codetools                  0.2-20   2024-03-31 [3] CRAN (R 4.6.1)
 #>  collapse                   2.1.7    2026-05-19 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3    2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                      * 1.9.1    2026-07-29 [1] Bioconductor
+#>  dar                      * 1.9.3    2026-08-03 [1] Bioconductor
 #>  data.table                 1.18.4   2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0    2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.8.0    2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
+#>  DECIPHER                   3.8.1    2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
 #>  decontam                   1.32.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedArray               0.38.2   2026-05-26 [1] Bioconductor 3.23 (R 4.6.1)
 #>  DelayedMatrixStats         1.34.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
@@ -209,7 +215,6 @@ devtools::session_info()
 #>  generics                   0.1.4    2025-05-09 [1] RSPM (R 4.6.0)
 #>  GenomicRanges              1.64.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  ggbeeswarm                 0.7.3    2025-11-29 [1] RSPM (R 4.6.0)
-#>  ggnewscale                 0.5.2    2025-06-20 [1] RSPM (R 4.6.0)
 #>  ggplot2                    4.0.3    2026-04-22 [1] RSPM (R 4.6.0)
 #>  ggrepel                    0.9.8    2026-03-17 [1] RSPM (R 4.6.0)
 #>  glue                       1.8.1    2026-04-17 [2] RSPM (R 4.6.0)
@@ -227,7 +232,6 @@ devtools::session_info()
 #>  jquerylib                  0.1.4    2021-04-26 [2] RSPM (R 4.6.0)
 #>  jsonlite                   2.0.0    2025-03-27 [2] RSPM (R 4.6.0)
 #>  knitr                      1.51     2025-12-20 [2] RSPM (R 4.6.0)
-#>  labeling                   0.4.3    2023-08-29 [1] RSPM (R 4.6.0)
 #>  lattice                    0.22-9   2026-02-09 [3] CRAN (R 4.6.1)
 #>  lazyeval                   0.2.3    2026-04-04 [1] RSPM (R 4.6.0)
 #>  lifecycle                  1.0.5    2026-01-08 [2] RSPM (R 4.6.0)
@@ -263,9 +267,12 @@ devtools::session_info()
 #>  R6                         2.6.1    2025-02-15 [2] RSPM (R 4.6.0)
 #>  ragg                       1.5.2    2026-03-23 [2] RSPM (R 4.6.0)
 #>  rappdirs                   0.3.4    2026-01-17 [2] RSPM (R 4.6.0)
+#>  rbibutils                  2.4.1    2026-01-21 [1] RSPM (R 4.6.0)
 #>  RColorBrewer               1.1-3    2022-04-03 [1] RSPM (R 4.6.0)
 #>  Rcpp                       1.1.2    2026-07-05 [2] RSPM (R 4.6.0)
+#>  Rdpack                     2.6.6    2026-02-08 [1] RSPM (R 4.6.0)
 #>  readr                      2.2.0    2026-02-19 [1] RSPM (R 4.6.0)
+#>  reformulas                 0.4.4    2026-02-02 [1] RSPM (R 4.6.0)
 #>  registry                   0.5-1    2019-03-05 [1] RSPM (R 4.6.0)
 #>  reshape2                   1.4.5    2025-11-12 [1] RSPM (R 4.6.0)
 #>  rlang                      1.3.0    2026-07-05 [2] RSPM (R 4.6.0)
@@ -315,7 +322,7 @@ devtools::session_info()
 #>  XVector                    0.52.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  yaml                       2.3.12   2025-12-10 [2] RSPM (R 4.6.0)
 #>  yulab.utils                0.2.4    2026-02-02 [1] RSPM (R 4.6.0)
-#>  zoo                        1.8-15   2025-12-15 [1] RSPM (R 4.6.0)
+#>  zoo                        1.9-0    2026-07-31 [1] RSPM (R 4.6.0)
 #> 
 #>  [1] /__w/_temp/Library
 #>  [2] /usr/local/lib/R/site-library

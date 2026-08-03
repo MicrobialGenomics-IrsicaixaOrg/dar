@@ -1,6 +1,8 @@
-# Adds taxonomic level of interest in the Recipe.
+# Add a legacy taxonomic level of interest to a recipe
 
-Adds taxonomic level of interest in the Recipe.
+`add_tax()` is deprecated. Supply `tax_level` to
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+instead.
 
 ## Usage
 
@@ -28,13 +30,13 @@ A `Recipe` object.
 ``` r
 data(metaHIV_phy)
 rec <- recipe(metaHIV_phy)
-rec <- add_tax(rec, tax_info = "Species")
+rec <- suppressWarnings(add_tax(rec, tax_info = "Species"))
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined variable of interest. Use add_var() to add it to Recipe! 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
 #>      ℹ taxonomic level Species 
 #> 
 #> 

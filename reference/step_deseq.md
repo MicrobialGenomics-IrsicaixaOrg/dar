@@ -105,7 +105,8 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
@@ -117,10 +118,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Lattice 
-#>      ◉ step_filter_taxa() id = filter_taxa__Empanada 
+#>      ◉ step_subset_taxa() id = subset_taxa__Börek 
+#>      ◉ step_filter_taxa() id = filter_taxa__Djevrek 
 #> 
 #> DA steps:
 #> 
@@ -129,25 +134,29 @@ rec
 rec <-
   step_deseq(rec) |>
   prep(parallel = FALSE)
+#> Warning: Estimated rdf < 1.0; not estimating variance
+#> Warning: Estimated rdf < 1.0; not estimating variance
+#> Warning: Estimated rdf < 1.0; not estimating variance
 
 rec
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
 #> Results:
 #> 
-#>      ✔ deseq__Hamantash diff_taxa = 2 
+#>      ✔ deseq__Spina_santa diff_taxa = 4 
 #> 
-#>      ℹ 2 taxa are present in all tested methods 
+#>      ℹ 5 taxon-contrast effects are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step
 rec <-
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_deseq(rarefy = TRUE)
 
 rec
@@ -158,10 +167,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_deseq() id = deseq__Pogača 
+#>      ◉ step_deseq() id = deseq__Carac 
 ```

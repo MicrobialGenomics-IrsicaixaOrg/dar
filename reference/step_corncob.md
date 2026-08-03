@@ -136,7 +136,8 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 
@@ -148,10 +149,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Baklava 
-#>      ◉ step_filter_taxa() id = filter_taxa__Kanafeh 
+#>      ◉ step_subset_taxa() id = subset_taxa__Tu 
+#>      ◉ step_filter_taxa() id = filter_taxa__Pogača 
 #> 
 #> DA steps:
 #> 
@@ -160,19 +165,22 @@ rec
 rec <- 
   step_corncob(rec) |>
   prep(parallel = FALSE)
+#> Warning: ! The centralized model overrides design arguments in 1 step.
+#> ℹ corncob__Cronut: formula_null
+#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
   
 rec
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 101 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
 #> Results:
 #> 
-#>      ✔ corncob__Éclair diff_taxa = 4 
+#>      ✔ corncob__Cronut diff_taxa = 4 
 #> 
-#>      ℹ 4 taxa are present in all tested methods 
+#>      ℹ 7 taxon-contrast effects are present in all tested methods 
 #> 
 ```

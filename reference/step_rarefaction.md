@@ -50,7 +50,7 @@ data(metaHIV_phy)
 
 ## Init Recipe
 rec <- 
-  recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "Phylum") |>
+  recipe(metaHIV_phy) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
 
@@ -59,13 +59,12 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Mantecadas 
-#>      ◉ step_filter_taxa() id = filter_taxa__Bridie 
+#>      ◉ step_subset_taxa() id = subset_taxa__Makroudh 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
 #> 
 #> DA steps:
 #> 
@@ -78,14 +77,13 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
+#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
+#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Mantecadas 
-#>      ◉ step_filter_taxa() id = filter_taxa__Bridie 
-#>      ◉ step_rarefaction() id = rarefaction__Curry_puff 
+#>      ◉ step_subset_taxa() id = subset_taxa__Makroudh 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
+#>      ◉ step_rarefaction() id = rarefaction__Punschkrapfen 
 #> 
 #> DA steps:
 #> 

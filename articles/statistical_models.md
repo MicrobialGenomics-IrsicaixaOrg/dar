@@ -1,0 +1,130 @@
+# Central statistical models and longitudinal contrasts
+
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+defines one statistical design shared by every compatible
+differential-abundance step. Its `targets` and `tax_level` arguments are
+the single source of truth for the analysis configuration; other fixed
+terms adjust for confounding. Method-specific thresholds, normalization
+and rarefaction settings remain active. A model-free recipe remains
+valid for preprocessing, but differential-abundance execution without a
+model is deprecated.
+
+## Cross-sectional adjustment
+
+``` r
+
+rec <- recipe(phy) |>
+  add_model(
+    ~ condition + batch + age,
+    targets = "condition",
+    tax_level = "Species",
+    reference = c(condition = "control"),
+    na_action = "error"
+  ) |>
+  step_deseq() |>
+  step_aldex() |>
+  step_ancom()
+
+get_model(rec)
+fit <- prep(rec)
+```
+
+The reference is the denominator, so a positive effect for
+`condition[treated-control]` means higher abundance in `treated`. With
+`na_action = "drop"`,
+[`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)
+removes one common complete-case cohort before any engine runs and
+records the sample identifiers in the execution manifest.
+
+## Longitudinal adjustment
+
+Numeric time values are converted internally to a factor whose levels
+are sorted by numeric value. The original sample metadata are not
+modified.
+
+``` r
+
+longitudinal <- recipe(longitudinal_phy) |>
+  add_model(
+    ~ condition * visit + batch + (1 | subject),
+    targets = "condition",
+    tax_level = "Species",
+    time = "visit",
+    reference = c(condition = "control", visit = "0"),
+    contrasts = "all",
+    na_action = "drop"
+  ) |>
+  step_ancom() |>
+  step_maaslin()
+
+fit <- prep(longitudinal)
+fit@execution$contrasts
+```
+
+For `condition * visit`, the simple plan contains condition comparisons
+within every visit and all pairwise visit comparisons within every
+condition. Later time values are numerators. `contrasts = "all"`
+additionally requests difference-in-differences. More than 12 time
+points requires an explicit larger `max_time_levels`, preventing
+accidental contrast explosions.
+
+## Engine capabilities
+
+| Engine    | Fixed confounders | Time interaction | Random effects |
+|:----------|:-----------------:|:----------------:|:--------------:|
+| DESeq2    |        yes        |       yes        |       no       |
+| ALDEx2    |        yes        |       yes        |       no       |
+| ANCOM-BC2 |        yes        |       yes        |      yes       |
+| corncob   |        yes        |       yes        |       no       |
+| MaAsLin3  |        yes        |       yes        |      yes       |
+| Wilcoxon  |        no         |        no        |       no       |
+| LEfSe     |        no         |        no        |       no       |
+
+Incompatible steps are warned about when the chain is built and
+rechecked after preprocessing.
+[`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)
+records them rather than treating them as failed fits. If no method is
+compatible, preparation stops. Real engine failures and missing planned
+contrasts remain errors.
+
+Prepared modeled results contain `contrast_id`, `comparison`,
+`contrast_type` and `var`. Consensus operations group by `contrast_id`
+and effect direction, so different longitudinal hypotheses cannot
+contribute to the same vote.
+
+[`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)
+and
+[`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
+preserve the formula, targets, taxonomic level, time column, references,
+contrast mode, missing-value policy and time-level limit. Files created
+by older versions without a model continue to import through the legacy
+path.
+
+## Migrating legacy selectors
+
+The former `recipe(..., var_info=, tax_info=)`,
+[`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
+[`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md),
+[`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
+and
+[`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
+interfaces remain available during the first Bioconductor deprecation
+cycle. They emit classified warnings and synchronize with the
+centralized model where applicable. New code should inspect
+`get_model(rec)$targets` and `get_model(rec)$tax_level` instead. Legacy
+recipes can be migrated by moving both selectors into
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md):
+
+``` r
+
+# Deprecated
+old <- recipe(phy, var_info = "condition", tax_info = "Species")
+
+# Current API
+current <- recipe(phy) |>
+  add_model(
+    ~ condition,
+    targets = "condition",
+    tax_level = "Species"
+  )
+```

@@ -47,7 +47,7 @@ intersections
 
 ## Additionally, we can exclude some methods form the table
 intersections <- find_intersections(
-  test_prep_rec, 
+  test_prep_rec,
   steps = steps_ids(test_prep_rec, "da")[-1]
 )
 

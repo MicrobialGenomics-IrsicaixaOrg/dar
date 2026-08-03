@@ -96,8 +96,9 @@ Other Diff taxa steps:
 data(metaHIV_phy)
 
 ## Init Recipe
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Phylum") |>
+rec <-
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
 
@@ -109,16 +110,20 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Banbury_cake 
-#>      ◉ step_filter_taxa() id = filter_taxa__Tortita_negra 
+#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
+#>      ◉ step_filter_taxa() id = filter_taxa__Nazook 
 #> 
 #> DA steps:
 #> 
 
 ## Define step with default parameters
-rec <- step_lefse(rec) 
+rec <- step_lefse(rec)
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -128,22 +133,27 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Banbury_cake 
-#>      ◉ step_filter_taxa() id = filter_taxa__Tortita_negra 
+#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
+#>      ◉ step_filter_taxa() id = filter_taxa__Nazook 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Lattice 
+#>      ◉ step_lefse() id = lefse__Coca 
 
 ## Running lefse without rarefaction (not recommended)
-rec <- 
-  recipe(metaHIV_phy, "RiskGroup2", "Species") |>
+rec <-
+  recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_lefse(rarefy = FALSE)
 #> ! Running lefse without rarefaction is not recommended (`id` =
-#>   "lefse__Sweetheart_cake").
-  
+#>   "lefse__Linzer_torte").
+
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
@@ -152,10 +162,14 @@ rec
 #>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
 #> Preporcessing steps:
 #> 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Sweetheart_cake 
+#>      ◉ step_lefse() id = lefse__Linzer_torte 
 ```

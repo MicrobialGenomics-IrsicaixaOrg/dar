@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -148,7 +149,8 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; GG_OTU_5 "Enterobacteriaceae" "Escherichia"    NA</span></span>
 <span></span>
 <span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span>, var_info <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_info <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">BODY_SITE</span>, targets <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
@@ -156,7 +158,11 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">5</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">BODY_SITE</span> (class: character, levels: gut, skin) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~BODY_SITE</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="to-treesummarizedexperiment">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment"></a>
@@ -257,7 +263,8 @@ of how to perform this conversion:</p>
 <span><span class="co">#&gt; GG_OTU_5                    s__</span></span>
 <span></span>
 <span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse</span>, var_info <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_info <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">BODY_SITE</span>, targets <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
@@ -265,7 +272,11 @@ of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">5</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">BODY_SITE</span> (class: character, levels: gut, skin) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~BODY_SITE</span></span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -308,7 +319,8 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]</span></span>
 <span></span>
 <span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy_qiime</span>, var_info <span class="op">=</span> <span class="st">"SampleType"</span>, tax_info <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy_qiime</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">SampleType</span>, targets <span class="op">=</span> <span class="st">"SampleType"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
@@ -316,7 +328,11 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">500</span> taxa and <span style="color: #0000BB;">26</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">SampleType</span> (class: character, levels: Feces, Freshwater, Freshwater (creek), Mock, Ocean, Sediment (estuary), Skin, Soil, Tongue) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~SampleType</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="to-treesummarizedexperiment-1">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment-1"></a>
@@ -338,7 +354,8 @@ of how to perform this conversion:</p>
 <span><span class="va">tse_qiime</span></span>
 <span></span>
 <span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_qiime</span>, var_info <span class="op">=</span> <span class="st">"body.site"</span>, tax_info <span class="op">=</span> <span class="st">"genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_qiime</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">body.site</span>, targets <span class="op">=</span> <span class="st">"body.site"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span></code></pre></div>
 </div>
@@ -378,8 +395,8 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; Inputs:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">591</span> taxa and <span style="color: #0000BB;">3</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined variable of interest. Use <span style="background-color: #BB00BB;">add_var()</span> to add it to Recipe! </span></span>
-<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_tax()</span> to add it to Recipe!</span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined analysis target. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis! </span></span>
+<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis!</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="to-treesummarizedexperiment-2">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment-2"></a>
@@ -414,7 +431,8 @@ of how to perform this conversion:</p>
 <span><span class="co">#&gt; colTree: NULL</span></span>
 <span></span>
 <span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_mothur</span>, var_info <span class="op">=</span> <span class="st">"drug"</span>, tax_info <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_mothur</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">drug</span>, targets <span class="op">=</span> <span class="st">"drug"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
@@ -422,7 +440,11 @@ of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">100</span> taxa and <span style="color: #0000BB;">100</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">drug</span> (class: character, levels: A, B) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~drug</span></span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -454,7 +476,8 @@ example of how to perform this conversion:</p>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_metaphlan</span>, var_info <span class="op">=</span> <span class="st">"condition"</span>, tax_info <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_metaphlan</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span>, targets <span class="op">=</span> <span class="st">"condition"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
@@ -462,7 +485,11 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">16</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">condition</span> (class: character, levels: A, B) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span></span></span></code></pre></div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~condition</span></span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -498,7 +525,7 @@ conversion to ensure it has been imported correctly.</p>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2026-07-29</span></span>
+<span><span class="co">#&gt;  date     2026-08-03</span></span>
 <span><span class="co">#&gt;  pandoc   3.10 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt;  quarto   1.9.38 @ /usr/local/bin/quarto</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -524,13 +551,13 @@ conversion to ensure it has been imported correctly.</p>
 <span><span class="co">#&gt;  cachem                     1.1.0   <span style="color: #555555;">2024-05-16</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  checkmate                  2.3.4   <span style="color: #555555;">2026-02-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  cli                        3.6.6   <span style="color: #555555;">2026-04-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cluster                    2.1.8.2 <span style="color: #555555;">2026-02-05</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
+<span><span class="co">#&gt;  cluster                    2.1.8.3 <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[3]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  codetools                  0.2-20  <span style="color: #555555;">2024-03-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  crayon                     1.5.3   <span style="color: #555555;">2024-06-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  dar                        1.9.1   <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  dar                        1.9.3   <span style="color: #555555;">2026-08-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  data.table                 1.18.4  <span style="color: #555555;">2026-05-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  DBI                        1.3.0   <span style="color: #555555;">2026-02-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DECIPHER                   3.8.0   <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
+<span><span class="co">#&gt;  DECIPHER                   3.8.1   <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  decontam                   1.32.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  DelayedArray               0.38.2  <span style="color: #555555;">2026-05-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  DelayedMatrixStats         1.34.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
@@ -594,8 +621,11 @@ conversion to ensure it has been imported correctly.</p>
 <span><span class="co">#&gt;  R6                         2.6.1   <span style="color: #555555;">2025-02-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  ragg                       1.5.2   <span style="color: #555555;">2026-03-23</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  rappdirs                   0.3.4   <span style="color: #555555;">2026-01-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  rbibutils                  2.4.1   <span style="color: #555555;">2026-01-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  RColorBrewer               1.1-3   <span style="color: #555555;">2022-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  Rcpp                       1.1.2   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  Rdpack                     2.6.6   <span style="color: #555555;">2026-02-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  reformulas                 0.4.4   <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  registry                   0.5-1   <span style="color: #555555;">2019-03-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  reshape2                   1.4.5   <span style="color: #555555;">2025-11-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  rlang                      1.3.0   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>

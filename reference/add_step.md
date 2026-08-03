@@ -34,7 +34,8 @@ with the new operation in the last slot.
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy, "RiskGroup2", "Species")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
 # Internally, step_ functions use add_step to append themselves
 rec <- step_maaslin(rec)

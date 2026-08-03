@@ -18,3 +18,8 @@ Useful links:
 
 **Maintainer**: Francesc Catala-Moll <fcatala@irsicaixa.es>
 ([ORCID](https://orcid.org/0000-0002-2354-8648))
+
+Authors:
+
+- Francesc Catala-Moll <fcatala@irsicaixa.es>
+  ([ORCID](https://orcid.org/0000-0002-2354-8648))

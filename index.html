@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,7 @@
     <li><a class="dropdown-item" href="articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -98,7 +99,12 @@
 <span></span>
 <span><span class="co">## Define recipe</span></span>
 <span><span class="va">rec</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span>, var_info <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/add_model.html">add_model</a></span><span class="op">(</span></span>
+<span>    <span class="op">~</span> <span class="va">RiskGroup2</span>,</span>
+<span>    targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>,</span>
+<span>    tax_level <span class="op">=</span> <span class="st">"Species"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -112,6 +118,10 @@
 <span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
 <span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt;      ℹ ~RiskGroup2</span></span>
+<span><span class="co">#&gt;</span></span>
 <span><span class="co">#&gt; Preporcessing steps:</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Nunt </span></span>

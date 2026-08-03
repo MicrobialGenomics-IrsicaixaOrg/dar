@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,7 @@
     <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -40,6 +41,23 @@
       <small>Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.3" id="dar-193">dar 1.9.3<a class="anchor" aria-label="anchor" href="#dar-193"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-1-9-3">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-3"></a></h3>
+<ul><li>CHANGED: <code><a href="../reference/add_model.html">add_model()</a></code> is now the single source of truth for differential abundance analysis targets and taxonomic resolution through its new <code>targets</code> and <code>tax_level</code> arguments (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<li>DEPRECATED: <code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code>, <code><a href="../reference/get_var.html">get_var()</a></code>, <code><a href="../reference/get_tax.html">get_tax()</a></code>, the <code>var_info</code> and <code>tax_info</code> arguments to <code><a href="../reference/recipe.html">recipe()</a></code>, and model-free DA execution now emit classified migration warnings. They remain functional during this first Bioconductor deprecation cycle (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<li>IMPROVED: Legacy centralized models, serialized recipes and imported step files are normalized to the new model representation without changing the original microbiome metadata (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<li>FIXED: Modeled exclusion and mutual plots preserve contrast and effect-direction keys, normalize adjusted p-value aliases without duplicate columns, and LEfSe executes every planned pairwise contrast for multilevel targets (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.2" id="dar-192">dar 1.9.2<a class="anchor" aria-label="anchor" href="#dar-192"></a></h2>
+<ul><li>NEW: Add a centralized statistical model with <code><a href="../reference/add_model.html">add_model()</a></code> and <code><a href="../reference/get_model.html">get_model()</a></code>, including fixed confounders, target-time interactions, supported random effects, explicit references, and a shared missing-value policy (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<li>NEW: Generate deterministic condition-within-time, time-within-condition and optional difference-in-differences contrasts, with a common result contract across DESeq2, ALDEx2, ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<li>IMPROVED: Record executed and skipped methods in prepared recipes, validate engine capabilities before execution, and keep consensus results separated by contrast and effect direction (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<li>IMPROVED: Preserve centralized model specifications when exporting and importing recipe steps (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.1" id="dar-191">dar 1.9.1<a class="anchor" aria-label="anchor" href="#dar-191"></a></h2>
 <ul><li>IMPROVED: Enforce structural invariants for <code>Recipe</code> and inherited <code>PrepRecipe</code> objects through S4 validity checks (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124" class="external-link">#124</a>).</li>
