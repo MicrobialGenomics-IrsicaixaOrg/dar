@@ -32,6 +32,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: scientific-validation-${{ github.event_name }}-${{ inputs.profile || 'full' }}-${{ inputs.engine || 'all' }}
+  cancel-in-progress: true
+
 jobs:
   bioc-config:
     runs-on: ubuntu-latest
@@ -89,14 +93,14 @@ jobs:
       R_LIBS_USER: /__w/_temp/ScientificValidationLibrary
       VALIDATION_PROFILE: ${{ needs.bioc-config.outputs.profile }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Create validation library
         shell: bash
         run: mkdir -p "$R_LIBS_USER"
 
       - name: Restore validation package cache
-        uses: actions/cache@v5
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
         with:
           path: ${{ env.R_LIBS_USER }}
           key: scientific-validation-${{ matrix.engine }}-R${{ needs.bioc-config.outputs.r }}-Bioc${{ needs.bioc-config.outputs.bioc }}-${{ hashFiles('DESCRIPTION', 'dev/scientific-validation/profiles.csv') }}
@@ -162,7 +166,7 @@ jobs:
 
       - name: Upload engine artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: scientific-validation-${{ matrix.engine }}
           path: validation-results/${{ matrix.engine }}
@@ -174,20 +178,20 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
         with:
           r-version: ${{ needs.bioc-config.outputs.r }}
 
-      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-pandoc@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2
 
       - name: Install report dependencies
         shell: Rscript {0}
         run: install.packages(c("dplyr", "ggplot2", "knitr", "rmarkdown"))
 
       - name: Download engine artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           pattern: scientific-validation-*
           path: validation-artifacts
@@ -200,7 +204,7 @@ jobs:
 
       - name: Upload aggregate report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: scientific-validation-report
           path: validation-report

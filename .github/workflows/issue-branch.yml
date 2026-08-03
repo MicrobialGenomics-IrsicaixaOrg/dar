@@ -1,4 +1,9 @@
 name: Create Issue Branch
+
+concurrency:
+  group: issue-branch-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 on:
   issues:
     types: [assigned]
@@ -8,13 +13,13 @@ on:
 jobs:
   create_issue_branch_job:
     runs-on: ubuntu-latest
-    permissions:       
+    permissions:
       contents: write
       issues: write
       pull-requests: write
     steps:
     - name: Create Issue Branch
       id: Create_Issue_Branch
-      uses: robvanderleek/create-issue-branch@main
+      uses: robvanderleek/create-issue-branch@1327274ffa72a698c514c5542edb05322c8e8308 # main, pinned 2026-08-03
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
