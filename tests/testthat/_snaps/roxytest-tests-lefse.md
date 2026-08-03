@@ -1,4 +1,4 @@
-# Function step_lefse() @ L83
+# Function step_lefse() @ L86
 
     Code
       expect_s4_class(suppressWarnings(prep(test, parallel = FALSE)), "PrepRecipe")

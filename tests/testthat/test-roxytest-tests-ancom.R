@@ -2,7 +2,7 @@
 
 # File R/ancom.R: @tests
 
-test_that("Function step_ancom() @ L116", {
+test_that("Function step_ancom() @ L126", {
   data(metaHIV_phy)
   
   test <-

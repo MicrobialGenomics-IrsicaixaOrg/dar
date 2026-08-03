@@ -389,7 +389,7 @@ test_that("all engine compilers receive the same design and contrast plan", {
       ~ condition * time + batch,
       targets = "condition", tax_level = "Species", time = "time"
     )
-  engines <- c("deseq", "aldex", "ancom", "corncob", "maaslin")
+  engines <- c("deseq", "aldex", "ancom", "corncob", "linda", "maaslin")
   compiled <- lapply(engines, function(engine) dar:::compile_model(rec, engine))
 
   expect_true(all(vapply(compiled, function(x) {

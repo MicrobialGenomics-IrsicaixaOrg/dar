@@ -125,7 +125,7 @@ rec
 
 Once data is preprocessed and cleaned, the next step is to add the da steps. 
 The `dar` package incorporates multiple methods to analyze the data, including: 
-ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin3 and Wilcox. 
+ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, LinDA, MaAsLin3 and Wilcox.
 These methods provide a range of options for uncovering potential microbial 
 biomarkers associated with the variable of interest. To ensure consistency 
 across methods, we decided not to use default parameters, but to set the 

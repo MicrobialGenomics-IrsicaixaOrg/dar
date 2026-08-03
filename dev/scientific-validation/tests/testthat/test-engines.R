@@ -5,6 +5,7 @@ testthat::test_that("engine capabilities match centralized model support", {
   testthat::expect_true(validation_engine_compatible(simple, "wilcox")$compatible)
   testthat::expect_false(validation_engine_compatible(complex, "wilcox")$compatible)
   testthat::expect_true(validation_engine_compatible(complex, "ancom")$compatible)
+  testthat::expect_true(validation_engine_compatible(complex, "linda")$compatible)
   testthat::expect_true(validation_engine_compatible(complex, "maaslin")$compatible)
   testthat::expect_false(validation_engine_compatible(complex, "deseq")$compatible)
 })
@@ -13,6 +14,13 @@ testthat::test_that("ANCOM installs every runtime validation dependency", {
   testthat::expect_contains(
     validation_engine("ancom")$packages,
     "microbiome"
+  )
+})
+
+testthat::test_that("LinDA validation uses its canonical CRAN package", {
+  testthat::expect_identical(
+    validation_engine("linda")$packages,
+    "MicrobiomeStat"
   )
 })
 

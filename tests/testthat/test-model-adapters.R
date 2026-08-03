@@ -3,18 +3,6 @@ model_smoke_recipe <- function() {
     add_model(~ condition, targets = "condition", tax_level = "Species")
 }
 
-expect_complete_model_result <- function(result, rec) {
-  table <- dar:::flatten_model_output(result)
-  expect_setequal(
-    unique(table$contrast_id),
-    dar:::resolve_model(rec)$contrast_plan$contrast_id
-  )
-  expect_true(all(c(
-    "taxa_id", "effect", "padj", "signif", "contrast_id", "comparison",
-    "contrast_type", "var"
-  ) %in% names(table)))
-}
-
 record_engine_stages <- function() {
   calls <- character()
   native_stage_function <- dar:::engine_stage_function

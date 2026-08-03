@@ -84,7 +84,7 @@ test_that("Function step_to_call() @ L162", {
 })
 
 
-test_that("Function find_intersections() @ L283", {
+test_that("Function find_intersections() @ L347", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -103,7 +103,7 @@ test_that("Function find_intersections() @ L283", {
 })
 
 
-test_that("Function steps_ids() @ L362", {
+test_that("Function steps_ids() @ L426", {
   data(test_prep_rec)
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
@@ -128,7 +128,7 @@ test_that("Function steps_ids() @ L362", {
 })
 
 
-test_that("Function import_steps() @ L523", {
+test_that("Function import_steps() @ L604", {
   data(metaHIV_phy)
   suppressWarnings(
     recipe(metaHIV_phy, "RiskGroup2", "Class") |>

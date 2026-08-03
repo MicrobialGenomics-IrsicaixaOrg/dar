@@ -1,7 +1,10 @@
 contract_recipe <- function() {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")
-  engines <- c("deseq", "aldex", "ancom", "corncob", "maaslin", "wilcox", "lefse")
+  engines <- c(
+    "deseq", "aldex", "ancom", "corncob", "linda", "maaslin",
+    "wilcox", "lefse"
+  )
   for (engine in engines) {
     arguments <- list(subclass = engine, id = paste0(engine, "__contract"))
     if (identical(engine, "wilcox")) {
@@ -41,14 +44,17 @@ contract_results <- function(rec = contract_recipe()) {
     corncob__contract = list(model = dplyr::mutate(
       common, pval = 0.013, padj = 0.023
     )),
+    linda__contract = list(model = dplyr::mutate(
+      common, pvalue = 0.014, padj = 0.024
+    )),
     maaslin__contract = list(model = dplyr::mutate(
-      common, pval = 0.014, qval = 0.024
+      common, pval = 0.015, qval = 0.025
     )),
     wilcox__contract = list(model = dplyr::mutate(
-      common, p = 0.015, padj = 0.025
+      common, p = 0.016, padj = 0.026
     )),
     lefse__contract = list(model = dplyr::mutate(
-      common, pvalue = 0.016, adjp = 0.026
+      common, pvalue = 0.017, adjp = 0.027
     ))
   )
 }
@@ -93,19 +99,23 @@ test_that("tidy_results exposes the canonical contract for every engine", {
     logical(1)
   )))
   expect_identical(prepared@results, raw)
-  expect_equal(nrow(result), 7L)
+  expect_equal(nrow(result), 8L)
   expect_equal(
     result$method,
-    c("deseq", "aldex", "ancom", "corncob", "maaslin", "wilcox", "lefse")
+    c(
+      "deseq", "aldex", "ancom", "corncob", "linda", "maaslin",
+      "wilcox", "lefse"
+    )
   )
   expect_equal(result$step_id, names(raw))
-  expect_equal(result$p_value, seq(0.01, 0.016, by = 0.001))
-  expect_equal(result$adj_p_value, seq(0.02, 0.026, by = 0.001))
+  expect_equal(result$p_value, seq(0.01, 0.017, by = 0.001))
+  expect_equal(result$adj_p_value, seq(0.02, 0.027, by = 0.001))
   expect_equal(result$effect_metric, c(
     "log2_fold_change",
     "standardized_clr_effect",
     "bias_corrected_log_fold_change",
     "logit_mean_abundance_coefficient",
+    "bias_corrected_log2_fold_change",
     "transformed_abundance_coefficient",
     "median_clr_difference",
     "lda_score"
@@ -116,7 +126,7 @@ test_that("tidy_results supports filtering, step selection and empty recipes", {
   prepared <- contract_prepared()
   prepared@results$aldex__contract$model$signif <- FALSE
 
-  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 6L)
+  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 7L)
   expect_equal(
     tidy_results(prepared, steps = "aldex__contract")$method,
     "aldex"

@@ -1,3 +1,11 @@
+# dar 1.9.6
+
+* NEW: `step_linda()` integrates bias-corrected LinDA linear and mixed-effects
+  models with every compatible centralized contrast (#128).
+* IMPROVED: LinDA participates in the canonical tidy result contract and the
+  Monte Carlo scientific-validation workflow with explicit log2 fold-change
+  semantics (#128).
+
 # dar 1.9.5
 
 * NEW: The seven centralized DA engines accept structured `engine_args` for

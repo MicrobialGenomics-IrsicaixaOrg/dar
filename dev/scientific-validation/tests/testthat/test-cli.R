@@ -1,13 +1,13 @@
 testthat::test_that("CLI arguments and selections are validated", {
   parsed <- parse_validation_arguments(c(
-    "--profile=full", "--engine=deseq,ancom", "--strict=false"
+    "--profile=full", "--engine=deseq,linda", "--strict=false"
   ))
   testthat::expect_equal(parsed$profile, "full")
-  testthat::expect_equal(parsed$engine, "deseq,ancom")
+  testthat::expect_equal(parsed$engine, "deseq,linda")
   testthat::expect_false(parsed$strict)
   testthat::expect_equal(
-    validation_selection("deseq,ancom", names(validation_engine_registry())),
-    c("deseq", "ancom")
+    validation_selection("deseq,linda", names(validation_engine_registry())),
+    c("deseq", "linda")
   )
   testthat::expect_error(validation_selection("unknown", "deseq"), "Unknown")
 })
