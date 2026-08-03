@@ -14,7 +14,6 @@ utils::globalVariables(c(
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <intersection_df>
   # <cool>
   # <run_wilcox>
   ".",
@@ -25,7 +24,6 @@ utils::globalVariables(c(
   # <run_maaslin>
   "coef",
   # <mutual_plt>
-  # <.all_stats>
   "comparison",
   # <.count_summary>
   "count_max",
@@ -33,7 +31,6 @@ utils::globalVariables(c(
   "count_mean",
   # <run_aldex>
   # <mutual_plt>
-  # <.all_stats>
   "effect",
   # <mutual_plt>
   "effect_v",
@@ -111,7 +108,6 @@ utils::globalVariables(c(
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <.otu_method_count>
-  # <.all_stats>
   # <tax_table>
   # <intersection_df>
   # <run_wilcox>

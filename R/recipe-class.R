@@ -651,8 +651,9 @@ methods::setMethod(
       purrr::discard(stringr::str_detect(., "step_subster|step_filter")) %>%
       purrr::walk( ~ {
         n_taxa <-
-          object@results[[.x]][[1]] %>%
-          dplyr::filter(signif == TRUE) %>%
+          tidy_results(
+            object, steps = .x, significant_only = TRUE
+          ) %>%
           dplyr::pull(taxa_id) %>%
           unique() %>%
           length()

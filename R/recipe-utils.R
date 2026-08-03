@@ -457,11 +457,12 @@ prep <- function(rec,
     names(res) <- da_names
   }
 
-  if (!is.null(get_model(rec))) {
-    for (step_id in names(res)) {
+  for (step_id in names(res)) {
+    if (!is.null(get_model(rec))) {
       res[[step_id]] <- harmonize_model_output(res[[step_id]], rec)
       validate_model_result_contract(flatten_model_output(res[[step_id]]), rec, step_id)
     }
+    standardize_da_result(res[[step_id]], rec, step_id)
   }
 
   execution <- list(
@@ -497,8 +498,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
 
   if (!is.null(get_model(rec))) {
     keys <- c("taxa_id", "contrast_id", "effect")
-    df <- .otu_effect_direction(rec) %>%
-      dplyr::filter(.data$method %in% steps) %>%
+    df <- .otu_effect_direction(rec, steps = steps) %>%
       dplyr::distinct(dplyr::across(dplyr::all_of(c(keys, "method")))) %>%
       dplyr::mutate(value = 1L) %>%
       tidyr::pivot_wider(
@@ -517,13 +517,13 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
     return(as.data.frame(df))
   }
 
+  tidy_result <- tidy_results(rec, steps = steps, significant_only = TRUE)
   df <-
-    names(rec@results) %>%
-    purrr::keep(. %in% steps) %>%
+    steps %>%
     purrr::set_names() %>%
     purrr::map_dfc( ~ {
-      taxa <- rec@results[[.x]][[1]] %>%
-        dplyr::filter(signif == TRUE) %>%
+      taxa <- tidy_result %>%
+        dplyr::filter(.data$step_id == .x) %>%
         dplyr::pull(taxa_id)
 
       rownames(rec@phyloseq@otu_table) %>%
@@ -558,7 +558,7 @@ overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all") {
   check_prep_recipe(rec)
 
   df <-
-    intersection_df(rec) %>%
+    intersection_df(rec, steps = steps) %>%
     tibble::as_tibble() %>%
     dplyr::select(dplyr::all_of(steps))
 

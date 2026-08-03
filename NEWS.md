@@ -1,3 +1,10 @@
+# dar 1.9.4
+
+* NEW: `tidy_results()` exposes a stable, engine-labelled result contract while
+  preserving the engine-specific tables stored in `PrepRecipe@results` (#127).
+* IMPROVED: Result consumers validate taxon-contrast-step keys and use explicit
+  effect metrics and p-value mappings instead of method-specific aliases (#127).
+
 # dar 1.9.3
 
 ## BREAKING CHANGES

@@ -14,19 +14,27 @@ testthat::test_that("normalization preserves unique scientific keys", {
   raw <- data.frame(
     taxa_id = c("taxon_01", "taxon_02"),
     contrast_id = "condition[treated-control]",
-    effect = c(1, -1),
-    padj = c(0.01, 0.02),
+    effect_size = c(1, -1),
+    effect_metric = "log2_fold_change",
+    adj_p_value = c(0.01, 0.02),
     lfcSE = c(0.2, 0.3)
   )
-  normalized <- normalize_validation_result(raw, "deseq", simulation)
+  normalized <- normalize_validation_result(
+    raw[c("taxa_id", "contrast_id", "effect_size", "effect_metric", "adj_p_value")],
+    "deseq", simulation, raw_result = raw
+  )
 
   testthat::expect_named(normalized, c(
     "engine", "scenario", "replicate", "taxa_id", "contrast_id", "effect",
     "padj", "std_error", "effect_metric", "truth_multiplier", "comparable"
   ))
   testthat::expect_equal(normalized$std_error, raw$lfcSE)
+  duplicate <- rbind(raw, raw[1, ])
   testthat::expect_error(
-    normalize_validation_result(rbind(raw, raw[1, ]), "deseq", simulation),
+    normalize_validation_result(
+      duplicate[c("taxa_id", "contrast_id", "effect_size", "effect_metric", "adj_p_value")],
+      "deseq", simulation
+    ),
     "duplicated"
   )
 })
