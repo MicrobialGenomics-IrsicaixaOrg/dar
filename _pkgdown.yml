@@ -14,6 +14,9 @@ reference:
   contents:
   - add_model
   - get_model
+- title: "Quality Control"
+  contents:
+  - recipe_qc
 - title: "Step Functions - Data Preprocessing"
   contents:
   - step_filter_taxa
@@ -50,7 +53,6 @@ reference:
   - get_tax
   - get_var
   - otu_table
-  - phy_qc
   - sample_data
   - steps_ids
   - tax_table

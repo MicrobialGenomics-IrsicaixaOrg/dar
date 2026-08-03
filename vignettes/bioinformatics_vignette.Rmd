@@ -64,11 +64,11 @@ The dar package provides convenient wrappers for the step_filter_taxa function, 
 - `step_filter_by_abundance`: Filters OTUs according to the OTU’s abundance across samples.
 - `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU across samples.
 
-In addition to the preprocessing steps, the dar package also incorporates the function phy_qc which returns a table with a set of metrics that allow for informed decisions to be made about the data preprocessing that will be done. In our case, we decided to use the `step_subset_taxa` function to retain only those observations annotated within the realm of Bacteria and Archaea. We also used the `step_filter_by_prevalence` function to retain only those OTUs with at least 1% of the samples with values greater than 0. This approach ensured that we were working with a high-quality, informative subset of the data, which improved the overall accuracy and reliability of the differential abundance analysis.
+In addition to the preprocessing steps, `recipe_qc()` returns overall or explicitly grouped metrics that support informed preprocessing decisions. In our case, we decided to use the `step_subset_taxa` function to retain only those observations annotated within the realm of Bacteria and Archaea. We also used the `step_filter_by_prevalence` function to retain only those OTUs with at least 1% of the samples with values greater than 0. This approach ensured that we were working with a high-quality, informative subset of the data, which improved the overall accuracy and reliability of the differential abundance analysis.
 
 ```{r}
-# Summary Stats by levels
-phy_qc(rec)
+# Summary statistics by analysis group
+recipe_qc(rec, group_by = "RiskGroup2")
 
 # Adding prepro steps
 rec <- 

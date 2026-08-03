@@ -1,3 +1,14 @@
+# dar 1.9.7
+
+## BREAKING CHANGES
+
+* DEFUNCT: `phy_qc()` now directs users to `recipe_qc()` instead of inferring
+  an analysis target implicitly (#112).
+* NEW: `recipe_qc()` provides model-independent overall or explicitly grouped
+  quality-control metrics for both `Recipe` and `PrepRecipe` objects (#112).
+* IMPROVED: QC summaries expose unambiguous `group_by` and `group` columns and
+  reshape correctly oriented count data only once per call (#112).
+
 # dar 1.9.6
 
 * NEW: `step_linda()` integrates bias-corrected LinDA linear and mixed-effects
