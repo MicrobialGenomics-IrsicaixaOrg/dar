@@ -122,6 +122,35 @@ interpreting them: for example, a DESeq2 log2 fold change and an ALDEx2
 standardized CLR effect are labelled explicitly but are not converted to a
 common scale and should not be compared numerically.
 
+## Advanced native-engine arguments
+
+The seven DA steps accept `engine_args`, a named list grouped by native-call
+stage. This keeps advanced settings attached to the configured step and avoids
+an ambiguous `...`. For example:
+
+```{r engine-args, eval=FALSE}
+rec |>
+  step_deseq(
+    engine_args = list(
+      fit = list(minReplicatesForReplace = Inf),
+      shrink = list(lfcThreshold = 1)
+    )
+  ) |>
+  step_ancom(
+    engine_args = list(
+      fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
+    )
+  )
+```
+
+Available stages are `size_factors`, `fit`, `results`, and `shrink` for
+DESeq2; `clr`, `fit`, and `effect` for ALDEx2; `fit` for ANCOM-BC2 and
+corncob; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon; and
+`transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths and
+arguments already exposed by each dar wrapper are protected. Non-empty
+`engine_args` require a centralized model. A configured stage that is not used
+by the selected execution route is reported as an error.
+
 `export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
 level, time column, references, contrast mode, missing-value policy and
 time-level limit. Files created by older versions without a model continue to

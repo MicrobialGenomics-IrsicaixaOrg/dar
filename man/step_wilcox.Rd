@@ -10,7 +10,8 @@ step_wilcox(
   max_significance = 0.05,
   p_adj_method = "BH",
   rarefy = FALSE,
-  id = rand_id("wilcox")
+  id = rand_id("wilcox"),
+  engine_args = list()
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{engine_args}{Named lists of advanced arguments for the native \code{test}
+stage. Arguments managed by dar or exposed above cannot be overridden.}
 }
 \value{
 An object of class \code{Recipe}

@@ -1,3 +1,10 @@
+# dar 1.9.5
+
+* NEW: The seven centralized DA engines accept structured `engine_args` for
+  advanced arguments at explicit native-call stages (#126).
+* IMPROVED: Step export/import preserves nested advanced arguments and rejects
+  values that cannot be reconstructed faithfully (#126).
+
 # dar 1.9.4
 
 * NEW: `tidy_results()` exposes a stable, engine-labelled result contract while

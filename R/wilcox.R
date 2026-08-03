@@ -15,6 +15,8 @@
 #' @param max_significance The q-value threshold for significance.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. 
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native `test`
+#'   stage. Arguments managed by dar or exposed above cannot be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -53,7 +55,8 @@ step_wilcox <- function(rec,
                         max_significance = 0.05,
                         p_adj_method = "BH",
                         rarefy = FALSE,
-                        id = rand_id("wilcox")) {
+                        id = rand_id("wilcox"),
+                        engine_args = list()) {
   
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_wilcox(), "step_wilcox()")
@@ -74,7 +77,8 @@ step_wilcox <- function(rec,
       max_significance = max_significance,
       p_adj_method = p_adj_method,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("wilcox", engine_args)
     )
   )
 }
@@ -93,11 +97,16 @@ run_wilcox <- function(rec,
                        max_significance,
                        p_adj_method,
                        rarefy,
-                       id) {
+                       id,
+                       engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "wilcox", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_wilcox_model(
-      rec, norm_method, max_significance, p_adj_method, rarefy
+      rec, norm_method, max_significance, p_adj_method, rarefy, engine_args
     ))
   }
 

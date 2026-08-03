@@ -13,7 +13,8 @@ step_deseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("deseq")
+  id = rand_id("deseq"),
+  engine_args = list()
 )
 }
 \arguments{
@@ -53,6 +54,10 @@ normalization procedures, which is why a single value for the sample.size
 is expected. If 'no_seed', rarefaction is performed without a set seed.}
 
 \item{id}{A character string that is unique to this step to identify it.}
+
+\item{engine_args}{Named lists of advanced arguments for the native
+\code{size_factors}, \code{fit}, \code{results}, or \code{shrink} stage. Arguments managed by
+dar or exposed above cannot be overridden.}
 }
 \value{
 An object of class \code{Recipe}
@@ -79,6 +84,15 @@ rec <-
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
 
 rec
+
+## Pass advanced arguments to native DESeq2 stages
+step_deseq(
+  rec,
+  engine_args = list(
+    fit = list(minReplicatesForReplace = Inf),
+    shrink = list(lfcThreshold = 1)
+  )
+)
 
 ## Define step with default parameters and prep
 rec <-

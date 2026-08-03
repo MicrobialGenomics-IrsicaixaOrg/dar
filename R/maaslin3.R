@@ -27,6 +27,9 @@
 #'   the features. Recommended for relative abundance (default: TRUE).
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed.
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native `fit` or
+#'   `contrast` stage. Arguments managed by dar or exposed above cannot be
+#'   overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -89,7 +92,8 @@ step_maaslin <- function(rec,
                          reference = NULL,
                          median_comparison_abundance = TRUE,
                          rarefy = FALSE,
-                         id = rand_id("maaslin")) {
+                         id = rand_id("maaslin"),
+                         engine_args = list()) {
   
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
@@ -110,7 +114,8 @@ step_maaslin <- function(rec,
       reference = reference,
       median_comparison_abundance = median_comparison_abundance,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("maaslin", engine_args)
     )
   )
 }
@@ -131,7 +136,12 @@ run_maaslin <- function(rec,
                         reference,
                         median_comparison_abundance,
                         rarefy,
-                        id) {
+                        id,
+                        engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "maaslin", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_maaslin_model(
@@ -145,7 +155,8 @@ run_maaslin <- function(rec,
       correction = correction,
       standardize = standardize,
       median_comparison_abundance = median_comparison_abundance,
-      rarefy = rarefy
+      rarefy = rarefy,
+      engine_args = engine_args
     ))
   }
 

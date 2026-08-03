@@ -65,6 +65,8 @@
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native `fit`
+#'   stage. Arguments managed by dar or exposed above cannot be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -99,6 +101,14 @@
 #'
 #' rec
 #'
+#' ## Pass advanced arguments to ANCOM-BC2
+#' step_ancom(
+#'   rec,
+#'   engine_args = list(
+#'     fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
+#'   )
+#' )
+#'
 #' ## Define step with default parameters and prep
 #' rec <-
 #'   step_ancom(rec) |>
@@ -131,7 +141,8 @@ step_ancom <- function(rec,
                        dunnet = FALSE,
                        trend = FALSE,
                        rarefy = FALSE,
-                       id = rand_id("ancom")) {
+                       id = rand_id("ancom"),
+                       engine_args = list()) {
 
   check_recipe(rec)
   recipes_pkg_check(c("bioc::ANCOMBC"), "step_ancom()")
@@ -156,7 +167,8 @@ step_ancom <- function(rec,
       dunnet = dunnet,
       trend = trend,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("ancom", engine_args)
     )
   )
 }
@@ -181,7 +193,12 @@ run_ancom <- function(rec,
                       dunnet,
                       trend,
                       rarefy,
-                      id) {
+                      id,
+                      engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "ancom", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_ancom_model(
@@ -195,7 +212,8 @@ run_ancom <- function(rec,
       alpha = alpha,
       n_cl = n_cl,
       verbose = verbose,
-      rarefy = rarefy
+      rarefy = rarefy,
+      engine_args = engine_args
     ))
   }
   

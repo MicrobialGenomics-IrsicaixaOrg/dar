@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.4
+Version: 1.9.5
 Date: 2026-08-03
 Authors@R: 
     c(person(given = "Francesc",
@@ -32,6 +32,7 @@ biocViews: Software, Sequencing, Microbiome, Metagenomics, MultipleComparison, N
 Imports: 
     checkmate,
     cli,
+    codetools,
     ComplexHeatmap,
     crayon,
     dplyr,
@@ -93,6 +94,7 @@ Collate:
     'dar-package.R'
     'data.R'
     'deseq2.R'
+    'engine-args.R'
     'filter_by_abundance.R'
     'filter_by_prevalence.R'
     'filter_by_rarity.R'

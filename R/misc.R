@@ -167,7 +167,9 @@ step_to_call <- function(step) {
   }
   fn_obj <- paste0("run_", method) %>% get(envir = asNamespace("dar"))
   args <- step
-  args[["id"]] <- NULL
+  if (!"id" %in% names(formals(fn_obj))) {
+    args[["id"]] <- NULL
+  }
   rlang::call2(fn_obj, rec = quote(rec), !!!args)
 }
 
@@ -191,7 +193,8 @@ step_to_call <- function(step) {
 step_to_expr <- function(step) {
   params <-
     step %>%
-    purrr::discard(names(.) == "id") %>%
+    purrr::discard(names(.) == "id" |
+      (names(.) == "engine_args" & lengths(.) == 0L)) %>%
     purrr::map2_chr(names(.), ~ {
 
       # 1. Manejo de NULL
@@ -224,7 +227,12 @@ step_to_expr <- function(step) {
         return(glue::glue("{.y} = c({text})"))
       }
 
-      # 6. Fallback general (numéricos, lógicos, etc.)
+      # 6. Nested lists (for example engine_args)
+      if (is.list(.x)) {
+        return(glue::glue("{.y} = {step_value_expr(.x, .y)}"))
+      }
+
+      # 7. Fallback general (numéricos, lógicos, etc.)
       glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
@@ -238,6 +246,62 @@ step_to_expr <- function(step) {
 
   # Construimos el string final con el pipeline
   glue::glue("rec %>% run_{method}({params})")
+}
+
+#' Convert a persistable step value to reconstructible R code
+#' @noRd
+step_value_expr <- function(value, context = "step argument") {
+  unsupported <- methods::is(value, "S4") || is.environment(value) ||
+    typeof(value) %in% c("externalptr", "weakref") || inherits(value, "connection")
+  if (unsupported) {
+    cli::cli_abort(
+      "Cannot export {.arg {context}} because it cannot be reconstructed faithfully.",
+      class = "dar_error_unserializable_step"
+    )
+  }
+  if (is.null(value)) {
+    return("NULL")
+  }
+  if (is.function(value)) {
+    captured <- codetools::findGlobals(value, merge = FALSE)$variables
+    if (length(captured) > 0L) {
+      cli::cli_abort(
+        "Cannot export {.arg {context}} because the function captures external values: {.val {captured}}.",
+        class = "dar_error_unserializable_step"
+      )
+    }
+    return(paste(deparse(value), collapse = " ") |> stringr::str_squish())
+  }
+  if (inherits(value, "formula")) {
+    return(paste(deparse(value), collapse = " ") |> stringr::str_squish())
+  }
+  if (is.list(value)) {
+    if (length(value) == 0L) {
+      return("list()")
+    }
+    value_names <- names(value)
+    if (is.null(value_names) || anyNA(value_names) ||
+        any(!nzchar(value_names)) || anyDuplicated(value_names)) {
+      cli::cli_abort(
+        "Cannot export {.arg {context}}: nested lists must have non-empty, unique names.",
+        class = "dar_error_unserializable_step"
+      )
+    }
+    entries <- purrr::map2_chr(value, value_names, function(item, name) {
+      paste0(
+        deparse(name), " = ",
+        step_value_expr(item, paste0(context, "$", name))
+      )
+    })
+    return(paste0("list(", paste(entries, collapse = ", "), ")"))
+  }
+  if (is.atomic(value)) {
+    return(paste(utils::capture.output(dput(value)), collapse = " "))
+  }
+  cli::cli_abort(
+    "Cannot export {.arg {context}} because its type is not supported.",
+    class = "dar_error_unserializable_step"
+  )
 }
 
 #' Finds common OTU between method results
@@ -438,9 +502,13 @@ export_steps <- function(rec, file_name) {
     inp %>%
     purrr::map_chr(~ {
       params <-
-        names(.x) %>%
+        c(setdiff(names(.x), "id"), intersect("id", names(.x))) %>%
         purrr::map_chr(function(.y) {
           val <- .x[[.y]]
+
+          if (identical(.y, "engine_args") && length(val) == 0L) {
+            return(NA_character_)
+          }
 
           # functions & formulas
           if (is.function(val) || inherits(val, "formula")) {
@@ -462,6 +530,16 @@ export_steps <- function(rec, file_name) {
           # NULL
           } else if (is.null(val)) {
             val <- "NULL"
+
+          # recursively reconstructible named lists
+          } else if (is.list(val)) {
+            val <- paste0("[", step_value_expr(val, .y), "]")
+
+          # reject values that the text format cannot preserve
+          } else if (methods::is(val, "S4") || is.environment(val) ||
+                     typeof(val) %in% c("externalptr", "weakref") ||
+                     inherits(val, "connection")) {
+            step_value_expr(val, .y)
           }
 
           stringr::str_c(
@@ -469,7 +547,10 @@ export_steps <- function(rec, file_name) {
             glue::double_quote(.y), ": ", paste0(val, collapse = ""),
             ","
           )
-        }) %>% stringr::str_c(collapse = "\n")
+        }) %>%
+        stats::na.omit() %>%
+        as.character() %>%
+        stringr::str_c(collapse = "\n")
 
       stringr::str_c("{\n", params, "\n}")
     })

@@ -86,9 +86,19 @@ bind_model_result <- function(result, contrast, rec, effect, padj, signif) {
 
 #' @noRd
 run_deseq_model <- function(rec, test, fitType, betaPrior, type,
-                            max_significance, log2FC, rarefy) {
+                            max_significance, log2FC, rarefy,
+                            engine_args = list()) {
   compiled <- compile_model(rec, "deseq")
   phy <- model_phyloseq(rec, rarefy)
+  result_stage <- if (identical(type, "normal") &&
+                      length(compiled$resolved$interaction_targets) > 0L) {
+    "results"
+  } else {
+    "shrink"
+  }
+  check_unused_engine_args(
+    "deseq", engine_args, c("size_factors", "fit", result_stage)
+  )
 
   fit_dds <- function(phy, design) {
     dds <- suppressMessages(phyloseq::phyloseq_to_deseq2(phy, design = design))
@@ -96,11 +106,18 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
       positive <- x[x > 0]
       if (length(positive) == 0L) 1 else exp(mean(log(positive)))
     })
-    dds <- DESeq2::estimateSizeFactors(dds, geoMeans = geo_means)
+    dds <- exec_engine_stage(
+      "deseq", "size_factors", engine_args,
+      fixed = list(object = dds, geoMeans = geo_means)
+    )
     tryCatch(
-      DESeq2::DESeq(
-        dds, fitType = fitType, test = test, betaPrior = betaPrior,
-        quiet = TRUE
+      exec_engine_stage(
+        "deseq", "fit", engine_args,
+        fixed = list(
+          object = dds, fitType = fitType, test = test,
+          betaPrior = betaPrior
+        ),
+        defaults = list(quiet = TRUE)
       ),
       error = function(cnd) {
         if (!grepl("all gene-wise dispersion estimates", conditionMessage(cnd),
@@ -147,12 +164,21 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
         class = "dar_error_invalid_result_contract"
       )
     }
-    res <- if (identical(type, "normal") &&
-               length(compiled$resolved$interaction_targets) > 0L) {
-      DESeq2::results(contrast_dds, name = result_names[[coefficient_index]])
+    res <- if (identical(result_stage, "results")) {
+      exec_engine_stage(
+        "deseq", "results", engine_args,
+        fixed = list(
+          object = contrast_dds,
+          name = result_names[[coefficient_index]]
+        )
+      )
     } else {
-      DESeq2::lfcShrink(
-        contrast_dds, coef = coefficient_index, type = type, quiet = TRUE
+      exec_engine_stage(
+        "deseq", "shrink", engine_args,
+        fixed = list(
+          dds = contrast_dds, coef = coefficient_index, type = type
+        ),
+        defaults = list(quiet = TRUE)
       )
     }
     effect_sign <- parameterized$sign
@@ -176,7 +202,8 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
 # ALDEX2 ----------------------------------------------------------------------
 
 #' @noRd
-run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy) {
+run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy,
+                            engine_args = list()) {
   if (!identical(denom, "all") && !is.numeric(denom)) {
     cli::cli_abort(
       c(
@@ -188,6 +215,7 @@ run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy) {
   }
   compiled <- compile_model(rec, "aldex")
   phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("aldex", engine_args, c("clr", "fit", "effect"))
   reads <- as(phyloseq::otu_table(phy), "matrix")
   if (!phyloseq::taxa_are_rows(phy)) {
     reads <- t(reads)
@@ -197,15 +225,22 @@ run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy) {
   out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
     contrast <- compiled$contrasts[index, , drop = FALSE]
     parameterized <- reparameterize_model_contrast(compiled, contrast)
-    clr <- suppressMessages(ALDEx2::aldex.clr(
-      reads = reads,
-      conds = parameterized$matrix,
-      denom = denom,
-      mc.samples = mc.samples,
-      verbose = FALSE
+    clr <- suppressMessages(exec_engine_stage(
+      "aldex", "clr", engine_args,
+      fixed = list(
+        reads = reads, conds = parameterized$matrix,
+        denom = denom, mc.samples = mc.samples
+      ),
+      defaults = list(verbose = FALSE)
     ))
-    glm <- ALDEx2::aldex.glm(clr, verbose = FALSE, fdr.method = "BH")
-    effects <- ALDEx2::aldex.glm.effect(clr, verbose = FALSE, CI = TRUE)
+    glm <- exec_engine_stage(
+      "aldex", "fit", engine_args, fixed = list(clr = clr),
+      defaults = list(verbose = FALSE, fdr.method = "BH")
+    )
+    effects <- exec_engine_stage(
+      "aldex", "effect", engine_args, fixed = list(clr = clr),
+      defaults = list(verbose = FALSE, CI = TRUE)
+    )
     coefficient <- parameterized$coefficient
     estimate_col <- paste0(coefficient, ":Est")
     padj_col <- paste0(coefficient, ":pval.padj")
@@ -244,9 +279,10 @@ match_ancom_column <- function(columns, prefix, coefficient) {
 #' @noRd
 run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
                             struc_zero, neg_lb, alpha, n_cl, verbose,
-                            rarefy) {
+                            rarefy, engine_args = list()) {
   compiled <- compile_model(rec, "ancom")
   phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("ancom", engine_args, "fit")
 
   out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
     contrast <- compiled$contrasts[index, , drop = FALSE]
@@ -256,25 +292,28 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
       tibble::column_to_rownames("sample_id") |>
       data.frame(check.names = FALSE) |>
       phyloseq::sample_data()
-    fit <- ANCOMBC::ancombc2(
-      data = mia::convertFromPhyloseq(contrast_phy),
-      tax_level = recipe_tax_level(rec),
-      fix_formula = compiled$fix_formula,
-      rand_formula = compiled$rand_formula,
-      p_adj_method = p_adj_method,
-      prv_cut = prv_cut,
-      lib_cut = lib_cut,
-      s0_perc = s0_perc,
-      group = NULL,
-      struc_zero = struc_zero,
-      neg_lb = neg_lb,
-      alpha = alpha,
-      n_cl = n_cl,
-      verbose = verbose,
-      global = FALSE,
-      pairwise = FALSE,
-      dunnet = FALSE,
-      trend = FALSE
+    fit <- exec_engine_stage(
+      "ancom", "fit", engine_args,
+      fixed = list(
+        data = mia::convertFromPhyloseq(contrast_phy),
+        tax_level = recipe_tax_level(rec),
+        fix_formula = compiled$fix_formula,
+        rand_formula = compiled$rand_formula,
+        p_adj_method = p_adj_method,
+        prv_cut = prv_cut,
+        lib_cut = lib_cut,
+        s0_perc = s0_perc,
+        group = NULL,
+        struc_zero = struc_zero,
+        neg_lb = neg_lb,
+        alpha = alpha,
+        n_cl = n_cl,
+        verbose = verbose,
+        global = FALSE,
+        pairwise = FALSE,
+        dunnet = FALSE,
+        trend = FALSE
+      )
     )
     stats <- fit$res
     lfc_col <- match_ancom_column(names(stats), "lfc", parameterized$coefficient)
@@ -309,9 +348,10 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
 #' @noRd
 run_corncob_model <- function(rec, phi.formula, link, phi.link,
                               filter_discriminant, fdr_cutoff, fdr,
-                              log2FC, rarefy) {
+                              log2FC, rarefy, engine_args = list()) {
   compiled <- compile_model(rec, "corncob")
   phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("corncob", engine_args, "fit")
   reads <- as(phyloseq::otu_table(phy), "matrix")
   if (phyloseq::taxa_are_rows(phy)) {
     reads <- t(reads)
@@ -326,12 +366,12 @@ run_corncob_model <- function(rec, phi.formula, link, phi.link,
     fit_data$M <- total
     fit_formula <- stats::update(compiled$formula, cbind(W, M - W) ~ .)
     fit <- tryCatch(
-      corncob::bbdml(
-        formula = fit_formula,
-        phi.formula = phi.formula,
-        data = fit_data,
-        link = link,
-        phi.link = phi.link
+      exec_engine_stage(
+        "corncob", "fit", engine_args,
+        fixed = list(
+          formula = fit_formula, phi.formula = phi.formula,
+          data = fit_data, link = link, phi.link = phi.link
+        )
       ),
       error = function(cnd) NULL
     )
@@ -399,9 +439,11 @@ run_corncob_model <- function(rec, phi.formula, link, phi.link,
 run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
                               normalization, transform, max_significance,
                               correction, standardize,
-                              median_comparison_abundance, rarefy) {
+                              median_comparison_abundance, rarefy,
+                              engine_args = list()) {
   compiled <- compile_model(rec, "maaslin")
   phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("maaslin", engine_args, c("fit", "contrast"))
   input_metadata <- data.frame(compiled$data, row.names = compiled$data$sample_id)
   input_metadata$sample_id <- NULL
   input_data <- as(phyloseq::otu_table(phy), "matrix")
@@ -412,36 +454,44 @@ run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
   output_dir <- tempfile("dar_maaslin3_")
   dir.create(output_dir)
 
-  fit <- purrr::quietly(maaslin3::maaslin3)(
-    input_data = input_data,
-    input_metadata = input_metadata,
-    output = output_dir,
-    formula = compiled$formula_text,
-    min_abundance = min_abundance,
-    min_prevalence = min_prevalence,
-    min_variance = min_variance,
-    normalization = normalization,
-    transform = transform,
-    max_significance = max_significance,
-    correction = correction,
-    standardize = standardize,
-    median_comparison_abundance = median_comparison_abundance,
-    verbosity = "ERROR",
-    plot_summary_plot = FALSE,
-    plot_associations = FALSE,
-    max_pngs = 0
-  )$result
+  fit <- purrr::quietly(function() {
+    exec_engine_stage(
+      "maaslin", "fit", engine_args,
+      fixed = list(
+        input_data = input_data,
+        input_metadata = input_metadata,
+        output = output_dir,
+        formula = compiled$formula_text,
+        min_abundance = min_abundance,
+        min_prevalence = min_prevalence,
+        min_variance = min_variance,
+        normalization = normalization,
+        transform = transform,
+        max_significance = max_significance,
+        correction = correction,
+        standardize = standardize,
+        median_comparison_abundance = median_comparison_abundance
+      ),
+      defaults = list(
+        verbosity = "ERROR", plot_summary_plot = FALSE,
+        plot_associations = FALSE, max_pngs = 0
+      )
+    )
+  })()$result
 
   contrast_matrix <- do.call(rbind, compiled$contrasts$weights)
   colnames(contrast_matrix) <- colnames(compiled$matrix)
   rownames(contrast_matrix) <- compiled$contrasts$contrast_id
-  tested <- maaslin3::maaslin_contrast_test(
-    fit,
-    contrast_mat = contrast_matrix,
-    max_significance = max_significance,
-    correction = correction,
-    median_comparison_abundance = median_comparison_abundance,
-    evaluate_only = "abundance"
+  tested <- exec_engine_stage(
+    "maaslin", "contrast", engine_args,
+    fixed = list(
+      maaslin3_fit = fit,
+      contrast_mat = contrast_matrix,
+      max_significance = max_significance,
+      correction = correction,
+      median_comparison_abundance = median_comparison_abundance,
+      evaluate_only = "abundance"
+    )
   )
   out <- tested$fit_data_abundance$results |>
     tibble::as_tibble() |>
@@ -469,9 +519,10 @@ run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
 
 #' @noRd
 run_wilcox_model <- function(rec, norm_method, max_significance,
-                             p_adj_method, rarefy) {
+                             p_adj_method, rarefy, engine_args = list()) {
   compiled <- compile_model(rec, "wilcox")
   phy <- model_phyloseq(rec, rarefy)
+  check_unused_engine_args("wilcox", engine_args, "test")
   transformed <- phy |>
     microbiome::transform(transform = norm_method) |>
     phyloseq::otu_table() |>
@@ -489,8 +540,13 @@ run_wilcox_model <- function(rec, norm_method, max_significance,
     keep <- data[[target]] %in% c(numerator, denominator)
     pvalues <- apply(transformed[keep, , drop = FALSE], 2, function(values) {
       groups <- data[[target]][keep]
-      suppressWarnings(stats::wilcox.test(
-        values[groups == numerator], values[groups == denominator], exact = FALSE
+      suppressWarnings(exec_engine_stage(
+        "wilcox", "test", engine_args,
+        fixed = list(
+          x = values[groups == numerator],
+          y = values[groups == denominator]
+        ),
+        defaults = list(exact = FALSE)
       )$p.value)
     })
     effects <- apply(transformed[keep, , drop = FALSE], 2, function(values) {
@@ -518,9 +574,11 @@ run_wilcox_model <- function(rec, norm_method, max_significance,
 
 #' @noRd
 run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
-                            lda.threshold, assay, trim.names, rarefy) {
+                            lda.threshold, assay, trim.names, rarefy,
+                            engine_args = list()) {
   compiled <- compile_model(rec, "lefse")
   lefse_mat <- prepro_lefse(rec, rarefy)
+  check_unused_engine_args("lefse", engine_args, c("transform", "fit"))
   out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
     contrast <- compiled$contrasts[index, , drop = FALSE]
     target <- contrast$var[[1]]
@@ -535,17 +593,23 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
     se <- SummarizedExperiment::SummarizedExperiment(
       assays = list(counts = lefse_mat[, metadata$sample_id, drop = FALSE]),
       colData = data.frame(metadata, row.names = metadata$sample_id)
-    ) |>
-      lefser::relativeAb()
-    raw <- lefser::lefser(
-      se,
-      classCol = target,
-      kruskal.threshold = 1,
-      wilcox.threshold = 1,
-      lda.threshold = 0,
-      subclassCol = NULL,
-      assay = assay,
-      trim.names = trim.names
+    )
+    se <- exec_engine_stage(
+      "lefse", "transform", engine_args,
+      fixed = list(se = se)
+    )
+    raw <- exec_engine_stage(
+      "lefse", "fit", engine_args,
+      fixed = list(
+        relab = se,
+        classCol = target,
+        kruskal.threshold = 1,
+        wilcox.threshold = 1,
+        lda.threshold = 0,
+        subclassCol = NULL,
+        assay = assay,
+        trim.names = trim.names
+      )
     ) |>
       tibble::as_tibble() |>
       dplyr::rename(lefse_id = "features") |>

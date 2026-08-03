@@ -328,6 +328,7 @@ prep <- function(rec,
   }
 
   check_any_recipe(rec)
+  validate_engine_args_model(rec)
 
   initial_da_steps <- purrr::keep(rec@steps, is_da_step)
   warn_model_free_da(rec)

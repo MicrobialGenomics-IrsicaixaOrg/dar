@@ -38,6 +38,9 @@
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
 #' @param id A character string that is unique to this step to identify it.
+#' @param engine_args Named lists of advanced arguments for the native
+#'   `size_factors`, `fit`, `results`, or `shrink` stage. Arguments managed by
+#'   dar or exposed above cannot be overridden.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -71,6 +74,15 @@
 #'
 #' rec
 #'
+#' ## Pass advanced arguments to native DESeq2 stages
+#' step_deseq(
+#'   rec,
+#'   engine_args = list(
+#'     fit = list(minReplicatesForReplace = Inf),
+#'     shrink = list(lfcThreshold = 1)
+#'   )
+#' )
+#'
 #' ## Define step with default parameters and prep
 #' rec <-
 #'   step_deseq(rec) |>
@@ -93,7 +105,8 @@ step_deseq <- function(rec,
                        max_significance = 0.05,
                        log2FC = 0,
                        rarefy = FALSE,
-                       id = rand_id("deseq")) {
+                       id = rand_id("deseq"),
+                       engine_args = list()) {
   
   check_recipe(rec)
   if (type == "ashr") {
@@ -113,7 +126,8 @@ step_deseq <- function(rec,
       max_significance = max_significance,
       log2FC = log2FC,
       rarefy = rarefy,
-      id = id
+      id = id,
+      engine_args = normalize_engine_args("deseq", engine_args)
     )
   )
 }
@@ -129,11 +143,17 @@ run_deseq <- function(rec,
                       max_significance,
                       log2FC,
                       rarefy,
-                      id) {
+                      id,
+                      engine_args = list()) {
+
+  engine_args <- check_engine_args_execution(
+    rec, "deseq", engine_args, id
+  )
 
   if (!is.null(get_model(rec))) {
     return(run_deseq_model(
-      rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy
+      rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy,
+      engine_args
     ))
   }
 
