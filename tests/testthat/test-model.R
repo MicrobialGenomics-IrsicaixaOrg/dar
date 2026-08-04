@@ -65,14 +65,14 @@ test_that("legacy selectors remain compatible with classified warnings", {
   )
   expect_warning(
     legacy <- add_var(legacy, "batch"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
   expect_warning(
     legacy <- add_tax(legacy, "species"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
-  expect_warning(get_var(legacy), class = "dar_warning_deprecated_selector")
-  expect_warning(get_tax(legacy), class = "dar_warning_deprecated_selector")
+  expect_warning(get_var(legacy), class = "deprecatedWarning")
+  expect_warning(get_tax(legacy), class = "deprecatedWarning")
   expect_null(get_model(legacy))
   expect_true(methods::validObject(legacy, test = TRUE))
 })
@@ -98,14 +98,14 @@ test_that("deprecated setters cannot diverge from a centralized model", {
 
   expect_warning(
     rec <- add_var(rec, "batch"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
   expect_equal(get_model(rec)$targets, "batch")
   expect_equal(rec@var_info$vars, "batch")
 
   expect_warning(
     rec <- add_tax(rec, "species"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
   expect_equal(get_model(rec)$tax_level, "Species")
   expect_equal(rec@tax_info$tax_lev, "Species")

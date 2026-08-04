@@ -14,7 +14,7 @@ body {
 text-align: justify}
 </style>
 
-```{r, include = FALSE}
+```{r article-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -62,7 +62,7 @@ containing the categories: men who have sex with men (msm), non-MSM (hts) and
 people who inject drugs (pwid) and we will perform the analysis at the species 
 level.
 
-```{r}
+```{r initialize-recipe}
 ## Recipe initialization
 rec <- recipe(metaHIV_phy) |>
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
@@ -107,7 +107,7 @@ we were working with a high-quality, informative subset of the data, which
 improved the overall accuracy and reliability of the differential abundance 
 analysis.
 
-```{r}
+```{r grouped-qc}
 ## QC by analysis group
 recipe_qc(rec, group_by = "RiskGroup2")
 
@@ -136,7 +136,7 @@ DESeq2 and MAaslin3 methods, that are the fastest ones. However, we
 recommend using all the methods available in the package to ensure a more 
 robust analysis.
 
-```{r}
+```{r define-da-steps}
 ## DA steps definition
 rec <- rec |> 
   step_deseq() |> 
@@ -158,7 +158,7 @@ number of taxa detected as significant in each of the methods and also the
 total number of taxa shared across all methods. This allows for a provisional 
 overview of the results and a comparison between methods.
 
-```{r}
+```{r execute-analysis}
 ## Execute in parallel
 da_results <- prep(rec, parallel = TRUE)
 da_results
@@ -170,7 +170,7 @@ At this point, we could extract the taxa shared across all methods using the
 function `bake()` to define a default consensus strategy and then `cool()` to 
 extract the results. 
 
-```{r}
+```{r default-results}
 ## Default DA taxa results
 results <- 
   bake(da_results) |> 
@@ -191,7 +191,7 @@ For example, `intersection_plt()` gives an overview of the overlaps between
 methods by creating an upSet plot. In our case, this function has shown that 
 210 taxa are shared across all the methods used.
 
-```{r, fig.height=5}
+```{r intersection-plot, fig.height=5}
 ## Intersection plot 
 intersection_plt(da_results, ordered_by = "degree", font_size = 1)
 ```
@@ -201,7 +201,7 @@ In addition to the `intersection_plt()` function, `dar` also has the function
 between methods. This function allows to identify the OTUs that are specific to 
 each method and also the ones that are not shared among any method.
 
-```{r}
+```{r exclusion-plot}
 ## Exclusion plot 
 exclusion_plt(da_results)
 ```
@@ -212,7 +212,7 @@ OTUs between tested methods. This function can provide similar information to
 the previous plots, but in some cases it may be easier to interpret.
 comprehensive view of the results.
 
-```{r, fig.height=6}
+```{r correlation-heatmap, fig.height=6}
 ## Correlation heatmap
 corr_heat <- corr_heatmap(da_results, font_size = 10) 
 corr_heat
@@ -226,7 +226,7 @@ correspond mainly to the comparisons between hts vs msm and msm vs pwid.
 Additionally, the graph also allows us to observe the direction of the effect; 
 whether a specific OTU is enriched or depleted for each comparison.
 
-```{r, fig.height=6}
+```{r mutual-plot, fig.height=6}
 ## Mutual plot
 mutual_plt(
   da_results, 
@@ -248,7 +248,7 @@ minimum number of methods in which an OTU must be present, and `weights`, a
 named vector with the ponderation value for each method. However, for 
 simplicity, these parameters are not used in this example.
 
-```{r}
+```{r consensus-strategy}
 ## Define consensus strategy
 da_results <- bake(da_results)
 da_results
@@ -261,7 +261,7 @@ function takes a `PrepRecipe` object and the ID of the bake to be used as input
 (by default it is 1, but if you have multiple consensus strategies, you can 
 change it to extract the desired results).
 
-```{r}
+```{r extract-consensus}
 ## Extract results for bake id 1
 f_results <- cool(da_results, bake = 1)
 
@@ -271,7 +271,7 @@ f_results
 To further visualize the results, the `abundance_plt()` function can be utilized 
 to visualize the differences in abundance of the differential abundant taxa.
 
-```{r, fig.height=6}
+```{r abundance-plot, fig.height=6}
 ## Ids for Bacteroide and Provotella species 
 ids <- 
   f_results |>
@@ -284,6 +284,6 @@ abundance_plt(da_results, taxa_ids = ids, type = "boxplot")
 
 ## Session info
 
-```{r}
+```{r article-session-info}
 devtools::session_info()
 ```

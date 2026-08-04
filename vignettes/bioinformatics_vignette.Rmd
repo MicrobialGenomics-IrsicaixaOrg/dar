@@ -16,7 +16,7 @@ body {
 text-align: justify}
 </style>
 
-```{r, include = FALSE}
+```{r bioinformatics-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -34,7 +34,7 @@ To illustrate the functionality of the dar package, this study will use the data
 
 ## Load dar package and data
 
-```{r}
+```{r bioinformatics-packages}
 library(dar)
 data("metaHIV_phy")
 set.seed(1234)
@@ -46,7 +46,7 @@ metaHIV_phy
 
 To begin the analysis process with the `dar` package, the first step is to initialize a Recipe object, which is an S4 class. This recipe object serves as a blueprint for the data preparation steps required for the differential abundance analysis. The initialization of the recipe object is done through the function `recipe()`, which takes as inputs a `phyloseq` or `TreeSummarizedExperiment` (TSE) object, the name of the categorical variable of interest and the taxonomic level at which the differential abundance analyses are to be performed. As previously mentioned, we will use the data set from (Noguera-Julian, M., et al. 2016) and the variable of interest “RiskGroup2” containing the categories: men who have sex with men (msm), non-MSM (hts) and people who inject drugs (pwid) and we will perform the analysis at the species level.
 
-```{r}
+```{r bioinformatics-recipe}
 # Recipe Initialization
 rec <- recipe(metaHIV_phy) |>
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
@@ -66,7 +66,7 @@ The dar package provides convenient wrappers for the step_filter_taxa function, 
 
 In addition to the preprocessing steps, `recipe_qc()` returns overall or explicitly grouped metrics that support informed preprocessing decisions. In our case, we decided to use the `step_subset_taxa` function to retain only those observations annotated within the realm of Bacteria and Archaea. We also used the `step_filter_by_prevalence` function to retain only those OTUs with at least 1% of the samples with values greater than 0. This approach ensured that we were working with a high-quality, informative subset of the data, which improved the overall accuracy and reliability of the differential abundance analysis.
 
-```{r}
+```{r bioinformatics-qc}
 # Summary statistics by analysis group
 recipe_qc(rec, group_by = "RiskGroup2")
 
@@ -83,7 +83,7 @@ rec
 
 Once data is preprocessed and cleaned, the next step is to add the da steps. The dar package incorporates multiple methods to analyze the data, including: `ALDEx2`, `ANCOM-BC`, `corncob`, `DESeq2`, `Lefse`, `LinDA`, `MaAsLin3`, and `Wilcox`. These methods provide a range of options for uncovering potential microbial biomarkers associated with the variable of interest. To ensure consistency across methods, we decided not to use default parameters, but to set the `min_prevalence` parameter to 0 for `MaAsLin3`. This approach ensured that the analysis was consistent across methods and that the results were interpretable.
 
-```{r}
+```{r bioinformatics-steps}
 # DA steps definition
 rec <- 
   rec |> 
@@ -102,7 +102,7 @@ rec
 
 Once the `recipe` has been defined, the next step is to execute all the steps defined in the `recipe.` This is done through the function `prep()`. Internally, it first executes the preprocessing steps, which modify the `phyloseq` object stored in the `recipe`. Then, using the modified `phyloseq`, it executes each of the defined differential abundance methods. To speed up the execution time, the `prep()` function includes the option to run in parallel. The resulting object has class `PrepRecipe` and when printed in the terminal, it displays the number of taxa detected as significant in each of the methods and also the total number of taxa shared across all methods. This allows for a provisional overview of the results and a comparison between methods.
 
-```{r}
+```{r bioinformatics-prep}
 # Execute in parallel
 da_results <- prep(rec, parallel = TRUE)
 
@@ -113,7 +113,7 @@ da_results
 
 At this point, we could extract the taxa shared across all methods using the function `bake()` to define a default consensus strategy and then `cool()` to extract the results.
 
-```{r}
+```{r bioinformatics-results}
 # Default DA taxa results
 results <- 
   bake(da_results) |> 
@@ -128,28 +128,28 @@ However, `dar` allows for complex consensus strategies based on the obtained res
 
 For example, `intersection_plt()` gives an overview of the overlaps between methods by creating an upSet plot. In our case, this function has shown that 24 taxa are shared across all the methods used.
 
-```{r}
+```{r bioinformatics-intersections}
 # Intersection plot
 intersection_plt(da_results, ordered_by = "degree", font_size = 1)
 ```
 
 In addition to the `intersection_plt()` function, dar also has the function `exclusion_plt()` which provides information about the number of OTUs shared between methods. This function allows to identify the OTUs that are specific to each method and also the ones that are not shared among any method.
 
-```{r}
+```{r bioinformatics-exclusions}
 # Exclusion plot 
 exclusion_plt(da_results)
 ```
 
 Besides to the previously mentioned functions, dar also includes the function `corr_heatmap()`, which allows for visualization of the overlap of significant OTUs between tested methods. This function can provide similar information to the previous plots, but in some cases it may be easier to interpret. comprehensive view of the results.
 
-```{r}
+```{r bioinformatics-correlation}
 # Correlation heatmap
 corr_heatmap(da_results, font_size = 10) 
 ```
 
 Finally, `dar` also includes the function `mutual_plt()`, which plots the number of differential abundant features mutually found by a defined number of methods, colored by the differential abundance direction and separated by comparison. The resulting graph allows us to see that the features detected correspond mainly to the comparisons between hts vs msm and msm vs pwid. Additionally, the graph also allows us to observe the direction of the effect, whether a specific OTU is enriched or depleted for each comparison.
 
-```{r}
+```{r bioinformatics-mutual}
 # Mutual plot
 mutual_plt(
   da_results, 
@@ -164,7 +164,7 @@ After visually inspecting the results from running all the differential analysis
 
 Additionally, the `bake()` function allows to further refine the consensus strategy through its parameters, such as `count_cutoff`, which indicates the minimum number of methods in which an OTU must be present, and weights, a named vector with the ponderation value for each method. However, for simplicity, these parameters are not used in this example.
 
-```{r}
+```{r bioinformatics-consensus}
 # Define consensus strategy
 da_results <- bake(da_results)
 da_results
@@ -174,7 +174,7 @@ da_results
 
 To conclude, we can extract the final results using the `cool()` function. This function takes a `PrepRecipe` object and the ID of the bake to be used as input (by default it is 1, but if you have multiple consensus strategies, you can change it to extract the desired results).
 
-```{r}
+```{r bioinformatics-cool}
 # Extract results for bake id 1
 f_results <- cool(da_results, bake = 1)
 
@@ -183,7 +183,7 @@ f_results
 
 To further visualize the results, the `abundance_plt()` function can be utilized to visualize the differences in abundance of the differential abundant taxa.
 
-```{r}
+```{r bioinformatics-abundance}
 # Ids for Bacteroide and Provotella species 
 ids <- 
   f_results |>
@@ -204,6 +204,6 @@ abundance_plt(
 
 ## Session Info
 
-```{r}
+```{r bioinformatics-session-info}
 devtools::session_info()
 ```

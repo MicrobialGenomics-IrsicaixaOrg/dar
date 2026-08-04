@@ -85,8 +85,12 @@ run_scientific_validation <- function(profile_name = "quick", engines = "all",
   metrics <- dplyr::bind_rows(scientific_metrics, execution_metrics)
   summary <- summarize_validation_metrics(metrics)
   gates <- evaluate_validation_gates(summary)
+  versions <- validation_version_manifest(
+    selected_engines, profile$name, base_seed
+  )
   write_validation_artifacts(
-    output_dir, results, runs, truth, manifests, metrics, summary, gates
+    output_dir, results, runs, truth, manifests, metrics, summary, gates,
+    versions
   )
 
   engine_failures <- nrow(runs) > 0L && any(runs$status == "engine_error")
@@ -104,6 +108,7 @@ run_scientific_validation <- function(profile_name = "quick", engines = "all",
     manifests = manifests,
     metrics = metrics,
     summary = summary,
-    gates = gates
+    gates = gates,
+    versions = versions
   )
 }

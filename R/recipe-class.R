@@ -192,7 +192,7 @@ recipe <- function(microbiome_object = NULL,
   if (length(deprecated_arguments) > 0L) {
     cli::cli_warn(
       c(
-        "!" = "Recipe argument{?s} {.arg {deprecated_arguments}} {?is/are} deprecated.",
+        "!" = "Recipe argument{?s} {.arg {deprecated_arguments}} {?is/are} deprecated in Bioconductor 3.24 and will become defunct in 3.25.",
         "i" = "Create the recipe without selectors, then define {.arg targets} and {.arg tax_level} with {.fun add_model}."
       ),
       class = "dar_warning_deprecated_recipe_argument"

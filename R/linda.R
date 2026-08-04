@@ -33,7 +33,7 @@
 #' data(metaHIV_phy)
 #' rec <- recipe(metaHIV_phy) |>
 #'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-#' expect_s3_class(step_linda(rec)@steps[[1]], "step_linda")
+#' expect_equal(length(steps_ids(step_linda(rec))), 1L)
 #' data(test_prep_rec)
 #' expect_error(step_linda(test_prep_rec))
 #' @examples

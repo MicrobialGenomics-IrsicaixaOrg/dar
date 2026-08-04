@@ -15,7 +15,7 @@ body {
 text-align: justify}
 </style>
 
-```{r, include = FALSE}
+```{r dar-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -183,6 +183,6 @@ cool(da_results)
 
 ## Session info
 
-```{r}
+```{r dar-session-info}
 devtools::session_info()
 ```

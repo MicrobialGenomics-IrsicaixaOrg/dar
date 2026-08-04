@@ -56,8 +56,45 @@ testthat::test_that("validation artifacts are machine readable", {
 
   expected <- c(
     "results.csv", "runs.csv", "truth.csv", "manifests.csv", "metrics.csv",
-    "summary.csv", "gates.csv", "validation-results.rds", "session-info.txt"
+    "summary.csv", "gates.csv", "versions.csv", "validation-results.rds",
+    "session-info.txt"
   )
   testthat::expect_setequal(list.files(output), expected)
   testthat::expect_equal(nrow(utils::read.csv(file.path(output, "results.csv"))), 6L)
+})
+
+testthat::test_that("longitudinal power gates target only strong contrasts", {
+  summary <- data.frame(
+    engine = "linda",
+    scenario = "longitudinal_interaction",
+    contrast_id = c(
+      "condition[treated-control]@time[1]",
+      "condition[treated-control]:time[1-0]"
+    ),
+    metric = "power",
+    estimate = c(0.9, 0.1),
+    lower = c(0.8, 0.05),
+    upper = c(1, 0.2),
+    n_replicates = 30L,
+    stringsAsFactors = FALSE
+  )
+  gates <- evaluate_validation_gates(summary)
+
+  testthat::expect_equal(gates$status, c("pass", "not_applicable"))
+})
+
+testthat::test_that("LinDA comparable metrics have active gates", {
+  summary <- data.frame(
+    engine = "linda",
+    scenario = "cross_sectional_signal",
+    contrast_id = "condition[treated-control]",
+    metric = c("coverage", "abs_relative_bias"),
+    estimate = c(0.93, 0.08),
+    lower = c(0.90, 0.05),
+    upper = c(0.96, 0.11),
+    n_replicates = 50L,
+    stringsAsFactors = FALSE
+  )
+
+  testthat::expect_equal(evaluate_validation_gates(summary)$status, c("pass", "pass"))
 })

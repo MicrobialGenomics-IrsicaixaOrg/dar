@@ -15,7 +15,7 @@ body {
 text-align: justify}
 </style>
 
-```{r, include = FALSE}
+```{r filtering-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -141,6 +141,6 @@ directly on the recipe object.
 
 ## Session info
 
-```{r}
+```{r filtering-session-info}
 devtools::session_info()
 ```

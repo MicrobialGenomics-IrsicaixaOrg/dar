@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.11
+Version: 1.9.12
 Date: 2026-08-04
 Authors@R: 
     c(person(given = "Francesc",
@@ -14,10 +14,10 @@ Description: Differential abundance testing in microbiome data challenges both
     variability and compositional nature. Microbiome-specific statistical 
     methods often assume classical distribution models or take into account 
     compositional specifics. These produce results that range within the 
-    specificity vs sensitivity space in such a way that type I and type II error 
-    that are difficult to ascertain in real microbiome data when a single method 
-    is used. Recently, a consensus approach based on multiple differential 
-    abundance (DA) methods was recently suggested in order to increase robustness. 
+    specificity versus sensitivity space in such a way that type I and type II
+    errors are difficult to ascertain in real microbiome data when a single
+    method is used. A consensus approach based on multiple differential
+    abundance (DA) methods has been suggested to increase robustness.
     With dar, you can use dplyr-like pipeable sequences of DA methods and then 
     apply different consensus strategies. In this way we can obtain more reliable 
     results in a fast, consistent and reproducible way.
@@ -32,14 +32,11 @@ biocViews: Software, Sequencing, Microbiome, Metagenomics, MultipleComparison, N
 Imports: 
     checkmate,
     cli,
-    ComplexHeatmap,
     crayon,
     dplyr,
     generics,
     ggplot2,
     glue,
-    gplots,
-    heatmaply,
     jsonlite,
     magrittr,
     methods,
@@ -52,8 +49,7 @@ Imports:
     scales,
     stringr,
     tibble,
-    tidyr,
-    UpSetR
+    tidyr
 Suggests: 
     ALDEx2,
     ANCOMBC,
@@ -61,11 +57,14 @@ Suggests:
     ashr,
     Biobase,
     corncob,
+    ComplexHeatmap,
     covr,
     DESeq2,
     devtools,
     furrr,
     future,
+    gplots,
+    heatmaply,
     knitr,
     lefser,
     limma,
@@ -79,12 +78,13 @@ Suggests:
     rstatix,
     SummarizedExperiment,
     TreeSummarizedExperiment,
+    UpSetR,
     testthat (>= 3.0.0),
     GenomeInfoDb,
     withr
 Config/testthat/edition: 3
 Depends: 
-    R (>= 4.5.0)
+    R (>= 4.6.0)
 LazyData: false
 Collate: 
     'recipe-class.R'
@@ -105,7 +105,6 @@ Collate:
     'lefse.R'
     'linda.R'
     'maaslin3.R'
-    'metagenomeseq.R'
     'misc.R'
     'model-adapters.R'
     'model.R'

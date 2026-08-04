@@ -85,17 +85,23 @@ recipe_qc <- function(rec, group_by = NULL) {
   dplyr::bind_rows(overall, grouped)
 }
 
-#' Defunct recipe QC interface
+#' Defunct functions in dar
 #'
-#' `phy_qc()` is defunct. Use [recipe_qc()] with an explicit `group_by`
-#' argument when grouped metrics are required.
+#' These functions are retained only to provide migration guidance.
+#' `phy_qc()` is defunct; use [recipe_qc()] with an explicit `group_by` when
+#' grouped metrics are required. `step_metagenomeseq()` was removed after being
+#' defunct for a complete Bioconductor release cycle; use [step_maaslin()] or
+#' another supported differential-abundance engine.
 #'
+#' @name dar-defunct
+#' @aliases phy_qc step_metagenomeseq
 #' @param rec A recipe object. This argument is no longer evaluated.
 #' @param ... Additional arguments. These arguments are no longer evaluated.
 #'
 #' @return This function does not return a value; it raises a defunct error.
 #' @export
 #' @keywords internal
+#' @rdname dar-defunct
 phy_qc <- function(rec, ...) {
   .Defunct(new = "recipe_qc", package = "dar")
 }

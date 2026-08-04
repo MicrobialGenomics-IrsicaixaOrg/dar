@@ -27,6 +27,55 @@ testthat::test_that("per-engine artifacts aggregate without mixing rows", {
   testthat::expect_true(file.exists(file.path(output, "validation-results.rds")))
 })
 
+testthat::test_that("quick-profile baseline comparison is informational", {
+  fixture <- validation_metric_fixture()
+  summary <- summarize_validation_metrics(
+    score_validation_results(fixture$results, fixture$truth)
+  )
+  baseline <- data.frame(
+    summary,
+    direction = "lower",
+    tolerance = 0,
+    source_run_id = "accepted",
+    stringsAsFactors = FALSE
+  )
+  input <- tempfile("dar-validation-quick-")
+  write_validation_artifacts(
+    file.path(input, "deseq"), fixture$results, data.frame(), fixture$truth,
+    data.frame(), data.frame(), summary, data.frame()
+  )
+  aggregate <- aggregate_validation_artifacts(
+    input, tempfile("dar-validation-quick-report-"), render = FALSE,
+    strict = TRUE, baseline = baseline, enforce_baseline = FALSE
+  )
+
+  testthat::expect_false(aggregate$baseline_failure)
+  testthat::expect_true(all(
+    aggregate$artifacts$baseline_comparison$status == "informational"
+  ))
+})
+
+testthat::test_that("execution aggregation distinguishes every terminal state", {
+  expected <- expand.grid(
+    engine = c("deseq", "wilcox", "ancom", "linda", "aldex"),
+    scenario = "cross_sectional_signal",
+    stringsAsFactors = FALSE
+  )
+  runs <- data.frame(
+    engine = expected$engine[-5],
+    scenario = expected$scenario[-5],
+    replicate = 1L,
+    status = c("success", "expected_skip", "engine_error", "dependency_missing"),
+    stringsAsFactors = FALSE
+  )
+
+  status <- summarize_validation_execution(runs, expected)
+  testthat::expect_equal(status$status, c(
+    "success", "skipped_incompatible", "failed_engine",
+    "failed_dependency", "missing_artifact"
+  ))
+})
+
 testthat::test_that("report aggregation records failures without masking rendering", {
   fixture <- validation_metric_fixture()
   input <- tempfile("dar-validation-failing-input-")

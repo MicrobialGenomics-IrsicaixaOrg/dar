@@ -25,13 +25,11 @@ recipe_tax_level <- function(rec) {
 }
 
 #' @noRd
-warn_deprecated_selector <- function(selector) {
-  cli::cli_warn(
-    c(
-      "!" = "{.fun {selector}} is deprecated and will become defunct in a future Bioconductor release.",
-      "i" = "Define analysis targets and taxonomic resolution with {.fun add_model}."
-    ),
-    class = "dar_warning_deprecated_selector"
+warn_deprecated_selector <- function(selector, replacement) {
+  .Deprecated(
+    new = replacement,
+    package = "dar",
+    old = selector
   )
 }
 
@@ -53,7 +51,7 @@ warn_deprecated_selector <- function(selector) {
 #' suppressWarnings(get_var(rec))
 get_var <- function(rec) {
   check_any_recipe(rec)
-  warn_deprecated_selector("get_var")
+  warn_deprecated_selector("get_var", "get_model")
   tibble::tibble(vars = recipe_targets(rec))
 }
 
@@ -74,7 +72,7 @@ get_var <- function(rec) {
 #' suppressWarnings(get_tax(rec))
 get_tax <- function(rec) {
   check_any_recipe(rec)
-  warn_deprecated_selector("get_tax")
+  warn_deprecated_selector("get_tax", "get_model")
   tibble::tibble(tax_lev = recipe_tax_level(rec))
 }
 
@@ -119,7 +117,7 @@ get_phy <- function(rec) {
 #'
 #' expect_warning(
 #'   expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe"),
-#'   class = "dar_warning_deprecated_selector"
+#'   class = "deprecatedWarning"
 #' )
 #' expect_error(
 #'   suppressWarnings(add_var(rec, "missing_variable")),
@@ -127,7 +125,7 @@ get_phy <- function(rec) {
 #' )
 add_var <- function(rec, var_info) {
   check_recipe(rec)
-  warn_deprecated_selector("add_var")
+  warn_deprecated_selector("add_var", "add_model")
   model <- normalize_model_spec(rec, rec@model)
   if (is.null(model)) {
     rec@var_info <- tibble::tibble(vars = var_info)
@@ -165,7 +163,7 @@ add_var <- function(rec, var_info) {
 #'
 #' expect_warning(
 #'   expect_s4_class(add_tax(rec, "Species"), "Recipe"),
-#'   class = "dar_warning_deprecated_selector"
+#'   class = "deprecatedWarning"
 #' )
 #' expect_error(
 #'   suppressWarnings(add_tax(rec, "Missing_rank")),
@@ -173,7 +171,7 @@ add_var <- function(rec, var_info) {
 #' )
 add_tax <- function(rec, tax_info) {
   check_recipe(rec)
-  warn_deprecated_selector("add_tax")
+  warn_deprecated_selector("add_tax", "add_model")
   tax_info <- stringr::str_to_sentence(tax_info)
   model <- normalize_model_spec(rec, rec@model)
   if (is.null(model)) {

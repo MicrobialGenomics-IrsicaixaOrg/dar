@@ -53,6 +53,16 @@ This check validates the pkgdown configuration without publishing the website.
 GitHub Actions runs the same validation for pull requests and deploys the full
 site only from `devel`.
 
+### Bioconductor lifecycle
+
+Released functions follow the three-cycle Bioconductor lifecycle: deprecated
+in one release, defunct in the next, and removed from R code and NAMESPACE in
+the following cycle while their migration alias remains documented. Every
+lifecycle change must name its target releases in NEWS and the statistical
+model vignette. BiocCheck warnings that point to intentional `.Deprecated()` or
+`.Defunct()` calls are reviewed against that schedule; other warnings must be
+fixed or justified in the pull request.
+
 ## Code of Conduct
 
 Please note that the dar project is released with a

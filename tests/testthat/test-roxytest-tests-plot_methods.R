@@ -2,7 +2,7 @@
 
 # File R/plot_methods.R: @tests
 
-test_that("Function corr_heatmap() @ L37", {
+test_that("Function corr_heatmap() @ L36", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(corr_heatmap(test_rec))
@@ -15,7 +15,7 @@ test_that("Function corr_heatmap() @ L37", {
 })
 
 
-test_that("Function intersection_plt() @ L112", {
+test_that("Function intersection_plt() @ L111", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(intersection_plt(test_rec))
@@ -77,7 +77,7 @@ test_that("Function abundance_plt() @ L299", {
 })
 
 
-test_that("Function mutual_plt() @ L410", {
+test_that("Function mutual_plt() @ L412", {
   data(test_rec)
   data(test_prep_rec)
   

@@ -18,3 +18,4 @@
 ^Meta$
 ^codecov\.yml$
 ^Dockerfile$
+^\.pre-commit-config\.yaml$

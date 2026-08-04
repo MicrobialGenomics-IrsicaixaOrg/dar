@@ -1,3 +1,26 @@
+# dar 1.9.12
+
+## SCIENTIFIC VALIDATION
+
+* IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA bias and
+  coverage gates, compares results with a reviewed stochastic baseline, records
+  dependency versions and publishes concise execution summaries (#155).
+* IMPROVED: Full validation reports are retained as compact machine-readable
+  history on the `validation-results` branch, while weak longitudinal contrasts
+  remain descriptive rather than receiving inappropriate power gates (#155).
+
+## LIFECYCLE
+
+* REMOVED: `step_metagenomeseq()` after a complete defunct release cycle;
+  `phy_qc()` remains defunct with migration guidance (#157).
+* DEPRECATED: Legacy selectors and model-free differential-abundance execution
+  remain available in Bioconductor 3.24, become defunct in 3.25 and are
+  scheduled for removal in 3.26 (#157).
+* CHANGED: Require R 4.6 and make ComplexHeatmap, gplots, heatmaply and UpSetR
+  optional plotting dependencies with classified installation guidance (#157).
+* IMPROVED: Remove generated test artifacts and address actionable BiocCheck
+  findings in documentation, vignettes and package metadata (#157).
+
 # dar 1.9.11
 
 ## FIXED

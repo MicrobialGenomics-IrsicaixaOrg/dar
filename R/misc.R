@@ -640,7 +640,10 @@ rarefy_msg <- function(steps) {
   info_rarefy <- "Rarefaction is a process that randomly subsamples the data..."
   rarefy_vals <- purrr::map(steps, ~ .x[["rarefy"]])
 
-  has_true <- any(purrr::map_lgl(rarefy_vals, ~ isTRUE(.x) || identical(.x, quote(T))))
+  has_true <- any(purrr::map_lgl(
+    rarefy_vals,
+    ~ isTRUE(.x) || identical(.x, as.name("T"))
+  ))
   has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
 
   if (has_true) {
