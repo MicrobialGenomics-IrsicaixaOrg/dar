@@ -61,7 +61,7 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ✖ undefined analysis target. Use add_model() to define the analysis! 
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
 #>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 
@@ -79,7 +79,7 @@ rec
 #>      ℹ phyloseq object with 451 taxa and 156 samples 
 #>      ✖ undefined analysis target. Use add_model() to define the analysis! 
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
 #>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 

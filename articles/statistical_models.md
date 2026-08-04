@@ -218,7 +218,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dar_1.9.7
+#> [1] dar_1.9.8
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] ade4_1.7-24         tidyselect_1.2.1    viridisLite_0.4.3  

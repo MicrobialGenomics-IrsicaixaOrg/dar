@@ -1,5 +1,19 @@
 # Changelog
 
+## dar 1.9.8
+
+- FIXED: Recipe steps are classified by their concrete classes, so
+  arbitrary user-defined IDs no longer change preprocessing,
+  differential-abundance or bake semantics
+  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
+- FIXED: Preprocessing operations execute in their configured order,
+  including recipes that interleave filtering, subsetting and
+  rarefaction
+  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
+- IMPROVED: Unsupported, misplaced and duplicate-ID recipe steps now
+  fail with classified validation errors before execution
+  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
+
 ## dar 1.9.7
 
 ### BREAKING CHANGES

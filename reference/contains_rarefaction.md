@@ -65,5 +65,9 @@ rec <-
 #> Also defined by ‘tidytree’
 
 contains_rarefaction(rec)
+#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
+#> Also defined by ‘tidytree’
+#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
+#> Also defined by ‘tidytree’
 #> [1] TRUE
 ```

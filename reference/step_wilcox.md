@@ -96,7 +96,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Bizcocho 
 #> 

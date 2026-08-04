@@ -143,7 +143,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #> 
 #> DA steps:

@@ -73,7 +73,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Viennoiserie 
 #>      ◉ step_filter_taxa() id = filter_taxa__Karakudamono 

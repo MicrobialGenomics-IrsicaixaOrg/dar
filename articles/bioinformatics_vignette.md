@@ -138,7 +138,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Bridie 
 #>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Gujiya 
@@ -186,7 +186,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Bridie 
 #>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Gujiya 
@@ -1111,7 +1111,7 @@ devtools::session_info()
 #>  corncob                    0.4.2      2025-03-29 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.7      2026-08-04 [1] Bioconductor
+#>  dar                      * 1.9.8      2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)

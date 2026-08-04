@@ -134,7 +134,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Cannoli_siciliani 
 #>      ◉ step_filter_taxa() id = filter_taxa__Fig_roll 
@@ -180,7 +180,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #> 
 #> DA steps:

@@ -198,7 +198,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
 #>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
@@ -227,7 +227,7 @@ step_ancom(
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
 #>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
@@ -300,7 +300,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #> 
 #> DA steps:

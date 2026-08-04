@@ -136,7 +136,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Crocetta_of_Caltanissetta 
 #>      ◉ step_filter_taxa() id = filter_taxa__Makroudh 
@@ -182,7 +182,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #> 
 #> DA steps:

@@ -121,7 +121,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Coca 
 #>      ◉ step_filter_taxa() id = filter_taxa__Linzer_torte 
@@ -144,7 +144,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #>      ◉ step_subset_taxa() id = subset_taxa__Coca 
 #>      ◉ step_filter_taxa() id = filter_taxa__Linzer_torte 
@@ -173,7 +173,7 @@ rec
 #> 
 #>      ℹ ~RiskGroup2 
 #> 
-#> Preporcessing steps:
+#> Preprocessing steps:
 #> 
 #> 
 #> DA steps:
