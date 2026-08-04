@@ -660,6 +660,13 @@ test_that("modeled abundance selectors reject ambiguous hypotheses", {
     dar:::resolve_abundance_contrast(single, NULL, "condition"),
     class = "dar_error_ambiguous_plot_contrast"
   )
+  contrast <- dar:::resolve_model(single)$contrast_plan$contrast_id[[1]]
+  expect_identical(
+    dar:::resolve_abundance_contrast(
+      single, NULL, "condition", contrast_id = contrast
+    ),
+    contrast
+  )
   expect_null(
     dar:::resolve_abundance_contrast(single, "taxon_1", "condition")
   )

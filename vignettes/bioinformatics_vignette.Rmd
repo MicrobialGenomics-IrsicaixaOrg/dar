@@ -194,7 +194,12 @@ ids <-
 abundance_plt(da_results, taxa_ids = ids, type = "boxplot") 
 
 # Abundance plot as heatmap
-abundance_plt(da_results, type = "heatmap", transform = "compositional")
+abundance_plt(
+  da_results,
+  type = "heatmap",
+  transform = "compositional",
+  contrast_id = "RiskGroup2[msm-hts]"
+)
 ```
 
 ## Session Info
