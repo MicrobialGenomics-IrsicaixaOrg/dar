@@ -1,3 +1,16 @@
+# dar 1.9.10
+
+## BREAKING CHANGES
+
+* CHANGED: `sample_data()` and `tax_table()` now return the complete recipe
+  metadata and taxonomy instead of model-restricted analysis views (#153).
+* CHANGED: `otu_table()` now always returns a wide taxa-by-sample tibble with
+  deterministic taxon and sample ordering, regardless of the stored phyloseq
+  orientation (#153).
+* IMPROVED: Differential-abundance engines and plots use explicit internal
+  target-only and selected-rank views, preventing public accessor semantics
+  from changing analysis inputs (#153).
+
 # dar 1.9.9
 
 ## BREAKING CHANGES

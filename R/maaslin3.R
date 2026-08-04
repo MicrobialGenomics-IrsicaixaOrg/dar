@@ -174,7 +174,7 @@ run_maaslin <- function(rec,
       comparisons_list <- get_comparisons(var, phy, as_list = TRUE, n_cut = 1)
       purrr::map_dfr(comparisons_list, function(comparison) {
         input_metadata <-
-          sample_data(rec) %>%
+          analysis_sample_data(rec) %>%
           dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
           data.frame(row.names = 1)
 
@@ -220,7 +220,7 @@ run_maaslin <- function(rec,
             comparison = stringr::str_c(comparison, collapse = "_"),
             var = !!var
           ) %>%
-          dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+          dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
           dplyr::mutate(
             effect = coef,
             signif = ifelse(qval < max_significance, TRUE, FALSE)

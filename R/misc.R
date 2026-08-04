@@ -234,7 +234,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
           step_ids = paste(sort(unique(.data$name)), collapse = ", "),
           sum_methods = sum(.data$value), .groups = "drop"
         ) %>%
-        dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+        dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
         dplyr::arrange(dplyr::desc(.data$sum_methods))
     )
   }
@@ -248,7 +248,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
         stringr::str_c(collapse = ", "),
       sum_methods = sum(value)
     ) %>%
-    dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
+    dplyr::right_join(analysis_tax_table(rec), ., by = "taxa_id") %>%
     dplyr::arrange(-sum_methods)
 }
 

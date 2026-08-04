@@ -392,7 +392,7 @@ order_tidy_results <- function(result, rec, steps) {
   }
   contrast_order <- rec@execution$contrasts$contrast_id
   contrast_order <- unique(c(contrast_order, result$contrast_id))
-  taxa_order <- rownames(rec@phyloseq@otu_table)
+  taxa_order <- phyloseq::taxa_names(rec@phyloseq)
   taxa_order <- unique(c(taxa_order, result$taxa_id))
   result |>
     dplyr::mutate(

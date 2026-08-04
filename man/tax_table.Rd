@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{tax_table}
 \alias{tax_table}
-\title{Extracts tax_table from phyloseq inside a Recipe}
+\title{Extract complete taxonomy from a recipe}
 \usage{
 tax_table(rec)
 }
@@ -10,14 +10,15 @@ tax_table(rec)
 \item{rec}{A \code{Recipe} or \code{PrepRecipe} object.}
 }
 \value{
-A tibble
+A tibble with \code{taxa_id} followed by every taxonomic rank. Taxa are
+ordered according to \code{\link[phyloseq:taxa_names]{phyloseq::taxa_names()}}. If the recipe has no
+taxonomy, an ID-only tibble is returned.
 }
 \description{
-Extracts tax_table from phyloseq inside a Recipe
+Extract complete taxonomy from a recipe
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+rec <- recipe(metaHIV_phy)
 tax_table(rec)
 }

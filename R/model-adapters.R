@@ -71,7 +71,7 @@ reparameterize_model_contrast <- function(compiled, contrast) {
 #' @noRd
 bind_model_result <- function(result, contrast, rec, effect, padj, signif) {
   result <- tibble::as_tibble(result, rownames = "taxa_id") |>
-    dplyr::left_join(tax_table(rec), by = "taxa_id")
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
   result$contrast_id <- contrast$contrast_id[[1]]
   result$comparison <- contrast$comparison[[1]]
   result$contrast_type <- contrast$contrast_type[[1]]
@@ -184,7 +184,7 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
     effect_sign <- parameterized$sign
 
     res_tbl <- tibble::as_tibble(res, rownames = "taxa_id") |>
-      dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+      dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
       dplyr::mutate(
         contrast_id = contrast$contrast_id[[1]],
         comparison = contrast$comparison[[1]],
@@ -337,7 +337,7 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
         contrast_type = contrast$contrast_type[[1]],
         var = contrast$var[[1]]
       ) |>
-      dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+      dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
       dplyr::relocate("taxa_id", "taxa")
   })
   list(model = out)
@@ -428,7 +428,7 @@ run_corncob_model <- function(rec, phi.formula, link, phi.link,
         abs(.data$effect) >= log2FC
     ) |>
     dplyr::ungroup() |>
-    dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
     dplyr::relocate("taxa_id", "taxa")
   list(model = out)
 }
@@ -527,7 +527,7 @@ run_linda_model <- function(rec, prev_filter, mean_abund_filter,
         signif = as.logical(.data$reject)
       )
   }) |>
-    dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
     dplyr::relocate("taxa_id", "taxa")
 
   list(model = out)
@@ -610,7 +610,7 @@ run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
       ),
       by = "contrast_id"
     ) |>
-    dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
     dplyr::relocate("taxa_id", "taxa")
   list(model = out)
 }
@@ -667,7 +667,7 @@ run_wilcox_model <- function(rec, norm_method, max_significance,
       signif = !is.na(padj) & padj < max_significance
     )
   }) |>
-    dplyr::left_join(tax_table(rec), by = "taxa_id") |>
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
     dplyr::relocate("taxa_id", "taxa")
   list(model = out)
 }
@@ -734,7 +734,7 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
         contrast_type = contrast$contrast_type[[1]],
         var = target
       ) |>
-      dplyr::left_join(tax_table(rec), by = "taxa") |>
+      dplyr::left_join(analysis_tax_table(rec), by = "taxa") |>
       dplyr::relocate("taxa_id", "taxa")
   })
   list(model = out)

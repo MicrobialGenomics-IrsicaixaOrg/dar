@@ -446,7 +446,7 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
     )
   } else {
     var <- targets[[1]]
-    var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
+    var_vals <- analysis_sample_data(object) %>% dplyr::pull(.env$var)
     if (is.character(var_vals) | is.factor(var_vals)) {
       levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
       msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
@@ -636,7 +636,7 @@ methods::setMethod(
       )
     } else {
       var <- targets[[1]]
-      var_vals <- sample_data(object) %>% dplyr::pull(.env$var)
+      var_vals <- analysis_sample_data(object) %>% dplyr::pull(.env$var)
       if (is.character(var_vals) | is.factor(var_vals)) {
         levs <-
           factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
