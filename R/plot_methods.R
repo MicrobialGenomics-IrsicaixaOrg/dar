@@ -497,8 +497,8 @@ mutual_plt <- function(rec,
 .annotated_counts <- function(rec) {
   otu_table(rec) %>% 
     tidyr::pivot_longer(-1, names_to = "sample_id") %>%
-    dplyr::left_join(sample_data(rec), by = "sample_id") %>% 
-    dplyr::left_join(tax_table(rec), by = "taxa_id")
+    dplyr::left_join(analysis_sample_data(rec), by = "sample_id") %>%
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
 }
 
 #' @noRd

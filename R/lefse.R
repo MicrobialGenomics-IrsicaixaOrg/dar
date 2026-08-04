@@ -153,7 +153,10 @@ run_lefse <- function(rec,
       get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>%
         purrr::map_dfr(function(comparison) {
           sample_data <-
-            dplyr::filter(sample_data(rec), !!dplyr::sym(var) %in% comparison)
+            dplyr::filter(
+              analysis_sample_data(rec),
+              !!dplyr::sym(var) %in% comparison
+            )
 
           se <- SummarizedExperiment::SummarizedExperiment(
             assays = list(counts = lefse_mat[, sample_data$sample_id]),
@@ -194,7 +197,7 @@ run_lefse <- function(rec,
                 FALSE
               )
             ) %>%
-            dplyr::left_join(tax_table(rec), by = "taxa") %>%
+            dplyr::left_join(analysis_tax_table(rec), by = "taxa") %>%
             dplyr::rename(lefse_id = otu) %>%
             dplyr::relocate(taxa_id, .before = 1)
         })

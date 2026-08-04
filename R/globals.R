@@ -71,7 +71,6 @@ utils::globalVariables(c(
   # <prepro_lefse>
   "RTC",
   # <.abundance_heatmap>
-  # <sample_data>
   # <run_wilcox>
   "sample_id",
   # <run_lefse>
@@ -92,7 +91,6 @@ utils::globalVariables(c(
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <.otu_method_count>
-  # <tax_table>
   # <intersection_df>
   # <run_wilcox>
   "taxa_id",

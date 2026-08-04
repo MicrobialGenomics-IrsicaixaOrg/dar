@@ -140,26 +140,18 @@ validate_qc_group <- function(rec, group_by) {
 #' Extract complete sample metadata in phyloseq sample order
 #' @noRd
 qc_sample_metadata <- function(rec) {
-  phy <- get_phy(rec)
-  metadata <- tryCatch(
-    as(phyloseq::sample_data(phy), "data.frame"),
-    error = function(cnd) NULL
+  metadata <- recipe_metadata_data(rec)
+  data.frame(
+    metadata[-1],
+    row.names = metadata$sample_id,
+    check.names = FALSE
   )
-  if (is.null(metadata)) {
-    return(data.frame(row.names = phyloseq::sample_names(phy)))
-  }
-  metadata[phyloseq::sample_names(phy), , drop = FALSE]
 }
 
 #' Reshape a recipe count matrix once for all QC summaries
 #' @noRd
 qc_count_data <- function(rec) {
-  phy <- get_phy(rec)
-  counts <- as(phyloseq::otu_table(phy), "matrix")
-  if (!phyloseq::taxa_are_rows(phy)) {
-    counts <- t(counts)
-  }
-  counts <- counts[, phyloseq::sample_names(phy), drop = FALSE]
+  counts <- recipe_count_matrix(rec)
   tibble::as_tibble(counts, rownames = "taxa_id") |>
     tidyr::pivot_longer(
       cols = -"taxa_id", names_to = "sample_id", values_to = "value"

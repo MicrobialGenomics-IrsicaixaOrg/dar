@@ -32,7 +32,7 @@ test_that("Function add_tax() @ L174", {
 })
 
 
-test_that("Function prep() @ L315", {
+test_that("Function prep() @ L385", {
   data(metaHIV_phy)
   invalid_rec <- suppressWarnings(recipe(
     metaHIV_phy,

@@ -209,7 +209,7 @@ run_deseq <- function(rec,
             quiet = TRUE
           ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+            dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
               comparison = stringr::str_c(x, "_", y), 
               var = !!var

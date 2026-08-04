@@ -2,7 +2,7 @@
 % Please edit documentation in R/recipe-utils.R
 \name{sample_data}
 \alias{sample_data}
-\title{Extracts sample_data from phyloseq inside a Recipe}
+\title{Extract complete sample metadata from a recipe}
 \usage{
 sample_data(rec)
 }
@@ -10,14 +10,15 @@ sample_data(rec)
 \item{rec}{A \code{Recipe} or \code{PrepRecipe} object.}
 }
 \value{
-A tibble
+A tibble with \code{sample_id} followed by every sample metadata column.
+Samples are ordered according to \code{\link[phyloseq:sample_names]{phyloseq::sample_names()}}. If the recipe
+has no sample metadata, an ID-only tibble is returned.
 }
 \description{
-Extracts sample_data from phyloseq inside a Recipe
+Extract complete sample metadata from a recipe
 }
 \examples{
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+rec <- recipe(metaHIV_phy)
 sample_data(rec)
 }

@@ -327,7 +327,14 @@ test_that("legacy recipes remain model-free", {
     class = "dar_warning_deprecated_recipe_argument"
   )
   expect_null(get_model(rec))
-  expect_equal(names(sample_data(rec)), c("sample_id", "condition"))
+  expect_equal(
+    names(sample_data(rec)),
+    c("sample_id", "condition", "time", "subject", "batch", "age")
+  )
+  expect_equal(
+    names(dar:::analysis_sample_data(rec)),
+    c("sample_id", "condition")
+  )
   expect_true(methods::validObject(rec, test = TRUE))
 })
 
@@ -361,6 +368,10 @@ test_that("models support multiple targets and are independent of step order", {
   expect_equal(get_model(before)$targets, c("condition", "batch"))
   expect_equal(
     names(sample_data(before)),
+    c("sample_id", "condition", "time", "subject", "batch", "age")
+  )
+  expect_equal(
+    names(dar:::analysis_sample_data(before)),
     c("sample_id", "condition", "batch")
   )
   expect_equal(get_model(before)$formula, get_model(after)$formula)

@@ -76,6 +76,24 @@ rec <- dar::recipe(phy) |>
 rec
 ```
 
+## Inspecting Recipe Components
+
+Recipe accessors expose the complete underlying components and do not depend
+on the targets or taxonomic level selected by `add_model()`. Their ordering is
+stable: samples follow `phyloseq::sample_names()`, taxa follow
+`phyloseq::taxa_names()`, and counts are always returned with taxa in rows.
+
+```{r}
+dar::sample_data(rec)
+dar::tax_table(rec)
+dar::otu_table(rec)
+```
+
+When sample metadata or taxonomy is absent, the corresponding accessor returns
+an ID-only tibble. Analysis engines use separate internal target and rank views,
+so additional metadata and taxonomy columns are not passed implicitly to a
+statistical method.
+
 
 ### To TreeSummarizedExperiment
 

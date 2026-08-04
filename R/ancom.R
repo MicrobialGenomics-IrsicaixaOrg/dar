@@ -276,7 +276,7 @@ required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 ancom_stats_tbl <- function(ancom_res, var, rec, comparison) {
   ancom_res %>%
     dplyr::select(taxa_id = taxon, dplyr::contains(!!var)) %>%
-    dplyr::right_join(tax_table(rec), ., by = "taxa_id") %>%
+    dplyr::right_join(analysis_tax_table(rec), ., by = "taxa_id") %>%
     stats::setNames(
       stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
     ) %>%

@@ -192,62 +192,132 @@ add_tax <- function(rec, tax_info) {
 
 # PHYLOSEQ EXTRACTION ----------------------------------------------------------
 
-#' Extracts tax_table from phyloseq inside a Recipe
+#' Extract complete taxonomy from a recipe
 #'
 #' @param rec A `Recipe` or `PrepRecipe` object.
 #'
-#' @return A tibble
+#' @return A tibble with `taxa_id` followed by every taxonomic rank. Taxa are
+#'   ordered according to [phyloseq::taxa_names()]. If the recipe has no
+#'   taxonomy, an ID-only tibble is returned.
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+#' rec <- recipe(metaHIV_phy)
 #' tax_table(rec)
 tax_table <- function(rec) {
   check_any_recipe(rec)
-  rec@phyloseq@tax_table %>%
-    to_tibble("taxa_id") %>%
-    dplyr::select(taxa_id, taxa = !!recipe_tax_level(rec))
+  recipe_taxonomy_data(rec)
 }
 
-#' Extracts sample_data from phyloseq inside a Recipe
+#' Extract complete sample metadata from a recipe
 #'
 #' @param rec A `Recipe` or `PrepRecipe` object.
 #'
-#' @return A tibble
+#' @return A tibble with `sample_id` followed by every sample metadata column.
+#'   Samples are ordered according to [phyloseq::sample_names()]. If the recipe
+#'   has no sample metadata, an ID-only tibble is returned.
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+#' rec <- recipe(metaHIV_phy)
 #' sample_data(rec)
 sample_data <- function(rec) {
   check_any_recipe(rec)
-  rec@phyloseq %>%
-    phyloseq::sample_data() %>%
-    to_tibble("sample_id") %>%
-    dplyr::select(sample_id, dplyr::all_of(recipe_targets(rec)))
+  recipe_metadata_data(rec)
 }
 
-#' Extracts otu_table from phyloseq inside a Recipe
+#' Extract a canonical count table from a recipe
 #'
 #' @param rec A `Recipe` or `PrepRecipe` object.
 #'
-#' @return A tibble
+#' @return A wide tibble with one row per taxon, `taxa_id` first, and one
+#'   column per sample. Taxa and samples follow [phyloseq::taxa_names()] and
+#'   [phyloseq::sample_names()] regardless of the stored OTU-table orientation.
 #' @export
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+#' rec <- recipe(metaHIV_phy)
 #' otu_table(rec)
 otu_table <- function(rec) {
   check_any_recipe(rec)
-  rec@phyloseq %>%
-    phyloseq::otu_table() %>%
-    to_tibble("taxa_id")
+  recipe_count_matrix(rec) |>
+    tibble::as_tibble(rownames = "taxa_id")
+}
+
+#' Extract complete metadata without invoking recipe validity recursively
+#' @noRd
+recipe_metadata_data <- function(rec) {
+  phy <- rec@phyloseq
+  sample_ids <- phyloseq::sample_names(phy)
+  metadata <- tryCatch(
+    as(phyloseq::sample_data(phy), "data.frame"),
+    error = function(cnd) NULL
+  )
+  if (is.null(metadata)) {
+    return(tibble::tibble(sample_id = sample_ids))
+  }
+  metadata[sample_ids, , drop = FALSE] |>
+    tibble::as_tibble(rownames = "sample_id")
+}
+
+#' Extract complete taxonomy without invoking recipe validity recursively
+#' @noRd
+recipe_taxonomy_data <- function(rec) {
+  phy <- rec@phyloseq
+  taxa_ids <- phyloseq::taxa_names(phy)
+  taxonomy <- tryCatch(
+    as(phyloseq::tax_table(phy), "matrix"),
+    error = function(cnd) NULL
+  )
+  if (is.null(taxonomy)) {
+    return(tibble::tibble(taxa_id = taxa_ids))
+  }
+  taxonomy[taxa_ids, , drop = FALSE] |>
+    data.frame(check.names = FALSE) |>
+    tibble::as_tibble(rownames = "taxa_id")
+}
+
+#' Extract the target-only metadata view used by analysis engines
+#' @noRd
+analysis_sample_data <- function(rec) {
+  recipe_metadata_data(rec) |>
+    dplyr::select("sample_id", dplyr::all_of(recipe_targets(rec)))
+}
+
+#' Extract the selected-rank taxonomy view used by analysis engines
+#' @noRd
+analysis_tax_table <- function(rec) {
+  tax_level <- recipe_tax_level(rec)
+  taxonomy <- recipe_taxonomy_data(rec)
+  if (length(tax_level) != 1L || !tax_level %in% names(taxonomy)) {
+    cli::cli_abort(
+      "A valid analysis taxonomic level is required for this operation.",
+      class = "dar_error_invalid_recipe"
+    )
+  }
+  dplyr::transmute(
+    taxonomy,
+    taxa_id = .data$taxa_id,
+    taxa = .data[[tax_level]]
+  )
+}
+
+#' Extract counts in canonical taxa-by-sample orientation
+#' @noRd
+recipe_count_matrix <- function(rec) {
+  phy <- rec@phyloseq
+  counts <- as(phyloseq::otu_table(phy), "matrix")
+  if (!phyloseq::taxa_are_rows(phy)) {
+    counts <- t(counts)
+  }
+  counts[
+    phyloseq::taxa_names(phy),
+    phyloseq::sample_names(phy),
+    drop = FALSE
+  ]
 }
 
 
@@ -516,12 +586,15 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
         dplyr::filter(.data$step_id == .x) %>%
         dplyr::pull(taxa_id)
 
-      rownames(rec@phyloseq@otu_table) %>%
+      phyloseq::taxa_names(rec@phyloseq) %>%
         tibble::tibble(taxa_id = .) %>%
         dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
         dplyr::select(!!.x)
     }) %>%
-    dplyr::mutate(taxa_id = rownames(rec@phyloseq@otu_table), .before = 1) %>%
+    dplyr::mutate(
+      taxa_id = phyloseq::taxa_names(rec@phyloseq),
+      .before = 1
+    ) %>%
     as.data.frame()
 
   if (tidy) { df <- tidyr::pivot_longer(df, -taxa_id) }

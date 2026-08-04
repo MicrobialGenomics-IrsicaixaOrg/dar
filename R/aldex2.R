@@ -183,7 +183,7 @@ run_aldex <- function(rec,
               var = var
             ) %>%
             tibble::as_tibble(rownames = "taxa_id") %>%
-            dplyr::left_join(tax_table(rec), by = "taxa_id") %>%
+            dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
             dplyr::mutate(
               effect = effect, 
               signif = ifelse(we.eBH < max_significance, TRUE, FALSE),

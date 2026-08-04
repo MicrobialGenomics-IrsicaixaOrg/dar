@@ -119,14 +119,14 @@ run_wilcox <- function(rec,
     phyloseq::otu_table() %>%
     t() %>%
     to_tibble("sample_id") %>%
-    dplyr::left_join(sample_data(rec), ., by = "sample_id")
+    dplyr::left_join(analysis_sample_data(rec), ., by = "sample_id")
 
   vars <- recipe_targets(rec)
   
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
-      meta_cols <- c("sample_id", var, names(sample_data(rec)))
+      meta_cols <- c("sample_id", var, names(analysis_sample_data(rec)))
       features <- setdiff(names(prepro_df), meta_cols)
       
       features %>%
@@ -162,7 +162,7 @@ run_wilcox <- function(rec,
           res <- 
             res %>% 
             dplyr::rename(padj = !!p_col) %>% 
-            dplyr::left_join(tax_table(rec), by = "taxa_id")
+            dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
         }) %>% 
         dplyr::mutate(
           estimate = -estimate, 

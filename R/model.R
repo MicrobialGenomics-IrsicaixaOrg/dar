@@ -169,10 +169,7 @@ coerce_model_formula <- function(formula) {
 
 #' @noRd
 model_metadata <- function(rec) {
-  rec@phyloseq |>
-    phyloseq::sample_data() |>
-    as("data.frame") |>
-    tibble::rownames_to_column("sample_id")
+  recipe_metadata_data(rec)
 }
 
 #' Return model validity problems without throwing
@@ -982,11 +979,6 @@ apply_model_to_recipe <- function(rec) {
   }
   keep <- resolved$data$sample_id
   rec@phyloseq <- phyloseq::prune_samples(keep, rec@phyloseq)
-  metadata <- resolved$data |>
-    tibble::column_to_rownames("sample_id") |>
-    data.frame(check.names = FALSE) |>
-    phyloseq::sample_data()
-  phyloseq::sample_data(rec@phyloseq) <- metadata
   list(rec = rec, resolved = resolved)
 }
 
