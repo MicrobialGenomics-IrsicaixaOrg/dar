@@ -1,5 +1,60 @@
 # Changelog
 
+## dar 1.9.12
+
+### SCIENTIFIC VALIDATION
+
+- IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA
+  bias and coverage gates, compares results with a reviewed stochastic
+  baseline, records dependency versions and publishes concise execution
+  summaries
+  ([\#155](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155)).
+- IMPROVED: Full validation reports are retained as compact
+  machine-readable history on the `validation-results` branch, while
+  weak longitudinal contrasts remain descriptive rather than receiving
+  inappropriate power gates
+  ([\#155](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155)).
+
+### LIFECYCLE
+
+- REMOVED:
+  [`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
+  after a complete defunct release cycle;
+  [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
+  remains defunct with migration guidance
+  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
+- DEPRECATED: Legacy selectors and model-free differential-abundance
+  execution remain available in Bioconductor 3.24, become defunct in
+  3.25 and are scheduled for removal in 3.26
+  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
+- CHANGED: Require R 4.6 and make ComplexHeatmap, gplots, heatmaply and
+  UpSetR optional plotting dependencies with classified installation
+  guidance
+  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
+- IMPROVED: Remove generated test artifacts and address actionable
+  BiocCheck findings in documentation, vignettes and package metadata
+  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
+
+## dar 1.9.11
+
+### FIXED
+
+- Consensus tables, plots and bake results now keep modeled targets,
+  contrasts and effect directions as separate hypotheses instead of
+  mixing their support counts
+  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
+- Modeled intersections use the complete taxon-by-contrast universe,
+  including non-significant hypotheses, and classify zero effects as
+  neutral
+  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
+- Method exclusions are applied before consensus support is counted, and
+  invalid cutoffs, weights and exclusions now produce classified errors
+  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
+- Modeled exploration functions accept explicit `target` and
+  `contrast_id` selectors; abundance plots require them whenever
+  automatic selection would otherwise be ambiguous
+  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
+
 ## dar 1.9.10
 
 ### BREAKING CHANGES
@@ -63,7 +118,7 @@
 ### BREAKING CHANGES
 
 - DEFUNCT:
-  [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)
+  [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
   now directs users to
   [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
   instead of inferring an analysis target implicitly

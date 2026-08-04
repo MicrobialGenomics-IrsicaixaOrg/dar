@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,31 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.12" id="dar-1912">dar 1.9.12<a class="anchor" aria-label="anchor" href="#dar-1912"></a></h2>
+<div class="section level3">
+<h3 id="scientific-validation-1-9-12">SCIENTIFIC VALIDATION<a class="anchor" aria-label="anchor" href="#scientific-validation-1-9-12"></a></h3>
+<ul><li>IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA bias and coverage gates, compares results with a reviewed stochastic baseline, records dependency versions and publishes concise execution summaries (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155" class="external-link">#155</a>).</li>
+<li>IMPROVED: Full validation reports are retained as compact machine-readable history on the <code>validation-results</code> branch, while weak longitudinal contrasts remain descriptive rather than receiving inappropriate power gates (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155" class="external-link">#155</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="lifecycle-1-9-12">LIFECYCLE<a class="anchor" aria-label="anchor" href="#lifecycle-1-9-12"></a></h3>
+<ul><li>REMOVED: <code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> after a complete defunct release cycle; <code><a href="../reference/dar-defunct.html">phy_qc()</a></code> remains defunct with migration guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<li>DEPRECATED: Legacy selectors and model-free differential-abundance execution remain available in Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in 3.26 (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<li>CHANGED: Require R 4.6 and make ComplexHeatmap, gplots, heatmaply and UpSetR optional plotting dependencies with classified installation guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<li>IMPROVED: Remove generated test artifacts and address actionable BiocCheck findings in documentation, vignettes and package metadata (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.11" id="dar-1911">dar 1.9.11<a class="anchor" aria-label="anchor" href="#dar-1911"></a></h2>
+<div class="section level3">
+<h3 id="fixed-1-9-11">FIXED<a class="anchor" aria-label="anchor" href="#fixed-1-9-11"></a></h3>
+<ul><li>Consensus tables, plots and bake results now keep modeled targets, contrasts and effect directions as separate hypotheses instead of mixing their support counts (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<li>Modeled intersections use the complete taxon-by-contrast universe, including non-significant hypotheses, and classify zero effects as neutral (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<li>Method exclusions are applied before consensus support is counted, and invalid cutoffs, weights and exclusions now produce classified errors (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<li>Modeled exploration functions accept explicit <code>target</code> and <code>contrast_id</code> selectors; abundance plots require them whenever automatic selection would otherwise be ambiguous (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.10" id="dar-1910">dar 1.9.10<a class="anchor" aria-label="anchor" href="#dar-1910"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-1-9-10">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-10"></a></h3>
@@ -69,7 +94,7 @@
 <h2 class="pkg-version" data-toc-text="1.9.7" id="dar-197">dar 1.9.7<a class="anchor" aria-label="anchor" href="#dar-197"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-1-9-7">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-7"></a></h3>
-<ul><li>DEFUNCT: <code><a href="../reference/phy_qc.html">phy_qc()</a></code> now directs users to <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> instead of inferring an analysis target implicitly (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+<ul><li>DEFUNCT: <code><a href="../reference/dar-defunct.html">phy_qc()</a></code> now directs users to <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> instead of inferring an analysis target implicitly (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
 <li>NEW: <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> provides model-independent overall or explicitly grouped quality-control metrics for both <code>Recipe</code> and <code>PrepRecipe</code> objects (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
 <li>IMPROVED: QC summaries expose unambiguous <code>group_by</code> and <code>group</code> columns and reshape correctly oriented count data only once per call (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
 </ul></div>

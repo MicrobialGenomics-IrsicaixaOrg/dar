@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,10 @@
 <p>Every exported topic must be listed in <code>_pkgdown.yml</code>. Validate the reference index locally before opening a pull request:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">--vanilla</span> dev/check-pkgdown.R</span></code></pre></div>
 <p>This check validates the pkgdown configuration without publishing the website. GitHub Actions runs the same validation for pull requests and deploys the full site only from <code>devel</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="bioconductor-lifecycle">Bioconductor lifecycle<a class="anchor" aria-label="anchor" href="#bioconductor-lifecycle"></a></h3>
+<p>Released functions follow the three-cycle Bioconductor lifecycle: deprecated in one release, defunct in the next, and removed from R code and NAMESPACE in the following cycle while their migration alias remains documented. Every lifecycle change must name its target releases in NEWS and the statistical model vignette. BiocCheck warnings that point to intentional <code><a href="https://rdrr.io/r/base/Deprecated.html" class="external-link">.Deprecated()</a></code> or <code><a href="https://rdrr.io/r/base/Defunct.html" class="external-link">.Defunct()</a></code> calls are reviewed against that schedule; other warnings must be fixed or justified in the pull request.</p>
 </div>
 </div>
 <div class="section level2">

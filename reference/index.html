@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -319,7 +319,7 @@
         </dt>
         <dd>Overlap of significant OTUs between tested methods.</dd>
       </dl></div><div class="section level2">
-      <h2 id="recipe-getters-and-adders">Recipe Getters and Adders<a class="anchor" aria-label="anchor" href="#recipe-getters-and-adders"></a></h2>
+      <h2 id="recipe-data-access">Recipe Data Access<a class="anchor" aria-label="anchor" href="#recipe-data-access"></a></h2>
 
 
 
@@ -330,38 +330,10 @@
 
       <dl><dt>
 
-          <code><a href="add_tax.html">add_tax()</a></code>
-
-        </dt>
-        <dd>Add a legacy taxonomic level of interest to a recipe</dd>
-
-        <dt>
-
-          <code><a href="add_var.html">add_var()</a></code>
-
-        </dt>
-        <dd>Add legacy variables of interest to a recipe</dd>
-
-        <dt>
-
           <code><a href="get_phy.html">get_phy()</a></code>
 
         </dt>
         <dd>Returns phyloseq from Recipe-class object</dd>
-
-        <dt>
-
-          <code><a href="get_tax.html">get_tax()</a></code>
-
-        </dt>
-        <dd>Return legacy taxonomic information from a recipe</dd>
-
-        <dt>
-
-          <code><a href="get_var.html">get_var()</a></code>
-
-        </dt>
-        <dd>Return legacy target information from a recipe</dd>
 
         <dt>
 
@@ -397,6 +369,50 @@
 
         </dt>
         <dd>Returns required pakcages for Recipe object</dd>
+      </dl></div><div class="section level2">
+      <h2 id="lifecycle-and-migration">Lifecycle and Migration<a class="anchor" aria-label="anchor" href="#lifecycle-and-migration"></a></h2>
+
+      <div class="section-desc"><p>Compatibility interfaces; use the centralized model API in new code.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="add_var.html">add_var()</a></code>
+
+        </dt>
+        <dd>Add legacy variables of interest to a recipe</dd>
+
+        <dt>
+
+          <code><a href="add_tax.html">add_tax()</a></code>
+
+        </dt>
+        <dd>Add a legacy taxonomic level of interest to a recipe</dd>
+
+        <dt>
+
+          <code><a href="get_var.html">get_var()</a></code>
+
+        </dt>
+        <dd>Return legacy target information from a recipe</dd>
+
+        <dt>
+
+          <code><a href="get_tax.html">get_tax()</a></code>
+
+        </dt>
+        <dd>Return legacy taxonomic information from a recipe</dd>
+
+        <dt>
+
+          <code><a href="dar-defunct.html">phy_qc()</a></code>
+
+        </dt>
+        <dd>Defunct functions in dar</dd>
       </dl></div><div class="section level2">
       <h2 id="import-and-export">Import and Export<a class="anchor" aria-label="anchor" href="#import-and-export"></a></h2>
 

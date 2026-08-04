@@ -26,6 +26,7 @@
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/contains_rarefaction.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.html</loc></url>
+<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.html</loc></url>
@@ -45,7 +46,6 @@
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/pastry_df.html</loc></url>
-<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/rand_id.html</loc></url>
@@ -68,7 +68,6 @@
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.html</loc></url>
-<url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_metagenomeseq.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rarefaction.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.html</loc></url>
 <url><loc>https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.html</loc></url>

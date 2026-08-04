@@ -5,7 +5,12 @@ Plot the number of shared DA OTUs between methods.
 ## Usage
 
 ``` r
-exclusion_plt(rec, steps = steps_ids(rec, "da"))
+exclusion_plt(
+  rec,
+  steps = steps_ids(rec, "da"),
+  target = NULL,
+  contrast_id = NULL
+)
 ```
 
 ## Arguments
@@ -17,6 +22,14 @@ exclusion_plt(rec, steps = steps_ids(rec, "da"))
 - steps:
 
   Character vector with step_ids to take in account.
+
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
 
 ## Value
 

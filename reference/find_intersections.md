@@ -5,7 +5,12 @@ Finds common OTU between method results
 ## Usage
 
 ``` r
-find_intersections(rec, steps = steps_ids(rec, "da"))
+find_intersections(
+  rec,
+  steps = steps_ids(rec, "da"),
+  target = NULL,
+  contrast_id = NULL
+)
 ```
 
 ## Arguments
@@ -17,6 +22,14 @@ find_intersections(rec, steps = steps_ids(rec, "da"))
 - steps:
 
   character vector with step ids to take in account
+
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
 
 ## Value
 

@@ -5,7 +5,13 @@ Overlap of significant OTUs between tested methods.
 ## Usage
 
 ``` r
-overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
+overlap_df(
+  rec,
+  steps = steps_ids(rec, "da"),
+  type = "all",
+  target = NULL,
+  contrast_id = NULL
+)
 ```
 
 ## Arguments
@@ -23,6 +29,14 @@ overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
   Indicates whether to use all taxa ("all") or only those that are
   differentially abundant in at least one method ("da"). Default as
   "all".
+
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
 
 ## Value
 

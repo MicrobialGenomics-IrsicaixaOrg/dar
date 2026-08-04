@@ -276,7 +276,7 @@ rec
 #> 
 #>      ✔ ancom__Pionono diff_taxa = 13 
 #> 
-#>      ℹ 21 taxon-contrast effects are present in all tested methods 
+#>      ℹ 0 taxon-contrast effects are present in all tested methods 
 #> 
 
 ## Wearing rarefaction only for this step

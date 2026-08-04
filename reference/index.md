@@ -94,18 +94,10 @@
 - [`overlap_df()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/overlap_df.md)
   : Overlap of significant OTUs between tested methods.
 
-## Recipe Getters and Adders
+## Recipe Data Access
 
-- [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
-  : Add a legacy taxonomic level of interest to a recipe
-- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
-  : Add legacy variables of interest to a recipe
 - [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
   : Returns phyloseq from Recipe-class object
-- [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-  : Return legacy taxonomic information from a recipe
-- [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
-  : Return legacy target information from a recipe
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
   : Extract a canonical count table from a recipe
 - [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
@@ -116,6 +108,21 @@
   : Extract complete taxonomy from a recipe
 - [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
   : Returns required pakcages for Recipe object
+
+## Lifecycle and Migration
+
+Compatibility interfaces; use the centralized model API in new code.
+
+- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
+  : Add legacy variables of interest to a recipe
+- [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
+  : Add a legacy taxonomic level of interest to a recipe
+- [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
+  : Return legacy target information from a recipe
+- [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
+  : Return legacy taxonomic information from a recipe
+- [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
+  : Defunct functions in dar
 
 ## Import and Export
 

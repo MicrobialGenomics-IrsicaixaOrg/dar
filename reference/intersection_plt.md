@@ -9,7 +9,9 @@ intersection_plt(
   rec,
   steps = steps_ids(rec, "da"),
   ordered_by = c("freq", "degree"),
-  font_size = 2
+  font_size = 2,
+  target = NULL,
+  contrast_id = NULL
 )
 ```
 
@@ -31,6 +33,14 @@ intersection_plt(
 - font_size:
 
   Size of the font.
+
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
 
 ## Value
 

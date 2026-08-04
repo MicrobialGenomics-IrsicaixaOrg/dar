@@ -60,7 +60,8 @@ longitudinal <- recipe(longitudinal_phy) |>
   step_maaslin()
 
 fit <- prep(longitudinal)
-fit@execution$contrasts
+tidy_results(fit) |>
+  dplyr::distinct(contrast_id, comparison, contrast_type)
 ```
 
 For `condition * visit`, the simple plan contains condition comparisons
@@ -99,7 +100,7 @@ contribute to the same vote.
 
 [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
 exposes the same columns for every DA engine while preserving the
-engine-specific tables in `fit@results`. The `method` column identifies
+engine-specific tables stored internally. The `method` column identifies
 the stable engine (`deseq`, `aldex`, and so on), whereas `step_id`
 identifies the configured instance and therefore distinguishes repeated
 configurations of one engine.
@@ -171,11 +172,12 @@ The former `recipe(..., var_info=, tax_info=)`,
 [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
 and
 [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-interfaces remain available during the first Bioconductor deprecation
-cycle. They emit classified warnings and synchronize with the
-centralized model where applicable. New code should inspect
-`get_model(rec)$targets` and `get_model(rec)$tax_level` instead. Legacy
-recipes can be migrated by moving both selectors into
+interfaces are deprecated in Bioconductor 3.24, become defunct in 3.25
+and are scheduled for removal in 3.26. Model-free DA execution follows
+the same schedule; preprocessing without a model remains supported. New
+code should inspect `get_model(rec)$targets` and
+`get_model(rec)$tax_level`. Legacy recipe objects loaded from RDS can be
+migrated by moving both selectors into
 [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md):
 
 ``` r
@@ -191,6 +193,16 @@ current <- recipe(phy) |>
     tax_level = "Species"
   )
 ```
+
+The retired executable pseudo-JSON format cannot be imported safely.
+Recreate those steps in a current recipe and export them with
+[`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)
+to obtain the versioned, non-executable JSON schema.
+[`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
+is defunct in 3.24 and is replaced by
+[`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md);
+[`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
+has completed its lifecycle and is no longer exported.
 
 ``` r
 
@@ -218,39 +230,33 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dar_1.9.10
+#> [1] dar_1.9.12
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] ade4_1.7-24         tidyselect_1.2.1    viridisLite_0.4.3  
-#>  [4] dplyr_1.2.1         farver_2.1.2        viridis_0.6.5      
-#>  [7] Biostrings_2.80.1   S7_0.2.2            fastmap_1.2.0      
-#> [10] TSP_1.2.7           phyloseq_1.56.0     digest_0.6.39      
-#> [13] lifecycle_1.0.5     cluster_2.1.8.3     survival_3.8-9     
-#> [16] magrittr_2.0.5      compiler_4.6.1      rlang_1.3.0        
-#> [19] sass_0.4.10         tools_4.6.1         igraph_2.3.3       
-#> [22] yaml_2.3.12         data.table_1.18.4   knitr_1.51         
-#> [25] htmlwidgets_1.6.4   plyr_1.8.9          RColorBrewer_1.1-3 
-#> [28] registry_0.5-1      ca_0.71.1           purrr_1.2.2        
-#> [31] BiocGenerics_0.58.1 desc_1.4.3          grid_4.6.1         
-#> [34] stats4_4.6.1        multtest_2.68.0     biomformat_1.40.0  
-#> [37] ggplot2_4.0.3       scales_1.4.0        iterators_1.0.14   
-#> [40] MASS_7.3-66         cli_3.6.6           vegan_2.7-5        
-#> [43] UpSetR_1.4.1        rmarkdown_2.31      crayon_1.5.3       
-#> [46] ragg_1.5.2          generics_0.1.4      otel_0.2.0         
-#> [49] heatmaply_1.6.0     httr_1.4.8          reshape2_1.4.5     
-#> [52] ape_5.8-1           cachem_1.1.0        stringr_1.6.0      
-#> [55] splines_4.6.1       assertthat_0.2.1    parallel_4.6.1     
-#> [58] XVector_0.52.0      vctrs_0.7.3         webshot_0.5.5      
-#> [61] Matrix_1.7-6        jsonlite_2.0.0      seriation_1.5.8    
-#> [64] IRanges_2.46.0      S4Vectors_0.50.1    systemfonts_1.3.2  
-#> [67] dendextend_1.19.1   foreach_1.5.2       plotly_4.12.1      
-#> [70] tidyr_1.3.2         jquerylib_0.1.4     glue_1.8.1         
-#> [73] pkgdown_2.2.1       codetools_0.2-20    stringi_1.8.7      
-#> [76] gtable_0.3.6        tibble_3.3.1        pillar_1.11.1      
-#> [79] htmltools_0.5.9     Seqinfo_1.2.0       R6_2.6.1           
-#> [82] textshaping_1.0.5   evaluate_1.0.5      Biobase_2.72.0     
-#> [85] lattice_0.22-9      bslib_0.12.0        Rcpp_1.1.2         
-#> [88] permute_0.9-10      gridExtra_2.3.1     nlme_3.1-170       
-#> [91] mgcv_1.9-4          xfun_0.60           fs_2.1.0           
-#> [94] pkgconfig_2.0.3
+#>  [1] gtable_0.3.6         xfun_0.60            bslib_0.12.0        
+#>  [4] ggplot2_4.0.3        htmlwidgets_1.6.4    Biobase_2.73.2      
+#>  [7] lattice_0.22-9       vctrs_0.7.3          tools_4.6.1         
+#> [10] generics_0.1.4       biomformat_1.41.0    stats4_4.6.1        
+#> [13] parallel_4.6.1       tibble_3.3.1         cluster_2.1.8.3     
+#> [16] pkgconfig_2.0.3      Matrix_1.7-6         data.table_1.18.4   
+#> [19] RColorBrewer_1.1-3   S7_0.2.2             desc_1.4.3          
+#> [22] S4Vectors_0.51.6     lifecycle_1.0.5      compiler_4.6.1      
+#> [25] farver_2.1.2         stringr_1.6.0        textshaping_1.0.5   
+#> [28] Biostrings_2.81.6    Seqinfo_1.3.0        codetools_0.2-20    
+#> [31] permute_0.9-10       htmltools_0.5.9      sass_0.4.10         
+#> [34] yaml_2.3.12          pillar_1.11.1        pkgdown_2.2.1       
+#> [37] crayon_1.5.3         jquerylib_0.1.4      MASS_7.3-66         
+#> [40] cachem_1.1.0         vegan_2.7-5          iterators_1.0.14    
+#> [43] foreach_1.5.2        nlme_3.1-170         tidyselect_1.2.1    
+#> [46] digest_0.6.39        stringi_1.8.7        dplyr_1.2.1         
+#> [49] reshape2_1.4.5       splines_4.6.1        ade4_1.7-24         
+#> [52] fastmap_1.2.0        grid_4.6.1           cli_3.6.6           
+#> [55] magrittr_2.0.5       survival_3.8-9       ape_5.8-1           
+#> [58] scales_1.4.0         rmarkdown_2.31       XVector_0.53.0      
+#> [61] igraph_2.3.3         multtest_2.69.0      otel_0.2.0          
+#> [64] ragg_1.5.2           phyloseq_1.57.0      evaluate_1.0.5      
+#> [67] knitr_1.51           IRanges_2.47.2       mgcv_1.9-4          
+#> [70] rlang_1.3.0          Rcpp_1.1.2           glue_1.8.1          
+#> [73] BiocGenerics_0.59.10 jsonlite_2.0.0       R6_2.6.1            
+#> [76] plyr_1.8.9           systemfonts_1.3.2    fs_2.1.0
 ```

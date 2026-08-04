@@ -58,22 +58,22 @@ cool(res)
 #> # A tibble: 16 × 2
 #>    taxa_id taxa            
 #>    <chr>   <chr>           
-#>  1 Otu_35  Collinsella     
-#>  2 Otu_78  Bacteroides     
-#>  3 Otu_82  Barnesiella     
-#>  4 Otu_88  Odoribacter     
-#>  5 Otu_94  Paraprevotella  
-#>  6 Otu_96  Prevotella      
-#>  7 Otu_119 Alistipes       
-#>  8 Otu_125 Parabacteroides 
-#>  9 Otu_255 Blautia         
-#> 10 Otu_259 Coprococcus     
-#> 11 Otu_262 Dorea           
-#> 12 Otu_307 Faecalibacterium
-#> 13 Otu_330 Ruthenibacterium
-#> 14 Otu_332 Catenibacterium 
-#> 15 Otu_365 Mitsuokella     
-#> 16 Otu_433 Haemophilus     
+#>  1 Otu_119 Alistipes       
+#>  2 Otu_125 Parabacteroides 
+#>  3 Otu_255 Blautia         
+#>  4 Otu_259 Coprococcus     
+#>  5 Otu_262 Dorea           
+#>  6 Otu_307 Faecalibacterium
+#>  7 Otu_330 Ruthenibacterium
+#>  8 Otu_332 Catenibacterium 
+#>  9 Otu_35  Collinsella     
+#> 10 Otu_365 Mitsuokella     
+#> 11 Otu_433 Haemophilus     
+#> 12 Otu_78  Bacteroides     
+#> 13 Otu_82  Barnesiella     
+#> 14 Otu_88  Odoribacter     
+#> 15 Otu_94  Paraprevotella  
+#> 16 Otu_96  Prevotella      
 
 ## bake() requires a PrepRecipe
 data(test_rec)
@@ -136,22 +136,22 @@ cool(res)
 #> # A tibble: 16 × 2
 #>    taxa_id taxa            
 #>    <chr>   <chr>           
-#>  1 Otu_35  Collinsella     
-#>  2 Otu_78  Bacteroides     
-#>  3 Otu_82  Barnesiella     
-#>  4 Otu_88  Odoribacter     
-#>  5 Otu_94  Paraprevotella  
-#>  6 Otu_96  Prevotella      
-#>  7 Otu_119 Alistipes       
-#>  8 Otu_125 Parabacteroides 
-#>  9 Otu_255 Blautia         
-#> 10 Otu_259 Coprococcus     
-#> 11 Otu_262 Dorea           
-#> 12 Otu_307 Faecalibacterium
-#> 13 Otu_330 Ruthenibacterium
-#> 14 Otu_332 Catenibacterium 
-#> 15 Otu_365 Mitsuokella     
-#> 16 Otu_433 Haemophilus     
+#>  1 Otu_119 Alistipes       
+#>  2 Otu_125 Parabacteroides 
+#>  3 Otu_255 Blautia         
+#>  4 Otu_259 Coprococcus     
+#>  5 Otu_262 Dorea           
+#>  6 Otu_307 Faecalibacterium
+#>  7 Otu_330 Ruthenibacterium
+#>  8 Otu_332 Catenibacterium 
+#>  9 Otu_35  Collinsella     
+#> 10 Otu_365 Mitsuokella     
+#> 11 Otu_433 Haemophilus     
+#> 12 Otu_78  Bacteroides     
+#> 13 Otu_82  Barnesiella     
+#> 14 Otu_88  Odoribacter     
+#> 15 Otu_94  Paraprevotella  
+#> 16 Otu_96  Prevotella      
 
 ## Furthermore, we can exclude methods from the consensus strategy
 ## with the `exclude` parameter.
@@ -160,18 +160,18 @@ cool(res)
 #> ℹ Baking with count_cutoff = 1
 #> Excluding "maaslin__Welsh_cake".
 #> # A tibble: 27 × 2
-#>    taxa_id taxa           
-#>    <chr>   <chr>          
-#>  1 Otu_34  Olsenella      
-#>  2 Otu_35  Collinsella    
-#>  3 Otu_45  Slackia        
-#>  4 Otu_78  Bacteroides    
-#>  5 Otu_82  Barnesiella    
-#>  6 Otu_88  Odoribacter    
-#>  7 Otu_94  Paraprevotella 
-#>  8 Otu_96  Prevotella     
-#>  9 Otu_119 Alistipes      
-#> 10 Otu_125 Parabacteroides
+#>    taxa_id taxa            
+#>    <chr>   <chr>           
+#>  1 Otu_119 Alistipes       
+#>  2 Otu_125 Parabacteroides 
+#>  3 Otu_231 Eubacterium     
+#>  4 Otu_255 Blautia         
+#>  5 Otu_259 Coprococcus     
+#>  6 Otu_262 Dorea           
+#>  7 Otu_285 Roseburia       
+#>  8 Otu_307 Faecalibacterium
+#>  9 Otu_308 Flavonifractor  
+#> 10 Otu_330 Ruthenibacterium
 #> # ℹ 17 more rows
 
 ## Finally, we can use the `weights` parameter to weigh each method.
@@ -181,17 +181,17 @@ res <- bake(rec, weights = weights)
 cool(res)
 #> ℹ Baking with count_cutoff = 2
 #> # A tibble: 41 × 2
-#>    taxa_id taxa       
-#>    <chr>   <chr>      
-#>  1 Otu_35  Collinsella
-#>  2 Otu_37  Collinsella
-#>  3 Otu_46  Bacteroides
-#>  4 Otu_47  Bacteroides
-#>  5 Otu_51  Bacteroides
-#>  6 Otu_52  Bacteroides
-#>  7 Otu_62  Bacteroides
-#>  8 Otu_69  Bacteroides
-#>  9 Otu_76  Bacteroides
-#> 10 Otu_77  Bacteroides
+#>    taxa_id taxa           
+#>    <chr>   <chr>          
+#>  1 Otu_102 Prevotella     
+#>  2 Otu_107 Prevotella     
+#>  3 Otu_115 Alistipes      
+#>  4 Otu_119 Alistipes      
+#>  5 Otu_120 Alistipes      
+#>  6 Otu_125 Parabacteroides
+#>  7 Otu_129 Parabacteroides
+#>  8 Otu_234 Eubacterium    
+#>  9 Otu_255 Blautia        
+#> 10 Otu_258 Coprococcus    
 #> # ℹ 31 more rows
 ```

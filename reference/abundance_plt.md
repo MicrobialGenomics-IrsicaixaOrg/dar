@@ -11,7 +11,9 @@ abundance_plt(
   type = "boxplot",
   transform = "compositional",
   scale = 1,
-  top_n = 20
+  top_n = 20,
+  target = NULL,
+  contrast_id = NULL
 )
 ```
 
@@ -47,6 +49,16 @@ abundance_plt(
 - top_n:
 
   Maximum number of taxa to represent. Default: 20.
+
+- target:
+
+  Modeled target used for annotations. Required when a modeled recipe
+  contains more than one target.
+
+- contrast_id:
+
+  Modeled contrast used for automatic taxon selection. Required when
+  `taxa_ids = NULL` and more than one contrast is available.
 
 ## Value
 

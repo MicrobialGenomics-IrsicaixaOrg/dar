@@ -12,7 +12,9 @@ mutual_plt(
   count_cutoff = NULL,
   comparisons = NULL,
   steps = steps_ids(rec, type = "da"),
-  top_n = 20
+  top_n = 20,
+  target = NULL,
+  contrast_id = NULL
 )
 ```
 
@@ -43,6 +45,14 @@ mutual_plt(
 
   Maximum number of taxa to represent. Default: 20.
 
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
+
 ## Value
 
 ggplot2
@@ -67,9 +77,6 @@ mutual_plt(
   test_prep_rec, 
   count_cutoff = length(steps_ids(test_prep_rec, "da"))
 )
-#> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
-#> ℹ The top 20 significant taxa with the greatest overlap between methods will be
-#>   used.
 
 
 ## A single comparisons can be plotted through the comparison parameter.

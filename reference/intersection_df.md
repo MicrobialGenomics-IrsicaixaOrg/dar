@@ -5,7 +5,13 @@ Returns data.frame with OTU intersection between methods
 ## Usage
 
 ``` r
-intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
+intersection_df(
+  rec,
+  steps = steps_ids(rec, "da"),
+  tidy = FALSE,
+  target = NULL,
+  contrast_id = NULL
+)
 ```
 
 ## Arguments
@@ -21,6 +27,14 @@ intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 - tidy:
 
   Boolean indicating if result must be in tidy format.
+
+- target:
+
+  Optional modeled target to include.
+
+- contrast_id:
+
+  Optional modeled contrast identifier to include.
 
 ## Value
 

@@ -5,7 +5,7 @@ Returns required pakcages for Recipe object
 ## Usage
 
 ``` r
-required_deps(rec, steps = rec@steps)
+required_deps(rec, steps = NULL)
 ```
 
 ## Arguments
