@@ -21,7 +21,8 @@ step_maaslin(
   reference = NULL,
   median_comparison_abundance = TRUE,
   rarefy = FALSE,
-  id = rand_id("maaslin")
+  id = rand_id("maaslin"),
+  engine_args = list()
 )
 ```
 
@@ -91,6 +92,11 @@ step_maaslin(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `fit` or `contrast`
+  stage. Arguments managed by dar or exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -103,6 +109,7 @@ Other Diff taxa steps:
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 
 ## Examples
@@ -131,8 +138,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Cream_horn 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pastry_heart 
+#>      ◉ step_subset_taxa() id = subset_taxa__Crocetta_of_Caltanissetta 
+#>      ◉ step_filter_taxa() id = filter_taxa__Makroudh 
 #> 
 #> DA steps:
 #> 
@@ -152,7 +159,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ maaslin__Remonce diff_taxa = 1 
+#>      ✔ maaslin__Strudel diff_taxa = 1 
 #> 
 #>      ℹ 1 taxon-contrast effects are present in all tested methods 
 #> 
@@ -180,5 +187,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_maaslin() id = maaslin__Rhubarb_tart 
+#>      ◉ step_maaslin() id = maaslin__Punschkrapfen 
 ```

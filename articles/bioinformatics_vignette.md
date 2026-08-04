@@ -94,10 +94,10 @@ specific criteria: prevalence, variance, abundance, and rarity.
 - `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU
   across samples.
 
-In addition to the preprocessing steps, the dar package also
-incorporates the function phy_qc which returns a table with a set of
-metrics that allow for informed decisions to be made about the data
-preprocessing that will be done. In our case, we decided to use the
+In addition to the preprocessing steps,
+[`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
+returns overall or explicitly grouped metrics that support informed
+preprocessing decisions. In our case, we decided to use the
 `step_subset_taxa` function to retain only those observations annotated
 within the realm of Bacteria and Archaea. We also used the
 `step_filter_by_prevalence` function to retain only those OTUs with at
@@ -108,17 +108,17 @@ differential abundance analysis.
 
 ``` r
 
-# Summary Stats by levels
-phy_qc(rec)
-#> # A tibble: 4 × 12
-#>   var_levels     n n_zero pct_zero pct_all_zero pct_singletons pct_doubletons
-#>   <chr>      <int>  <int>    <dbl>        <dbl>          <dbl>          <dbl>
-#> 1 all        70356  57632     81.9          0             20.6           8.87
-#> 2 hts        18491  15108     81.7         24.2           22.8           8.43
-#> 3 msm        45100  37019     82.1         16.0           20.2           9.53
-#> 4 pwid        6765   5505     81.4         41.2           16.6           9.31
-#> # ℹ 5 more variables: n_samples <int>, lib_size_min <dbl>, lib_size_max <dbl>,
-#> #   count_mean <dbl>, count_max <dbl>
+# Summary statistics by analysis group
+recipe_qc(rec, group_by = "RiskGroup2")
+#> # A tibble: 4 × 13
+#>   group_by   group     n n_zero pct_zero pct_all_zero pct_singletons
+#>   <chr>      <chr> <dbl>  <dbl>    <dbl>        <dbl>          <dbl>
+#> 1 NA         NA    70356  57632     81.9          0             20.6
+#> 2 RiskGroup2 hts   18491  15108     81.7         24.2           22.8
+#> 3 RiskGroup2 msm   45100  37019     82.1         16.0           20.2
+#> 4 RiskGroup2 pwid   6765   5505     81.4         41.2           16.6
+#> # ℹ 6 more variables: pct_doubletons <dbl>, n_samples <dbl>,
+#> #   lib_size_min <dbl>, lib_size_max <dbl>, count_mean <dbl>, count_max <dbl>
 
 # Adding prepro steps
 rec <- 
@@ -151,12 +151,12 @@ rec
 Once data is preprocessed and cleaned, the next step is to add the da
 steps. The dar package incorporates multiple methods to analyze the
 data, including: `ALDEx2`, `ANCOM-BC`, `corncob`, `DESeq2`, `Lefse`,
-`MAaslin3`, and `Wilcox.` These methods provide a range of options for
-uncovering potential microbial biomarkers associated with the variable
-of interest. To ensure consistency across methods, we decided not to use
-default parameters, but to set the `min_prevalence` parameter to 0 for
-`MAaslin2`. This approach ensured that the analysis was consistent
-across all methods and that the results were interpretable.
+`LinDA`, `MaAsLin3`, and `Wilcox`. These methods provide a range of
+options for uncovering potential microbial biomarkers associated with
+the variable of interest. To ensure consistency across methods, we
+decided not to use default parameters, but to set the `min_prevalence`
+parameter to 0 for `MaAsLin3`. This approach ensured that the analysis
+was consistent across methods and that the results were interpretable.
 
 ``` r
 
@@ -781,14 +781,14 @@ da_results <- prep(rec, parallel = TRUE)
 #> Likely, one of your covariates/experimental conditions is such that
 #> there are all zero counts within a group. The results of this model should
 #> be interpreted with care because there is insufficient data to distinguish between groups.
-#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
-#> Variables in the input are collinear. Try only with the terminal nodes using
+#> Warning in (function (relab, kruskal.threshold = 0.05, wilcox.threshold = 0.05,
+#> : Variables in the input are collinear. Try only with the terminal nodes using
 #> `get_terminal_nodes` function
-#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
-#> Variables in the input are collinear. Try only with the terminal nodes using
+#> Warning in (function (relab, kruskal.threshold = 0.05, wilcox.threshold = 0.05,
+#> : Variables in the input are collinear. Try only with the terminal nodes using
 #> `get_terminal_nodes` function
-#> Warning in lefser::lefser(se, classCol = target, kruskal.threshold = 1, :
-#> Variables in the input are collinear. Try only with the terminal nodes using
+#> Warning in (function (relab, kruskal.threshold = 0.05, wilcox.threshold = 0.05,
+#> : Variables in the input are collinear. Try only with the terminal nodes using
 #> `get_terminal_nodes` function
 
 da_results
@@ -830,7 +830,7 @@ results <-
 results
 #> # A tibble: 24 × 9
 #>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                6
 #>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
 #>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
@@ -1004,7 +1004,7 @@ f_results <- cool(da_results, bake = 1)
 f_results
 #> # A tibble: 24 × 9
 #>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                6
 #>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              6
 #>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                6
@@ -1062,7 +1062,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-08-03
+#>  date     2026-08-04
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -1092,7 +1092,7 @@ devtools::session_info()
 #>  bluster                    1.22.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  brio                       1.1.5      2024-04-24 [2] RSPM (R 4.6.0)
 #>  broom                      1.0.13     2026-05-14 [1] RSPM (R 4.6.0)
-#>  bslib                      0.11.0     2026-05-16 [2] RSPM (R 4.6.0)
+#>  bslib                      0.12.0     2026-08-04 [2] RSPM (R 4.6.0)
 #>  ca                         0.71.1     2020-01-24 [1] RSPM (R 4.6.0)
 #>  cachem                     1.1.0      2024-05-16 [2] RSPM (R 4.6.0)
 #>  car                        3.1-5      2026-02-03 [1] RSPM (R 4.6.0)
@@ -1111,7 +1111,7 @@ devtools::session_info()
 #>  corncob                    0.4.2      2025-03-29 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.3      2026-08-03 [1] Bioconductor
+#>  dar                      * 1.9.7      2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
@@ -1138,7 +1138,7 @@ devtools::session_info()
 #>  fontLiberation             0.1.0      2016-10-15 [1] RSPM (R 4.6.0)
 #>  fontquiver                 0.2.1      2017-02-01 [1] RSPM (R 4.6.0)
 #>  foreach                    1.5.2      2022-02-02 [1] RSPM (R 4.6.0)
-#>  Formula                    1.2-5      2023-02-24 [1] RSPM (R 4.6.0)
+#>  Formula                    1.2-6      2026-08-03 [1] RSPM (R 4.6.0)
 #>  fs                         2.1.0      2026-04-18 [2] RSPM (R 4.6.0)
 #>  furrr                      0.4.0      2026-03-31 [1] RSPM (R 4.6.0)
 #>  future                     1.75.0     2026-07-20 [1] RSPM (R 4.6.0)
@@ -1241,7 +1241,7 @@ devtools::session_info()
 #>  S4Arrays                   1.12.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  S4Vectors                  0.50.1     2026-05-13 [1] Bioconductor 3.23 (R 4.6.1)
 #>  S7                         0.2.2      2026-04-22 [1] CRAN (R 4.6.1)
-#>  sandwich                   3.1-2      2026-07-12 [1] RSPM (R 4.6.0)
+#>  sandwich                   3.1-3      2026-08-03 [1] RSPM (R 4.6.0)
 #>  sass                       0.4.10     2025-04-11 [2] RSPM (R 4.6.0)
 #>  ScaledMatrix               1.20.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  scales                     1.4.0      2025-04-24 [1] RSPM (R 4.6.0)

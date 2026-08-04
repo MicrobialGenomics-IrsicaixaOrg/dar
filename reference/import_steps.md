@@ -114,7 +114,7 @@ cool(rec)
 #> ℹ Baking with count_cutoff = 2
 #> # A tibble: 29 × 9
 #>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
 #>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
 #>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2

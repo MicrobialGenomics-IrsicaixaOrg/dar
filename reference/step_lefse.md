@@ -21,7 +21,8 @@ step_lefse(
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
-  id = rand_id("lefse")
+  id = rand_id("lefse"),
+  engine_args = list()
 )
 ```
 
@@ -76,6 +77,11 @@ step_lefse(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `transform` or `fit`
+  stage. Arguments managed by dar or exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -87,6 +93,7 @@ Other Diff taxa steps:
 [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md),
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 
@@ -116,8 +123,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
-#>      ◉ step_filter_taxa() id = filter_taxa__Nazook 
+#>      ◉ step_subset_taxa() id = subset_taxa__Coca 
+#>      ◉ step_filter_taxa() id = filter_taxa__Linzer_torte 
 #> 
 #> DA steps:
 #> 
@@ -139,12 +146,12 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
-#>      ◉ step_filter_taxa() id = filter_taxa__Nazook 
+#>      ◉ step_subset_taxa() id = subset_taxa__Coca 
+#>      ◉ step_filter_taxa() id = filter_taxa__Linzer_torte 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Coca 
+#>      ◉ step_lefse() id = lefse__Cream_horn 
 
 ## Running lefse without rarefaction (not recommended)
 rec <-
@@ -152,7 +159,7 @@ rec <-
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_lefse(rarefy = FALSE)
 #> ! Running lefse without rarefaction is not recommended (`id` =
-#>   "lefse__Linzer_torte").
+#>   "lefse__Pastry_heart").
 
 rec
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
@@ -171,5 +178,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_lefse() id = lefse__Linzer_torte 
+#>      ◉ step_lefse() id = lefse__Pastry_heart 
 ```

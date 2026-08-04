@@ -88,7 +88,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Lotus_seed_bun 
+#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Masan 
 #> 
 #> DA steps:
 #> 

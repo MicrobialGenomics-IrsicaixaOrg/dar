@@ -21,6 +21,11 @@
 - [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
   : Get the centralized statistical model from a recipe
 
+## Quality Control
+
+- [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
+  : Recipe quality-control metrics
+
 ## Step Functions - Data Preprocessing
 
 - [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
@@ -51,12 +56,17 @@
   : DESeq2 analysis
 - [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md)
   : lefse analysis
+- [`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md)
+  : LinDA differential-abundance analysis
 - [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
   : MaAsLin3 analysis
 - [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
   : Wilcox analysis
 
 ## Exploration
+
+- [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
+  : Collect differential-abundance results in a tidy contract
 
 - [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
   : Abundance boxplot
@@ -98,8 +108,6 @@
   : Return legacy target information from a recipe
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
   : Extracts otu_table from phyloseq inside a Recipe
-- [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)
-  : Phyloseq Quality Control Metrics
 - [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
   : Extracts sample_data from phyloseq inside a Recipe
 - [`steps_ids()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/steps_ids.md)

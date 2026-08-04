@@ -65,6 +65,19 @@ help you write a unit test, if needed).
   unit tests. Contributions with test cases included are easier to
   accept.
 
+### Package website
+
+Every exported topic must be listed in `_pkgdown.yml`. Validate the
+reference index locally before opening a pull request:
+
+``` sh
+Rscript --vanilla dev/check-pkgdown.R
+```
+
+This check validates the pkgdown configuration without publishing the
+website. GitHub Actions runs the same validation for pull requests and
+deploys the full site only from `devel`.
+
 ## Code of Conduct
 
 Please note that the dar project is released with a [Contributor Code of

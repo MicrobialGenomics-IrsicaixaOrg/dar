@@ -93,10 +93,10 @@ abundance, and rarity.
 - `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU
   across samples.
 
-In addition to the preprocessing steps, the `dar` package also
-incorporates the function `phy_qc` which returns a table with a set of
-metrics that allow for informed decisions to be made about the data
-preprocessing that will be done. In our case, we decided to use the
+In addition to the preprocessing steps,
+[`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
+returns overall or explicitly grouped metrics that support informed
+preprocessing decisions. In our case, we decided to use the
 step_subset_taxa function to retain only those observations annotated
 within the realm of Bacteria and Archaea. We also used the
 `step_filter_by_prevalence` function to retain only those OTUs with at
@@ -107,17 +107,17 @@ differential abundance analysis.
 
 ``` r
 
-## QC 
-phy_qc(rec)
-#> # A tibble: 4 × 12
-#>   var_levels     n n_zero pct_zero pct_all_zero pct_singletons pct_doubletons
-#>   <chr>      <int>  <int>    <dbl>        <dbl>          <dbl>          <dbl>
-#> 1 all        70356  57632     81.9          0             20.6           8.87
-#> 2 hts        18491  15108     81.7         24.2           22.8           8.43
-#> 3 msm        45100  37019     82.1         16.0           20.2           9.53
-#> 4 pwid        6765   5505     81.4         41.2           16.6           9.31
-#> # ℹ 5 more variables: n_samples <int>, lib_size_min <dbl>, lib_size_max <dbl>,
-#> #   count_mean <dbl>, count_max <dbl>
+## QC by analysis group
+recipe_qc(rec, group_by = "RiskGroup2")
+#> # A tibble: 4 × 13
+#>   group_by   group     n n_zero pct_zero pct_all_zero pct_singletons
+#>   <chr>      <chr> <dbl>  <dbl>    <dbl>        <dbl>          <dbl>
+#> 1 NA         NA    70356  57632     81.9          0             20.6
+#> 2 RiskGroup2 hts   18491  15108     81.7         24.2           22.8
+#> 3 RiskGroup2 msm   45100  37019     82.1         16.0           20.2
+#> 4 RiskGroup2 pwid   6765   5505     81.4         41.2           16.6
+#> # ℹ 6 more variables: pct_doubletons <dbl>, n_samples <dbl>,
+#> #   lib_size_min <dbl>, lib_size_max <dbl>, count_mean <dbl>, count_max <dbl>
 
 ## Adding prepro steps
 rec <- 
@@ -149,13 +149,13 @@ rec
 
 Once data is preprocessed and cleaned, the next step is to add the da
 steps. The `dar` package incorporates multiple methods to analyze the
-data, including: ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, MAaslin3 and
-Wilcox. These methods provide a range of options for uncovering
-potential microbial biomarkers associated with the variable of interest.
-To ensure consistency across methods, we decided not to use default
-parameters, but to set the `min_prevalence` parameter to 0 for MAaslin3.
-This approach ensured that the analysis was consistent across all
-methods and that the results were interpretable.
+data, including: ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, LinDA,
+MaAsLin3 and Wilcox. These methods provide a range of options for
+uncovering potential microbial biomarkers associated with the variable
+of interest. To ensure consistency across methods, we decided not to use
+default parameters, but to set the `min_prevalence` parameter to 0 for
+MAaslin3. This approach ensured that the analysis was consistent across
+all methods and that the results were interpretable.
 
 Note: to reduce computation time, in this example we will only use the
 DESeq2 and MAaslin3 methods, that are the fastest ones. However, we
@@ -247,7 +247,7 @@ results <-
 results
 #> # A tibble: 33 × 9
 #>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
 #>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
 #>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
@@ -417,7 +417,7 @@ f_results <- cool(da_results, bake = 1)
 f_results
 #> # A tibble: 33 × 9
 #>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
 #>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
 #>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
@@ -466,7 +466,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-08-03
+#>  date     2026-08-04
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -491,7 +491,7 @@ devtools::session_info()
 #>  biomformat                 1.40.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  Biostrings                 2.80.1     2026-05-22 [1] Bioconductor 3.23 (R 4.6.1)
 #>  bluster                    1.22.0     2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
-#>  bslib                      0.11.0     2026-05-16 [2] RSPM (R 4.6.0)
+#>  bslib                      0.12.0     2026-08-04 [2] RSPM (R 4.6.0)
 #>  ca                         0.71.1     2020-01-24 [1] RSPM (R 4.6.0)
 #>  cachem                     1.1.0      2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4      2026-02-03 [1] RSPM (R 4.6.0)
@@ -501,7 +501,7 @@ devtools::session_info()
 #>  codetools                  0.2-20     2024-03-31 [3] CRAN (R 4.6.1)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.3      2026-08-03 [1] Bioconductor
+#>  dar                      * 1.9.7      2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)

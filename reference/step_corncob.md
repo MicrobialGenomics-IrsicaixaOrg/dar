@@ -23,7 +23,8 @@ step_corncob(
   fdr = "fdr",
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("corncob")
+  id = rand_id("corncob"),
+  engine_args = list()
 )
 ```
 
@@ -103,6 +104,11 @@ step_corncob(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `fit` stage.
+  Arguments managed by dar or exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -126,6 +132,7 @@ Other Diff taxa steps:
 [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 
@@ -155,8 +162,8 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Tu 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pogača 
+#>      ◉ step_subset_taxa() id = subset_taxa__Pogača 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cronut 
 #> 
 #> DA steps:
 #> 
@@ -166,7 +173,7 @@ rec <-
   step_corncob(rec) |>
   prep(parallel = FALSE)
 #> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ corncob__Cronut: formula_null
+#> ℹ corncob__Börek: formula_null
 #> ℹ Method-specific thresholds and preprocessing controls are unchanged.
   
 rec
@@ -179,7 +186,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ corncob__Cronut diff_taxa = 4 
+#>      ✔ corncob__Börek diff_taxa = 4 
 #> 
 #>      ℹ 7 taxon-contrast effects are present in all tested methods 
 #> 

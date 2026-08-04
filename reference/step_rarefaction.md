@@ -63,8 +63,8 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Makroudh 
-#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
+#>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
+#>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 
 #> 
 #> DA steps:
 #> 
@@ -81,9 +81,9 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Makroudh 
-#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
-#>      ◉ step_rarefaction() id = rarefaction__Punschkrapfen 
+#>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
+#>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 
+#>      ◉ step_rarefaction() id = rarefaction__Paste 
 #> 
 #> DA steps:
 #> 

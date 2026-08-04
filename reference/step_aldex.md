@@ -21,7 +21,8 @@ step_aldex(
   mc.samples = 128,
   denom = "all",
   rarefy = FALSE,
-  id = rand_id("aldex")
+  id = rand_id("aldex"),
+  engine_args = list()
 )
 ```
 
@@ -78,6 +79,12 @@ step_aldex(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `clr`, `fit`, or
+  `effect` stage. Arguments managed by dar or exposed above cannot be
+  overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -99,6 +106,7 @@ Other Diff taxa steps:
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 

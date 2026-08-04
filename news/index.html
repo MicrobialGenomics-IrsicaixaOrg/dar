@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,30 @@
       <small>Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.7" id="dar-197">dar 1.9.7<a class="anchor" aria-label="anchor" href="#dar-197"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-1-9-7">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-7"></a></h3>
+<ul><li>DEFUNCT: <code><a href="../reference/phy_qc.html">phy_qc()</a></code> now directs users to <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> instead of inferring an analysis target implicitly (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+<li>NEW: <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> provides model-independent overall or explicitly grouped quality-control metrics for both <code>Recipe</code> and <code>PrepRecipe</code> objects (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+<li>IMPROVED: QC summaries expose unambiguous <code>group_by</code> and <code>group</code> columns and reshape correctly oriented count data only once per call (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.6" id="dar-196">dar 1.9.6<a class="anchor" aria-label="anchor" href="#dar-196"></a></h2>
+<ul><li>NEW: <code><a href="../reference/step_linda.html">step_linda()</a></code> integrates bias-corrected LinDA linear and mixed-effects models with every compatible centralized contrast (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128" class="external-link">#128</a>).</li>
+<li>IMPROVED: LinDA participates in the canonical tidy result contract and the Monte Carlo scientific-validation workflow with explicit log2 fold-change semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128" class="external-link">#128</a>).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.5" id="dar-195">dar 1.9.5<a class="anchor" aria-label="anchor" href="#dar-195"></a></h2>
+<ul><li>NEW: The seven centralized DA engines accept structured <code>engine_args</code> for advanced arguments at explicit native-call stages (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
+<li>IMPROVED: Step export/import preserves nested advanced arguments and rejects values that cannot be reconstructed faithfully (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.4" id="dar-194">dar 1.9.4<a class="anchor" aria-label="anchor" href="#dar-194"></a></h2>
+<ul><li>NEW: <code><a href="../reference/tidy_results.html">tidy_results()</a></code> exposes a stable, engine-labelled result contract while preserving the engine-specific tables stored in <code>PrepRecipe@results</code> (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
+<li>IMPROVED: Result consumers validate taxon-contrast-step keys and use explicit effect metrics and p-value mappings instead of method-specific aliases (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.3" id="dar-193">dar 1.9.3<a class="anchor" aria-label="anchor" href="#dar-193"></a></h2>
 <div class="section level3">

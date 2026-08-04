@@ -1,5 +1,57 @@
 # Changelog
 
+## dar 1.9.7
+
+### BREAKING CHANGES
+
+- DEFUNCT:
+  [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/phy_qc.md)
+  now directs users to
+  [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
+  instead of inferring an analysis target implicitly
+  ([\#112](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112)).
+- NEW:
+  [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
+  provides model-independent overall or explicitly grouped
+  quality-control metrics for both `Recipe` and `PrepRecipe` objects
+  ([\#112](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112)).
+- IMPROVED: QC summaries expose unambiguous `group_by` and `group`
+  columns and reshape correctly oriented count data only once per call
+  ([\#112](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112)).
+
+## dar 1.9.6
+
+- NEW:
+  [`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md)
+  integrates bias-corrected LinDA linear and mixed-effects models with
+  every compatible centralized contrast
+  ([\#128](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128)).
+- IMPROVED: LinDA participates in the canonical tidy result contract and
+  the Monte Carlo scientific-validation workflow with explicit log2
+  fold-change semantics
+  ([\#128](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128)).
+
+## dar 1.9.5
+
+- NEW: The seven centralized DA engines accept structured `engine_args`
+  for advanced arguments at explicit native-call stages
+  ([\#126](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126)).
+- IMPROVED: Step export/import preserves nested advanced arguments and
+  rejects values that cannot be reconstructed faithfully
+  ([\#126](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126)).
+
+## dar 1.9.4
+
+- NEW:
+  [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
+  exposes a stable, engine-labelled result contract while preserving the
+  engine-specific tables stored in `PrepRecipe@results`
+  ([\#127](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127)).
+- IMPROVED: Result consumers validate taxon-contrast-step keys and use
+  explicit effect metrics and p-value mappings instead of
+  method-specific aliases
+  ([\#127](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127)).
+
 ## dar 1.9.3
 
 ### BREAKING CHANGES

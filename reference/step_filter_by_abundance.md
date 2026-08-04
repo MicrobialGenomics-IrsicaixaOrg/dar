@@ -89,7 +89,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Welsh_cake 
+#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Pie 
 #> 
 #> DA steps:
 #> 

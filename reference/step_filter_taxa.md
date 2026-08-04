@@ -73,7 +73,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_filter_taxa() id = filter_taxa__Empanada 
+#>      ◉ step_filter_taxa() id = filter_taxa__Nazook 
 #> 
 #> DA steps:
 #> 

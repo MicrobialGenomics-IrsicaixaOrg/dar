@@ -160,7 +160,7 @@ devtools::session_info()
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       UTC
-#>  date     2026-08-03
+#>  date     2026-08-04
 #>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
 #>  quarto   1.9.38 @ /usr/local/bin/quarto
 #> 
@@ -183,7 +183,7 @@ devtools::session_info()
 #>  bit                        4.6.0    2025-03-06 [1] CRAN (R 4.6.1)
 #>  bit64                      4.8.2    2026-05-19 [1] CRAN (R 4.6.1)
 #>  bluster                    1.22.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
-#>  bslib                      0.11.0   2026-05-16 [2] RSPM (R 4.6.0)
+#>  bslib                      0.12.0   2026-08-04 [2] RSPM (R 4.6.0)
 #>  ca                         0.71.1   2020-01-24 [1] RSPM (R 4.6.0)
 #>  cachem                     1.1.0    2024-05-16 [2] RSPM (R 4.6.0)
 #>  checkmate                  2.3.4    2026-02-03 [1] RSPM (R 4.6.0)
@@ -192,7 +192,7 @@ devtools::session_info()
 #>  codetools                  0.2-20   2024-03-31 [3] CRAN (R 4.6.1)
 #>  collapse                   2.1.7    2026-05-19 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3    2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                      * 1.9.3    2026-08-03 [1] Bioconductor
+#>  dar                      * 1.9.7    2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4   2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0    2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1    2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
@@ -281,7 +281,7 @@ devtools::session_info()
 #>  S4Arrays                   1.12.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  S4Vectors                  0.50.1   2026-05-13 [1] Bioconductor 3.23 (R 4.6.1)
 #>  S7                         0.2.2    2026-04-22 [1] CRAN (R 4.6.1)
-#>  sandwich                   3.1-2    2026-07-12 [1] RSPM (R 4.6.0)
+#>  sandwich                   3.1-3    2026-08-03 [1] RSPM (R 4.6.0)
 #>  sass                       0.4.10   2025-04-11 [2] RSPM (R 4.6.0)
 #>  ScaledMatrix               1.20.0   2026-04-28 [1] Bioconductor 3.23 (R 4.6.1)
 #>  scales                     1.4.0    2025-04-24 [1] RSPM (R 4.6.0)

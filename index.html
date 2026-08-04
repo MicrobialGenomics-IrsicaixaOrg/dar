@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,6 +148,19 @@
 <span><span class="co">#&gt;      ✔ aldex__Pineapple_bun diff_taxa = 98 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods</span></span>
+<span></span>
+<span><span class="co">## Uniform, reproducible results across engines</span></span>
+<span><span class="fu"><a href="reference/tidy_results.html">tidy_results</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
+<span>    <span class="va">taxa_id</span>, <span class="va">comparison</span>, <span class="va">effect_size</span>, <span class="va">effect_metric</span>,</span>
+<span>    <span class="va">adj_p_value</span>, <span class="va">significant</span>, <span class="va">method</span>, <span class="va">step_id</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Advanced native options remain explicit and reproducible</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/step_deseq.html">step_deseq</a></span><span class="op">(</span></span>
+<span>  <span class="va">rec</span>,</span>
+<span>  engine_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>minReplicatesForReplace <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Consensus strategy</span></span>
 <span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>

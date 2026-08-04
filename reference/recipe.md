@@ -74,7 +74,7 @@ cool(da_results)
 #> ℹ Baking with count_cutoff = 2
 #> # A tibble: 1 × 9
 #>   taxa_id taxa    contrast_id comparison contrast_type var   effect method_count
-#>   <chr>   <chr>   <glue>      <glue>     <chr>         <chr> <chr>         <dbl>
+#>   <chr>   <chr>   <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
 #> 1 Otu_96  Bacter… RiskGroup2… RiskGroup… main          Risk… down              2
 #> # ℹ 1 more variable: methods <chr>
 

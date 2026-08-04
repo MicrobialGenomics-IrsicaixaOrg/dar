@@ -32,7 +32,8 @@ step_ancom(
   dunnet = FALSE,
   trend = FALSE,
   rarefy = FALSE,
-  id = rand_id("ancom")
+  id = rand_id("ancom"),
+  engine_args = list()
 )
 ```
 
@@ -153,6 +154,11 @@ step_ancom(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `fit` stage.
+  Arguments managed by dar or exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -164,6 +170,7 @@ Other Diff taxa steps:
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 
@@ -199,12 +206,42 @@ rec
 #> DA steps:
 #> 
 
+## Pass advanced arguments to ANCOM-BC2
+step_ancom(
+  rec,
+  engine_args = list(
+    fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
+  )
+)
+#> Warning: ! The centralized model overrides design arguments in 1 step.
+#> ℹ ancom__Öçpoçmaq: fix_formula
+#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
+#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Genus 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
+#> Preporcessing steps:
+#> 
+#>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
+#> 
+#> DA steps:
+#> 
+#>      ◉ step_ancom() id = ancom__Öçpoçmaq 
+
 ## Define step with default parameters and prep
 rec <-
   step_ancom(rec) |>
   prep(parallel = FALSE)
 #> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ ancom__Öçpoçmaq: fix_formula
+#> ℹ ancom__Pionono: fix_formula
 #> ℹ Method-specific thresholds and preprocessing controls are unchanged.
 #> Warning: The number of taxa used for estimating sample-specific biases is: 41
 #> A large number of taxa (>50) is required for the consistent estimation of biases
@@ -237,7 +274,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ ancom__Öçpoçmaq diff_taxa = 13 
+#>      ✔ ancom__Pionono diff_taxa = 13 
 #> 
 #>      ℹ 21 taxon-contrast effects are present in all tested methods 
 #> 
@@ -248,7 +285,7 @@ rec <-
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
   step_ancom(rarefy = TRUE)
 #> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ ancom__Sufganiyah: fix_formula
+#> ℹ ancom__Tu: fix_formula
 #> ℹ Method-specific thresholds and preprocessing controls are unchanged.
 
 rec
@@ -268,5 +305,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_ancom() id = ancom__Sufganiyah 
+#>      ◉ step_ancom() id = ancom__Tu 
 ```

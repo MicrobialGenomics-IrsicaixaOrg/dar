@@ -13,7 +13,8 @@ step_wilcox(
   max_significance = 0.05,
   p_adj_method = "BH",
   rarefy = FALSE,
-  id = rand_id("wilcox")
+  id = rand_id("wilcox"),
+  engine_args = list()
 )
 ```
 
@@ -47,6 +48,11 @@ step_wilcox(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `test` stage.
+  Arguments managed by dar or exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -59,6 +65,7 @@ Other Diff taxa steps:
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
 
 ## Examples
@@ -91,9 +98,9 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
+#>      ◉ step_subset_taxa() id = subset_taxa__Bizcocho 
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_wilcox() id = wilcox__Canelé 
+#>      ◉ step_wilcox() id = wilcox__Apple_pie 
 ```

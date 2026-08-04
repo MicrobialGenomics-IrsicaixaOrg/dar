@@ -22,7 +22,8 @@ step_deseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("deseq")
+  id = rand_id("deseq"),
+  engine_args = list()
 )
 ```
 
@@ -84,6 +85,12 @@ step_deseq(
 
   A character string that is unique to this step to identify it.
 
+- engine_args:
+
+  Named lists of advanced arguments for the native `size_factors`,
+  `fit`, `results`, or `shrink` stage. Arguments managed by dar or
+  exposed above cannot be overridden.
+
 ## Value
 
 An object of class `Recipe`
@@ -95,6 +102,7 @@ Other Diff taxa steps:
 [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md),
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
+[`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md),
 [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md),
 [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
 
@@ -124,11 +132,39 @@ rec
 #> 
 #> Preporcessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Börek 
-#>      ◉ step_filter_taxa() id = filter_taxa__Djevrek 
+#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
+#>      ◉ step_filter_taxa() id = filter_taxa__Spina_santa 
 #> 
 #> DA steps:
 #> 
+
+## Pass advanced arguments to native DESeq2 stages
+step_deseq(
+  rec,
+  engine_args = list(
+    fit = list(minReplicatesForReplace = Inf),
+    shrink = list(lfcThreshold = 1)
+  )
+)
+#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
+#> Inputs:
+#> 
+#>      ℹ phyloseq object with 451 taxa and 156 samples 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
+#>      ℹ taxonomic level Phylum 
+#> 
+#> Statistical model:
+#> 
+#>      ℹ ~RiskGroup2 
+#> 
+#> Preporcessing steps:
+#> 
+#>      ◉ step_subset_taxa() id = subset_taxa__Djevrek 
+#>      ◉ step_filter_taxa() id = filter_taxa__Spina_santa 
+#> 
+#> DA steps:
+#> 
+#>      ◉ step_deseq() id = deseq__Streusel 
 
 ## Define step with default parameters and prep
 rec <-
@@ -148,7 +184,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ deseq__Spina_santa diff_taxa = 4 
+#>      ✔ deseq__Rugelach diff_taxa = 4 
 #> 
 #>      ℹ 5 taxon-contrast effects are present in all tested methods 
 #> 
@@ -176,5 +212,5 @@ rec
 #> 
 #> DA steps:
 #> 
-#>      ◉ step_deseq() id = deseq__Carac 
+#>      ◉ step_deseq() id = deseq__Lotus_seed_bun 
 ```
