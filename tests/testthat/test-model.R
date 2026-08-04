@@ -335,7 +335,7 @@ test_that("model-free DA execution emits one classified migration warning", {
   rec <- suppressWarnings(
     recipe(make_longitudinal_phy(), "condition", "Species")
   )
-  rec <- dar:::add_step(rec, dar:::step("mock", id = "mock__legacy"))
+  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__legacy"))
 
   expect_warning(
     dar:::warn_model_free_da(rec),
@@ -562,7 +562,7 @@ test_that("prep records skipped steps and errors when none can run", {
       targets = "condition", tax_level = "Species", time = "time"
     )
   rec <- suppressWarnings(
-    dar:::add_step(rec, dar:::step("wilcox", id = "arbitrary-wilcox-id"))
+    dar:::add_step(rec, dar:::step("wilcox", id = "filter_named_da"))
   )
 
   expect_error(
@@ -580,7 +580,7 @@ test_that("prep records skipped steps and errors when none can run", {
   expect_length(steps_ids(prepared, "da"), 0)
   expect_equal(
     steps_ids(prepared, "da", include_skipped = TRUE),
-    "arbitrary-wilcox-id"
+    "filter_named_da"
   )
 })
 
@@ -590,7 +590,7 @@ test_that("sequential and parallel model execution preserve contrast IDs", {
   skip_if_not_installed("furrr")
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species") |>
-    step_wilcox(id = "wilcox-model")
+    step_wilcox(id = "filter_named_da")
 
   sequential <- prep(rec, parallel = FALSE)
   parallel <- prep(rec, parallel = TRUE, workers = 1)

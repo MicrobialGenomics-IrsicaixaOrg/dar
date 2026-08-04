@@ -107,7 +107,7 @@ test_that("Function recipe_validity_problems() @ L323", {
 })
 
 
-test_that("Function prep_recipe() @ L566", {
+test_that("Function prep_recipe() @ L590", {
   data(metaHIV_phy)
   rec <- suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Species"))
   

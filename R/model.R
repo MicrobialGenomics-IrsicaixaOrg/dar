@@ -789,12 +789,14 @@ model_engine_capabilities <- list(
 
 #' @noRd
 step_engine <- function(step) {
-  stringr::str_remove(class(step)[[1]], "^step_")
-}
-
-#' @noRd
-is_da_step <- function(step) {
-  !stringr::str_detect(step[["id"]], "subset|filter|rarefaction")
+  descriptor <- step_descriptor(step)
+  if (!identical(descriptor$role, "da")) {
+    cli::cli_abort(
+      "Step {.cls {class(step)[[1L]]}} is not a differential-abundance step.",
+      class = "dar_error_invalid_step"
+    )
+  }
+  descriptor$engine
 }
 
 #' Warn when differential abundance still uses the legacy selector path
@@ -866,6 +868,15 @@ model_steps_status <- function(rec, resolved = NULL) {
       step_id = step[["id"]], engine = step_engine(step),
       compatible = status$compatible, reason = status$reason
     )
+  })
+}
+
+#' @noRd
+model_dependency_steps <- function(rec, status = model_steps_status(rec)) {
+  compatible_da_ids <- status$step_id[status$compatible]
+  purrr::keep(rec@steps, function(configured_step) {
+    is_preprocessing_step(configured_step) ||
+      configured_step[["id"]] %in% compatible_da_ids
   })
 }
 

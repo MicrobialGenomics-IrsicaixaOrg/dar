@@ -336,6 +336,14 @@ recipe_validity_problems <- function(object) {
     problems <- c(problems, "`phyloseq` must contain at least one taxon")
   }
 
+  problems <- c(
+    problems,
+    step_slot_validation_problems(
+      object@steps, "steps", c("preprocessing", "da")
+    ),
+    duplicate_step_id_problems(object@steps)
+  )
+
   var_info <- object@var_info
   if (!is.null(var_info) && ncol(var_info) > 0) {
     if (!identical(names(var_info), "vars")) {
@@ -478,10 +486,10 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
 
   ## Steps
   if (length(object@steps) > 0) {
-    cat("Preporcessing steps:\n\n")
+    cat("Preprocessing steps:\n\n")
     object@steps %>%
       purrr::walk(~ {
-        if (stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+        if (is_preprocessing_step(.x)) {
           id <-
             glue::glue("id = {.x[['id']]}") %>%
             crayon::silver()
@@ -496,7 +504,7 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
     cat("DA steps:\n\n")
     object@steps %>%
       purrr::walk(~ {
-        if (!stringr::str_detect(.x[['id']], "subset|filter|rarefaction")) {
+        if (is_da_step(.x)) {
           id <-
             glue::glue("id = {.x[['id']]}") %>%
             crayon::silver()
@@ -533,6 +541,22 @@ methods::setClass(
   contains = "Recipe",
   slots = c(results = "list", bakes = "list", execution = "list"),
   prototype = list(execution = list())
+)
+
+#' @noRd
+prep_recipe_validity_problems <- function(object) {
+  problems <- c(
+    step_slot_validation_problems(object@bakes, "bakes", "bake"),
+    duplicate_step_id_problems(
+      c(object@steps, object@bakes), "`steps` and `bakes`"
+    )
+  )
+  if (length(problems) == 0L) TRUE else problems
+}
+
+methods::setValidity(
+  Class = "PrepRecipe",
+  method = prep_recipe_validity_problems
 )
 
 ## constructor ----
@@ -648,7 +672,6 @@ methods::setMethod(
     ## Results
     cat("Results:\n\n")
     names(object@results) %>%
-      purrr::discard(stringr::str_detect(., "step_subster|step_filter")) %>%
       purrr::walk( ~ {
         n_taxa <-
           tidy_results(

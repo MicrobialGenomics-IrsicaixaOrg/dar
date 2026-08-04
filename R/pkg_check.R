@@ -68,7 +68,7 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 required_deps <- function(rec, steps = rec@steps) {
   check_any_recipe(rec)
   purrr::walk(steps, function(step_obj) {
-    id <- stringr::str_remove_all(class(step_obj)[[1]], "step_")
+    id <- step_method(step_obj)
     req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
     if (!is.null(req_fun)) {
       recipes_pkg_check(pkg = req_fun(), step_name = paste0("step_", id, "()"))

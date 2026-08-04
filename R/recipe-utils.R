@@ -333,10 +333,7 @@ prep <- function(rec,
   initial_da_steps <- purrr::keep(rec@steps, is_da_step)
   warn_model_free_da(rec)
   static_status <- model_steps_status(rec)
-  static_compatible <- static_status$step_id[static_status$compatible]
-  dependency_steps <- purrr::keep(rec@steps, function(step) {
-    !is_da_step(step) || step[["id"]] %in% static_compatible
-  })
+  dependency_steps <- model_dependency_steps(rec, static_status)
 
   check <- utils::capture.output(required_deps(rec, dependency_steps))
   if (length(check) > 0) {
@@ -349,16 +346,8 @@ prep <- function(rec,
     )
   }
 
-  ## Phyloseq preprocessing steps
-  filter_steps <-
-    rec@steps %>%
-    purrr::keep(~ stringr::str_detect(.x[["id"]], "subset|filter"))
-
-  rarefaction_steps <-
-    rec@steps %>%
-    purrr::keep(~ stringr::str_detect(.x[["id"]], "run_rarefaction"))
-
-  preprocessing_steps <- c(filter_steps, rarefaction_steps)
+  ## Phyloseq preprocessing steps, in their configured order
+  preprocessing_steps <- purrr::keep(rec@steps, is_preprocessing_step)
   to_execute <- purrr::map(preprocessing_steps, step_to_call)
 
   for (.i in seq_along(to_execute)) {
