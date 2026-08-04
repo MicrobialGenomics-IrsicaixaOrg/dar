@@ -122,7 +122,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' @autoglobal
 #' @tests
 #' # 1. Test standard string and numeric parameters
-#' step_standard <- list(
+#' step_standard <- step("maaslin",
 #'   id = "maaslin__123",
 #'   transform = "LOG",
 #'   min_abundance = 0.1
@@ -137,7 +137,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #'
 #' # 2. Test with a function parameter (The main reason for this refactor)
 #' my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
-#' step_func <- list(
+#' step_func <- step("filter_taxa",
 #'   id = "filter_taxa__abc",
 #'   .f = my_fun
 #' )
@@ -149,7 +149,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' expect_true(is.function(rlang::call_args(call_func)$.f))
 #'
 #' # 3. Test with a formula parameter
-#' step_formula <- list(
+#' step_formula <- step("deseq",
 #'   id = "deseq__xyz",
 #'   design = ~ RiskGroup2
 #' )
@@ -160,12 +160,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 #' expect_equal(call_formula[[1]], run_deseq)
 #' expect_true(inherits(rlang::call_args(call_formula)$design, "formula"))
 step_to_call <- function(step) {
-  method <- if (inherits(step, "step")) {
-    stringr::str_remove(class(step)[[1]], "^step_")
-  } else {
-    stringr::str_remove_all(step[["id"]], "__.*")
-  }
-  fn_obj <- paste0("run_", method) %>% get(envir = asNamespace("dar"))
+  fn_obj <- step_runner(step)
   args <- step
   if (!"id" %in% names(formals(fn_obj))) {
     args[["id"]] <- NULL
@@ -197,29 +192,29 @@ step_to_expr <- function(step) {
       (names(.) == "engine_args" & lengths(.) == 0L)) %>%
     purrr::map2_chr(names(.), ~ {
 
-      # 1. Manejo de NULL
+      # 1. NULL values
       if (is.null(.x)) {
         return(glue::glue("{.y} = NULL"))
       }
 
-      # 2. Manejo de Caracteres
+      # 2. Character values
       if (is.character(.x)) {
         .x <- stringr::str_c("'", .x, "'", collapse = ", ")
         return(glue::glue("{.y} = c({.x})"))
       }
 
-      # 3. Manejo de Fórmulas
+      # 3. Formulas
       if (inherits(.x, "formula")) {
         return(paste0(.y, " = ", paste0(.x, collapse = "")))
       }
 
-      # 4. Manejo de Funciones (Parche de seguridad)
+      # 4. Functions
       if (is.function(.x)) {
         func_str <- paste(deparse(.x), collapse = " ")
         return(glue::glue("{.y} = {func_str}"))
       }
 
-      # 5. Manejo especial de Weights para bakes
+      # 5. Named bake weights
       if (.y == "weights" && inherits(step, "step_bake") && !is.null(.x)) {
         text <- .x %>%
           purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>%
@@ -232,19 +227,14 @@ step_to_expr <- function(step) {
         return(glue::glue("{.y} = {step_value_expr(.x, .y)}"))
       }
 
-      # 7. Fallback general (numéricos, lógicos, etc.)
+      # 7. Numeric, logical and other scalar values
       glue::glue("{.y} = {.x}")
     }) %>%
     stringr::str_c(collapse = ", ")
 
-  # Extraemos el nombre real de la función (quitando el sufijo aleatorio)
-  method <- if (inherits(step, "step")) {
-    stringr::str_remove(class(step)[[1]], "^step_")
-  } else {
-    step[["id"]] %>% stringr::str_remove_all("__.*")
-  }
+  method <- step_method(step)
 
-  # Construimos el string final con el pipeline
+  # Build the final pipeline expression
   glue::glue("rec %>% run_{method}({params})")
 }
 
@@ -424,6 +414,7 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
 #' prepro_ids <- steps_ids(test_rec, type = "prepro")
 #' prepro_ids
 steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
+  check_any_recipe(rec)
   if (!type %in% c("all", "da", "prepro")) {
     cli::cli_abort(
       c(
@@ -435,22 +426,19 @@ steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
 
   }
 
-  out <- purrr::map_chr(rec@steps, ~ .x[["id"]])
+  selected_steps <- switch(
+    type,
+    "all" = rec@steps,
+    "da" = purrr::keep(rec@steps, is_da_step),
+    "prepro" = purrr::keep(rec@steps, is_preprocessing_step)
+  )
+  out <- purrr::map_chr(selected_steps, ~ .x[["id"]])
   if (methods::is(rec, "PrepRecipe") && !include_skipped &&
       length(rec@execution) > 0L && type %in% c("all", "da")) {
     skipped <- rec@execution$skipped_steps$step_id %||% character()
     out <- setdiff(out, skipped)
   }
-  switch(
-    type,
-    "all" = out,
-    "da" = purrr::discard(
-      out, stringr::str_detect(out, "subset|filter|rarefaction")
-    ),
-    "prepro" = purrr::keep(
-      out, stringr::str_detect(out, "subset|filter|rarefaction")
-      )
-  )
+  out
 }
 
 #' @keywords internal
@@ -723,9 +711,10 @@ extract_instructions <- function(lines) {
 #'
 #' contains_rarefaction(rec)
 contains_rarefaction <- function(rec) {
-  steps_ids(rec) %>%
-    stringr::str_detect("^rarefaction_") %>%
-    any()
+  check_any_recipe(rec)
+  any(purrr::map_lgl(rec@steps, function(configured_step) {
+    identical(step_method(configured_step), "rarefaction")
+  }))
 }
 
 

@@ -44,7 +44,7 @@ test_that("Function to_tibble() @ L100", {
 
 test_that("Function step_to_call() @ L162", {
   # 1. Test standard string and numeric parameters
-  step_standard <- list(
+  step_standard <- step("maaslin",
     id = "maaslin__123",
     transform = "LOG",
     min_abundance = 0.1
@@ -59,7 +59,7 @@ test_that("Function step_to_call() @ L162", {
   
   # 2. Test with a function parameter (The main reason for this refactor)
   my_fun <- function(x) sum(x > 0) >= (0.03 * length(x))
-  step_func <- list(
+  step_func <- step("filter_taxa",
     id = "filter_taxa__abc",
     .f = my_fun
   )
@@ -71,7 +71,7 @@ test_that("Function step_to_call() @ L162", {
   expect_true(is.function(rlang::call_args(call_func)$.f))
   
   # 3. Test with a formula parameter
-  step_formula <- list(
+  step_formula <- step("deseq",
     id = "deseq__xyz",
     design = ~ RiskGroup2
   )
@@ -84,7 +84,7 @@ test_that("Function step_to_call() @ L162", {
 })
 
 
-test_that("Function find_intersections() @ L347", {
+test_that("Function find_intersections() @ L337", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -103,7 +103,7 @@ test_that("Function find_intersections() @ L347", {
 })
 
 
-test_that("Function steps_ids() @ L426", {
+test_that("Function steps_ids() @ L416", {
   data(test_prep_rec)
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
@@ -128,7 +128,7 @@ test_that("Function steps_ids() @ L426", {
 })
 
 
-test_that("Function import_steps() @ L604", {
+test_that("Function import_steps() @ L592", {
   data(metaHIV_phy)
   suppressWarnings(
     recipe(metaHIV_phy, "RiskGroup2", "Class") |>

@@ -148,7 +148,7 @@ result_step <- function(rec, step_id) {
 
 #' @noRd
 result_method <- function(step) {
-  sub("^step_", "", class(step)[[1L]])
+  step_engine(step)
 }
 
 #' @noRd

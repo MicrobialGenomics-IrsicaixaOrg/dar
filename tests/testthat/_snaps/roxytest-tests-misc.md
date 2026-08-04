@@ -1,4 +1,4 @@
-# Function steps_ids() @ L426
+# Function steps_ids() @ L416
 
     Code
       print(test_prep_rec)
@@ -18,7 +18,7 @@
            i 16 taxa are present in all tested methods 
       
 
-# Function import_steps() @ L604
+# Function import_steps() @ L592
 
     Code
       suppressWarnings(import_steps(recipe(metaHIV_phy, "RiskGroup2", "Class"),

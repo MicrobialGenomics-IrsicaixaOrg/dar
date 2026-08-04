@@ -1,7 +1,7 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.7
-Date: 2026-08-03
+Version: 1.9.8
+Date: 2026-08-04
 Authors@R: 
     c(person(given = "Francesc",
              family = "Catala-Moll",
