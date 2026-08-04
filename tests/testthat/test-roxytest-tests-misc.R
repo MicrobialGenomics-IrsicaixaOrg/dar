@@ -84,7 +84,7 @@ test_that("Function step_to_call() @ L162", {
 })
 
 
-test_that("Function find_intersections() @ L218", {
+test_that("Function find_intersections() @ L223", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -103,7 +103,7 @@ test_that("Function find_intersections() @ L218", {
 })
 
 
-test_that("Function steps_ids() @ L297", {
+test_that("Function steps_ids() @ L302", {
   data(test_prep_rec)
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec

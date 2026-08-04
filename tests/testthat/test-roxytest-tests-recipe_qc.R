@@ -12,3 +12,4 @@ test_that("Function recipe_qc() @ L53", {
   ))
   expect_equal(nrow(result), 1L)
 })
+
