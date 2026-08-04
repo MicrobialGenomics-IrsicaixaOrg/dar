@@ -7,6 +7,8 @@ validation_root <- normalizePath(
 )
 options(dar.validation.root = validation_root)
 source(file.path(validation_root, "R", "scenarios.R"), local = FALSE)
+source(file.path(validation_root, "R", "metrics.R"), local = FALSE)
+source(file.path(validation_root, "R", "baseline.R"), local = FALSE)
 source(file.path(validation_root, "R", "report.R"), local = FALSE)
 
 arguments <- commandArgs(trailingOnly = TRUE)
@@ -15,7 +17,8 @@ if (length(arguments) != 2L) {
 }
 output_dir <- normalizePath(arguments[[2L]], mustWork = FALSE)
 outcome <- aggregate_validation_artifacts(
-  arguments[[1L]], output_dir, render = TRUE, strict = FALSE
+  arguments[[1L]], output_dir, render = TRUE, strict = TRUE,
+  enforce_baseline = identical(Sys.getenv("VALIDATION_PROFILE"), "full")
 )
 message("Aggregate scientific validation report: ",
         file.path(output_dir, "scientific-validation.html"))

@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r import-export-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -40,7 +40,7 @@ the analysis.
 
 Here's an example of how to use the `export_steps` function:
 
-```{r}
+```{r export-recipe}
 library(dar)
 data(metaHIV_phy)
 
@@ -69,7 +69,7 @@ your current analysis.
 
 Here's an example of how to use the `import_steps` function:
 
-```{r}
+```{r import-recipe}
 # Initialize a recipe with the same phyloseq object. The model is in the file.
 rec <- recipe(metaHIV_phy)
 
@@ -87,7 +87,7 @@ Once the recipe is imported, we can choose to add more steps or execute the
 code using the `prep` function. In this case, we choose to execute `prep` 
 directly.
 
-```{r}
+```{r execute-imported-recipe}
 ## Execute
 da_results <- prep(rec, parallel = FALSE) |> bake()
 da_results
@@ -136,6 +136,6 @@ increasing transparency and the reliability of your results.
 
 ## Session info
 
-```{r}
+```{r import-export-session-info}
 devtools::session_info()
 ```

@@ -159,10 +159,14 @@ summarize_validation_metrics <- function(metrics) {
 }
 
 read_validation_thresholds <- function() {
-  utils::read.csv(
+  thresholds <- utils::read.csv(
     file.path(validation_root_path(), "thresholds.csv"),
     stringsAsFactors = FALSE
   )
+  if (!"contrast_pattern" %in% names(thresholds)) {
+    thresholds$contrast_pattern <- ".*"
+  }
+  thresholds
 }
 
 evaluate_validation_gates <- function(summary, thresholds = read_validation_thresholds()) {
@@ -181,8 +185,14 @@ evaluate_validation_gates <- function(summary, thresholds = read_validation_thre
       function(pattern) grepl(pattern, item$engine, perl = TRUE),
       logical(1)
     )
+    contrast_match <- vapply(
+      thresholds$contrast_pattern,
+      function(pattern) grepl(pattern, item$contrast_id, perl = TRUE),
+      logical(1)
+    )
     candidates <- thresholds[
-      thresholds$metric == item$metric & scenario_match & engine_match,
+      thresholds$metric == item$metric & scenario_match & engine_match &
+        contrast_match,
       , drop = FALSE
     ]
     if (!nrow(candidates)) {
@@ -224,12 +234,51 @@ direction_reversal_self_test <- function() {
   identical(gate$status, "fail")
 }
 
+validation_version_manifest <- function(engines, profile, base_seed) {
+  installed <- as.data.frame(utils::installed.packages(), stringsAsFactors = FALSE)
+  dependencies <- tryCatch(
+    tools::package_dependencies(
+      "dar", db = utils::installed.packages(), recursive = TRUE
+    )[["dar"]],
+    error = function(cnd) character()
+  )
+  engine_packages <- unique(unlist(lapply(
+    engines, function(engine) validation_engine(engine)$packages
+  ), use.names = FALSE))
+  packages <- unique(c("dar", "BiocVersion", engine_packages, dependencies))
+  packages <- packages[packages %in% installed$Package]
+  roles <- ifelse(
+    packages %in% engine_packages, "engine",
+    ifelse(packages == "dar", "package", "dependency")
+  )
+  repositories <- if ("Repository" %in% names(installed)) {
+    installed[packages, "Repository"]
+  } else {
+    rep(NA_character_, length(packages))
+  }
+  data.frame(
+    component = c("R", packages),
+    version = c(as.character(getRversion()), installed[packages, "Version"]),
+    role = c("runtime", roles),
+    source = c("R runtime", repositories),
+    library = c(NA_character_, installed[packages, "LibPath"]),
+    engine = paste(engines, collapse = ","),
+    profile = profile,
+    base_seed = as.integer(base_seed),
+    platform = R.version$platform,
+    git_sha = Sys.getenv("GITHUB_SHA", NA_character_),
+    run_id = Sys.getenv("GITHUB_RUN_ID", NA_character_),
+    stringsAsFactors = FALSE
+  )
+}
+
 write_validation_artifacts <- function(output_dir, results, runs, truth,
-                                       manifests, metrics, summary, gates) {
+                                       manifests, metrics, summary, gates,
+                                       versions = data.frame()) {
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   objects <- list(
     results = results, runs = runs, truth = truth, manifests = manifests,
-    metrics = metrics, summary = summary, gates = gates
+    metrics = metrics, summary = summary, gates = gates, versions = versions
   )
   for (name in names(objects)) {
     utils::write.csv(

@@ -167,7 +167,9 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
 
   cli::cli_inform(c(
     "i" = "Baking with {.field count_cutoff =} {.val {count_cutoff}}",
-    if (length(exclude) > 0) { "i" = "Excluding {.val {exclude}}." }
+    if (length(exclude) > 0) {
+      "Excluding {.val {exclude}}."
+    }
   ))
 
   res

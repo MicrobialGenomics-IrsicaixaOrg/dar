@@ -65,8 +65,11 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 #' ## The function also works with PrepRecipe-class objects
 #' data(test_prep_rec)
 #' dar:::required_deps(test_prep_rec)
-required_deps <- function(rec, steps = rec@steps) {
+required_deps <- function(rec, steps = NULL) {
   check_any_recipe(rec)
+  if (is.null(steps)) {
+    steps <- rec@steps
+  }
   purrr::walk(steps, function(step_obj) {
     id <- step_method(step_obj)
     req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
@@ -76,4 +79,21 @@ required_deps <- function(rec, steps = rec@steps) {
   })
     
   invisible()
+}
+
+#' Require an optional package for a plotting path
+#' @noRd
+require_optional_package <- function(pkg, caller) {
+  if (rlang::is_installed(pkg)) {
+    return(invisible(TRUE))
+  }
+  cli::cli_abort(
+    c(
+      "x" = "Package {.pkg {pkg}} is required by {.fun {caller}}.",
+      "i" = "Install it with {.run BiocManager::install(\"{pkg}\")} and try again."
+    ),
+    class = "dar_error_missing_package",
+    package = pkg,
+    caller = caller
+  )
 }

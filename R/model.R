@@ -802,7 +802,7 @@ warn_model_free_da <- function(rec) {
   if (is.null(rec@model) && any(vapply(rec@steps, is_da_step, logical(1)))) {
     cli::cli_warn(
       c(
-        "!" = "Model-free differential-abundance execution is deprecated.",
+        "!" = "Model-free differential-abundance execution is deprecated in Bioconductor 3.24 and will become defunct in 3.25.",
         "i" = "Define the statistical design, targets and taxonomic resolution with {.fun add_model}."
       ),
       class = "dar_warning_deprecated_legacy_da"

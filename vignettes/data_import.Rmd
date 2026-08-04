@@ -13,7 +13,7 @@ editor_options:
 body {text-align: justify}
 </style>
 
-```{r, include = FALSE}
+```{r data-import-setup, include = FALSE}
 knitr::opts_chunk$set(
   message = FALSE,
   digits = 3,
@@ -32,7 +32,7 @@ to aid users in converting other prevalent data formats, such as `biome`,
 `mothur`, `metaphlan`, and more, into the necessary `phyloseq` or 
 `TreeSummarizedExperiment` formats. 
 
-```{r}
+```{r data-import-packages}
 suppressPackageStartupMessages(library(mia))
 suppressPackageStartupMessages(library(phyloseq))
 ```
@@ -50,7 +50,7 @@ To convert data from the `biome` format to the `phyloseq` format, you can use
 the `phyloseq::import_biom()` function. Here's a step-by-step example of how to 
 perform this conversion:
 
-```{r}
+```{r import-biom}
 # Example of a rich dense biom file
 rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
@@ -83,7 +83,7 @@ on the targets or taxonomic level selected by `add_model()`. Their ordering is
 stable: samples follow `phyloseq::sample_names()`, taxa follow
 `phyloseq::taxa_names()`, and counts are always returned with taxa in rows.
 
-```{r}
+```{r inspect-sample-data}
 dar::sample_data(rec)
 dar::tax_table(rec)
 dar::otu_table(rec)
@@ -101,7 +101,7 @@ To convert data from the `biome` format to the `TreeSummarizedExperiment` format
 you can use the `mia::importBIOM()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
-```{r}
+```{r import-biom-tse}
 # Example of a rich dense biom file
 rich_dense_biom  <-
   system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
@@ -144,7 +144,7 @@ To convert data from the `qiime` format to the `Phyloseq` format, you can use
 the `phyloseq::import_qiime()` function. Here's a step-by-step example of how 
 to perform this conversion:
 
-```{r}
+```{r import-qiime-phyloseq}
 # Import QIIME data
 phy_qiime <- phyloseq::import_qiime(
   otufilename = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package = "phyloseq"),
@@ -168,7 +168,7 @@ To convert data from the `qiime` format to the `TreeSummarizedExperiment` format
 you can use the `mia::importQIIME2()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
-```{r eval = FALSE}
+```{r import-qiime-tse, eval = FALSE}
 # Import QIIME data to tse
 tse_qiime <- mia::importQIIME2(
   featureTableFile = system.file("extdata", "table.qza", package = "mia"),
@@ -201,7 +201,7 @@ To convert data from the `mothur` format to the `Phyloseq` format, you can use
 the `phyloseq::import_mothur()` function. Here's a step-by-step example of how 
 to perform this conversion:
 
-```{r}
+```{r import-mothur-phyloseq}
 # Import Mothur data
 phy_mothur <- phyloseq::import_mothur(
   mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package = "phyloseq"),
@@ -224,7 +224,7 @@ To convert data from the `mothur` format to the `TreeSummarizedExperiment`
 format, you can use the `mia::importMothur()` function. Here's a step-by-step 
 example of how to perform this conversion:
 
-```{r}
+```{r import-mothur-tse}
 # Import Mothur data to TreeSummarizedExperiment
 tse_mothur <- mia::importMothur(
   sharedFile = system.file("extdata", "mothur_example.shared", package = "mia"),
@@ -254,7 +254,7 @@ To convert data from the `metaphlan` format to the `TreeSummarizedExperiment`
 format, you can use the `mia::importMetaPhlAn()` function. Here's a 
 step-by-step example of how to perform this conversion:
 
-```{r}
+```{r import-metaphlan}
 # Importing data from Metaphlan
 tse_metaphlan <- mia::importMetaPhlAn(
   file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
@@ -295,6 +295,6 @@ to ensure it has been imported correctly.
 
 ## Session info
 
-```{r}
+```{r data-import-session-info}
 devtools::session_info()
 ```

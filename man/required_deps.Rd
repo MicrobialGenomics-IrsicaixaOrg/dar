@@ -4,7 +4,7 @@
 \alias{required_deps}
 \title{Returns required pakcages for Recipe object}
 \usage{
-required_deps(rec, steps = rec@steps)
+required_deps(rec, steps = NULL)
 }
 \arguments{
 \item{rec}{A \code{Recipe} object}

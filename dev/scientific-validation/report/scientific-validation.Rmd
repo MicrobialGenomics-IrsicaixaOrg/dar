@@ -20,6 +20,9 @@ runs <- read_artifact("runs")
 manifests <- read_artifact("manifests")
 summary <- read_artifact("summary")
 gates <- read_artifact("gates")
+versions <- read_artifact("versions")
+execution_status <- read_artifact("execution_status")
+baseline_comparison <- read_artifact("baseline_comparison")
 ```
 
 ## Scope
@@ -48,6 +51,14 @@ if (nrow(manifests)) {
 
 ## Engine execution
 
+```{r execution-status}
+if (nrow(execution_status)) {
+  knitr::kable(execution_status)
+} else {
+  cat("No expected engine/scenario status was available.")
+}
+```
+
 ```{r execution}
 if (nrow(runs)) {
   execution <- runs |>
@@ -55,6 +66,44 @@ if (nrow(runs)) {
   knitr::kable(execution)
 } else {
   cat("No engine runs were available.")
+}
+```
+
+## Regression baseline
+
+```{r baseline-status}
+if (nrow(baseline_comparison)) {
+  baseline_counts <- baseline_comparison |>
+    dplyr::count(.data$status, name = "metrics")
+  knitr::kable(baseline_counts)
+} else {
+  cat("No accepted baseline has been promoted yet.")
+}
+```
+
+```{r baseline-failures}
+if (nrow(baseline_comparison) &&
+    any(baseline_comparison$status == "fail")) {
+  knitr::kable(baseline_comparison |>
+    dplyr::filter(.data$status == "fail"))
+} else {
+  cat("No baseline regression was detected.")
+}
+```
+
+## Runtime versions
+
+```{r runtime-versions}
+if (nrow(versions)) {
+  shown <- versions |>
+    dplyr::filter(.data$role %in% c("runtime", "package", "engine")) |>
+    dplyr::distinct(
+      .data$component, .data$version, .data$role, .data$platform,
+      .data$git_sha, .data$run_id
+    )
+  knitr::kable(shown)
+} else {
+  cat("No runtime version manifest was available.")
 }
 ```
 
@@ -119,3 +168,5 @@ if (nrow(summary)) {
 - `not_applicable` is intentional for incompatible estimands or unavailable uncertainty estimates.
 - `informational` means the selected profile did not reach the minimum replicate count for a regression gate.
 - Expected capability skips are not engine failures; errors from compatible models are failures.
+- Missing engine/scenario artifacts are failures, including jobs terminated by a timeout.
+- Baseline regression requires the current Monte Carlo interval to move beyond the accepted interval and metric-specific tolerance.

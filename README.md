@@ -24,12 +24,11 @@ Differential abundance testing in microbiome data challenges both
 parametric and non-parametric statistical methods, due to its sparsity,
 high variability and compositional nature. Microbiome-specific
 statistical methods often assume classical distribution models or take
-into account compositional specifics. These produce results that range
-within the specificity vs sensitivity space in such a way that type I
-and type II error are difficult to ascertain in real microbiome data
-when a single method is used. Recently, a consensus approach based on
-multiple differential abundance (DA) methods was recently suggested in
-order to increase robustness.
+into account compositional specifics. These produce results across the
+specificity-versus-sensitivity space, while type I and type II errors are
+difficult to ascertain in real microbiome data when a single method is
+used. Consensus across multiple differential abundance (DA) methods can
+increase robustness.
 
 With dar, you can use dplyr-like pipeable sequences of DA methods and
 then apply different consensus strategies. In this way we can obtain

@@ -2,13 +2,13 @@
 
 # File R/"recipe-utils.R": @tests
 
-test_that("Function add_var() @ L128", {
+test_that("Function add_var() @ L126", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
   
   expect_warning(
     expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
   expect_error(
     suppressWarnings(add_var(rec, "missing_variable")),
@@ -17,13 +17,13 @@ test_that("Function add_var() @ L128", {
 })
 
 
-test_that("Function add_tax() @ L174", {
+test_that("Function add_tax() @ L172", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
   
   expect_warning(
     expect_s4_class(add_tax(rec, "Species"), "Recipe"),
-    class = "dar_warning_deprecated_selector"
+    class = "deprecatedWarning"
   )
   expect_error(
     suppressWarnings(add_tax(rec, "Missing_rank")),
@@ -32,7 +32,7 @@ test_that("Function add_tax() @ L174", {
 })
 
 
-test_that("Function prep() @ L385", {
+test_that("Function prep() @ L383", {
   data(metaHIV_phy)
   invalid_rec <- suppressWarnings(recipe(
     metaHIV_phy,

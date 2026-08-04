@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "source_run_id": "30824448541+30815107597",
+  "promoted_at": "2026-08-04T16:43:48Z",
+  "thresholds": "../thresholds.csv"
+}

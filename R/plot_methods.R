@@ -9,7 +9,6 @@
 #' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases corr_heatmap
-#' @importFrom heatmaply heatmaply_cor
 #' @return heatmap
 #' @export
 #' @autoglobal
@@ -42,6 +41,7 @@ corr_heatmap <- function(rec,
                          contrast_id = NULL) {
   
   check_prep_recipe(rec)
+  require_optional_package("heatmaply", "corr_heatmap")
   
   overlap_df(
     rec, steps = steps, type = type, target = target,
@@ -84,7 +84,6 @@ corr_heatmap <- function(rec,
 #' @return UpSet plot
 #' @export
 #' @autoglobal
-#' @importFrom UpSetR upset
 #' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
@@ -117,6 +116,7 @@ intersection_plt <- function(rec,
                              contrast_id = NULL) {
   
   check_prep_recipe(rec)
+  require_optional_package("UpSetR", "intersection_plt")
   UpSetR::upset(
     data = intersection_df(
       rec, steps, target = target, contrast_id = contrast_id
@@ -322,6 +322,8 @@ abundance_plt <- function(rec,
       rec, taxa_ids, transform, scale, top_n, target, contrast_id
     )
   } else if (type == "heatmap") { 
+    require_optional_package("ComplexHeatmap", "abundance_plt")
+    require_optional_package("gplots", "abundance_plt")
     plt <- .abundance_heatmap(
       rec, taxa_ids, transform, scale, top_n, target, contrast_id
     )

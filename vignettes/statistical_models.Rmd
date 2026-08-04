@@ -67,7 +67,8 @@ longitudinal <- recipe(longitudinal_phy) |>
   step_maaslin()
 
 fit <- prep(longitudinal)
-fit@execution$contrasts
+tidy_results(fit) |>
+  dplyr::distinct(contrast_id, comparison, contrast_type)
 ```
 
 For `condition * visit`, the simple plan contains condition comparisons within
@@ -101,7 +102,7 @@ different longitudinal hypotheses cannot contribute to the same vote.
 ## A uniform tidy result contract
 
 `tidy_results()` exposes the same columns for every DA engine while preserving
-the engine-specific tables in `fit@results`. The `method` column identifies the
+the engine-specific tables stored internally. The `method` column identifies the
 stable engine (`deseq`, `aldex`, and so on), whereas `step_id` identifies the
 configured instance and therefore distinguishes repeated configurations of one
 engine.
@@ -162,11 +163,12 @@ created by the legacy exporter are rejected with migration guidance.
 ## Migrating legacy selectors
 
 The former `recipe(..., var_info=, tax_info=)`, `add_var()`, `add_tax()`,
-`get_var()` and `get_tax()` interfaces remain available during the first
-Bioconductor deprecation cycle. They emit classified warnings and synchronize
-with the centralized model where applicable. New code should inspect
-`get_model(rec)$targets` and `get_model(rec)$tax_level` instead. Legacy recipes
-can be migrated by moving both selectors into `add_model()`:
+`get_var()` and `get_tax()` interfaces are deprecated in Bioconductor 3.24,
+become defunct in 3.25 and are scheduled for removal in 3.26. Model-free DA
+execution follows the same schedule; preprocessing without a model remains
+supported. New code should inspect `get_model(rec)$targets` and
+`get_model(rec)$tax_level`. Legacy recipe objects loaded from RDS can be
+migrated by moving both selectors into `add_model()`:
 
 ```{r migration, eval=FALSE}
 # Deprecated
@@ -180,6 +182,12 @@ current <- recipe(phy) |>
     tax_level = "Species"
   )
 ```
+
+The retired executable pseudo-JSON format cannot be imported safely. Recreate
+those steps in a current recipe and export them with `export_steps()` to obtain
+the versioned, non-executable JSON schema. `phy_qc()` is defunct in 3.24 and is
+replaced by `recipe_qc()`; `step_metagenomeseq()` has completed its lifecycle
+and is no longer exported.
 
 ```{r session-info}
 sessionInfo()

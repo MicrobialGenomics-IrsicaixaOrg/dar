@@ -47,18 +47,22 @@ reference:
   - intersection_plt
   - mutual_plt
   - overlap_df
-- title: "Recipe Getters and Adders"
+- title: "Recipe Data Access"
   contents:
-  - add_tax
-  - add_var
   - get_phy
-  - get_tax
-  - get_var
   - otu_table
   - sample_data
   - steps_ids
   - tax_table
   - required_deps
+- title: "Lifecycle and Migration"
+  desc: "Compatibility interfaces; use the centralized model API in new code."
+  contents:
+  - add_var
+  - add_tax
+  - get_var
+  - get_tax
+  - dar-defunct
 - title: "Import and Export"
   contents:
   - export_steps

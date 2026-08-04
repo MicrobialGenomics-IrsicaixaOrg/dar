@@ -1,9 +1,11 @@
-metric,scenario_pattern,engine_pattern,direction,limit,min_replicates,notes
-type1_error,^cross_sectional_null$,.*,upper,0.10,50,Detect clear inflation above twice the nominal 0.05 rate
-fdr,^cross_sectional_null$,.*,upper,0.10,50,Detect clear false discovery inflation under the global null
-power,cross_sectional_signal|sparse_zero_inflated|fixed_confounder|longitudinal|missing_unbalanced,.*,lower,0.50,30,Require useful power for deliberately strong simulated effects
-direction_recovery,cross_sectional_signal|sparse_zero_inflated|fixed_confounder|longitudinal|missing_unbalanced,.*,lower,0.80,20,Protect numerator-minus-denominator orientation
-finite_rate,.*,.*,lower,0.90,20,Require stable finite effect estimates for compatible fits
-execution_rate,.*,.*,lower,0.90,20,Require compatible models to complete reliably
-coverage,.*,deseq,lower,0.85,30,Detect severe undercoverage of nominal 95 percent intervals
-abs_relative_bias,.*,deseq|ancom,upper,0.30,30,Apply only when engine effect and truth share a documented scale
+metric,scenario_pattern,engine_pattern,contrast_pattern,direction,limit,min_replicates,notes
+type1_error,^cross_sectional_null$,.*,.*,upper,0.10,50,Detect clear inflation above twice the nominal 0.05 rate
+fdr,^cross_sectional_null$,.*,.*,upper,0.10,50,Detect clear false discovery inflation under the global null
+power,cross_sectional_signal|sparse_zero_inflated|fixed_confounder,.*,.*,lower,0.50,30,Require useful power for deliberately strong cross-sectional effects
+power,longitudinal|missing_unbalanced,.*,^condition[[]treated-control[]]@time[[][0-9]+[]]$,lower,0.50,30,Require useful power only for strong condition-within-time effects
+direction_recovery,cross_sectional_signal|sparse_zero_inflated|fixed_confounder,.*,.*,lower,0.80,20,Protect numerator-minus-denominator orientation for strong effects
+direction_recovery,longitudinal|missing_unbalanced,.*,^condition[[]treated-control[]]@time[[][0-9]+[]]$,lower,0.80,20,Protect orientation only where the longitudinal signal is deliberately strong
+finite_rate,.*,.*,.*,lower,0.90,20,Require stable finite effect estimates for compatible fits
+execution_rate,.*,.*,.*,lower,0.90,20,Require compatible models to complete reliably
+coverage,.*,deseq|linda,.*,lower,0.85,30,Detect severe undercoverage when engine effect and truth share a documented scale
+abs_relative_bias,.*,deseq|ancom|linda,.*,upper,0.30,30,Apply only when engine effect and truth share a documented scale

@@ -1,5 +1,7 @@
 .Rproj.user
 .Rhistory
+Rplots.pdf
+**/Rplots.pdf
 .Rdata
 .httr-oauth
 .DS_Store

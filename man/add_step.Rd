@@ -25,11 +25,11 @@ rec <- recipe(metaHIV_phy) |>
 
 # Internally, step_ functions use add_step to append themselves
 rec <- step_maaslin(rec)
-length(rec@steps) # Returns 1
+length(steps_ids(rec)) # Returns 1
 
 # If we try to add the exact same step, it will inform us and skip it
 rec <- step_maaslin(rec)
-length(rec@steps) # Still returns 1
+length(steps_ids(rec)) # Still returns 1
 
 }
 \keyword{internal}

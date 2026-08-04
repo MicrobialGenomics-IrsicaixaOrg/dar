@@ -48,7 +48,7 @@ env:
   run_pkgdown: 'true'
   has_RUnit: 'false'
   cache-version: 'cache-v1'
-  bioc_version: 'bioc-release'
+  bioc_version: 'bioc-devel'
   ## Valid options are:
   ##    "bioc-release"
   ##    "bioc-devel"
@@ -322,6 +322,9 @@ jobs:
         env:
           DISPLAY: 99.0
         run: |
+          # The devel branch intentionally contains .Deprecated()/.Defunct()
+          # calls required by the Bioconductor lifecycle documented in NEWS.
+          # BiocCheck reports those calls so reviewers can verify the schedule.
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
               `quit-with-status` = TRUE,
