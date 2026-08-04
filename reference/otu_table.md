@@ -1,6 +1,6 @@
-# Extracts otu_table from phyloseq inside a Recipe
+# Extract a canonical count table from a recipe
 
-Extracts otu_table from phyloseq inside a Recipe
+Extract a canonical count table from a recipe
 
 ## Usage
 
@@ -16,14 +16,18 @@ otu_table(rec)
 
 ## Value
 
-A tibble
+A wide tibble with one row per taxon, `taxa_id` first, and one column
+per sample. Taxa and samples follow
+[`phyloseq::taxa_names()`](https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html)
+and
+[`phyloseq::sample_names()`](https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html)
+regardless of the stored OTU-table orientation.
 
 ## Examples
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+rec <- recipe(metaHIV_phy)
 otu_table(rec)
 #> # A tibble: 451 × 157
 #>    taxa_id Sample_186 Sample_185 Sample_184 Sample_182 Sample_181 Sample_170

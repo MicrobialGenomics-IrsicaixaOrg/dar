@@ -1,6 +1,6 @@
-# Extracts tax_table from phyloseq inside a Recipe
+# Extract complete taxonomy from a recipe
 
-Extracts tax_table from phyloseq inside a Recipe
+Extract complete taxonomy from a recipe
 
 ## Usage
 
@@ -16,27 +16,29 @@ tax_table(rec)
 
 ## Value
 
-A tibble
+A tibble with `taxa_id` followed by every taxonomic rank. Taxa are
+ordered according to
+[`phyloseq::taxa_names()`](https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html).
+If the recipe has no taxonomy, an ID-only tibble is returned.
 
 ## Examples
 
 ``` r
 data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+rec <- recipe(metaHIV_phy)
 tax_table(rec)
-#> # A tibble: 451 × 2
-#>    taxa_id taxa                         
-#>    <chr>   <chr>                        
-#>  1 Otu_1   Methanobrevibacter_smithii   
-#>  2 Otu_2   Methanosphaera_stadtmanae    
-#>  3 Otu_3   Actinomyces_odontolyticus    
-#>  4 Otu_4   Actinomyces_radicidentis     
-#>  5 Otu_5   Actinomyces_sp_HPA0247       
-#>  6 Otu_6   Actinomyces_sp_oral_taxon_181
-#>  7 Otu_7   Actinomyces_turicensis       
-#>  8 Otu_8   Aeriscardovia_aeriphila      
-#>  9 Otu_9   Alloscardovia_omnicolens     
-#> 10 Otu_10  Bifidobacterium_adolescentis 
+#> # A tibble: 451 × 8
+#>    taxa_id Kingdom  Phylum         Class           Order    Family Genus Species
+#>    <chr>   <chr>    <chr>          <chr>           <chr>    <chr>  <chr> <chr>  
+#>  1 Otu_1   Archaea  Euryarchaeota  Methanobacteria Methano… Metha… Meth… Methan…
+#>  2 Otu_2   Archaea  Euryarchaeota  Methanobacteria Methano… Metha… Meth… Methan…
+#>  3 Otu_3   Bacteria Actinobacteria Actinobacteria  Actinom… Actin… Acti… Actino…
+#>  4 Otu_4   Bacteria Actinobacteria Actinobacteria  Actinom… Actin… Acti… Actino…
+#>  5 Otu_5   Bacteria Actinobacteria Actinobacteria  Actinom… Actin… Acti… Actino…
+#>  6 Otu_6   Bacteria Actinobacteria Actinobacteria  Actinom… Actin… Acti… Actino…
+#>  7 Otu_7   Bacteria Actinobacteria Actinobacteria  Actinom… Actin… Acti… Actino…
+#>  8 Otu_8   Bacteria Actinobacteria Actinobacteria  Bifidob… Bifid… Aeri… Aerisc…
+#>  9 Otu_9   Bacteria Actinobacteria Actinobacteria  Bifidob… Bifid… Allo… Allosc…
+#> 10 Otu_10  Bacteria Actinobacteria Actinobacteria  Bifidob… Bifid… Bifi… Bifido…
 #> # ℹ 441 more rows
 ```

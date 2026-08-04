@@ -796,7 +796,7 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
@@ -969,7 +969,7 @@ da_results
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Species 
 #> 
 #> Results:
@@ -1111,7 +1111,7 @@ devtools::session_info()
 #>  corncob                    0.4.2      2025-03-29 [1] RSPM (R 4.6.0)
 #>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
 #>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.9      2026-08-04 [1] Bioconductor
+#>  dar                      * 1.9.10     2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1      2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)

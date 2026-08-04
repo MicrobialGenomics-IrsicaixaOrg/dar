@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -164,6 +164,49 @@ example of how to perform this conversion:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~BODY_SITE</span></span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="inspecting-recipe-components">Inspecting Recipe Components<a class="anchor" aria-label="anchor" href="#inspecting-recipe-components"></a>
+</h2>
+<p>Recipe accessors expose the complete underlying components and do not
+depend on the targets or taxonomic level selected by
+<code><a href="../reference/add_model.html">add_model()</a></code>. Their ordering is stable: samples follow
+<code><a href="https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html" class="external-link">phyloseq::sample_names()</a></code>, taxa follow
+<code><a href="https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html" class="external-link">phyloseq::taxa_names()</a></code>, and counts are always returned with
+taxa in rows.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/sample_data.html">sample_data</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   sample_id BarcodeSequence LinkerPrimerSequence  BODY_SITE Description</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample1   CGCTTATCGAGA    CATGCTGCCTCCCGTAGGAGT gut       human gut  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample2   CATACCAGTAGC    CATGCTGCCTCCCGTAGGAGT gut       human gut  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample3   CTCTCTACCTGT    CATGCTGCCTCCCGTAGGAGT gut       human gut  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample4   CTCTCGGCCTGT    CATGCTGCCTCCCGTAGGAGT skin      human skin </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sample5   CTCTCTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Sample6   CTAACTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin</span></span>
+<span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/tax_table.html">tax_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 8</span></span></span>
+<span><span class="co">#&gt;   taxa_id  Kingdom  Phylum         Class              Order Family Genus Species</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> GG_OTU_1 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> GG_OTU_2 Bacteria Cyanobacteria  Nostocophycideae   Nost… Nosto… Doli… <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GG_OTU_3 Archaea  Euryarchaeota  Methanomicrobia    Meth… Metha… Meth… <span style="color: #BB0000;">NA</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> GG_OTU_4 Bacteria Firmicutes     Clostridia         Hala… Halan… Hala… Halana…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… <span style="color: #BB0000;">NA</span></span></span>
+<span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/otu_table.html">otu_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
+<span><span class="co">#&gt;   taxa_id  Sample1 Sample2 Sample3 Sample4 Sample5 Sample6</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> GG_OTU_1       0       0       1       0       0       0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> GG_OTU_2       5       1       0       2       3       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GG_OTU_3       0       0       1       4       2       0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> GG_OTU_4       2       1       1       0       0       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5       0       1       1       0       0       0</span></span></code></pre></div>
+<p>When sample metadata or taxonomy is absent, the corresponding
+accessor returns an ID-only tibble. Analysis engines use separate
+internal target and rank views, so additional metadata and taxonomy
+columns are not passed implicitly to a statistical method.</p>
 <div class="section level3">
 <h3 id="to-treesummarizedexperiment">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment"></a>
 </h3>
@@ -171,7 +214,7 @@ example of how to perform this conversion:</p>
 <code>TreeSummarizedExperiment</code> format, you can use the
 <code><a href="https://microbiome.github.io/mia/reference/importBIOM.html" class="external-link">mia::importBIOM()</a></code> function. Here’s a step-by-step example
 of how to perform this conversion:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example of a rich dense biom file</span></span>
 <span><span class="va">rich_dense_biom</span>  <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>,  package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
@@ -293,7 +336,7 @@ data in <code>qiime</code> format to both <code>Phyloseq</code> and
 <code>Phyloseq</code> format, you can use the
 <code><a href="https://rdrr.io/pkg/phyloseq/man/import_qiime.html" class="external-link">phyloseq::import_qiime()</a></code> function. Here’s a step-by-step
 example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Import QIIME data</span></span>
 <span><span class="va">phy_qiime</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_qiime.html" class="external-link">import_qiime</a></span><span class="op">(</span></span>
 <span>  otufilename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"GP_otu_table_rand_short.txt.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
@@ -341,7 +384,7 @@ example of how to perform this conversion:</p>
 <code>TreeSummarizedExperiment</code> format, you can use the
 <code><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">mia::importQIIME2()</a></code> function. Here’s a step-by-step example
 of how to perform this conversion:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Import QIIME data to tse</span></span>
 <span><span class="va">tse_qiime</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">importQIIME2</a></span><span class="op">(</span></span>
 <span>  featureTableFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table.qza"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
@@ -374,7 +417,7 @@ data in <code>mothur</code> format to both <code>Phyloseq</code> and
 <code>Phyloseq</code> format, you can use the
 <code><a href="https://rdrr.io/pkg/phyloseq/man/import_mothur.html" class="external-link">phyloseq::import_mothur()</a></code> function. Here’s a step-by-step
 example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Import Mothur data</span></span>
 <span><span class="va">phy_mothur</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_mothur.html" class="external-link">import_mothur</a></span><span class="op">(</span></span>
 <span>  mothur_list_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"esophagus.fn.list.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
@@ -405,7 +448,7 @@ example of how to perform this conversion:</p>
 <code>TreeSummarizedExperiment</code> format, you can use the
 <code><a href="https://microbiome.github.io/mia/reference/importMothur.html" class="external-link">mia::importMothur()</a></code> function. Here’s a step-by-step example
 of how to perform this conversion:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Import Mothur data to TreeSummarizedExperiment</span></span>
 <span><span class="va">tse_mothur</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importMothur.html" class="external-link">importMothur</a></span><span class="op">(</span></span>
 <span>  sharedFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mothur_example.shared"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
@@ -461,7 +504,7 @@ data in <code>metaphlan</code> format to
 <code>TreeSummarizedExperiment</code> format, you can use the
 <code><a href="https://microbiome.github.io/mia/reference/importMetaPhlAn.html" class="external-link">mia::importMetaPhlAn()</a></code> function. Here’s a step-by-step
 example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Importing data from Metaphlan</span></span>
 <span><span class="va">tse_metaphlan</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importMetaPhlAn.html" class="external-link">importMetaPhlAn</a></span><span class="op">(</span></span>
 <span>  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"merged_abundance_table.txt"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span></span>
@@ -513,7 +556,7 @@ conversion to ensure it has been imported correctly.</p>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://sessioninfo.r-lib.org/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -554,7 +597,7 @@ conversion to ensure it has been imported correctly.</p>
 <span><span class="co">#&gt;  cluster                    2.1.8.3 <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[3]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  codetools                  0.2-20  <span style="color: #555555;">2024-03-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
 <span><span class="co">#&gt;  crayon                     1.5.3   <span style="color: #555555;">2024-06-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  dar                        1.9.9   <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  dar                        1.9.10  <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  data.table                 1.18.4  <span style="color: #555555;">2026-05-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  DBI                        1.3.0   <span style="color: #555555;">2026-02-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  DECIPHER                   3.8.1   <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.23 (R 4.6.1)</span></span></span>
@@ -660,6 +703,7 @@ conversion to ensure it has been imported correctly.</p>
 <span><span class="co">#&gt;  TSP                        1.2.7   <span style="color: #555555;">2026-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  UpSetR                     1.4.1   <span style="color: #555555;">2026-05-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  usethis                    3.2.1   <span style="color: #555555;">2025-09-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt;  utf8                       1.2.6   <span style="color: #555555;">2025-06-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  vctrs                      0.7.3   <span style="color: #555555;">2026-04-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  vegan                      2.7-5   <span style="color: #555555;">2026-05-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
 <span><span class="co">#&gt;  vipor                      0.4.7   <span style="color: #555555;">2023-12-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>

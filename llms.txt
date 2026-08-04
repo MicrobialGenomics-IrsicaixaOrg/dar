@@ -274,13 +274,13 @@ By contributing to this project, you agree to abide by its terms.
 - [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
   : Return legacy target information from a recipe
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
-  : Extracts otu_table from phyloseq inside a Recipe
+  : Extract a canonical count table from a recipe
 - [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
-  : Extracts sample_data from phyloseq inside a Recipe
+  : Extract complete sample metadata from a recipe
 - [`steps_ids()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/steps_ids.md)
   : Get step_ids from recipe
 - [`tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)
-  : Extracts tax_table from phyloseq inside a Recipe
+  : Extract complete taxonomy from a recipe
 - [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
   : Returns required pakcages for Recipe object
 

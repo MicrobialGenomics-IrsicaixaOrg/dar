@@ -181,7 +181,7 @@ rec
 #> Inputs:
 #> 
 #>      ℹ phyloseq object with 101 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: factor, levels: hts, msm, pwid) 
+#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
 #>      ℹ taxonomic level Phylum 
 #> 
 #> Results:

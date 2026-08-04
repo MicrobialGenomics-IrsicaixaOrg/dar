@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,15 @@
       <small>Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.10" id="dar-1910">dar 1.9.10<a class="anchor" aria-label="anchor" href="#dar-1910"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-1-9-10">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-10"></a></h3>
+<ul><li>CHANGED: <code><a href="../reference/sample_data.html">sample_data()</a></code> and <code><a href="../reference/tax_table.html">tax_table()</a></code> now return the complete recipe metadata and taxonomy instead of model-restricted analysis views (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+<li>CHANGED: <code><a href="../reference/otu_table.html">otu_table()</a></code> now always returns a wide taxa-by-sample tibble with deterministic taxon and sample ordering, regardless of the stored phyloseq orientation (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+<li>IMPROVED: Differential-abundance engines and plots use explicit internal target-only and selected-rank views, preventing public accessor semantics from changing analysis inputs (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.9" id="dar-199">dar 1.9.9<a class="anchor" aria-label="anchor" href="#dar-199"></a></h2>
 <div class="section level3">

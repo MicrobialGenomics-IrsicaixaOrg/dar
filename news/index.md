@@ -1,5 +1,27 @@
 # Changelog
 
+## dar 1.9.10
+
+### BREAKING CHANGES
+
+- CHANGED:
+  [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
+  and
+  [`tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)
+  now return the complete recipe metadata and taxonomy instead of
+  model-restricted analysis views
+  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
+- CHANGED:
+  [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
+  now always returns a wide taxa-by-sample tibble with deterministic
+  taxon and sample ordering, regardless of the stored phyloseq
+  orientation
+  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
+- IMPROVED: Differential-abundance engines and plots use explicit
+  internal target-only and selected-rank views, preventing public
+  accessor semantics from changing analysis inputs
+  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
+
 ## dar 1.9.9
 
 ### BREAKING CHANGES

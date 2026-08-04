@@ -91,6 +91,54 @@ rec
 #>      ℹ ~BODY_SITE
 ```
 
+## Inspecting Recipe Components
+
+Recipe accessors expose the complete underlying components and do not
+depend on the targets or taxonomic level selected by
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md).
+Their ordering is stable: samples follow
+[`phyloseq::sample_names()`](https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html),
+taxa follow
+[`phyloseq::taxa_names()`](https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html),
+and counts are always returned with taxa in rows.
+
+``` r
+
+dar::sample_data(rec)
+#> # A tibble: 6 × 5
+#>   sample_id BarcodeSequence LinkerPrimerSequence  BODY_SITE Description
+#>   <chr>     <chr>           <chr>                 <chr>     <chr>      
+#> 1 Sample1   CGCTTATCGAGA    CATGCTGCCTCCCGTAGGAGT gut       human gut  
+#> 2 Sample2   CATACCAGTAGC    CATGCTGCCTCCCGTAGGAGT gut       human gut  
+#> 3 Sample3   CTCTCTACCTGT    CATGCTGCCTCCCGTAGGAGT gut       human gut  
+#> 4 Sample4   CTCTCGGCCTGT    CATGCTGCCTCCCGTAGGAGT skin      human skin 
+#> 5 Sample5   CTCTCTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin 
+#> 6 Sample6   CTAACTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin
+dar::tax_table(rec)
+#> # A tibble: 5 × 8
+#>   taxa_id  Kingdom  Phylum         Class              Order Family Genus Species
+#>   <chr>    <chr>    <chr>          <chr>              <chr> <chr>  <chr> <chr>  
+#> 1 GG_OTU_1 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… NA     
+#> 2 GG_OTU_2 Bacteria Cyanobacteria  Nostocophycideae   Nost… Nosto… Doli… NA     
+#> 3 GG_OTU_3 Archaea  Euryarchaeota  Methanomicrobia    Meth… Metha… Meth… NA     
+#> 4 GG_OTU_4 Bacteria Firmicutes     Clostridia         Hala… Halan… Hala… Halana…
+#> 5 GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… NA
+dar::otu_table(rec)
+#> # A tibble: 5 × 7
+#>   taxa_id  Sample1 Sample2 Sample3 Sample4 Sample5 Sample6
+#>   <chr>      <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+#> 1 GG_OTU_1       0       0       1       0       0       0
+#> 2 GG_OTU_2       5       1       0       2       3       1
+#> 3 GG_OTU_3       0       0       1       4       2       0
+#> 4 GG_OTU_4       2       1       1       0       0       1
+#> 5 GG_OTU_5       0       1       1       0       0       0
+```
+
+When sample metadata or taxonomy is absent, the corresponding accessor
+returns an ID-only tibble. Analysis engines use separate internal target
+and rank views, so additional metadata and taxonomy columns are not
+passed implicitly to a statistical method.
+
 ### To TreeSummarizedExperiment
 
 To convert data from the `biome` format to the
@@ -492,7 +540,7 @@ devtools::session_info()
 #>  cluster                    2.1.8.3 2026-07-30 [3] RSPM (R 4.6.0)
 #>  codetools                  0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
 #>  crayon                     1.5.3   2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                        1.9.9   2026-08-04 [1] Bioconductor
+#>  dar                        1.9.10  2026-08-04 [1] Bioconductor
 #>  data.table                 1.18.4  2026-05-06 [1] RSPM (R 4.6.0)
 #>  DBI                        1.3.0   2026-02-25 [1] RSPM (R 4.6.0)
 #>  DECIPHER                   3.8.1   2026-07-30 [1] Bioconductor 3.23 (R 4.6.1)
@@ -598,6 +646,7 @@ devtools::session_info()
 #>  TSP                        1.2.7   2026-03-23 [1] RSPM (R 4.6.0)
 #>  UpSetR                     1.4.1   2026-05-25 [1] RSPM (R 4.6.0)
 #>  usethis                    3.2.1   2025-09-06 [2] RSPM (R 4.6.0)
+#>  utf8                       1.2.6   2025-06-08 [2] RSPM (R 4.6.0)
 #>  vctrs                      0.7.3   2026-04-11 [2] RSPM (R 4.6.0)
 #>  vegan                      2.7-5   2026-05-25 [1] RSPM (R 4.6.0)
 #>  vipor                      0.4.7   2023-12-18 [1] RSPM (R 4.6.0)
