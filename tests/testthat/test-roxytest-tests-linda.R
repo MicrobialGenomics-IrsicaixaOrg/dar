@@ -10,3 +10,4 @@ test_that("Function step_linda() @ L51", {
   data(test_prep_rec)
   expect_error(step_linda(test_prep_rec))
 })
+

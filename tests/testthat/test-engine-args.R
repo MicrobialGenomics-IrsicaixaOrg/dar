@@ -167,21 +167,20 @@ test_that("step export rejects values that cannot be reconstructed", {
   )
 })
 
-test_that("recursive step serialization supports compatible values", {
+test_that("recursive step serialization supports data-only compatible values", {
   value <- list(
     fit = list(control = list(tolerance = 1e-4), transform = ~ x + y),
-    effect = list(callback = function(x) x)
+    effect = list(enabled = TRUE)
   )
-  expression <- dar:::step_value_expr(value)
-  restored <- eval(parse(text = expression))
+  encoded <- dar:::encode_recipe_value(value)
+  restored <- dar:::decode_recipe_value(encoded)
 
   expect_equal(restored$fit$control$tolerance, 1e-4)
   expect_equal(deparse(restored$fit$transform), deparse(~ x + y))
-  expect_true(is.function(restored$effect$callback))
+  expect_true(restored$effect$enabled)
 
-  threshold <- 2
   expect_error(
-    dar:::step_value_expr(list(fit = list(callback = function(x) x > threshold))),
+    dar:::encode_recipe_value(list(fit = list(callback = function(x) x))),
     class = "dar_error_unserializable_step"
   )
 })

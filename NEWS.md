@@ -1,3 +1,17 @@
+# dar 1.9.9
+
+## BREAKING CHANGES
+
+* CHANGED: `export_steps()` and `import_steps()` now use a real, versioned,
+  non-executable JSON schema. Files produced by the legacy pseudo-JSON format
+  are rejected with migration guidance instead of being evaluated (#152).
+* CHANGED: Imported bake configurations require an explicit `prepare = TRUE`
+  before `import_steps()` may execute an analysis on an unprepared recipe
+  (#152).
+* IMPROVED: Imported constructors, arguments, formulas, nested values and
+  filter predicates are allowlisted and validated transactionally before a
+  recipe is changed (#152).
+
 # dar 1.9.8
 
 * FIXED: Recipe steps are classified by their concrete classes, so arbitrary

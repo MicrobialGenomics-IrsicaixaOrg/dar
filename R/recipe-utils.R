@@ -622,10 +622,5 @@ cool <- function(rec, bake = 1) {
     bake <- which(all_names == bake)
   }
 
-  to_execute <-
-    rec@bakes %>%
-    .[bake] %>%
-    purrr::map_chr(step_to_expr)
-
-  eval(parse(text = to_execute))
+  base::eval(step_to_call(rec@bakes[[bake]]))
 }

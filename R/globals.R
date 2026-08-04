@@ -4,15 +4,13 @@ utils::globalVariables(c(
   # <ancom_stats_tbl>
   # <run_deseq>
   # <prepro_lefse>
-  # <step_to_expr>
   # <find_intersections>
-  # <import_steps>
+  # <.legacy_import_steps>
   # <recipes_pkg_check>
   # <corr_heatmap>
   # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
-  # <cool>
   # <run_wilcox>
   ".",
   # <run_wilcox>

@@ -43,6 +43,7 @@ step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
     required_pkgs_filter_taxa(), 
     "step_filter_taxa()"
   )
+  .f <- normalize_filter_predicate(.f)
   
   add_step(
     rec,
@@ -58,7 +59,6 @@ step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
 #' @autoglobal
 #' @keywords internal
 run_filter_taxa <- function(rec, .f, id) {
-  if (is.character(.f)) { .f <- eval(parse(text = .f)) }
   rec@phyloseq <- phyloseq::filter_taxa(get_phy(rec), .f, prune = TRUE)
  
   rec

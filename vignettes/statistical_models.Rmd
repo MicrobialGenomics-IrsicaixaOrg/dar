@@ -156,8 +156,8 @@ used by the selected execution route is reported as an error.
 
 `export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
 level, time column, references, contrast mode, missing-value policy and
-time-level limit. Files created by older versions without a model continue to
-import through the legacy path.
+time-level limit in the versioned `dar-recipe` JSON schema. Executable files
+created by the legacy exporter are rejected with migration guidance.
 
 ## Migrating legacy selectors
 

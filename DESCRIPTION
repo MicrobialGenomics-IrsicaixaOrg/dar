@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Analysis by Consensus
-Version: 1.9.8
+Version: 1.9.9
 Date: 2026-08-04
 Authors@R: 
     c(person(given = "Francesc",
@@ -32,7 +32,6 @@ biocViews: Software, Sequencing, Microbiome, Metagenomics, MultipleComparison, N
 Imports: 
     checkmate,
     cli,
-    codetools,
     ComplexHeatmap,
     crayon,
     dplyr,
@@ -41,6 +40,7 @@ Imports:
     glue,
     gplots,
     heatmaply,
+    jsonlite,
     magrittr,
     methods,
     mia,
@@ -115,6 +115,7 @@ Collate:
     'recipe-utils.R'
     'recipe_qc.R'
     'result-contract.R'
+    'serialization.R'
     'steps_and_checks.R'
     'subset_taxa.R'
     'utilis-validation.R'
