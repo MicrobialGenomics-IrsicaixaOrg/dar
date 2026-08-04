@@ -4,7 +4,13 @@
 \alias{intersection_df}
 \title{Returns data.frame with OTU intersection between methods}
 \usage{
-intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
+intersection_df(
+  rec,
+  steps = steps_ids(rec, "da"),
+  tidy = FALSE,
+  target = NULL,
+  contrast_id = NULL
+)
 }
 \arguments{
 \item{rec}{A \code{PrepRecipe} object.}
@@ -12,6 +18,10 @@ intersection_df(rec, steps = steps_ids(rec, "da"), tidy = FALSE)
 \item{steps}{character vector with step_ids to take in account.}
 
 \item{tidy}{Boolean indicating if result must be in tidy format.}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 data.frame class object

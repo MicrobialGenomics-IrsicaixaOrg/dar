@@ -8,7 +8,6 @@ utils::globalVariables(c(
   # <.legacy_import_steps>
   # <recipes_pkg_check>
   # <corr_heatmap>
-  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <run_wilcox>
@@ -45,7 +44,6 @@ utils::globalVariables(c(
   # <exclusion_plt>
   # <mutual_plt>
   "method",
-  # <mutual_plt>
   # <.abundance_boxplot>
   # <.abundance_heatmap>
   "method_count",

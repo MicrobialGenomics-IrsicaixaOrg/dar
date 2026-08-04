@@ -4,7 +4,14 @@
 \alias{corr_heatmap}
 \title{Plot otuput of the \code{overlap_df} function as a heatmap.}
 \usage{
-corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
+corr_heatmap(
+  rec,
+  steps = steps_ids(rec, "da"),
+  font_size = 15,
+  type = "all",
+  target = NULL,
+  contrast_id = NULL
+)
 }
 \arguments{
 \item{rec}{A prepped \code{Recipe} object.}
@@ -15,6 +22,10 @@ corr_heatmap(rec, steps = steps_ids(rec, "da"), font_size = 15, type = "all")
 
 \item{type}{Indicates whether to use all taxa ("all") or only those that are
 differentially abundant in at least one method ("da"). Default as "all".}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 heatmap

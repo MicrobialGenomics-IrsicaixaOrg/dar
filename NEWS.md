@@ -1,3 +1,18 @@
+# dar 1.9.11
+
+## FIXED
+
+* Consensus tables, plots and bake results now keep modeled targets, contrasts
+  and effect directions as separate hypotheses instead of mixing their support
+  counts (#154).
+* Modeled intersections use the complete taxon-by-contrast universe, including
+  non-significant hypotheses, and classify zero effects as neutral (#154).
+* Method exclusions are applied before consensus support is counted, and
+  invalid cutoffs, weights and exclusions now produce classified errors (#154).
+* Modeled exploration functions accept explicit `target` and `contrast_id`
+  selectors; abundance plots require them whenever automatic selection would
+  otherwise be ambiguous (#154).
+
 # dar 1.9.10
 
 ## BREAKING CHANGES

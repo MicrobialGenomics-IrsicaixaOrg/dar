@@ -8,7 +8,9 @@ intersection_plt(
   rec,
   steps = steps_ids(rec, "da"),
   ordered_by = c("freq", "degree"),
-  font_size = 2
+  font_size = 2,
+  target = NULL,
+  contrast_id = NULL
 )
 }
 \arguments{
@@ -21,6 +23,10 @@ Options include frequency (entered as "freq"), degree, or both in any
 order.}
 
 \item{font_size}{Size of the font.}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 UpSet plot

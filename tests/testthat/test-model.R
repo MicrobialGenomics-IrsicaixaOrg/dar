@@ -540,11 +540,128 @@ test_that("modeled mutual plots normalize adjusted p-value aliases", {
   )
 
   stats <- dar:::.all_stats(prepared)
-  expect_named(stats, c("taxa_id", "comparison", "effect_v", "padj", "method"))
+  expect_named(
+    stats,
+    c(
+      "taxa_id", "contrast_id", "var", "comparison", "effect_v", "padj",
+      "method"
+    )
+  )
   expect_equal(stats$padj, rows$padj)
-  expect_s3_class(
-    suppressMessages(mutual_plt(prepared, count_cutoff = 1)),
-    "ggplot"
+  plot <- suppressMessages(mutual_plt(prepared, count_cutoff = 1))
+  expect_s3_class(plot, "ggplot")
+  expect_s3_class(ggplot2::ggplot_build(plot), "ggplot_built")
+})
+
+test_that("modeled intersections preserve the complete hypothesis universe", {
+  rec <- recipe(make_multilevel_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
+  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__one"))
+  rec <- dar:::add_step(rec, dar:::step("maaslin", id = "maaslin__two"))
+  plan <- dar:::resolve_model(rec)$contrast_plan
+  first <- plan[1, ]
+  row <- tibble::tibble(
+    taxa_id = c("taxon_1", "taxon_2"),
+    taxa = c("Species_1", "Species_2"),
+    contrast_id = first$contrast_id,
+    comparison = first$comparison,
+    contrast_type = first$contrast_type,
+    var = first$var,
+    effect = c(1, 0),
+    padj = 0.01,
+    signif = TRUE
+  )
+  prepared <- dar:::prep_recipe(
+    rec,
+    list(
+      deseq__one = list(model = row),
+      maaslin__two = list(model = dplyr::slice(row, 1))
+    ),
+    list()
+  )
+
+  intersections <- intersection_df(prepared)
+  expect_equal(
+    dplyr::n_distinct(intersections$taxa_id, intersections$contrast_id),
+    phyloseq::ntaxa(prepared@phyloseq) * nrow(plan)
+  )
+  expect_true(any(intersections$effect == "neutral"))
+  selected <- intersection_df(prepared, contrast_id = first$contrast_id)
+  expect_identical(unique(selected$contrast_id), first$contrast_id)
+  expect_error(
+    intersection_df(prepared, contrast_id = "missing"),
+    class = "dar_error_invalid_contrast_selector"
+  )
+
+  counts <- dar:::.all_significant(prepared, steps = "deseq__one")
+  expect_true(all(counts$method_count == 1L))
+  expect_identical(dar:::effect_direction(c(-1, 0, 1)), c("down", "neutral", "up"))
+
+  transposed <- prepared
+  phy <- prepared@phyloseq
+  transposed@phyloseq@otu_table <- phyloseq::otu_table(
+    t(as(phyloseq::otu_table(phy), "matrix")), taxa_are_rows = FALSE
+  )
+  expect_identical(
+    intersection_df(transposed, contrast_id = first$contrast_id), selected
+  )
+})
+
+test_that("bake rejects unsafe or impossible consensus specifications", {
+  ids <- c("deseq__one", "maaslin__two")
+  invalid_cutoffs <- list(0, Inf, NA_real_, c(1, 2), 3)
+  purrr::walk(invalid_cutoffs, function(cutoff) {
+    expect_error(
+      dar:::validate_bake_spec(ids, cutoff, NULL, NULL),
+      class = "dar_error_invalid_count_cutoff"
+    )
+  })
+  expect_error(
+    dar:::validate_bake_spec(ids, NULL, NULL, ids),
+    class = "dar_error_invalid_consensus"
+  )
+  expect_error(
+    dar:::validate_bake_spec(ids, NULL, NULL, c(ids[[1]], ids[[1]])),
+    class = "dar_error_invalid_step_id"
+  )
+  invalid_weights <- list(
+    c(1, 1), c(deseq__one = 1),
+    c(deseq__one = -1, maaslin__two = 1),
+    c(deseq__one = Inf, maaslin__two = 1),
+    c(deseq__one = NA_real_, maaslin__two = 1)
+  )
+  purrr::walk(invalid_weights, function(weights) {
+    expect_error(
+      dar:::validate_bake_spec(ids, NULL, weights, NULL),
+      class = "dar_error_invalid_weights"
+    )
+  })
+  spec <- dar:::validate_bake_spec(
+    ids, 2, c(deseq__one = 2, maaslin__two = 1), NULL
+  )
+  expect_identical(names(spec$weights), ids)
+})
+
+test_that("modeled abundance selectors reject ambiguous hypotheses", {
+  rec <- recipe(make_longitudinal_phy()) |>
+    add_model(
+      ~ condition + batch, targets = c("condition", "batch"),
+      tax_level = "Species"
+    )
+  expect_error(
+    dar:::resolve_plot_target(rec),
+    class = "dar_error_ambiguous_plot_target"
+  )
+  expect_identical(dar:::resolve_plot_target(rec, "condition"), "condition")
+
+  single <- recipe(make_multilevel_phy()) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
+  expect_error(
+    dar:::resolve_abundance_contrast(single, NULL, "condition"),
+    class = "dar_error_ambiguous_plot_contrast"
+  )
+  expect_null(
+    dar:::resolve_abundance_contrast(single, "taxon_1", "condition")
   )
 })
 

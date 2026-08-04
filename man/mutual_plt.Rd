@@ -9,7 +9,9 @@ mutual_plt(
   count_cutoff = NULL,
   comparisons = NULL,
   steps = steps_ids(rec, type = "da"),
-  top_n = 20
+  top_n = 20,
+  target = NULL,
+  contrast_id = NULL
 )
 }
 \arguments{
@@ -27,6 +29,10 @@ selected ones will be plotted.}
 "da" methods.}
 
 \item{top_n}{Maximum number of taxa to represent. Default: 20.}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 ggplot2

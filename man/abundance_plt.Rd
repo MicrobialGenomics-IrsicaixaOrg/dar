@@ -10,7 +10,9 @@ abundance_plt(
   type = "boxplot",
   transform = "compositional",
   scale = 1,
-  top_n = 20
+  top_n = 20,
+  target = NULL,
+  contrast_id = NULL
 )
 }
 \arguments{
@@ -33,6 +35,12 @@ applied and works with the raw counts.}
 "scale".}
 
 \item{top_n}{Maximum number of taxa to represent. Default: 20.}
+
+\item{target}{Modeled target used for annotations. Required when a modeled
+recipe contains more than one target.}
+
+\item{contrast_id}{Modeled contrast used for automatic taxon selection.
+Required when \code{taxa_ids = NULL} and more than one contrast is available.}
 }
 \value{
 ggplot2 or HeatmapList

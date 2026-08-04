@@ -543,6 +543,8 @@ prep <- function(rec,
 #' @param rec A `PrepRecipe` object.
 #' @param steps character vector with step_ids to take in account.
 #' @param tidy Boolean indicating if result must be in tidy format.
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases intersection_df
 #' @return data.frame class object
@@ -552,15 +554,41 @@ prep <- function(rec,
 #' data(test_prep_rec)
 #' df <- intersection_df(test_prep_rec)
 #' head(df)
-intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
+intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
+                            target = NULL, contrast_id = NULL) {
 
   check_prep_recipe(rec)
+  validate_consensus_steps(rec, steps)
 
   if (!is.null(get_model(rec))) {
-    keys <- c("taxa_id", "contrast_id", "effect")
-    df <- .otu_effect_direction(rec, steps = steps) %>%
-      dplyr::distinct(dplyr::across(dplyr::all_of(c(keys, "method")))) %>%
-      dplyr::mutate(value = 1L) %>%
+    keys <- c(
+      "taxa_id", "contrast_id", "comparison", "contrast_type", "var",
+      "effect"
+    )
+    all_results <- tidy_results(rec, steps = steps) |>
+      dplyr::mutate(effect = effect_direction(.data$effect_size))
+    directions <- all_results |>
+      dplyr::distinct(dplyr::across(dplyr::all_of(keys)))
+    plan <- resolve_model(rec)$contrast_plan |>
+      dplyr::select("contrast_id", "comparison", "contrast_type", "var")
+    universe <- tidyr::crossing(
+      taxa_id = phyloseq::taxa_names(rec@phyloseq),
+      plan
+    ) |>
+      dplyr::left_join(
+        directions,
+        by = c("taxa_id", "contrast_id", "comparison", "contrast_type", "var")
+      ) |>
+      dplyr::mutate(effect = tidyr::replace_na(.data$effect, "neutral"))
+    calls <- all_results |>
+      dplyr::filter(.data$significant %in% TRUE) |>
+      dplyr::transmute(
+        dplyr::across(dplyr::all_of(keys)), method = .data$step_id, value = 1L
+      ) |>
+      dplyr::distinct()
+    df <- universe |>
+      dplyr::left_join(calls, by = keys) |>
+      dplyr::mutate(value = tidyr::replace_na(.data$value, 0L)) |>
       tidyr::pivot_wider(
         id_cols = dplyr::all_of(keys), names_from = "method",
         values_from = "value", values_fill = 0L
@@ -568,7 +596,21 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
     for (step_id in setdiff(steps, names(df))) {
       df[[step_id]] <- 0L
     }
-    df <- dplyr::select(df, dplyr::all_of(c(keys, steps)))
+    df <- dplyr::select(df, dplyr::all_of(c(keys, steps))) |>
+      filter_model_hypotheses(target = target, contrast_id = contrast_id) |>
+      dplyr::mutate(
+        .tax_order = match(
+          .data$taxa_id, phyloseq::taxa_names(rec@phyloseq)
+        ),
+        .contrast_order = match(
+          .data$contrast_id, plan$contrast_id
+        ),
+        .effect_order = match(.data$effect, c("up", "down", "neutral"))
+      ) |>
+      dplyr::arrange(
+        .data$.tax_order, .data$.contrast_order, .data$.effect_order
+      ) |>
+      dplyr::select(-dplyr::starts_with("."))
     if (tidy) {
       df <- tidyr::pivot_longer(
         df, dplyr::all_of(steps), names_to = "name", values_to = "value"
@@ -607,6 +649,8 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
 #' @param steps Character vector with step_ids to take in account.
 #' @param type Indicates whether to use all taxa ("all") or only those that are
 #'   differentially abundant in at least one method ("da"). Default as "all".
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases overlap_df
 #' @return df
@@ -616,12 +660,22 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE) {
 #' data(test_prep_rec)
 #' df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
 #' head(df)
-overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all") {
+overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all",
+                       target = NULL, contrast_id = NULL) {
 
   check_prep_recipe(rec)
+  if (!is.character(type) || length(type) != 1L ||
+      !type %in% c("all", "da")) {
+    cli::cli_abort(
+      "{.arg type} must be one of {.val all} or {.val da}.",
+      class = "dar_error_invalid_overlap_type"
+    )
+  }
 
   df <-
-    intersection_df(rec, steps = steps) %>%
+    intersection_df(
+      rec, steps = steps, target = target, contrast_id = contrast_id
+    ) %>%
     tibble::as_tibble() %>%
     dplyr::select(dplyr::all_of(steps))
 
@@ -631,6 +685,13 @@ overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all") {
       dplyr::mutate(sum = sum(dplyr::across(dplyr::all_of(steps))), .before = 1) %>%
       dplyr::filter(sum != 0) %>%
       dplyr::select(dplyr::all_of(steps))
+  }
+
+  if (nrow(df) == 0L) {
+    cli::cli_abort(
+      "No hypotheses remain after applying the requested overlap filters.",
+      class = "dar_error_empty_consensus"
+    )
   }
 
   names(df) %>%
@@ -649,6 +710,48 @@ overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all") {
         })
     }) %>%
     data.frame(row.names = names(df))
+}
+
+#' @noRd
+validate_consensus_steps <- function(rec, steps) {
+  available <- steps_ids(rec, "da")
+  if (!is.character(steps) || anyNA(steps) || any(!nzchar(steps)) ||
+      anyDuplicated(steps) || length(steps) == 0L ||
+      !all(steps %in% available)) {
+    cli::cli_abort(
+      "{.arg steps} must contain unique executable DA step IDs.",
+      class = "dar_error_invalid_steps"
+    )
+  }
+  invisible(steps)
+}
+
+#' @noRd
+filter_model_hypotheses <- function(data, target = NULL, contrast_id = NULL) {
+  validate_selector <- function(value, argument, available) {
+    if (is.null(value)) return(NULL)
+    if (!is.character(value) || length(value) != 1L || anyNA(value) ||
+        any(!nzchar(value)) || !all(value %in% available)) {
+      cli::cli_abort(
+        "Invalid {.arg {argument}}. Available values: {.val {available}}.",
+        class = "dar_error_invalid_contrast_selector"
+      )
+    }
+    value
+  }
+  target <- validate_selector(target, "target", unique(data$var))
+  contrast_id <- validate_selector(
+    contrast_id, "contrast_id", unique(data$contrast_id)
+  )
+  if (!is.null(target)) {
+    data <- dplyr::filter(data, .data$var %in% .env$target)
+  }
+  if (!is.null(contrast_id)) {
+    data <- dplyr::filter(
+      data, .data$contrast_id %in% .env$contrast_id
+    )
+  }
+  data
 }
 
 #' Extract results from defined bake

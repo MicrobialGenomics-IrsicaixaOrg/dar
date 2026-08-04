@@ -4,12 +4,21 @@
 \alias{find_intersections}
 \title{Finds common OTU between method results}
 \usage{
-find_intersections(rec, steps = steps_ids(rec, "da"))
+find_intersections(
+  rec,
+  steps = steps_ids(rec, "da"),
+  target = NULL,
+  contrast_id = NULL
+)
 }
 \arguments{
 \item{rec}{A Recipe object.}
 
 \item{steps}{character vector with step ids to take in account}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 tibble
