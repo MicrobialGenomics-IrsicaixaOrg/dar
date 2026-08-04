@@ -40,6 +40,19 @@ If you’ve found a bug, please file an issue that illustrates the bug with a mi
 *  We use [testthat](https://cran.r-project.org/package=testthat) for unit tests. 
    Contributions with test cases included are easier to accept.  
 
+### Package website
+
+Every exported topic must be listed in `_pkgdown.yml`. Validate the reference
+index locally before opening a pull request:
+
+```sh
+Rscript --vanilla dev/check-pkgdown.R
+```
+
+This check validates the pkgdown configuration without publishing the website.
+GitHub Actions runs the same validation for pull requests and deploys the full
+site only from `devel`.
+
 ## Code of Conduct
 
 Please note that the dar project is released with a
