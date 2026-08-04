@@ -126,54 +126,24 @@ required_pkgs_bake <- function(x, ...) { c() }
 run_bake <- function(rec, count_cutoff, weights, exclude, id) {
 
   da_ids <- steps_ids(rec, "da")
-  exclude <- exclude %||% character()
-  invalid_steps <- exclude[!exclude %in% da_ids]
-  if (length(invalid_steps) > 0) {
-    cli::cli_abort(
-      c(
-        "x" = "{cli::qty(invalid_steps)}Step ID{?s} {.val {invalid_steps}} {?does/do} not exist in the {.cls PrepRecipe}.",
-        "i" = "Check the available IDs with {.code steps_ids(rec, 'da')}."
-      ),
-      class = "dar_error_invalid_step_id"
-    )
-  }
-
-  ids <- da_ids[!da_ids %in% exclude]
-
-  if (is.null(count_cutoff)) { count_cutoff <- length(ids) }
-
-  if (count_cutoff > length(da_ids)) {
-    cli::cli_abort(
-      c(
-        "x" = "{.arg count_cutoff} must be less than or equal to the number of {.val da} methods.",
-        "i" = "Current number of {.val da} methods: {.val {length(da_ids)}}."
-      ),
-      class = "dar_error_invalid_count_cutoff"
-    )
-  }
-
-  if (is.null(weights)) { weights <- stats::setNames(rep(1, length(ids)), ids) }
-
+  specification <- validate_bake_spec(da_ids, count_cutoff, weights, exclude)
+  ids <- specification$ids
+  exclude <- specification$exclude
+  count_cutoff <- specification$count_cutoff
+  weights <- specification$weights
   df_weights <- tibble::enframe(weights, name = "method", value = "ponderation")
-  not_weights <- ids[!ids %in% names(weights)]
-  if (length(not_weights) > 0) {
-    cli::cli_abort(
-      c(
-        "x" = "{cli::qty(not_weights)}Some non-excluded method{?s} {?is/are} missing from the weights vector: {.val {not_weights}}.",
-        "i" = "{cli::qty(not_weights)}Please provide a weight for {?this/these} method{?s}.",
-        "i" = "{cli::qty(not_weights)}Alternatively, explicitly exclude {?it/them} via the {.arg exclude} argument."
-      ),
-      class = "dar_error_missing_weights"
-    )
-  }
 
-  significant <- .all_significant(rec) %>%
-    dplyr::filter(.data$method %in% ids) %>%
+  significant <- .all_significant(rec, steps = ids) %>%
     dplyr::left_join(df_weights, by = "method")
 
   if (is.null(get_model(rec))) {
     res <- significant %>%
-      dplyr::mutate(method_count = .data$method_count * .data$ponderation) %>%
+      dplyr::distinct(.data$taxa_id, .data$taxa, .data$method, .keep_all = TRUE) %>%
+      dplyr::group_by(.data$taxa_id, .data$taxa) %>%
+      dplyr::summarise(
+        method_count = sum(.data$ponderation),
+        .groups = "drop"
+      ) %>%
       dplyr::filter(.data$method_count >= count_cutoff) %>%
       dplyr::distinct(.data$taxa_id, .data$taxa)
   } else {
@@ -201,4 +171,52 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
   ))
 
   res
+}
+
+#' @noRd
+validate_bake_spec <- function(da_ids, count_cutoff, weights, exclude) {
+  exclude <- exclude %||% character()
+  if (!is.character(exclude) || anyNA(exclude) || any(!nzchar(exclude)) ||
+      anyDuplicated(exclude) || !all(exclude %in% da_ids)) {
+    cli::cli_abort(
+      "{.arg exclude} must contain unique executable DA step IDs.",
+      class = "dar_error_invalid_step_id"
+    )
+  }
+  ids <- setdiff(da_ids, exclude)
+  if (length(ids) == 0L) {
+    cli::cli_abort(
+      "At least one executable DA method must remain after exclusions.",
+      class = "dar_error_invalid_consensus"
+    )
+  }
+  if (is.null(weights)) {
+    weights <- stats::setNames(rep(1, length(ids)), ids)
+  } else if (!is.numeric(weights) || anyNA(weights) || any(!is.finite(weights)) ||
+             any(weights < 0) || is.null(names(weights)) ||
+             any(!nzchar(names(weights))) || anyDuplicated(names(weights)) ||
+             !setequal(names(weights), ids) || length(weights) != length(ids)) {
+    cli::cli_abort(
+      paste0(
+        "{.arg weights} must be a finite, non-negative, uniquely named numeric ",
+        "vector exactly matching the non-excluded executable DA methods."
+      ),
+      class = "dar_error_invalid_weights"
+    )
+  }
+  weights <- weights[ids]
+  maximum <- sum(weights)
+  if (is.null(count_cutoff)) count_cutoff <- length(ids)
+  if (!is.numeric(count_cutoff) || length(count_cutoff) != 1L ||
+      is.na(count_cutoff) || !is.finite(count_cutoff) || count_cutoff <= 0 ||
+      count_cutoff > maximum) {
+    cli::cli_abort(
+      "{.arg count_cutoff} must be one finite positive value no greater than the available consensus weight ({maximum}).",
+      class = "dar_error_invalid_count_cutoff"
+    )
+  }
+  list(
+    ids = ids, exclude = exclude, weights = weights,
+    count_cutoff = count_cutoff
+  )
 }

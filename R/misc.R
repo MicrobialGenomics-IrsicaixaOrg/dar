@@ -184,6 +184,8 @@ step_call_label <- function(step) {
 #'
 #' @param rec A Recipe object.
 #' @param steps character vector with step ids to take in account
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @return tibble
 #' @export
@@ -220,8 +222,11 @@ step_call_label <- function(step) {
 #' )
 #'
 #' intersections
-find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
-  df <- intersection_df(rec, steps) %>% tibble::as_tibble()
+find_intersections <- function(rec, steps = steps_ids(rec, "da"),
+                               target = NULL, contrast_id = NULL) {
+  df <- intersection_df(
+    rec, steps, target = target, contrast_id = contrast_id
+  ) %>% tibble::as_tibble()
   if (!is.null(get_model(rec))) {
     return(
       df %>%
@@ -229,7 +234,10 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da")) {
           dplyr::all_of(steps), names_to = "name", values_to = "value"
         ) %>%
         dplyr::filter(.data$value == 1) %>%
-        dplyr::group_by(.data$taxa_id, .data$contrast_id, .data$effect) %>%
+        dplyr::group_by(
+          .data$taxa_id, .data$contrast_id, .data$comparison,
+          .data$contrast_type, .data$var, .data$effect
+        ) %>%
         dplyr::summarise(
           step_ids = paste(sort(unique(.data$name)), collapse = ", "),
           sum_methods = sum(.data$value), .groups = "drop"

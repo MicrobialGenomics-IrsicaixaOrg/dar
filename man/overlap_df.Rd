@@ -4,7 +4,13 @@
 \alias{overlap_df}
 \title{Overlap of significant OTUs between tested methods.}
 \usage{
-overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
+overlap_df(
+  rec,
+  steps = steps_ids(rec, "da"),
+  type = "all",
+  target = NULL,
+  contrast_id = NULL
+)
 }
 \arguments{
 \item{rec}{A \code{PrepRecipe} object.}
@@ -13,6 +19,10 @@ overlap_df(rec, steps = steps_ids(rec, "da"), type = "all")
 
 \item{type}{Indicates whether to use all taxa ("all") or only those that are
 differentially abundant in at least one method ("da"). Default as "all".}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 df

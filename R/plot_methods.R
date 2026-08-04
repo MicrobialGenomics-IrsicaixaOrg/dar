@@ -5,6 +5,8 @@
 #' @param font_size Size of the axis font.
 #' @param type Indicates whether to use all taxa ("all") or only those that are
 #'   differentially abundant in at least one method ("da"). Default as "all". 
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases corr_heatmap
 #' @importFrom heatmaply heatmaply_cor
@@ -35,11 +37,16 @@
 corr_heatmap <- function(rec,
                          steps = steps_ids(rec, "da"),
                          font_size = 15,
-                         type = "all") {
+                         type = "all",
+                         target = NULL,
+                         contrast_id = NULL) {
   
   check_prep_recipe(rec)
   
-  overlap_df(rec, steps = steps, type = type) %>%
+  overlap_df(
+    rec, steps = steps, type = type, target = target,
+    contrast_id = contrast_id
+  ) %>%
     heatmaply::heatmaply_cor(
       x = .,
       point_size_mat = .,
@@ -70,6 +77,8 @@ corr_heatmap <- function(rec,
 #'   Options include frequency (entered as "freq"), degree, or both in any
 #'   order.
 #' @param font_size Size of the font. 
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases intersection_plt
 #' @return UpSet plot
@@ -103,11 +112,15 @@ corr_heatmap <- function(rec,
 intersection_plt <- function(rec,
                              steps = steps_ids(rec, "da"),
                              ordered_by = c("freq", "degree"), 
-                             font_size = 2) {
+                             font_size = 2,
+                             target = NULL,
+                             contrast_id = NULL) {
   
   check_prep_recipe(rec)
   UpSetR::upset(
-    data = intersection_df(rec, steps),
+    data = intersection_df(
+      rec, steps, target = target, contrast_id = contrast_id
+    ),
     sets = steps,
     sets.bar.color = "#56B4E9",
     order.by = ordered_by, 
@@ -121,6 +134,8 @@ intersection_plt <- function(rec,
 #'
 #' @param rec A prepped `Recipe` object.
 #' @param steps Character vector with step_ids to take in account.
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases exclusion_plt
 #' @return ggplot2-class object
@@ -153,11 +168,14 @@ intersection_plt <- function(rec,
 #' data(test_rec)
 #' err <- testthat::expect_error(exclusion_plt(test_rec))
 #' err
-exclusion_plt <- function(rec, steps = steps_ids(rec, "da")) {
+exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
+                          contrast_id = NULL) {
   
   check_prep_recipe(rec)
 
-  intersections <- intersection_df(rec, steps = steps)
+  intersections <- intersection_df(
+    rec, steps = steps, target = target, contrast_id = contrast_id
+  )
   key_columns <- setdiff(names(intersections), steps)
   intersections <- intersections %>%
     tidyr::pivot_longer(
@@ -215,6 +233,10 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da")) {
 #' @param scale Scaling constant for the abundance values when transform =
 #'   "scale".
 #' @param top_n Maximum number of taxa to represent. Default: 20.
+#' @param target Modeled target used for annotations. Required when a modeled
+#'   recipe contains more than one target.
+#' @param contrast_id Modeled contrast used for automatic taxon selection.
+#'   Required when `taxa_ids = NULL` and more than one contrast is available.
 #'
 #' @return ggplot2 or HeatmapList
 #' @export
@@ -279,7 +301,9 @@ abundance_plt <- function(rec,
                           type = "boxplot",
                           transform = "compositional",
                           scale = 1, 
-                          top_n = 20)  {
+                          top_n = 20,
+                          target = NULL,
+                          contrast_id = NULL)  {
   
   check_prep_recipe(rec)
   
@@ -290,10 +314,17 @@ abundance_plt <- function(rec,
     )
   }
 
+  target <- resolve_plot_target(rec, target)
+  contrast_id <- resolve_abundance_contrast(rec, taxa_ids, target, contrast_id)
+
   if (type == "boxplot") { 
-    plt <- .abundance_boxplot(rec, taxa_ids, transform, scale, top_n) 
+    plt <- .abundance_boxplot(
+      rec, taxa_ids, transform, scale, top_n, target, contrast_id
+    )
   } else if (type == "heatmap") { 
-    plt <- .abundance_heatmap(rec, taxa_ids, transform, scale, top_n) 
+    plt <- .abundance_heatmap(
+      rec, taxa_ids, transform, scale, top_n, target, contrast_id
+    )
   }
   
   plot(plt)
@@ -317,6 +348,8 @@ abundance_plt <- function(rec,
 #' @param steps Character vector with step_ids to take in account. Default all
 #'   "da" methods.
 #' @param top_n Maximum number of taxa to represent. Default: 20.
+#' @param target Optional modeled target to include.
+#' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @return ggplot2
 #' @export
@@ -378,11 +411,15 @@ mutual_plt <- function(rec,
                        count_cutoff = NULL,
                        comparisons = NULL,
                        steps = steps_ids(rec, type = "da"),
-                       top_n = 20) {
+                       top_n = 20,
+                       target = NULL,
+                       contrast_id = NULL) {
   
   check_prep_recipe(rec)
   
-  if (top_n == 0) {
+  validate_consensus_steps(rec, steps)
+  if (!is.numeric(top_n) || length(top_n) != 1L || !is.finite(top_n) ||
+      top_n <= 0) {
     cli::cli_abort(
       c("x" = "{.arg top_n} must be greater than {.val {0}}."),
       class = "dar_error_invalid_top_n"
@@ -397,47 +434,53 @@ mutual_plt <- function(rec,
     )
   }
 
-  if (count_cutoff > length(steps_ids(rec, "da"))) {
+  if (!is.numeric(count_cutoff) || length(count_cutoff) != 1L ||
+      !is.finite(count_cutoff) || count_cutoff > length(steps)) {
     cli::cli_abort(
       c("x" = "{.arg count_cutoff} must be less than or equal to the number of methods."),
       class = "dar_error_invalid_count_cutoff"
     )
   }
 
-  if (count_cutoff == 0) {
+  if (count_cutoff <= 0) {
     cli::cli_abort(
       c("x" = "{.arg count_cutoff} must be greater than {.val {0}}."),
       class = "dar_error_invalid_count_cutoff"
     )
   }
 
-  if (!all(steps %in% steps_ids(rec, "da"))) {
-    cli::cli_abort(
-      c("x" = "{.arg steps} must be a subset of {.code steps_ids(rec, 'da')}."),
-      class = "dar_error_invalid_steps"
+  all_significant <- .all_significant(rec, steps = steps)
+  if (!is.null(get_model(rec))) {
+    all_significant <- filter_model_hypotheses(
+      all_significant, target = target, contrast_id = contrast_id
     )
   }
+  df <- dplyr::filter(
+    all_significant, .data$method_count >= .env$count_cutoff
+  )
+  hypothesis_keys <- if (is.null(get_model(rec))) {
+    "taxa_id"
+  } else {
+    c("taxa_id", "contrast_id", "effect")
+  }
+  ranked <- all_significant %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(hypothesis_keys))) %>%
+    dplyr::summarise(method_count = max(.data$method_count), .groups = "drop") %>%
+    dplyr::arrange(dplyr::desc(.data$method_count))
   
-  df <- 
-    .all_significant(rec) %>% 
-    dplyr::filter(method_count >= count_cutoff & method %in% steps)
-  
-  if (nrow(df) > top_n) {
+  if (nrow(dplyr::distinct(
+    df, dplyr::across(dplyr::all_of(hypothesis_keys))
+  )) > top_n) {
     cli::cli_inform(c(
       "!" = "Taxa present in selected methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
       "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
     ))
     
-    taxa_ids <- 
-      .all_significant(rec) %>% 
-      dplyr::filter(method %in% steps) %>% 
-      dplyr::group_by(taxa_id) %>% 
-      dplyr::summarise(method_count = max(method_count)) %>% 
-      dplyr::arrange(-method_count) %>% 
-      dplyr::pull(taxa_id) %>% 
-      .[seq_len(top_n)]
-    
-    df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
+    selected <- ranked %>%
+      dplyr::filter(.data$method_count >= .env$count_cutoff) %>%
+      dplyr::slice_head(n = top_n) %>%
+      dplyr::select(dplyr::all_of(hypothesis_keys))
+    df <- dplyr::semi_join(df, selected, by = hypothesis_keys)
   }
   
   if (nrow(df) == 0) {
@@ -446,16 +489,10 @@ mutual_plt <- function(rec,
       "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
     ))
     
-    taxa_ids <- 
-      .all_significant(rec) %>% 
-      dplyr::filter(method %in% steps) %>% 
-      dplyr::group_by(taxa_id) %>% 
-      dplyr::summarise(method_count = max(method_count)) %>% 
-      dplyr::arrange(-method_count) %>% 
-      dplyr::pull(taxa_id) %>% 
-      .[seq_len(top_n)]
-    
-    df <- .all_significant(rec) %>% dplyr::filter(taxa_id %in% taxa_ids)
+    selected <- ranked %>%
+      dplyr::slice_head(n = top_n) %>%
+      dplyr::select(dplyr::all_of(hypothesis_keys))
+    df <- dplyr::semi_join(all_significant, selected, by = hypothesis_keys)
   }
   
   if (!is.null(comparisons)) {
@@ -470,9 +507,12 @@ mutual_plt <- function(rec,
     df <- df %>% dplyr::filter(comparison %in% comparisons)
   }
 
+  facet <- if (is.null(get_model(rec))) ~ comparison else ~ var + comparison
+
   df %>% 
     dplyr::left_join(
-      .all_stats(rec), by = c("taxa_id", "comparison", "method")
+      .all_stats(rec),
+      by = c("taxa_id", "contrast_id", "var", "comparison", "method")
     ) %>% 
     dplyr::mutate(
       method = stringr::str_remove_all(method, "[:alpha:]_[:alpha:].*")
@@ -482,9 +522,9 @@ mutual_plt <- function(rec,
     dplyr::mutate(zscore = scales::rescale(effect_v)) %>% 
     ggplot(aes(taxa, method, fill = effect)) +
     geom_tile(width = 0.7, height = 0.8, alpha = 1) +
-    facet_wrap(~ comparison, ncol = 1, strip.position = "right") +
+    facet_wrap(facet, ncol = 1, strip.position = "right") +
     theme_light() +
-    scale_fill_manual(values = c("#74ADD1", "#F46D43")) +
+    scale_fill_manual(values = c(down = "#74ADD1", neutral = "grey70", up = "#F46D43")) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
     labs(x = NULL, y = NULL, fill = "DA")
 }
@@ -502,12 +542,74 @@ mutual_plt <- function(rec,
 }
 
 #' @noRd
+resolve_plot_target <- function(rec, target = NULL) {
+  available <- recipe_targets(rec)
+  if (is.null(get_model(rec))) return(target %||% available[[1]])
+  if (is.null(target) && length(available) != 1L) {
+    cli::cli_abort(
+      "{.arg target} is required when the model contains multiple targets.",
+      class = "dar_error_ambiguous_plot_target"
+    )
+  }
+  if (is.null(target)) target <- available
+  if (!is.character(target) || length(target) != 1L || is.na(target) ||
+      !nzchar(target) || !target %in% available) {
+    cli::cli_abort(
+      "{.arg target} must identify one modeled target: {.val {available}}.",
+      class = "dar_error_invalid_contrast_selector"
+    )
+  }
+  target
+}
+
+#' @noRd
+resolve_abundance_contrast <- function(rec, taxa_ids, target,
+                                       contrast_id = NULL) {
+  if (is.null(get_model(rec))) return(NULL)
+  plan <- resolve_model(rec)$contrast_plan
+  available <- plan$contrast_id[plan$var %in% target]
+  if (!is.null(taxa_ids) && is.null(contrast_id)) return(NULL)
+  if (is.null(contrast_id) && length(available) != 1L) {
+    cli::cli_abort(
+      paste0(
+        "{.arg contrast_id} is required for automatic taxon selection when ",
+        "multiple modeled contrasts are available."
+      ),
+      class = "dar_error_ambiguous_plot_contrast"
+    )
+  }
+  if (is.null(contrast_id)) contrast_id <- available
+  if (!is.character(contrast_id) || length(contrast_id) != 1L ||
+      is.na(contrast_id) || !nzchar(contrast_id) ||
+      !contrast_id %in% available) {
+    cli::cli_abort(
+      "{.arg contrast_id} must identify one planned model contrast.",
+      class = "dar_error_invalid_contrast_selector"
+    )
+  }
+  contrast_id
+}
+
+#' @noRd
+selected_significant <- function(rec, target = NULL, contrast_id = NULL,
+                                 steps = steps_ids(rec, "da")) {
+  data <- .all_significant(rec, steps = steps)
+  if (!is.null(get_model(rec))) {
+    data <- filter_model_hypotheses(
+      data, target = target, contrast_id = contrast_id
+    )
+  }
+  data
+}
+
+#' @noRd
 #' @keywords internal
 #' @autoglobal
-.abundance_boxplot <- function(rec, taxa_ids, transform, scale, top_n = 20) {
+.abundance_boxplot <- function(rec, taxa_ids, transform, scale, top_n = 20,
+                               target, contrast_id) {
   if (is.null(taxa_ids)) {
     taxa_ids <- 
-      .all_significant(rec) %>% 
+      selected_significant(rec, target, contrast_id) %>%
       dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
       dplyr::pull(taxa_id) %>% 
       unique()
@@ -519,7 +621,7 @@ mutual_plt <- function(rec,
       ))
      
       taxa_ids <- 
-        .all_significant(rec) %>% 
+        selected_significant(rec, target, contrast_id) %>%
         dplyr::group_by(taxa_id) %>% 
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
@@ -534,7 +636,7 @@ mutual_plt <- function(rec,
       ))
       
       taxa_ids <- 
-        .all_significant(rec) %>% 
+        selected_significant(rec, target, contrast_id) %>%
         dplyr::group_by(taxa_id) %>% 
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
@@ -557,7 +659,7 @@ mutual_plt <- function(rec,
   .annotated_counts(t_rec) %>% 
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
-    ggplot(aes(taxa, value, fill = !!dplyr::sym(recipe_targets(rec)[[1]]))) +
+    ggplot(aes(taxa, value, fill = !!dplyr::sym(target))) +
     geom_boxplot(alpha = 0.7) +
     theme_minimal(base_size = 10) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
@@ -567,7 +669,8 @@ mutual_plt <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n) {
+.abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n, target,
+                               contrast_id) {
   ComplexHeatmap::ht_opt(
     message = FALSE, 
     COLUMN_ANNO_PADDING = unit(0.5, "cm")
@@ -575,7 +678,7 @@ mutual_plt <- function(rec,
   
   if (is.null(taxa_ids)) {
     taxa_ids <- 
-      .all_significant(rec) %>% 
+      selected_significant(rec, target, contrast_id) %>%
       dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
       dplyr::pull(taxa_id) %>% 
       unique()
@@ -587,7 +690,7 @@ mutual_plt <- function(rec,
       ))
       
       taxa_ids <- 
-        .all_significant(rec) %>% 
+        selected_significant(rec, target, contrast_id) %>%
         dplyr::group_by(taxa_id) %>% 
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
@@ -602,7 +705,7 @@ mutual_plt <- function(rec,
       ))
       
       taxa_ids <- 
-        .all_significant(rec) %>% 
+        selected_significant(rec, target, contrast_id) %>%
         dplyr::group_by(taxa_id) %>% 
         dplyr::summarise(method_count = max(method_count)) %>% 
         dplyr::arrange(-method_count) %>% 
@@ -631,7 +734,7 @@ mutual_plt <- function(rec,
     as.matrix()
   
   annot <- 
-    dplyr::select(df, sample_id, recipe_targets(rec)[[1]]) %>%
+    dplyr::select(df, sample_id, dplyr::all_of(target)) %>%
     dplyr::distinct() %>% 
     data.frame(row.names = 1) %>% 
     ComplexHeatmap::HeatmapAnnotation(
@@ -659,10 +762,19 @@ mutual_plt <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.otu_method_count <- function(rec) {
-  intersection_df(rec, tidy = TRUE) %>%
+.otu_method_count <- function(rec, steps = steps_ids(rec, "da")) {
+  intersection_df(rec, steps = steps, tidy = TRUE) %>%
     dplyr::group_by(taxa_id) %>%
     dplyr::summarise(method_count = sum(value))
+}
+
+#' @noRd
+effect_direction <- function(effect) {
+  dplyr::case_when(
+    effect > 0 ~ "up",
+    effect < 0 ~ "down",
+    TRUE ~ "neutral"
+  )
 }
 
 #' @noRd
@@ -674,7 +786,7 @@ mutual_plt <- function(rec,
       taxa_id = .data$taxa_id,
       taxa = .data$taxa,
       comparison = .data$comparison,
-      effect = dplyr::if_else(.data$effect_size > 0, "up", "down"),
+      effect = effect_direction(.data$effect_size),
       method = .data$step_id,
       contrast_id = .data$contrast_id,
       contrast_type = .data$contrast_type,
@@ -685,10 +797,11 @@ mutual_plt <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.all_significant <- function(rec) {
+.all_significant <- function(rec, steps = steps_ids(rec, "da")) {
+  validate_consensus_steps(rec, steps)
   if (!is.null(get_model(rec))) {
     return(
-      .otu_effect_direction(rec) %>%
+      .otu_effect_direction(rec, steps = steps) %>%
         dplyr::group_by(
           .data$taxa_id, .data$taxa, .data$contrast_id,
           .data$comparison, .data$contrast_type, .data$var, .data$effect
@@ -698,8 +811,8 @@ mutual_plt <- function(rec,
     )
   }
   dplyr::left_join(
-    .otu_effect_direction(rec), 
-    .otu_method_count(rec),
+    .otu_effect_direction(rec, steps = steps),
+    .otu_method_count(rec, steps = steps),
     by = "taxa_id"
   )
 }
@@ -711,6 +824,8 @@ mutual_plt <- function(rec,
   tidy_results(rec) %>%
     dplyr::transmute(
       taxa_id = .data$taxa_id,
+      contrast_id = .data$contrast_id,
+      var = .data$var,
       comparison = .data$comparison,
       effect_v = .data$effect_size,
       padj = .data$adj_p_value,

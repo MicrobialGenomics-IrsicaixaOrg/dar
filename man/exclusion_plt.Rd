@@ -4,12 +4,21 @@
 \alias{exclusion_plt}
 \title{Plot the number of shared DA OTUs between methods.}
 \usage{
-exclusion_plt(rec, steps = steps_ids(rec, "da"))
+exclusion_plt(
+  rec,
+  steps = steps_ids(rec, "da"),
+  target = NULL,
+  contrast_id = NULL
+)
 }
 \arguments{
 \item{rec}{A prepped \code{Recipe} object.}
 
 \item{steps}{Character vector with step_ids to take in account.}
+
+\item{target}{Optional modeled target to include.}
+
+\item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
 ggplot2-class object
