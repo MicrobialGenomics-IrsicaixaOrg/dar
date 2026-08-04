@@ -113,8 +113,8 @@ rec
 rec <- step_aldex(rec)
 rec <- step_aldex(rec)
 #> ! This step is already defined with the same parameters and will be skipped.
-#> ℹ `rec %>% step_aldex(max_significance = 0.05, mc.samples = 128, denom =
-#>   c('all'), rarefy = FALSE)`
+#> ℹ `rec %>% step_aldex(max_significance = 0.05, mc.samples = 128, denom = "all",
+#>   rarefy = FALSE)`
 
 ## The same with bake
 da_results <- bake(da_results)

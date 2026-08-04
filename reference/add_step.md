@@ -46,8 +46,8 @@ length(rec@steps) # Returns 1
 rec <- step_maaslin(rec)
 #> ! This step is already defined with the same parameters and will be skipped.
 #> ℹ `rec %>% step_maaslin(min_abundance = 0, min_prevalence = 0.1, min_variance =
-#>   0, normalization = c('TSS'), transform = c('LOG'), max_significance = 0.1,
-#>   random_effects = NULL, correction = c('BH'), standardize = TRUE, reference =
+#>   0, normalization = "TSS", transform = "LOG", max_significance = 0.1,
+#>   random_effects = NULL, correction = "BH", standardize = TRUE, reference =
 #>   NULL, median_comparison_abundance = TRUE, rarefy = FALSE)`
 length(rec@steps) # Still returns 1
 #> [1] 1

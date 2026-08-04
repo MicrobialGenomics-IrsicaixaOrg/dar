@@ -1,6 +1,8 @@
-# Export step parameters as json.
+# Export a recipe analysis configuration as versioned JSON
 
-Export step parameters as json.
+Writes the centralized model, ordered preprocessing and DA steps, and
+any bake configurations using the non-executable `dar-recipe` JSON
+schema.
 
 ## Usage
 
@@ -12,12 +14,27 @@ export_steps(rec, file_name)
 
 - rec:
 
-  A Recipe object.
+  A
+  [`Recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+  or
+  [`PrepRecipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep_recipe.md)
+  object.
 
 - file_name:
 
-  The path and file name of the optout file.
+  Output path.
 
 ## Value
 
-invisible
+`file_name`, invisibly.
+
+## Examples
+
+``` r
+data(metaHIV_phy)
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
+  step_filter_by_prevalence(threshold = 0.1)
+path <- tempfile(fileext = ".json")
+export_steps(rec, path)
+```

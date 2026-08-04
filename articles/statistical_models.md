@@ -159,9 +159,9 @@ route is reported as an error.
 and
 [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
 preserve the formula, targets, taxonomic level, time column, references,
-contrast mode, missing-value policy and time-level limit. Files created
-by older versions without a model continue to import through the legacy
-path.
+contrast mode, missing-value policy and time-level limit in the
+versioned `dar-recipe` JSON schema. Executable files created by the
+legacy exporter are rejected with migration guidance.
 
 ## Migrating legacy selectors
 
@@ -218,7 +218,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] dar_1.9.8
+#> [1] dar_1.9.9
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] ade4_1.7-24         tidyselect_1.2.1    viridisLite_0.4.3  

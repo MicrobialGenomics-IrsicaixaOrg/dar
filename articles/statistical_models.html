@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -273,8 +273,9 @@ centralized model. A configured stage that is not used by the selected
 execution route is reported as an error.</p>
 <p><code><a href="../reference/export_steps.html">export_steps()</a></code> and <code><a href="../reference/import_steps.html">import_steps()</a></code> preserve
 the formula, targets, taxonomic level, time column, references, contrast
-mode, missing-value policy and time-level limit. Files created by older
-versions without a model continue to import through the legacy path.</p>
+mode, missing-value policy and time-level limit in the versioned
+<code>dar-recipe</code> JSON schema. Executable files created by the
+legacy exporter are rejected with migration guidance.</p>
 </div>
 <div class="section level2">
 <h2 id="migrating-legacy-selectors">Migrating legacy selectors<a class="anchor" aria-label="anchor" href="#migrating-legacy-selectors"></a>
@@ -323,7 +324,7 @@ migrated by moving both selectors into <code><a href="../reference/add_model.htm
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] dar_1.9.8</span></span>
+<span><span class="co">#&gt; [1] dar_1.9.9</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] ade4_1.7-24         tidyselect_1.2.1    viridisLite_0.4.3  </span></span>

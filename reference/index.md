@@ -120,9 +120,9 @@
 ## Import and Export
 
 - [`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)
-  : Export step parameters as json.
+  : Export a recipe analysis configuration as versioned JSON
 - [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
-  : Import steps from json file
+  : Import a recipe configuration from versioned JSON
 
 ## Other functions
 

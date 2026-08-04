@@ -136,8 +136,8 @@ rec
 #> 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Cannoli_siciliani 
-#>      ◉ step_filter_taxa() id = filter_taxa__Fig_roll 
+#>      ◉ step_subset_taxa() id = subset_taxa__Samosa 
+#>      ◉ step_filter_taxa() id = filter_taxa__Apple_pie 
 #> 
 #> DA steps:
 #> 
@@ -157,7 +157,7 @@ rec
 #> 
 #> Results:
 #> 
-#>      ✔ aldex__Samosa diff_taxa = 3 
+#>      ✔ aldex__Pineapple_cake diff_taxa = 3 
 #> 
 #>      ℹ 4 taxon-contrast effects are present in all tested methods 
 #> 
