@@ -275,7 +275,7 @@ add_step <- function(rec, object) {
   }))
   
   if (dupl_rec) {
-    expr <- stringr::str_replace(step_to_expr(object), 'run', 'step')
+    expr <- step_call_label(object)
     cli::cli_inform(
       c(
         "!" = "This step is already defined with the same parameters and will be skipped.",

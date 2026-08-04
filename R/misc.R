@@ -168,130 +168,16 @@ step_to_call <- function(step) {
   rlang::call2(fn_obj, rec = quote(rec), !!!args)
 }
 
-#' Converts a step object into an executable R code string
-#'
-#' @description
-#' This legacy function takes a step from a `Recipe` and converts its parameters
-#' into a formatted text string that can be evaluated using `eval(parse(text = ...))`.
-#' It handles the conversion of strings, NULLs, formulas, functions, and specific
-#' cases like `weights` for `step_bake`.
-#'
-#' @param step A list or `step` class object containing the parameters for the
-#'   operation, including an `id` string (e.g., `"method__randomstring"`).
-#'
-#' @return A character string containing the formatted R code (e.g.,
-#'   `"rec %>% run_method(param = 'value')"`) ready to be parsed and evaluated.
-#'
+#' Format a configured step without producing executable source text
 #' @noRd
-#' @keywords internal
-#' @autoglobal
-step_to_expr <- function(step) {
-  params <-
-    step %>%
-    purrr::discard(names(.) == "id" |
-      (names(.) == "engine_args" & lengths(.) == 0L)) %>%
-    purrr::map2_chr(names(.), ~ {
-
-      # 1. NULL values
-      if (is.null(.x)) {
-        return(glue::glue("{.y} = NULL"))
-      }
-
-      # 2. Character values
-      if (is.character(.x)) {
-        .x <- stringr::str_c("'", .x, "'", collapse = ", ")
-        return(glue::glue("{.y} = c({.x})"))
-      }
-
-      # 3. Formulas
-      if (inherits(.x, "formula")) {
-        return(paste0(.y, " = ", paste0(.x, collapse = "")))
-      }
-
-      # 4. Functions
-      if (is.function(.x)) {
-        func_str <- paste(deparse(.x), collapse = " ")
-        return(glue::glue("{.y} = {func_str}"))
-      }
-
-      # 5. Named bake weights
-      if (.y == "weights" && inherits(step, "step_bake") && !is.null(.x)) {
-        text <- .x %>%
-          purrr::map2_chr(names(.), ~ { paste0(.y, " = ", paste0(.x)) }) %>%
-          stringr::str_c(collapse = ", ")
-        return(glue::glue("{.y} = c({text})"))
-      }
-
-      # 6. Nested lists (for example engine_args)
-      if (is.list(.x)) {
-        return(glue::glue("{.y} = {step_value_expr(.x, .y)}"))
-      }
-
-      # 7. Numeric, logical and other scalar values
-      glue::glue("{.y} = {.x}")
-    }) %>%
-    stringr::str_c(collapse = ", ")
-
-  method <- step_method(step)
-
-  # Build the final pipeline expression
-  glue::glue("rec %>% run_{method}({params})")
-}
-
-#' Convert a persistable step value to reconstructible R code
-#' @noRd
-step_value_expr <- function(value, context = "step argument") {
-  unsupported <- methods::is(value, "S4") || is.environment(value) ||
-    typeof(value) %in% c("externalptr", "weakref") || inherits(value, "connection")
-  if (unsupported) {
-    cli::cli_abort(
-      "Cannot export {.arg {context}} because it cannot be reconstructed faithfully.",
-      class = "dar_error_unserializable_step"
-    )
+step_call_label <- function(step) {
+  constructor <- paste0("step_", step_method(step))
+  args <- unclass(step)
+  args$id <- NULL
+  if ("engine_args" %in% names(args) && length(args$engine_args) == 0L) {
+    args$engine_args <- NULL
   }
-  if (is.null(value)) {
-    return("NULL")
-  }
-  if (is.function(value)) {
-    captured <- codetools::findGlobals(value, merge = FALSE)$variables
-    if (length(captured) > 0L) {
-      cli::cli_abort(
-        "Cannot export {.arg {context}} because the function captures external values: {.val {captured}}.",
-        class = "dar_error_unserializable_step"
-      )
-    }
-    return(paste(deparse(value), collapse = " ") |> stringr::str_squish())
-  }
-  if (inherits(value, "formula")) {
-    return(paste(deparse(value), collapse = " ") |> stringr::str_squish())
-  }
-  if (is.list(value)) {
-    if (length(value) == 0L) {
-      return("list()")
-    }
-    value_names <- names(value)
-    if (is.null(value_names) || anyNA(value_names) ||
-        any(!nzchar(value_names)) || anyDuplicated(value_names)) {
-      cli::cli_abort(
-        "Cannot export {.arg {context}}: nested lists must have non-empty, unique names.",
-        class = "dar_error_unserializable_step"
-      )
-    }
-    entries <- purrr::map2_chr(value, value_names, function(item, name) {
-      paste0(
-        deparse(name), " = ",
-        step_value_expr(item, paste0(context, "$", name))
-      )
-    })
-    return(paste0("list(", paste(entries, collapse = ", "), ")"))
-  }
-  if (is.atomic(value)) {
-    return(paste(utils::capture.output(dput(value)), collapse = " "))
-  }
-  cli::cli_abort(
-    "Cannot export {.arg {context}} because its type is not supported.",
-    class = "dar_error_unserializable_step"
-  )
+  paste0("rec %>% ", rlang::expr_text(rlang::call2(constructor, !!!args)))
 }
 
 #' Finds common OTU between method results
@@ -470,11 +356,10 @@ dot <- function() {
 #' @param rec A Recipe object.
 #' @param file_name The path and file name of the optout file.
 #'
-#' @importFrom glue double_quote
 #' @return invisible
-#' @export
+#' @noRd
 #' @autoglobal
-export_steps <- function(rec, file_name) {
+.legacy_export_steps <- function(rec, file_name) {
   check_any_recipe(rec)
   inp <- rec@steps
   if (methods::is(rec, "PrepRecipe")) {
@@ -521,13 +406,13 @@ export_steps <- function(rec, file_name) {
 
           # recursively reconstructible named lists
           } else if (is.list(val)) {
-            val <- paste0("[", step_value_expr(val, .y), "]")
+            val <- paste0("[", encode_recipe_value(val, .y), "]")
 
           # reject values that the text format cannot preserve
           } else if (methods::is(val, "S4") || is.environment(val) ||
                      typeof(val) %in% c("externalptr", "weakref") ||
                      inherits(val, "connection")) {
-            step_value_expr(val, .y)
+            encode_recipe_value(val, .y)
           }
 
           stringr::str_c(
@@ -555,18 +440,8 @@ export_steps <- function(rec, file_name) {
 #' @param workers Number of workers for palatalization.
 #'
 #' @return recipe-class object
-#' @export
+#' @noRd
 #' @autoglobal
-#' @tests
-#' data(metaHIV_phy)
-#' suppressWarnings(
-#'   recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-#'     import_steps(
-#'       system.file("extdata", "test_bake.json", package = "dar"),
-#'       parallel = FALSE
-#'     )
-#' ) |>
-#'  expect_snapshot()
 #' @examples
 #' data(metaHIV_phy)
 #'
@@ -580,7 +455,7 @@ export_steps <- function(rec, file_name) {
 #' rec <- import_steps(rec, json_file)
 #' rec
 #'
-#' ## If the json file contains 'bake', the Recipe is automatically prepared.
+#' ## Legacy executable imports are disabled.
 #' json_file <- system.file("extdata", "test_bake.json", package = "dar")
 #' rec <-
 #'   recipe(metaHIV_phy) |>
@@ -589,7 +464,7 @@ export_steps <- function(rec, file_name) {
 #'
 #' rec
 #' cool(rec)
-import_steps <- function(
+.legacy_import_steps <- function(
   rec,
   file,
   parallel = TRUE,
@@ -623,12 +498,10 @@ import_steps <- function(
       instruction_lines <- instruction_lines[-length(instruction_lines)]
     }
 
-    extract_instructions(instruction_lines) %>%
-      stringr::str_replace_all("\\[|\\]", "") %>%
-      stringr::str_c(collapse = ", ") %>%
-      stringr::str_c("rec <<- ", constructor, "(rec, ", ., ")") %>%
-      parse(text = .) %>%
-      eval()
+    cli::cli_abort(
+      "Legacy executable recipe imports are disabled.",
+      class = "dar_error_legacy_recipe_schema"
+    )
   }
 
   if (any(stringr::str_detect(lines, "bake__"))) {
@@ -651,12 +524,10 @@ import_steps <- function(
         stringr::str_remove_all("__.*") %>%
         stringr::str_replace_all("\\[|\\]|c\\(", "")
 
-      extract_instructions(lines[low_idx:id_idx[i]]) %>%
-        stringr::str_replace_all("\\[|\\]", "") %>%
-        stringr::str_c(collapse = ", ") %>%
-        stringr::str_c("rec <<- ", fun_name, "(rec, ", ., ")") %>%
-        parse(text = .) %>%
-        eval()
+      cli::cli_abort(
+        "Legacy executable recipe imports are disabled.",
+        class = "dar_error_legacy_recipe_schema"
+      )
     }
   }
   rec

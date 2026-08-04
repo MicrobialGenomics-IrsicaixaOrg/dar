@@ -84,7 +84,7 @@ test_that("Function step_to_call() @ L162", {
 })
 
 
-test_that("Function find_intersections() @ L337", {
+test_that("Function find_intersections() @ L218", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -103,7 +103,7 @@ test_that("Function find_intersections() @ L337", {
 })
 
 
-test_that("Function steps_ids() @ L416", {
+test_that("Function steps_ids() @ L297", {
   data(test_prep_rec)
   print(test_prep_rec) |> expect_snapshot()
   rec <- test_prep_rec
@@ -125,18 +125,5 @@ test_that("Function steps_ids() @ L416", {
   )
   expect_error(steps_ids(rec, "das"))
   expect_type(steps_ids(rec), "character")
-})
-
-
-test_that("Function import_steps() @ L592", {
-  data(metaHIV_phy)
-  suppressWarnings(
-    recipe(metaHIV_phy, "RiskGroup2", "Class") |>
-      import_steps(
-        system.file("extdata", "test_bake.json", package = "dar"),
-        parallel = FALSE
-      )
-  ) |>
-   expect_snapshot()
 })
 

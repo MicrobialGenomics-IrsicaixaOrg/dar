@@ -12,7 +12,7 @@ test_that("every supported constructor has a class-based execution role", {
     filter_by_prevalence = function(x, id) step_filter_by_prevalence(x, id = id),
     filter_by_rarity = function(x, id) step_filter_by_rarity(x, id = id),
     filter_by_variance = function(x, id) step_filter_by_variance(x, id = id),
-    filter_taxa = function(x, id) step_filter_taxa(x, function(value) TRUE, id),
+    filter_taxa = function(x, id) step_filter_taxa(x, function(x) TRUE, id),
     subset_taxa = function(x, id) {
       step_subset_taxa(x, tax_level = "Kingdom", taxa = "Bacteria", id = id)
     },
