@@ -20,6 +20,6 @@ jobs:
     steps:
     - name: Create Issue Branch
       id: Create_Issue_Branch
-      uses: robvanderleek/create-issue-branch@1327274ffa72a698c514c5542edb05322c8e8308 # main, pinned 2026-08-03
+      uses: robvanderleek/create-issue-branch@d0dadb73dccc8ffd79a6c9653d26fe8b860c078f # main, pinned 2026-08-03
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
