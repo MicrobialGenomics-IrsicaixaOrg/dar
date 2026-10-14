@@ -14,7 +14,11 @@
 #'   multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).
 #' @param max_significance The q-value threshold for significance.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. 
-#' @param id A character string that is unique to this step to identify it.
+#' @param id Unique, non-empty identifier for this step. DA step IDs must not
+#'   use the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+#'   `contrast_type`, `var`, `effect`, `sum`, `.tax_order`, `.contrast_order` or
+#'   `.effect_order`. Other identifiers, including names such as `.custom`,
+#'   are retained unchanged.
 #' @param engine_args Named lists of advanced arguments for the native `test`
 #'   stage. Arguments managed by dar or exposed above cannot be overridden.
 #'

@@ -17,6 +17,9 @@
 * Plot selectors are validated against the model's contrast plan, including
   hypotheses with no significant taxa. Discovery plots report an empty selection
   without rejecting valid contrasts or passing empty data to plotting engines.
+* DA step IDs cannot collide with internal consensus columns; constructors,
+  recipe validity and JSON imports reject reserved names before execution.
+  Non-conflicting custom IDs beginning with a dot remain in consensus tables.
 
 ## SCIENTIFIC VALIDATION
 

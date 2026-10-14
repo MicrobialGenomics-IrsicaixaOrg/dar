@@ -20,7 +20,7 @@
 #' @param alpha Adjusted p-value threshold used to classify significance.
 #' @param n_cpus Number of cores used by LinDA mixed-effects models.
 #' @param rarefy Whether counts are rarefied for this step.
-#' @param id Unique identifier for this configured step.
+#' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native `fit`
 #'   stage. Arguments managed by dar or exposed above cannot be overridden.
 #'

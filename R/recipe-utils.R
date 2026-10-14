@@ -638,7 +638,9 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
       dplyr::arrange(
         .data$.tax_order, .data$.contrast_order, .data$.effect_order
       ) |>
-      dplyr::select(-dplyr::starts_with("."))
+      dplyr::select(-dplyr::all_of(c(
+        ".tax_order", ".contrast_order", ".effect_order"
+      )))
     if (tidy) {
       df <- tidyr::pivot_longer(
         df, dplyr::all_of(steps), names_to = "name", values_to = "value"

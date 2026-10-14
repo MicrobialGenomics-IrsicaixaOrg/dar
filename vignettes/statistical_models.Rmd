@@ -117,6 +117,13 @@ stable engine (`deseq`, `aldex`, and so on), whereas `step_id` identifies the
 configured instance and therefore distinguishes repeated configurations of one
 engine.
 
+DA step identifiers become columns in consensus tables. The internal names
+`taxa_id`, `contrast_id`, `comparison`, `contrast_type`, `var`, `effect`, `sum`,
+`.tax_order`, `.contrast_order` and `.effect_order` are therefore reserved.
+Use a distinct identifier such as `wilcox_effect` instead of `effect`.
+Other custom identifiers, including `.custom`, are retained unchanged; this
+restriction does not apply to preprocessing or bake IDs.
+
 ```{r tidy-results, eval=FALSE}
 results <- tidy_results(
   fit,

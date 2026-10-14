@@ -53,7 +53,11 @@ total number of counts between samples, as an alternative to other formal
 normalization procedures, which is why a single value for the sample.size
 is expected. If 'no_seed', rarefaction is performed without a set seed.}
 
-\item{id}{A character string that is unique to this step to identify it.}
+\item{id}{Unique, non-empty identifier for this step. DA step IDs must not
+use the reserved internal names \code{taxa_id}, \code{contrast_id}, \code{comparison},
+\code{contrast_type}, \code{var}, \code{effect}, \code{sum}, \code{.tax_order}, \code{.contrast_order} or
+\code{.effect_order}. Other identifiers, including names such as \code{.custom},
+are retained unchanged.}
 
 \item{engine_args}{Named lists of advanced arguments for the native
 \code{size_factors}, \code{fit}, \code{results}, or \code{shrink} stage. Arguments managed by

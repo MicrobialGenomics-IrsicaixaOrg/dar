@@ -37,7 +37,7 @@
 #'   total number of counts between samples, as an alternative to other formal
 #'   normalization procedures, which is why a single value for the sample.size
 #'   is expected. If 'no_seed', rarefaction is performed without a set seed. 
-#' @param id A character string that is unique to this step to identify it.
+#' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native
 #'   `size_factors`, `fit`, `results`, or `shrink` stage. Arguments managed by
 #'   dar or exposed above cannot be overridden.

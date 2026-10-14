@@ -38,6 +38,27 @@ recipe_step_registry <- c(
   register_step_methods("bake", "bake")
 )
 
+#' Column names that cannot also identify differential-abundance steps
+#' @noRd
+reserved_da_step_ids <- c(
+  "taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect",
+  "sum", ".tax_order", ".contrast_order", ".effect_order"
+)
+
+#' @noRd
+step_id_validation_problems <- function(id, role) {
+  if (!is.character(id) || length(id) != 1L || is.na(id) || !nzchar(id)) {
+    return("must contain one non-empty, non-missing character `id`")
+  }
+  if (identical(role, "da") && id %in% reserved_da_step_ids) {
+    return(paste0(
+      "DA step ID `", id, "` is reserved for internal columns; ",
+      "choose a different ID, e.g. `da_", id, "`."
+    ))
+  }
+  character()
+}
+
 #' @noRd
 step_validation_problems <- function(object) {
   problems <- character()
@@ -55,11 +76,12 @@ step_validation_problems <- function(object) {
     )
   }
 
-  id <- object[["id"]]
-  if (!is.character(id) || length(id) != 1L || is.na(id) || !nzchar(id)) {
-    problems <- c(problems, "must contain one non-empty, non-missing character `id`")
+  role <- if (length(matched_classes) == 1L) {
+    recipe_step_registry[[matched_classes[[1L]]]]$role
+  } else {
+    NULL
   }
-  problems
+  c(problems, step_id_validation_problems(object[["id"]], role))
 }
 
 #' @noRd

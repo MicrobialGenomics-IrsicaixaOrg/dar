@@ -788,6 +788,12 @@ decode_step_record <- function(record, section, index) {
       "dar_error_invalid_recipe_record", context, "id"
     )
   }
+  id_problems <- step_id_validation_problems(record$id, spec$role)
+  if (length(id_problems) > 0L) {
+    abort_recipe_schema(
+      id_problems, "dar_error_invalid_recipe_record", context, "id"
+    )
+  }
   if (!is.list(record$arguments) ||
       (length(record$arguments) > 0L && is.null(names(record$arguments)))) {
     abort_recipe_schema(

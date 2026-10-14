@@ -26,7 +26,7 @@
 #'   value corresponding to the median coefficient for a metadata variable across
 #'   the features. Recommended for relative abundance (default: TRUE).
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed.
-#' @param id A character string that is unique to this step to identify it.
+#' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native `fit` or
 #'   `contrast` stage. Arguments managed by dar or exposed above cannot be
 #'   overridden.

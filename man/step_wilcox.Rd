@@ -30,7 +30,11 @@ multiple comparisons. Default is “BH” (Benjamini-Hochberg procedure).}
 
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed.}
 
-\item{id}{A character string that is unique to this step to identify it.}
+\item{id}{Unique, non-empty identifier for this step. DA step IDs must not
+use the reserved internal names \code{taxa_id}, \code{contrast_id}, \code{comparison},
+\code{contrast_type}, \code{var}, \code{effect}, \code{sum}, \code{.tax_order}, \code{.contrast_order} or
+\code{.effect_order}. Other identifiers, including names such as \code{.custom},
+are retained unchanged.}
 
 \item{engine_args}{Named lists of advanced arguments for the native \code{test}
 stage. Arguments managed by dar or exposed above cannot be overridden.}
