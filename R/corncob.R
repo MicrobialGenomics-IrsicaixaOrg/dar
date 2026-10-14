@@ -45,6 +45,10 @@
 #' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native `fit`
 #'   stage. Arguments managed by dar or exposed above cannot be overridden.
+#' @details Centralized models use non-bootstrap Wald contrasts. With
+#'   `engine_args = list(fit = list(robust = TRUE))`, inference uses corncob's
+#'   native sandwich covariance rather than the inverse Hessian. This does not
+#'   add support for random effects or repeated-measures dependence.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -186,7 +190,7 @@ run_corncob <- function(rec,
                 phi.link = phi.link,
                 test = test,
                 boot = boot,
-                B = 10e4,
+                B = B,
                 filter_discriminant = filter_discriminant,
                 fdr_cutoff = Inf,
                 fdr = fdr
@@ -211,6 +215,18 @@ run_corncob <- function(rec,
           )
         })
     })
+}
+
+#' Extract mean-model covariance using the requested native inference
+#' @noRd
+corncob_model_covariance <- function(fit) {
+  covariance <- if (isTRUE(fit$robust)) {
+    utils::getFromNamespace("sand_vcov", "corncob")(fit)
+  } else {
+    solve(utils::getFromNamespace("hessian", "corncob")(fit))
+  }
+  mean_coefficients <- seq_len(fit$np.mu)
+  covariance[mean_coefficients, mean_coefficients, drop = FALSE]
 }
 
 #' @noRd

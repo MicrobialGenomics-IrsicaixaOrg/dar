@@ -95,6 +95,11 @@ variability, and addresses each of the challenges presented below:
 \item within-taxon correlation
 \item hypothesis testing with categorical and continuous covariates
 }
+
+Centralized models use non-bootstrap Wald contrasts. With
+\code{engine_args = list(fit = list(robust = TRUE))}, inference uses corncob's
+native sandwich covariance rather than the inverse Hessian. This does not
+add support for random effects or repeated-measures dependence.
 }
 \examples{
 data(metaHIV_phy)

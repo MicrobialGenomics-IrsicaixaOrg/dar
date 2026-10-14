@@ -23,6 +23,11 @@
 #' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native `fit`
 #'   stage. Arguments managed by dar or exposed above cannot be overridden.
+#' @details With MicrobiomeStat 1.4, dar uses a local copy of the native
+#'   function with the adaptive zero-handling capitalization error corrected.
+#'   This restores the native choice of imputation when sequencing depth is
+#'   associated with the design. The installed package, model fitting,
+#'   winsorization and multiple-testing correction are unchanged.
 #'
 #' @return A [Recipe-class] object.
 #' @family Diff taxa steps
@@ -160,4 +165,51 @@ run_linda <- function(rec,
 #' @noRd
 required_pkgs_linda <- function(x, ...) {
   "MicrobiomeStat"
+}
+
+#' Resolve the LinDA engine with the verified adaptive-zero correction
+#' @noRd
+linda_engine_function <- function(
+    native = getExportedValue("MicrobiomeStat", "linda"),
+    version = utils::packageVersion("MicrobiomeStat")
+) {
+  # MicrobiomeStat 1.4 (GPL-3), R/linda.R: the adaptive branch assigns
+  # "Imputation", but zero handling tests for "imputation". Preserve the
+  # native function and its namespace; do not vendor or replace its algorithm.
+  # Source: https://github.com/cran/MicrobiomeStat/blob/master/R/linda.R
+  assignments <- 0L
+  comparisons <- 0L
+  repair <- function(node) {
+    if (identical(node, quote(zero.handling <- "Imputation"))) {
+      assignments <<- assignments + 1L
+      return(quote(zero.handling <- "imputation"))
+    }
+    if (identical(node, quote(zero.handling == "imputation"))) {
+      comparisons <<- comparisons + 1L
+    }
+    if (is.call(node)) {
+      for (index in seq_along(node)) {
+        if (!rlang::is_missing(node[[index]])) {
+          node[index] <- list(repair(node[[index]]))
+        }
+      }
+    }
+    node
+  }
+  corrected <- repair(body(native))
+  if (assignments == 0L) {
+    return(native)
+  }
+  if (!identical(as.character(version), "1.4") ||
+      assignments != 1L || comparisons != 1L) {
+    cli::cli_abort(
+      c(
+        "The adaptive-zero correction is not verified for this LinDA implementation.",
+        "i" = "MicrobiomeStat version: {.val {as.character(version)}}."
+      ),
+      class = "dar_error_model_engine"
+    )
+  }
+  body(native) <- corrected
+  native
 }

@@ -282,6 +282,7 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
   compiled <- compile_model(rec, "ancom")
   phy <- model_phyloseq(rec, rarefy)
   check_unused_engine_args("ancom", engine_args, "fit")
+  pseudo_sens <- engine_args$fit$pseudo_sens %||% TRUE
 
   out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
     contrast <- compiled$contrasts[index, , drop = FALSE]
@@ -314,25 +315,27 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
         pairwise = FALSE,
         dunnet = FALSE,
         trend = FALSE
-      )
+      ),
+      defaults = list(pseudo_sens = TRUE)
     )
     stats <- fit$res
     lfc_col <- match_ancom_column(names(stats), "lfc", parameterized$coefficient)
     q_col <- match_ancom_column(names(stats), "q", parameterized$coefficient)
-    diff_col <- match_ancom_column(names(stats), "diff", parameterized$coefficient)
     if (anyNA(c(lfc_col, q_col))) {
       cli::cli_abort(
         "ANCOM-BC2 did not return coefficient {.val {parameterized$coefficient}}.",
         class = "dar_error_invalid_result_contract"
       )
     }
+    signif_col <- ancom_significance_column(
+      names(stats), pseudo_sens, parameterized$coefficient
+    )
     tibble::as_tibble(stats) |>
       dplyr::transmute(
         taxa_id = .data$taxon,
         padj = .data[[q_col]],
         effect = .data[[lfc_col]] * parameterized$sign,
-        signif = if (!is.na(diff_col)) .data[[diff_col]] else
-          !is.na(.data[[q_col]]) & .data[[q_col]] < alpha,
+        signif = .data[[signif_col]],
         contrast_id = contrast$contrast_id[[1]],
         comparison = contrast$comparison[[1]],
         contrast_type = contrast$contrast_type[[1]],
@@ -380,10 +383,7 @@ run_corncob_model <- function(rec, phi.formula, link, phi.link,
       return(tibble::tibble())
     }
     covariance <- tryCatch(
-      {
-        hessian <- utils::getFromNamespace("hessian", "corncob")(fit)
-        solve(hessian)[seq_len(fit$np.mu), seq_len(fit$np.mu), drop = FALSE]
-      },
+      corncob_model_covariance(fit),
       error = function(cnd) NULL
     )
     if (is.null(covariance)) {

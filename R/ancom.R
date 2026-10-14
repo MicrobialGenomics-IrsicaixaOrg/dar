@@ -69,6 +69,13 @@
 #' @inheritParams step_wilcox
 #' @param engine_args Named lists of advanced arguments for the native `fit`
 #'   stage. Arguments managed by dar or exposed above cannot be overridden.
+#' @details Significance follows ANCOM-BC2's sensitivity-aware `diff_robust`
+#'   decision when `pseudo_sens = TRUE` (the default), rather than the basic
+#'   `diff` decision alone. With a centralized model,
+#'   `engine_args = list(fit = list(pseudo_sens = FALSE))` explicitly disables
+#'   sensitivity analysis and uses `diff`. Deprecated model-free execution
+#'   uses the default sensitivity analysis. Adjusted p-values and effect
+#'   estimates are not changed by this selection.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -244,7 +251,8 @@ run_ancom <- function(rec,
         global = global,
         pairwise = pairwise,
         dunnet = dunnet,
-        trend = trend
+        trend = trend,
+        pseudo_sens = TRUE
       )
 
       ancom_stats_tbl(res$res, var, rec, comparison)
@@ -260,19 +268,43 @@ required_pkgs_ancom <- function(x, ...) { c("bioc::ANCOMBC") }
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-ancom_stats_tbl <- function(ancom_res, var, rec, comparison) {
-  ancom_res %>%
+ancom_stats_tbl <- function(ancom_res, var, rec, comparison,
+                            pseudo_sens = TRUE) {
+  result <- ancom_res %>%
     dplyr::select(taxa_id = taxon, dplyr::contains(!!var)) %>%
     dplyr::right_join(analysis_tax_table(rec), ., by = "taxa_id") %>%
     stats::setNames(
       stringr::str_remove_all(names(.), stringr::str_c("_", var, ".*"))
-    ) %>%
+    )
+  signif_col <- ancom_significance_column(names(result), pseudo_sens)
+  result %>%
     dplyr::mutate(
       comparison = stringr::str_c(comparison, collapse = "_"),
       var = var,
       effect = lfc,
-      signif = diff
+      signif = .data[[signif_col]]
     )
+}
+
+#' @noRd
+ancom_significance_column <- function(columns, pseudo_sens = TRUE,
+                                      coefficient = NULL) {
+  prefix <- if (pseudo_sens) "diff_robust" else "diff"
+  column <- if (is.null(coefficient)) {
+    if (prefix %in% columns) prefix else NA_character_
+  } else {
+    match_ancom_column(columns, prefix, coefficient)
+  }
+  if (is.na(column)) {
+    cli::cli_abort(
+      c(
+        "ANCOM-BC2 did not return the expected {.val {prefix}} decision.",
+        "i" = "Sensitivity analysis is {.val {pseudo_sens}}; significance cannot be inferred from adjusted p-values alone."
+      ),
+      class = "dar_error_invalid_result_contract"
+    )
+  }
+  column
 }
 
 #' @noRd

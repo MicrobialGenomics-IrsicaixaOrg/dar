@@ -12,7 +12,7 @@
       
       Results:
       
-           v ancom__Utap diff_taxa = 5 
+           v ancom__Utap diff_taxa = 2 
       
            i 0 taxa are present in all tested methods 
       

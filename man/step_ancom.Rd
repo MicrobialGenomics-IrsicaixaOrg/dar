@@ -125,6 +125,15 @@ comparison, ANCOM-BC2 also supports testing for continuous covariates and
 multi-group comparisons, including the global test, pairwise directional
 test, Dunnett's type of test, and trend test.
 }
+\details{
+Significance follows ANCOM-BC2's sensitivity-aware \code{diff_robust}
+decision when \code{pseudo_sens = TRUE} (the default), rather than the basic
+\code{diff} decision alone. With a centralized model,
+\code{engine_args = list(fit = list(pseudo_sens = FALSE))} explicitly disables
+sensitivity analysis and uses \code{diff}. Deprecated model-free execution
+uses the default sensitivity analysis. Adjusted p-values and effect
+estimates are not changed by this selection.
+}
 \examples{
 data(metaHIV_phy)
 

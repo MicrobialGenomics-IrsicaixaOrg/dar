@@ -170,6 +170,9 @@ engine_stage_spec <- function(engine, stage) {
 #' @noRd
 engine_stage_function <- function(engine, stage) {
   spec <- engine_stage_spec(engine, stage)
+  if (identical(engine, "linda") && identical(stage, "fit")) {
+    return(linda_engine_function())
+  }
   getExportedValue(spec$package, spec$fun)
 }
 

@@ -35,8 +35,18 @@
 * `prep()` emits the DA rarefaction caution when rarefying steps execute,
   rather than when they are constructed.
 * `step_ancom()` preserves stable taxon IDs after ANCOM-BC2 aggregation.
+* `step_ancom()` uses ANCOM-BC2's robust significance decision when
+  pseudocount sensitivity analysis is enabled, in both centralized and
+  deprecated model-free execution. Explicitly disabling sensitivity analysis
+  retains the basic native decision.
 * `step_corncob()` honors the requested absolute effect threshold in
   deprecated model-free execution.
+* `step_corncob()` uses native sandwich covariance for centralized Wald
+  contrasts when `robust = TRUE` and forwards the requested `B` during
+  deprecated model-free bootstrap execution.
+* `step_linda()` locally corrects MicrobiomeStat 1.4's adaptive zero-handling
+  capitalization error, restoring depth-dependent imputation without
+  modifying the installed dependency or the remaining native algorithm.
 * `step_filter_taxa()` executes allowed `median()`, `var()` and `sd()`
   predicates locally and after JSON import, using fixed trusted bindings
   without expanding the permitted syntax or capturing external functions.

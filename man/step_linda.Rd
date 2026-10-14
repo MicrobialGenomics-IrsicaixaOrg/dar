@@ -71,6 +71,13 @@ A \link[=Recipe-class]{Recipe} object.
 \code{\link[MicrobiomeStat:linda]{MicrobiomeStat::linda()}}. It requires a centralized model defined by
 \code{\link[=add_model]{add_model()}} and executes every contrast in that model's contrast plan.
 }
+\details{
+With MicrobiomeStat 1.4, dar uses a local copy of the native
+function with the adaptive zero-handling capitalization error corrected.
+This restores the native choice of imputation when sequencing depth is
+associated with the design. The installed package, model fitting,
+winsorization and multiple-testing correction are unchanged.
+}
 \examples{
 data(metaHIV_phy)
 
