@@ -10,30 +10,51 @@ step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
 \item{rec}{A Recipe object. The step will be added to the sequence of
 operations for this Recipe.}
 
-\item{.f}{A function or list of functions that take a vector of abundance
-values and return a logical. Some canned useful function types are included
-in the genefilter-package.}
+\item{.f}{A function with exactly one argument named \code{x}, without a default,
+or a character string containing that function expression. It must return
+a single logical value for the abundance vector \code{x}. Only the restricted
+expression syntax described below is accepted; lists of functions are not
+supported.}
 
 \item{id}{A character string that is unique to this step to identify it.}
 }
 \value{
-An object of class \code{Recipe}
+A \code{Recipe} with the filtering step added. The constructor does not
+filter the data or return a logical vector. During \code{\link[=prep]{prep()}}, the step uses
+\code{\link[phyloseq:filter_taxa]{phyloseq::filter_taxa()}} with \code{prune = TRUE}; there is no \code{prune} argument
+in this wrapper.
 }
 \description{
-This function is directly analogous to the genefilter function for microarray
-filtering, but is used for filtering OTUs from phyloseq objects. It applies
-an arbitrary set of functions — as a function list, for instance, created by
-filterfun — as across-sample criteria, one OTU at a time. It takes as input a
-phyloseq object, and returns a logical vector indicating whether or not each
-OTU passed the criteria. Alternatively, if the "prune" option is set to
-FALSE, it returns the already-trimmed version of the phyloseq object.
+Add a preprocessing step that applies one safely serializable predicate to
+each taxon's abundance vector across samples. Filtering is performed during
+\code{\link[=prep]{prep()}}; taxa for which the predicate returns \code{FALSE} are removed.
+}
+\details{
+The predicate body must be a single expression, without braces,
+assignments, external variables or user-defined helper calls. Write
+thresholds as literal numbers inside the expression, even when using the
+function directly in R. These restrictions keep recipes safely exportable
+and importable; they are checked when the step is added, not just on export.
+
+Accepted expressions use \code{x}, finite numeric or non-missing logical
+literals, parentheses, arithmetic operators (\code{+}, \code{-}, \code{*}, \code{/}, \code{^},
+\code{\%\%}, \code{\%/\%}), comparisons (\code{>}, \code{>=}, \code{<}, \code{<=}, \code{==}, \code{!=}), logical
+operators (\code{&}, \code{|}, \code{!}), and calls to \code{sum}, \code{length}, \code{mean}, \code{median},
+\code{min}, \code{max}, \code{var}, \code{sd}, \code{any}, \code{all} or \code{is.na}. The only supported
+named argument is \code{na.rm} in \code{sum}, \code{mean}, \code{median}, \code{min}, \code{max}, \code{var},
+\code{sd}, \code{any} and \code{all}. Namespace-qualified calls are not accepted.
 }
 \examples{
 data(metaHIV_phy)
 
 ## Keep taxa present in at least 3\% of samples
 recipe(metaHIV_phy) |>
-  step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x))
+  step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x)) |>
+  prep()
+
+## The same predicate can be supplied as a string
+recipe(metaHIV_phy) |>
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)")
 }
 \seealso{
 Other filter phy steps:

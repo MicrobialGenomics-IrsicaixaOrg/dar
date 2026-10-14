@@ -22,6 +22,9 @@
   Non-conflicting custom IDs beginning with a dot remain in consensus tables.
 * Deprecated model-free corncob execution honors the requested absolute effect
   threshold instead of comparing its coefficient column against itself.
+* `step_filter_taxa()` documentation and examples describe the restricted
+  serializable predicate syntax and filtering during `prep()`, rather than
+  promising arbitrary function lists or a `prune` option.
 
 ## SCIENTIFIC VALIDATION
 

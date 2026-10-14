@@ -1,24 +1,39 @@
 #' Filter taxa based on across-sample OTU abundance criteria
 #'
-#' This function is directly analogous to the genefilter function for microarray
-#' filtering, but is used for filtering OTUs from phyloseq objects. It applies
-#' an arbitrary set of functions — as a function list, for instance, created by
-#' filterfun — as across-sample criteria, one OTU at a time. It takes as input a
-#' phyloseq object, and returns a logical vector indicating whether or not each
-#' OTU passed the criteria. Alternatively, if the "prune" option is set to
-#' FALSE, it returns the already-trimmed version of the phyloseq object.
+#' Add a preprocessing step that applies one safely serializable predicate to
+#' each taxon's abundance vector across samples. Filtering is performed during
+#' [prep()]; taxa for which the predicate returns `FALSE` are removed.
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
 #'   operations for this Recipe.
-#' @param .f A function or list of functions that take a vector of abundance
-#'   values and return a logical. Some canned useful function types are included
-#'   in the genefilter-package.
+#' @param .f A function with exactly one argument named `x`, without a default,
+#'   or a character string containing that function expression. It must return
+#'   a single logical value for the abundance vector `x`. Only the restricted
+#'   expression syntax described below is accepted; lists of functions are not
+#'   supported.
 #' @param id A character string that is unique to this step to identify it.
+#'
+#' @details The predicate body must be a single expression, without braces,
+#'   assignments, external variables or user-defined helper calls. Write
+#'   thresholds as literal numbers inside the expression, even when using the
+#'   function directly in R. These restrictions keep recipes safely exportable
+#'   and importable; they are checked when the step is added, not just on export.
+#'
+#'   Accepted expressions use `x`, finite numeric or non-missing logical
+#'   literals, parentheses, arithmetic operators (`+`, `-`, `*`, `/`, `^`,
+#'   `%%`, `%/%`), comparisons (`>`, `>=`, `<`, `<=`, `==`, `!=`), logical
+#'   operators (`&`, `|`, `!`), and calls to `sum`, `length`, `mean`, `median`,
+#'   `min`, `max`, `var`, `sd`, `any`, `all` or `is.na`. The only supported
+#'   named argument is `na.rm` in `sum`, `mean`, `median`, `min`, `max`, `var`,
+#'   `sd`, `any` and `all`. Namespace-qualified calls are not accepted.
 #'
 #' @include recipe-class.R
 #' @family filter phy steps
 #' @aliases step_filter_taxa
-#' @return An object of class `Recipe`
+#' @return A `Recipe` with the filtering step added. The constructor does not
+#'   filter the data or return a logical vector. During [prep()], the step uses
+#'   [phyloseq::filter_taxa()] with `prune = TRUE`; there is no `prune` argument
+#'   in this wrapper.
 #' @export
 #' @autoglobal
 #' @tests 
@@ -29,7 +44,12 @@
 #'
 #' ## Keep taxa present in at least 3% of samples
 #' recipe(metaHIV_phy) |>
-#'   step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x))
+#'   step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x)) |>
+#'   prep()
+#'
+#' ## The same predicate can be supplied as a string
+#' recipe(metaHIV_phy) |>
+#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)")
 step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
   
   check_recipe(rec)

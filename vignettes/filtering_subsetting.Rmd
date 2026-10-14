@@ -41,20 +41,27 @@ functions to perform this filtering directly on the recipe object.
 
 ## step_filter_taxa
 
-The `step_filter_taxa` function applies an arbitrary set of functions to OTUs as 
-across-sample criteria. It takes a phyloseq object as input and returns a 
-logical vector indicating whether each OTU passed the criteria. If the "prune" 
-option is set to FALSE, it returns the already-trimmed version of the phyloseq 
-object.
+The `step_filter_taxa` function adds one across-sample abundance predicate to a
+recipe. It returns a `Recipe`; filtering takes place during `prep()`, which
+removes taxa that do not pass the predicate. This wrapper does not expose a
+`prune` argument or return a logical vector.
+
+Supply a function with exactly one argument named `x` and no default, or a
+string containing that function expression. Its body must be a single
+expression returning one logical value, using the restricted syntax documented
+in `?step_filter_taxa`. Lists of functions, braces, assignments, external
+variables and user-defined helper calls are not accepted, including in local R
+use. Write thresholds directly in the expression so the recipe remains safely
+serializable.
+
+For example, keep taxa present in at least 3% of samples:
 
 ```{r step_filter_taxa}
 library(dar)
 data("metaHIV_phy")
 
 rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-rec <- 
-  step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0 * length(x))") |> 
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)") |>
   prep()
 ```
 
