@@ -20,6 +20,8 @@
 * DA step IDs cannot collide with internal consensus columns; constructors,
   recipe validity and JSON imports reject reserved names before execution.
   Non-conflicting custom IDs beginning with a dot remain in consensus tables.
+* Deprecated model-free corncob execution honors the requested absolute effect
+  threshold instead of comparing its coefficient column against itself.
 
 ## SCIENTIFIC VALIDATION
 
