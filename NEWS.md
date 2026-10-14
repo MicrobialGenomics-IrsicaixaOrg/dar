@@ -15,9 +15,16 @@
 
 ## SCIENTIFIC VALIDATION
 
-* IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA bias and
-  coverage gates, compares results with a reviewed stochastic baseline, records
-  dependency versions and publishes concise execution summaries (#155).
+* FIXED: Scientific metrics use the complete expected taxon-contrast universe,
+  retaining absent results and failed fits in recovery denominators and reporting
+  explicit availability counts.
+* FIXED: Relative mean absolute estimation error replaces the cancelling
+  absolute mean signed-bias criterion, with conservative gates restricted to
+  strong comparable contrasts. Historical baseline values are not relabelled;
+  new regression tolerances require calibration before promotion.
+* IMPROVED: Full Monte Carlo validation tracks comparable LinDA effects and
+  interval coverage, records dependency versions and publishes concise execution
+  summaries (#155).
 * IMPROVED: Full validation reports are retained as compact machine-readable
   history on the `validation-results` branch, while weak longitudinal contrasts
   remain descriptive rather than receiving inappropriate power gates (#155).

@@ -30,9 +30,17 @@ validation_regression_tolerance <- function(metric) {
     direction_recovery = 0.05,
     finite_rate = 0.05,
     execution_rate = 0.05,
-    coverage = 0.05,
-    abs_relative_bias = 0.10
+    coverage = 0.05
   )
+  unknown <- setdiff(metric, names(values))
+  if (length(unknown)) {
+    stop(
+      "No reviewed baseline tolerance for metric: ",
+      paste(unknown, collapse = ", "),
+      ". Calibrate it before promoting a new baseline.",
+      call. = FALSE
+    )
+  }
   unname(values[metric])
 }
 

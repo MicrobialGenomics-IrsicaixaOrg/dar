@@ -3,29 +3,99 @@ validation_mean <- function(x) {
   if (length(x)) mean(x) else NA_real_
 }
 
-score_validation_results <- function(results, truth, alpha = 0.05) {
-  if (!nrow(results)) {
-    return(data.frame())
-  }
+validation_result_universe <- function(results, truth, runs) {
+  run_keys <- c("engine", "scenario", "replicate")
   scientific_keys <- c(
     "engine", "scenario", "replicate", "taxa_id", "contrast_id"
   )
   truth_keys <- c("scenario", "replicate", "taxa_id", "contrast_id")
-  if (anyDuplicated(results[scientific_keys])) {
-    stop("Validation results contain duplicated scientific keys.", call. = FALSE)
+  case_keys <- c("scenario", "replicate")
+  if (!nrow(runs)) {
+    if (nrow(results)) {
+      stop("Validation results have no recorded runs.", call. = FALSE)
+    }
+    return(data.frame())
   }
-  joined <- dplyr::left_join(results, truth, by = truth_keys)
-  if (any(is.na(joined$is_null))) {
-    stop("Validation results contain keys absent from the truth table.", call. = FALSE)
+  if (anyNA(runs[run_keys]) || anyDuplicated(runs[run_keys])) {
+    stop("Validation runs contain missing or duplicated keys.", call. = FALSE)
   }
+  statuses <- c("success", "engine_error", "expected_skip", "dependency_missing")
+  if (anyNA(runs$status) || any(!runs$status %in% statuses)) {
+    stop("Validation runs contain unknown execution statuses.", call. = FALSE)
+  }
+  if (anyNA(truth[truth_keys]) || anyNA(truth$is_null) ||
+      anyDuplicated(truth[truth_keys])) {
+    stop("Validation truth contains missing or duplicated scientific keys.", call. = FALSE)
+  }
+  attempted <- runs[
+    runs$status %in% c("success", "engine_error"), run_keys, drop = FALSE
+  ]
+  if (nrow(dplyr::anti_join(attempted, truth[case_keys], by = case_keys))) {
+    stop("Validation runs contain cases absent from the truth table.", call. = FALSE)
+  }
+  if (!nrow(attempted)) {
+    if (nrow(results)) {
+      stop("Validation results have no attempted compatible runs.", call. = FALSE)
+    }
+    return(data.frame())
+  }
+  specifications <- dplyr::bind_rows(lapply(
+    unique(attempted$engine), function(engine) {
+      config <- validation_engine(engine)
+      data.frame(
+        engine = engine, effect_metric = config$effect_metric,
+        truth_multiplier = config$truth_multiplier, comparable = config$comparable
+      )
+    }
+  ))
+  expected <- attempted |>
+    dplyr::left_join(specifications, by = "engine") |>
+    dplyr::inner_join(truth, by = case_keys, relationship = "many-to-many")
+  if (!nrow(results)) {
+    expected$effect <- NA_real_
+    expected$padj <- NA_real_
+    expected$std_error <- NA_real_
+    expected$returned <- FALSE
+    return(expected)
+  }
+  if (anyNA(results[scientific_keys]) || anyDuplicated(results[scientific_keys])) {
+    stop("Validation results contain missing or duplicated scientific keys.", call. = FALSE)
+  }
+  if (nrow(dplyr::anti_join(results, expected, by = scientific_keys))) {
+    stop("Validation results contain keys absent from the expected universe.", call. = FALSE)
+  }
+  metadata <- unique(results[c(
+    "engine", "effect_metric", "truth_multiplier", "comparable"
+  )])
+  expected_metadata <- specifications[match(metadata$engine, specifications$engine), ]
+  # CSV round trips need not preserve the last floating-point digits.
+  if (!identical(metadata$effect_metric, expected_metadata$effect_metric) ||
+      !identical(metadata$comparable, expected_metadata$comparable) ||
+      !isTRUE(all.equal(
+        as.numeric(metadata$truth_multiplier), expected_metadata$truth_multiplier,
+        tolerance = 1e-12, check.attributes = FALSE
+      ))) {
+    stop("Validation results contain inconsistent effect metadata.", call. = FALSE)
+  }
+  observed <- results[c(scientific_keys, "effect", "padj", "std_error")]
+  observed$returned <- TRUE
+  expected |>
+    dplyr::left_join(observed, by = scientific_keys) |>
+    dplyr::mutate(returned = tidyr::replace_na(.data$returned, FALSE))
+}
 
+score_validation_results <- function(results, truth, runs, alpha = 0.05) {
+  joined <- validation_result_universe(results, truth, runs)
+  if (!nrow(joined)) {
+    return(data.frame())
+  }
   joined |>
     dplyr::group_by(
       .data$engine, .data$scenario, .data$replicate, .data$contrast_id,
       .data$effect_metric, .data$truth_multiplier, .data$comparable
     ) |>
     dplyr::group_modify(function(data, key) {
-      discovered <- !is.na(data$padj) & data$padj <= alpha
+      discovered <- is.finite(data$padj) & data$padj <= alpha
       signal <- !data$is_null
       null <- data$is_null
       finite <- is.finite(data$effect)
@@ -33,14 +103,17 @@ score_validation_results <- function(results, truth, alpha = 0.05) {
         sign(data$effect) == data$expected_direction
       scaled_truth <- data$true_effect * key$truth_multiplier
       comparable <- isTRUE(key$comparable) && is.finite(key$truth_multiplier)
-      bias <- if (comparable && any(signal & finite)) {
-        validation_mean(data$effect[signal & finite] - scaled_truth[signal & finite])
+      estimated_signal <- signal & finite
+      errors <- data$effect[estimated_signal] - scaled_truth[estimated_signal]
+      bias <- if (comparable && any(estimated_signal)) {
+        validation_mean(errors)
       } else {
         NA_real_
       }
-      scale <- validation_mean(abs(scaled_truth[signal & finite]))
-      coverage <- if (comparable && any(signal & finite & is.finite(data$std_error))) {
-        keep <- signal & finite & is.finite(data$std_error)
+      scale <- validation_mean(abs(scaled_truth[estimated_signal]))
+      intervals <- estimated_signal & is.finite(data$std_error) & data$std_error >= 0
+      coverage <- if (comparable && any(intervals)) {
+        keep <- intervals
         validation_mean(
           scaled_truth[keep] >= data$effect[keep] - 1.96 * data$std_error[keep] &
             scaled_truth[keep] <= data$effect[keep] + 1.96 * data$std_error[keep]
@@ -49,18 +122,26 @@ score_validation_results <- function(results, truth, alpha = 0.05) {
         NA_real_
       }
       data.frame(
+        n_expected = nrow(data),
+        n_returned = sum(data$returned),
+        n_missing = sum(!data$returned),
+        n_signals = sum(signal),
+        n_tested = sum(is.finite(data$padj)),
+        n_finite = sum(finite),
+        n_signal_finite = sum(estimated_signal),
+        n_intervals = if (comparable) sum(intervals) else 0L,
         type1_error = if (any(null)) validation_mean(discovered[null]) else NA_real_,
         fdr = if (any(discovered)) sum(discovered & null) / sum(discovered) else 0,
         power = if (any(signal)) validation_mean(discovered[signal]) else NA_real_,
-        direction_recovery = if (any(signal & finite)) {
-          validation_mean(direction_ok[signal & finite])
+        direction_recovery = if (any(signal)) {
+          validation_mean(direction_ok[signal])
         } else {
           NA_real_
         },
         finite_rate = validation_mean(finite),
         bias = bias,
-        abs_relative_bias = if (is.finite(bias) && is.finite(scale) && scale > 0) {
-          abs(bias) / scale
+        relative_mae = if (comparable && is.finite(scale) && scale > 0) {
+          validation_mean(abs(errors)) / scale
         } else {
           NA_real_
         },
@@ -89,7 +170,7 @@ score_validation_runs <- function(runs) {
     comparable = FALSE,
     type1_error = NA_real_, fdr = NA_real_, power = NA_real_,
     direction_recovery = NA_real_, finite_rate = NA_real_,
-    bias = NA_real_, abs_relative_bias = NA_real_, coverage = NA_real_,
+    bias = NA_real_, relative_mae = NA_real_, coverage = NA_real_,
     execution_rate = as.numeric(attempted$status == "success"),
     stringsAsFactors = FALSE
   )
@@ -127,7 +208,7 @@ summarize_validation_metrics <- function(metrics) {
   metric_names <- intersect(
     c(
       "type1_error", "fdr", "power", "direction_recovery", "finite_rate",
-      "abs_relative_bias", "coverage", "execution_rate"
+      "relative_mae", "coverage", "execution_rate"
     ),
     names(metrics)
   )
@@ -142,9 +223,9 @@ summarize_validation_metrics <- function(metrics) {
     dplyr::group_modify(function(data, key) {
       interval <- validation_interval(
         data$value,
-        bounded = !identical(key$metric, "abs_relative_bias")
+        bounded = !identical(key$metric, "relative_mae")
       )
-      if (identical(key$metric, "abs_relative_bias")) {
+      if (identical(key$metric, "relative_mae")) {
         interval[["lower"]] <- max(0, interval[["lower"]])
       }
       data.frame(

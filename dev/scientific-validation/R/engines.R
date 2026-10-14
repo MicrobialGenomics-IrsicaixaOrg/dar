@@ -48,7 +48,13 @@ validation_engine <- function(engine) {
   if (!engine %in% names(registry)) {
     stop("Unknown validation engine: ", engine, call. = FALSE)
   }
-  c(list(id = engine), registry[[engine]])
+  c(
+    list(
+      id = engine,
+      effect_metric = dar:::result_effect_metric(engine, list())
+    ),
+    registry[[engine]]
+  )
 }
 
 validation_engine_compatible <- function(spec, engine) {
@@ -130,8 +136,13 @@ normalize_validation_result <- function(result, engine, simulation,
     stop("Engine result contains duplicated taxon-contrast keys.", call. = FALSE)
   }
   config <- validation_engine(engine)
+  if (anyNA(result$effect_metric) ||
+      any(result$effect_metric != config$effect_metric)) {
+    stop("Engine result contains an unexpected effect metric.", call. = FALSE)
+  }
+  n_results <- nrow(result)
   standard_error <- rep(NA_real_, nrow(result))
-  if (!is.null(raw_result)) {
+  if (!is.null(raw_result) && n_results > 0L) {
     raw_result <- dar:::flatten_model_output(raw_result)
     raw_standard_error <- validation_numeric_column(
       raw_result, c("lfcSE", "stderr", "std_error", "se")
@@ -149,17 +160,17 @@ normalize_validation_result <- function(result, engine, simulation,
     standard_error <- raw_keys$std_error[matched]
   }
   data.frame(
-    engine = engine,
-    scenario = simulation$manifest$scenario,
-    replicate = simulation$manifest$replicate,
+    engine = rep(engine, n_results),
+    scenario = rep(simulation$manifest$scenario, n_results),
+    replicate = rep(simulation$manifest$replicate, n_results),
     taxa_id = as.character(result$taxa_id),
     contrast_id = as.character(result$contrast_id),
     effect = as.numeric(result$effect_size),
     padj = as.numeric(result$adj_p_value),
     std_error = standard_error,
     effect_metric = as.character(result$effect_metric),
-    truth_multiplier = config$truth_multiplier,
-    comparable = config$comparable,
+    truth_multiplier = rep(config$truth_multiplier, n_results),
+    comparable = rep(config$comparable, n_results),
     stringsAsFactors = FALSE
   )
 }

@@ -49,3 +49,10 @@ testthat::test_that("missing and new baseline keys are explicit", {
   testthat::expect_setequal(compared$status, c("fail", "informational"))
   testthat::expect_match(compared$reason[compared$status == "fail"], "missing")
 })
+
+testthat::test_that("new estimation errors cannot inherit an obsolete bias tolerance", {
+  testthat::expect_error(
+    validation_regression_tolerance("relative_mae"), "No reviewed baseline tolerance"
+  )
+  testthat::expect_equal(validation_regression_tolerance("power"), 0.05)
+})

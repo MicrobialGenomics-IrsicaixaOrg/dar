@@ -8,4 +8,5 @@ direction_recovery,longitudinal|missing_unbalanced,.*,^condition[[]treated-contr
 finite_rate,.*,.*,.*,lower,0.90,20,Require stable finite effect estimates for compatible fits
 execution_rate,.*,.*,.*,lower,0.90,20,Require compatible models to complete reliably
 coverage,.*,deseq|linda,.*,lower,0.85,30,Detect severe undercoverage when engine effect and truth share a documented scale
-abs_relative_bias,.*,deseq|ancom|linda,.*,upper,0.30,30,Apply only when engine effect and truth share a documented scale
+relative_mae,cross_sectional_signal|sparse_zero_inflated|fixed_confounder,deseq|ancom|linda,^condition[[]treated-control[]]$,upper,0.50,30,Detect gross estimation error above half the known strong effect magnitude on comparable scales
+relative_mae,longitudinal|missing_unbalanced,deseq|ancom|linda,^condition[[]treated-control[]]@time[[][0-9]+[]]$,upper,0.50,30,Detect gross estimation error only for strong condition-within-time effects on comparable scales

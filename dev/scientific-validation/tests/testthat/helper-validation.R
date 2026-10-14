@@ -39,5 +39,9 @@ validation_metric_fixture <- function(reverse = FALSE) {
     truth_multiplier = 1 / log(2),
     comparable = TRUE
   )
-  list(results = results, truth = truth)
+  runs <- data.frame(
+    engine = "deseq", scenario = "cross_sectional_signal", replicate = 1L,
+    status = "success", stringsAsFactors = FALSE
+  )
+  list(results = results, truth = truth, runs = runs)
 }

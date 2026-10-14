@@ -62,3 +62,15 @@ testthat::test_that("incompatible engines are expected skips", {
   testthat::expect_match(outcome$run$reason, "confounders")
   testthat::expect_equal(nrow(outcome$results), 0L)
 })
+
+testthat::test_that("normalization preserves empty results without inventing rows", {
+  simulation <- simulate_validation_scenario("cross_sectional_signal", 1L)
+  empty <- dar:::empty_tidy_results()
+  normalized <- normalize_validation_result(empty, "deseq", simulation)
+
+  testthat::expect_equal(nrow(normalized), 0L)
+  testthat::expect_identical(normalized$engine, character())
+  testthat::expect_identical(normalized$replicate, integer())
+  testthat::expect_identical(normalized$effect, numeric())
+  testthat::expect_identical(normalized$comparable, logical())
+})

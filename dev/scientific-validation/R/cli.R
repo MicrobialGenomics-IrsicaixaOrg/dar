@@ -80,7 +80,7 @@ run_scientific_validation <- function(profile_name = "quick", engines = "all",
   runs <- dplyr::bind_rows(runs)
   truth <- dplyr::bind_rows(truths)
   manifests <- dplyr::bind_rows(manifests)
-  scientific_metrics <- score_validation_results(results, truth, profile$alpha)
+  scientific_metrics <- score_validation_results(results, truth, runs, profile$alpha)
   execution_metrics <- score_validation_runs(runs)
   metrics <- dplyr::bind_rows(scientific_metrics, execution_metrics)
   summary <- summarize_validation_metrics(metrics)

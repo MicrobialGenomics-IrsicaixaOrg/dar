@@ -30,21 +30,64 @@ produces an exact taxon-contrast truth table and a manifest.
 
 ## Metrics and estimands
 
-Power, type-I error, FDR, direction recovery, finite-result rate, execution rate, bias, and interval coverage are kept separate by engine, scenario, replicate, contrast, and effect metric. Bias and coverage are marked unavailable when an engine effect is not on a scientifically comparable scale. The suite never requires different engines to return equal p-values or effect magnitudes.
+Power, type-I error, FDR, direction recovery, finite-result rate, execution rate,
+signed mean error (`bias`), relative mean absolute error (`relative_mae`), and
+interval coverage are kept separate by engine, scenario, replicate, contrast,
+and effect metric. Estimation errors and coverage are unavailable when an engine
+effect is not on a scientifically comparable scale. The suite never requires
+different engines to return equal p-values or effect magnitudes.
+
+The scoring universe is the truth table crossed with attempted compatible runs,
+not the rows returned by an engine. Failed fits remain in that universe;
+capability skips and unavailable dependencies do not. Missing taxon-contrast
+rows are not discoveries, and missing or non-finite effects are not recovered
+directions. Power and direction recovery therefore use all true signals, while
+`finite_rate` uses all expected hypotheses. Native output filtering can reduce
+these end-to-end rates; a missing row is never silently assumed to be a valid
+filtering decision. Missing effects, p-values and standard errors remain missing.
+
+Per-replicate metrics include `n_expected`, `n_returned`, `n_missing`, `n_signals`,
+`n_tested`, `n_finite`, `n_signal_finite` and `n_intervals`, making their
+denominators explicit. `bias` and `relative_mae` are conditional on finite
+estimates of true signals; interval coverage additionally requires a finite,
+non-negative standard error. These conditional diagnostics must be interpreted
+together with availability, not as evidence that missing estimates were correct.
+
+`relative_mae` is `mean(abs(estimate - scaled_truth)) /
+mean(abs(scaled_truth))` over the same finite signal estimates. Taking absolute
+errors before averaging prevents balanced positive and negative errors from
+cancelling. It measures estimation error, not signed bias, and is unbounded
+above. Null contrasts without true signals have no relative-error metric.
 
 The quick profile uses two replicates and treats Monte Carlo thresholds as
 informational. The full profile uses the replicate counts in `profiles.csv`.
 Gates in `thresholds.csv` match engines, scenarios and contrasts, so power and
-direction requirements apply only to deliberately strong effects. LinDA bias
-and coverage are gated because its log2 fold-change scale is comparable with
-the simulation truth. The direction-reversal sentinel must always fail its
-gate; this protects numerator-minus-denominator orientation.
+direction requirements apply only to deliberately strong effects. The new
+relative-error gate uses an upper limit of 0.50 for strong condition contrasts
+on comparable DESeq2, ANCOM-BC2 and LinDA scales. This is a conservative
+gross-error criterion: mean absolute error above half the known effect magnitude
+is unacceptable, and complete attenuation to zero gives 1. As with other upper
+gates, failure requires the Monte Carlo interval to lie entirely above the
+limit. It is not inherited
+from the former 0.30 signed-bias gate, an empirical calibration, or a claim of
+general statistical accuracy. Weak time and difference-in-differences effects
+remain descriptive. DESeq2 and LinDA interval coverage is gated because their
+log2 fold-change scales are comparable with the simulation truth. The
+direction-reversal sentinel must always fail its gate; this protects
+numerator-minus-denominator orientation.
 
 `baselines/accepted-full.csv` stores reviewed full-run intervals and
 metric-specific tolerances. Use `promote-baseline.R REPORT_DIR RUN_ID` only
 after reviewing a complete run, commit the CSV and metadata together, and then
 confirm them with a different seed. Threshold and tolerance changes require
 the scientific justification in the same pull request.
+
+The historical baseline predates complete-universe scoring and contains the
+retired `abs_relative_bias` metric. Its values must not be renamed to
+`relative_mae`. Review new full-profile results and calibrate a new baseline
+tolerance before promotion; promotion rejects metrics without a reviewed
+tolerance. Existing historical baseline files are preserved, not silently
+rewritten or treated as a calibrated reference for the new metric.
 
 ## Artifacts
 

@@ -17,6 +17,7 @@ read_artifact <- function(name) {
   tryCatch(utils::read.csv(path, stringsAsFactors = FALSE), error = function(cnd) data.frame())
 }
 runs <- read_artifact("runs")
+metrics <- read_artifact("metrics")
 manifests <- read_artifact("manifests")
 summary <- read_artifact("summary")
 gates <- read_artifact("gates")
@@ -66,6 +67,33 @@ if (nrow(runs)) {
   knitr::kable(execution)
 } else {
   cat("No engine runs were available.")
+}
+```
+
+## Result availability
+
+Counts below refer to the complete expected taxon-contrast universe, including
+attempted fits that failed. Missing rows are not replaced by zero effects or
+invented p-values. Native output filtering can reduce availability; it does not
+remove true signals from the end-to-end power denominator.
+
+```{r result-availability}
+if (nrow(metrics)) {
+  availability <- metrics |>
+    dplyr::filter(.data$effect_metric != "execution") |>
+    dplyr::group_by(.data$engine, .data$scenario) |>
+    dplyr::summarise(
+      expected = sum(.data$n_expected),
+      returned = sum(.data$n_returned),
+      missing = sum(.data$n_missing),
+      tested = sum(.data$n_tested),
+      finite_effects = sum(.data$n_finite),
+      signal_intervals = sum(.data$n_intervals),
+      .groups = "drop"
+    )
+  knitr::kable(availability)
+} else {
+  cat("No scientific result availability was recorded.")
 }
 ```
 
@@ -161,10 +189,29 @@ if (nrow(summary)) {
 }
 ```
 
+## Estimation error
+
+```{r estimation-error}
+if (nrow(summary)) {
+  estimation_error <- summary |>
+    dplyr::filter(.data$metric == "relative_mae") |>
+    dplyr::select(
+      .data$engine, .data$scenario, .data$contrast_id,
+      .data$estimate, .data$lower, .data$upper, .data$n_replicates
+    )
+  if (nrow(estimation_error)) {
+    knitr::kable(estimation_error, caption = "Relative mean absolute estimation error")
+  }
+}
+```
+
 ## Interpretation limits
 
 - Monte Carlo intervals quantify uncertainty between independent simulation replicates.
-- Bias and coverage are evaluated only when the reported effect and simulation truth share a documented scale.
+- Power and direction recovery include all true signals in attempted compatible runs, not only returned or finite results.
+- Signed mean error, relative MAE and coverage require a documented comparable effect scale and are conditional on available estimates; interpret them with the availability counts.
+- Relative MAE averages absolute errors before scaling and does not allow errors of opposite signs to cancel. Its 0.50 gate detects gross error only for deliberately strong condition contrasts.
+- The retired signed-bias metric and historical baseline cannot be relabelled or reused as a calibrated reference for relative MAE; new baseline tolerances require review.
 - `not_applicable` is intentional for incompatible estimands or unavailable uncertainty estimates.
 - `informational` means the selected profile did not reach the minimum replicate count for a regression gate.
 - Expected capability skips are not engine failures; errors from compatible models are failures.
