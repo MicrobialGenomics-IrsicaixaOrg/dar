@@ -103,6 +103,12 @@ Prepared modeled results contain `contrast_id`, `comparison`, `contrast_type`
 and `var`. Consensus operations group by `contrast_id` and effect direction, so
 different longitudinal hypotheses cannot contribute to the same vote.
 
+Plot selectors are validated against the planned hypotheses, not only the
+significant results. If a valid selection has no significant taxa,
+`abundance_plt()` (with automatic taxon selection), `mutual_plt()` and
+`intersection_plt()` report this with a message and return invisible `NULL`.
+Explicit `taxa_ids` can still be used to plot abundances regardless of significance.
+
 ## A uniform tidy result contract
 
 `tidy_results()` exposes the same columns for every DA engine while preserving

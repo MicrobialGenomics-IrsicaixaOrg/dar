@@ -14,6 +14,9 @@
   results join by taxon ID instead of potentially duplicated taxonomy labels.
 * Wilcoxon and LEfSe skip designs with additive time adjustment, including when
   the time column is explicitly declared, rather than silently ignoring it.
+* Plot selectors are validated against the model's contrast plan, including
+  hypotheses with no significant taxa. Discovery plots report an empty selection
+  without rejecting valid contrasts or passing empty data to plotting engines.
 
 ## SCIENTIFIC VALIDATION
 

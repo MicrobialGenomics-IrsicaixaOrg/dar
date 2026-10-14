@@ -43,7 +43,8 @@ recipe contains more than one target.}
 Required when \code{taxa_ids = NULL} and more than one contrast is available.}
 }
 \value{
-ggplot2 or HeatmapList
+ggplot2 or HeatmapList, or invisible \code{NULL} with an informational
+message when automatic selection finds no significant taxa.
 }
 \description{
 Abundance boxplot

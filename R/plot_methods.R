@@ -77,7 +77,8 @@ corr_heatmap <- function(rec,
 #' @param contrast_id Optional modeled contrast identifier to include.
 #'
 #' @aliases intersection_plt
-#' @return UpSet plot
+#' @return UpSet plot, or invisible `NULL` with an informational message when
+#'   no significant taxa are available for the selected hypotheses.
 #' @export
 #' @autoglobal
 #' @tests
@@ -108,11 +109,15 @@ intersection_plt <- function(rec,
                              contrast_id = NULL) {
   
   check_prep_recipe(rec)
+  intersections <- intersection_df(
+    rec, steps, target = target, contrast_id = contrast_id
+  )
+  if (!any(as.matrix(intersections[, steps, drop = FALSE]) == 1L)) {
+    return(inform_empty_discovery_plot())
+  }
   require_optional_package("UpSetR", "intersection_plt")
   UpSetR::upset(
-    data = intersection_df(
-      rec, steps, target = target, contrast_id = contrast_id
-    ),
+    data = intersections,
     sets = steps,
     sets.bar.color = "#56B4E9",
     order.by = ordered_by, 
@@ -221,7 +226,8 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
 #' @param contrast_id Modeled contrast used for automatic taxon selection.
 #'   Required when `taxa_ids = NULL` and more than one contrast is available.
 #'
-#' @return ggplot2 or HeatmapList
+#' @return ggplot2 or HeatmapList, or invisible `NULL` with an informational
+#'   message when automatic selection finds no significant taxa.
 #' @export
 #' @autoglobal
 #' @tests
@@ -293,6 +299,11 @@ abundance_plt <- function(rec,
   target <- resolve_plot_target(rec, target)
   contrast_id <- resolve_abundance_contrast(rec, taxa_ids, target, contrast_id)
 
+  if (is.null(taxa_ids) &&
+      nrow(selected_significant(rec, target, contrast_id)) == 0L) {
+    return(inform_empty_discovery_plot())
+  }
+
   if (type == "boxplot") { 
     plt <- .abundance_boxplot(
       rec, taxa_ids, transform, scale, top_n, target, contrast_id
@@ -329,7 +340,8 @@ abundance_plt <- function(rec,
 #' @param target Optional modeled target to include.
 #' @param contrast_id Optional modeled contrast identifier to include.
 #'
-#' @return ggplot2
+#' @return ggplot2, or invisible `NULL` with an informational message when
+#'   no significant taxa are available for the selected hypotheses.
 #' @export
 #' @autoglobal
 #' @tests
@@ -419,8 +431,29 @@ mutual_plt <- function(rec,
   all_significant <- .all_significant(rec, steps = steps)
   if (!is.null(get_model(rec))) {
     all_significant <- filter_model_hypotheses(
-      all_significant, target = target, contrast_id = contrast_id
+      all_significant, rec, target = target, contrast_id = contrast_id
     )
+  }
+
+  if (!is.null(comparisons)) {
+    available <- if (is.null(get_model(rec))) {
+      unique(tidy_results(rec, steps = steps)$comparison)
+    } else {
+      filter_model_hypotheses(
+        resolve_model(rec)$contrast_plan, rec,
+        target = target, contrast_id = contrast_id
+      )$comparison
+    }
+    if (!is.character(comparisons) || anyNA(comparisons) ||
+        !all(comparisons %in% available)) {
+      cli::cli_abort(c(
+        "x" = "Invalid value in {.arg comparisons}.",
+        "i" = "Valid comparisons are: {.val {available}}."
+      ), class = "dar_error_invalid_comparison")
+    }
+  }
+  if (nrow(all_significant) == 0L) {
+    return(inform_empty_discovery_plot())
   }
   df <- dplyr::filter(
     all_significant, .data$method_count >= .env$count_cutoff
@@ -463,15 +496,11 @@ mutual_plt <- function(rec,
   }
   
   if (!is.null(comparisons)) {
-    if (!all(comparisons %in% df$comparison)) {
-      cli::cli_abort(c(
-        "x" = "Invalid value in {.arg comparisons}.",
-        "i" = "Valid comparisons are: {.val {unique(df$comparison)}}."
-      ),
-      class = "dar_error_invalid_comparison"
-      )
-    }
     df <- df %>% dplyr::filter(comparison %in% comparisons)
+  }
+
+  if (nrow(df) == 0L) {
+    return(inform_empty_discovery_plot())
   }
 
   facet <- if (is.null(get_model(rec))) ~ comparison else ~ var + comparison
@@ -497,6 +526,12 @@ mutual_plt <- function(rec,
 }
 
 # --- INTERNAL HELPERS ---
+
+#' @noRd
+inform_empty_discovery_plot <- function() {
+  cli::cli_inform("No significant taxa are available for the selected hypotheses.")
+  invisible(NULL)
+}
 
 #' @noRd
 #' @keywords internal
@@ -567,7 +602,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   data <- .all_significant(rec, steps = steps)
   if (!is.null(get_model(rec))) {
     data <- filter_model_hypotheses(
-      data, target = target, contrast_id = contrast_id
+      data, rec, target = target, contrast_id = contrast_id
     )
   }
   data

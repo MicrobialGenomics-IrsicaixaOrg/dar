@@ -29,7 +29,8 @@ order.}
 \item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
-UpSet plot
+UpSet plot, or invisible \code{NULL} with an informational message when
+no significant taxa are available for the selected hypotheses.
 }
 \description{
 Plot results using UpSet plot

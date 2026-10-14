@@ -625,7 +625,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
       df[[step_id]] <- 0L
     }
     df <- dplyr::select(df, dplyr::all_of(c(keys, steps))) |>
-      filter_model_hypotheses(target = target, contrast_id = contrast_id) |>
+      filter_model_hypotheses(rec, target = target, contrast_id = contrast_id) |>
       dplyr::mutate(
         .tax_order = match(
           .data$taxa_id, taxa_ids
@@ -755,7 +755,8 @@ validate_consensus_steps <- function(rec, steps) {
 }
 
 #' @noRd
-filter_model_hypotheses <- function(data, target = NULL, contrast_id = NULL) {
+filter_model_hypotheses <- function(data, rec, target = NULL, contrast_id = NULL) {
+  plan <- resolve_model(rec)$contrast_plan
   validate_selector <- function(value, argument, available) {
     if (is.null(value)) return(NULL)
     if (!is.character(value) || length(value) != 1L || anyNA(value) ||
@@ -767,9 +768,12 @@ filter_model_hypotheses <- function(data, target = NULL, contrast_id = NULL) {
     }
     value
   }
-  target <- validate_selector(target, "target", unique(data$var))
+  target <- validate_selector(target, "target", unique(plan$var))
+  if (!is.null(target)) {
+    plan <- dplyr::filter(plan, .data$var %in% .env$target)
+  }
   contrast_id <- validate_selector(
-    contrast_id, "contrast_id", unique(data$contrast_id)
+    contrast_id, "contrast_id", plan$contrast_id
   )
   if (!is.null(target)) {
     data <- dplyr::filter(data, .data$var %in% .env$target)

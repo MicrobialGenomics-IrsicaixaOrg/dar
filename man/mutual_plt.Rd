@@ -35,7 +35,8 @@ selected ones will be plotted.}
 \item{contrast_id}{Optional modeled contrast identifier to include.}
 }
 \value{
-ggplot2
+ggplot2, or invisible \code{NULL} with an informational message when
+no significant taxa are available for the selected hypotheses.
 }
 \description{
 Plots number of differentially abundant features mutually found by defined
