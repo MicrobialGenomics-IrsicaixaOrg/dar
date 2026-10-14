@@ -1,0 +1,37 @@
+test_that("the frozen design contains exactly nine cells and 860 planned fits", {
+  design <- benchmark_design()
+  expect_identical(design$cell_id, paste0("P", 1:9))
+  expect_identical(design$n_replicates, rep(20L, 9L))
+  expect_identical(design$n_taxa, rep(100L, 9L))
+  expect_identical(design$adjust_batch, c(rep(FALSE, 4), TRUE, TRUE, rep(FALSE, 3)))
+  expect_equal(sum(design$n_replicates * (4L + !design$adjust_batch)), 860L)
+  expect_equal(benchmark_case("P3")$n_per_group, 15L)
+  expect_equal(benchmark_case("P3")$depth_median, 1500L)
+})
+
+test_that("preflight is a separate two-dataset strong balanced ledger", {
+  design <- benchmark_preflight_design()
+  expect_identical(design$cell_id, c("PF_G1", "PF_G2"))
+  expect_identical(design$n_replicates, rep(1L, 2L))
+  expect_equal(design$effect_magnitude, rep(log(4), 2L))
+  expect_identical(design$mode, rep("preflight", 2L))
+  expect_error(benchmark_case("P2", preflight = TRUE), "Unknown cell")
+  expect_error(benchmark_case("PF_G1"), "Unknown cell")
+  expect_error(benchmark_data_seed("PF_G1", replicate = 2L, preflight = TRUE),
+               "exceeds")
+})
+
+test_that("seeds follow the frozen dataset and engine arithmetic", {
+  expect_identical(benchmark_data_seed("P2", 3L), 20281017L)
+  expect_identical(benchmark_data_seed("PF_G1", preflight = TRUE), 19810311L)
+  expect_identical(benchmark_data_seed("PF_G2", preflight = TRUE), 19820311L)
+  ledger <- benchmark_seed_ledger()
+  expect_equal(nrow(ledger), 180L)
+  expect_equal(anyDuplicated(ledger$data_seed), 0L)
+  expect_equal(ledger$ancom - ledger$data_seed, rep(100000L, 180L))
+  expect_equal(ledger$wilcox - ledger$data_seed, rep(500000L, 180L))
+  expect_equal(nrow(benchmark_seed_ledger(preflight = TRUE)), 2L)
+  expect_error(benchmark_data_seed("P1", 0), "valid integer")
+  expect_error(benchmark_data_seed("P1", 1.5), "valid integer")
+  expect_error(benchmark_data_seed("P1", 21), "exceeds")
+})
