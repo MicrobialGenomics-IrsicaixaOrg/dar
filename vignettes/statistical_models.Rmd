@@ -12,6 +12,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(dar)
+set.seed(130)
 ```
 
 `add_model()` defines one statistical design shared by every compatible
@@ -21,9 +22,48 @@ for confounding. Method-specific thresholds, normalization and rarefaction
 settings remain active. A model-free recipe remains valid for preprocessing,
 but differential-abundance execution without a model is deprecated.
 
+## Small example data
+
+These simulated counts illustrate the API, not biological findings or a
+benchmark. There are 12 subjects, each measured at three visits. The
+cross-sectional example uses only their baseline samples.
+
+```{r example-data}
+metadata <- expand.grid(
+  visit = 0:2, subject_index = 1:6,
+  condition = c("control", "treated"),
+  KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE
+)
+metadata$subject <- paste(metadata$condition, metadata$subject_index, sep = "_")
+metadata$batch <- factor(ifelse(metadata$subject_index %% 2 == 0, "A", "B"))
+metadata$age <- rep(c(25, 42, 31, 56, 38, 49), each = 3, times = 2)
+rownames(metadata) <- paste(metadata$subject, metadata$visit, sep = "_")
+means <- outer(seq(40, 150, length.out = 12), rep(1, nrow(metadata)))
+means[1, ] <- means[1, ] * ifelse(metadata$condition == "treated", 2, 1)
+means[2, ] <- means[2, ] * exp(
+  0.3 * metadata$visit * (metadata$condition == "treated")
+)
+counts <- matrix(
+  rnbinom(length(means), mu = as.vector(means), size = 20),
+  nrow = nrow(means),
+  dimnames = list(paste0("taxon_", seq_len(nrow(means))), rownames(metadata))
+)
+taxonomy <- cbind(
+  Genus = paste0("Genus_", seq_len(nrow(counts))),
+  Species = paste0("Species_", seq_len(nrow(counts)))
+)
+rownames(taxonomy) <- rownames(counts)
+longitudinal_phy <- phyloseq::phyloseq(
+  phyloseq::otu_table(counts, taxa_are_rows = TRUE),
+  phyloseq::tax_table(taxonomy),
+  phyloseq::sample_data(metadata)
+)
+phy <- phyloseq::prune_samples(metadata$visit == 0, longitudinal_phy)
+```
+
 ## Cross-sectional adjustment
 
-```{r cross-sectional, eval=FALSE}
+```{r cross-sectional}
 rec <- recipe(phy) |>
   add_model(
     ~ condition + batch + age,
@@ -38,8 +78,14 @@ rec <- recipe(phy) |>
   step_linda()
 
 get_model(rec)
-fit <- prep(rec)
+cross_sectional_fit <- prep(rec, parallel = FALSE)
 ```
+
+With only 12 simulated taxa, ANCOM-BC2 warns that bias estimation requires a
+larger taxon set. ALDEx2 may also report that its standardized effect is not
+calculated for the numeric adjustment variable `age`; `age` is not a requested
+target here. These warnings are left visible: this is an API illustration,
+not a validation of estimation quality on such a small data set.
 
 The reference is the denominator, so a positive effect for
 `condition[treated-control]` means higher abundance in `treated`. With
@@ -51,7 +97,7 @@ any engine runs and records the sample identifiers in the execution manifest.
 Numeric time values are converted internally to a factor whose levels are
 sorted by numeric value. The original sample metadata are not modified.
 
-```{r longitudinal, eval=FALSE}
+```{r longitudinal}
 longitudinal <- recipe(longitudinal_phy) |>
   add_model(
     ~ condition * visit + batch + (1 | subject),
@@ -62,11 +108,11 @@ longitudinal <- recipe(longitudinal_phy) |>
     contrasts = "all",
     na_action = "drop"
   ) |>
-  step_ancom() |>
+  step_ancom(id = "ancom__primary") |>
   step_linda() |>
-  step_maaslin()
+  step_maaslin(id = "maaslin__sensitivity")
 
-fit <- prep(longitudinal)
+fit <- prep(longitudinal, parallel = FALSE)
 tidy_results(fit) |>
   dplyr::distinct(contrast_id, comparison, contrast_type)
 ```
@@ -124,7 +170,7 @@ Use a distinct identifier such as `wilcox_effect` instead of `effect`.
 Other custom identifiers, including `.custom`, are retained unchanged; this
 restriction does not apply to preprocessing or bake IDs.
 
-```{r tidy-results, eval=FALSE}
+```{r tidy-results}
 results <- tidy_results(
   fit,
   steps = c("ancom__primary", "maaslin__sensitivity"),
@@ -149,8 +195,12 @@ The eight DA steps accept `engine_args`, a named list grouped by native-call
 stage. This keeps advanced settings attached to the configured step and avoids
 an ambiguous `...`. For example:
 
-```{r engine-args, eval=FALSE}
-rec |>
+```{r engine-args}
+advanced <- recipe(phy) |>
+  add_model(
+    ~ condition + batch + age, targets = "condition", tax_level = "Species",
+    reference = c(condition = "control")
+  ) |>
   step_deseq(
     engine_args = list(
       fit = list(minReplicatesForReplace = Inf),
@@ -159,10 +209,15 @@ rec |>
   ) |>
   step_ancom(
     engine_args = list(
-      fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
+      fit = list(iter_control = list(tol = 1e-3, max_iter = 50, verbose = FALSE))
     )
   )
+advanced_fit <- prep(advanced, parallel = FALSE)
 ```
+
+Nested native control lists replace the corresponding native argument; they
+are not merged with its defaults. For ANCOM-BC2, supply the complete
+`iter_control` list, including `verbose`, rather than only the values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
 DESeq2; `clr`, `fit`, and `effect` for ALDEx2; `fit` for ANCOM-BC2,

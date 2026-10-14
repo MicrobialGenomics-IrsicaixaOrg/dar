@@ -28,7 +28,7 @@ inputs in a variety of formats. It primarily utilizes the `phyloseq` format but
 also supports the `TreeSummarizedExperiment` format. This flexibility allows 
 users to conduct differential abundance analysis smoothly, irrespective of 
 their initial data format. To facilitate this, a detailed guide is available 
-to aid users in converting other prevalent data formats, such as `biome`, 
+to aid users in converting other prevalent data formats, such as `BIOM`,
 `mothur`, `metaphlan`, and more, into the necessary `phyloseq` or 
 `TreeSummarizedExperiment` formats. 
 
@@ -37,16 +37,16 @@ suppressPackageStartupMessages(library(mia))
 suppressPackageStartupMessages(library(phyloseq))
 ```
 
-## Importing Data from `biome` Format
+## Importing Data from `BIOM` Format
 
-The `biome` format is a commonly used format in bioinformatics to represent 
-microbiome sequencing data. Here's how you can import data in `biome` format to 
+The `BIOM` format represents microbiome abundance tables. Here's how you can
+import data in `BIOM` format to
 both `phyloseq` and `TreeSummarizedExperiment.`
 
 
 ### To Phyloseq
 
-To convert data from the `biome` format to the `phyloseq` format, you can use 
+To convert data from the `BIOM` format to the `phyloseq` format, you can use
 the `phyloseq::import_biom()` function. Here's a step-by-step example of how to 
 perform this conversion:
 
@@ -97,7 +97,7 @@ statistical method.
 
 ### To TreeSummarizedExperiment
 
-To convert data from the `biome` format to the `TreeSummarizedExperiment` format, 
+To convert data from the `BIOM` format to the `TreeSummarizedExperiment` format,
 you can use the `mia::importBIOM()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
@@ -131,11 +131,10 @@ rec
 ```
 
 
-## Importing Data from `qiime` Format
+## Importing Data from QIIME Formats
 
-The `qiime` format is another commonly used format in bioinformatics for 
-microbiome sequencing data. Here's how you can import data in `qiime` format to
-both `Phyloseq` and `TreeSummarizedExperiment.`
+The examples below use different file formats: a legacy QIIME text table for
+`phyloseq`, and QIIME 2 `.qza` artifacts for `TreeSummarizedExperiment`.
 
 
 ### To Phyloseq
@@ -168,7 +167,7 @@ To convert data from the `qiime` format to the `TreeSummarizedExperiment` format
 you can use the `mia::importQIIME2()` function. Here's a step-by-step example 
 of how to perform this conversion:
 
-```{r import-qiime-tse, eval = FALSE}
+```{r import-qiime-tse}
 # Import QIIME data to tse
 tse_qiime <- mia::importQIIME2(
   featureTableFile = system.file("extdata", "table.qza", package = "mia"),
@@ -260,27 +259,24 @@ tse_metaphlan <- mia::importMetaPhlAn(
   file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
 )
 
-# Recipe init
-tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
-  assays = list(counts = SummarizedExperiment::assay(tse_metaphlan)),
-  rowData = SummarizedExperiment::rowData(tse_metaphlan),
-  colData = SummarizedExperiment::colData(tse_metaphlan) |> 
-    as.data.frame() |> 
-    dplyr::mutate(condition = rep(c("A", "B"), times = 3))
-)
-
-rec <- dar::recipe(tse_metaphlan) |>
-  dar::add_model(~ condition, targets = "condition", tax_level = "Genus")
+# Recipe init: no invented sample groups
+phy_metaphlan <- mia::convertToPhyloseq(tse_metaphlan, assay.type = "metaphlan")
+rec <- dar::recipe(phy_metaphlan)
 
 rec
 ```
+
+MetaPhlAn abundance profiles are not raw read counts. Inspect the assay and
+its units before choosing a DA engine; importing a profile does not make it
+appropriate for a count-based model. Add genuine study metadata before
+configuring a target with `add_model()`.
 
 ## Conclusion
 
 In this guide, we have explored various methods for importing microbiome 
 sequencing data from different formats into `Phyloseq` and 
-`TreeSummarizedExperiment.` We've covered the `biome`, `qiime`, `mothur`, 
-`metaphlan`, and `humann` formats, providing step-by-step examples for each.
+`TreeSummarizedExperiment`. We've covered BIOM, QIIME, mothur and MetaPhlAn
+formats with example files included in the corresponding dependencies.
 
 The flexibility of these tools allows for a smooth transition between different
 data formats, making it easier to conduct your analysis irrespective of the
@@ -296,5 +292,5 @@ to ensure it has been imported correctly.
 ## Session info
 
 ```{r data-import-session-info}
-devtools::session_info()
+sessionInfo()
 ```

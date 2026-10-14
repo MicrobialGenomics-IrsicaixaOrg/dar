@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 options(digits = 3)
+set.seed(130)
 ```
 
 ## An Example 
@@ -48,9 +49,6 @@ metaHIV_phy
 First, we will create a recipe object from the original data and then specify 
 the processing and differential analysis steps.
 
-Recipes can be created manually by sequentially adding roles to variables in a 
-data set.
-
 The easiest way to create the initial recipe is:
 
 ```{r first_rec}
@@ -59,19 +57,18 @@ rec_obj <- recipe(metaHIV_phy) |>
 rec_obj
 ```
 
-The `var_info` argument corresponds to the variable to be considered in the 
-modeling process and `tax_info` indicates the taxonomic level that will be used 
-for the analyses.
+The `targets` argument of `add_model()` identifies the variables whose effects
+will be tested, and `tax_level` selects the taxonomic rank for the analysis.
 
 ## Preprocessing Steps
 
 From here, preprocessing steps for some step X can be added sequentially in one 
 of two ways:
 
-```{r step_code, eval=FALSE}
-rec_obj <- step_{X}(rec_obj, arguments)   
+```text
+rec_obj <- step_X(rec_obj, arguments)
 ## or
-rec_obj <- rec_obj |> step_{X}(arguments)
+rec_obj <- rec_obj |> step_X(arguments)
 ```
 
 Note that all `step_ancom` and the other functions will always return updated 
@@ -98,17 +95,17 @@ Additionally, the `dar` package provides convenient wrappers for the
 
 - `step_filter_by_prevalence`: Filters OTUs according to the number of samples 
 in which the OTU appears.
-- `step_filter_by_variance`: Filters OTUs based on the variance of the OTU's 
-presence across samples.
+- `step_filter_by_variance`: Filters OTUs based on the variance of their
+abundance across samples.
 - `step_filter_by_abundance`: Filters OTUs according to the OTU's abundance 
 across samples.
 - `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU across 
 samples.
 
 For our data, we can add an operation to preprocessing the data stored in the 
-initial recpie. First, we will use `step_subset_taxa` to retain only Bacteria 
+initial recipe. First, we will use `step_subset_taxa` to retain only Bacteria
 and Archaea OTUs from the Kingdom taxonomic level. We will then filter out OTUs
-where at least 3% of the samples have counts greater than 0. 
+present in no more than 3% of samples, retaining those above that threshold.
 
 ```{r prepro_steps}
 rec_obj <- rec_obj |>
@@ -122,7 +119,7 @@ rec_obj
 
 Now that we have defined the preprocessing of the input data for all the da 
 methods that will be used, we need to define them. For this introduction we 
-will use __maaslin2__ method with default parameters
+will use DESeq2 and MaAsLin3 with default parameters
 (those defined by the authors of each method).
 
 ```{r da_steps}
@@ -148,11 +145,12 @@ grep(
 ## Prep 
 
 To ensure the reproducibility and consistency of the generated results, all the 
-steps defined in the recipe are executed at the same time using the `prep` 
-function.
+preprocessing steps are executed in order, followed by the compatible DA
+methods, using `prep()`. This vignette runs sequentially; use `parallel = TRUE`
+and an appropriate `workers` value to run DA methods in separate processes.
 
 ```{r prep}
-da_results <- prep(rec_obj, parallel = TRUE)
+da_results <- prep(rec_obj, parallel = FALSE)
 da_results
 ```
 
@@ -164,8 +162,9 @@ OTUs that have been detected by all methods (consensus).
 
 Now that we have the results we need to extract them, however for this we first 
 need to define a consensus strategy with the `bake`. For this example we are 
-only interested in those OTUs detected as differentially abundant in the three 
-methods used.
+only interested in taxa detected by both methods for the same contrast and
+effect direction. Agreement is a selection rule, not evidence that the
+consensus has a calibrated false-discovery rate.
 
 ```{r bake}
 ## Number of used methods
@@ -184,5 +183,5 @@ cool(da_results)
 ## Session info
 
 ```{r dar-session-info}
-devtools::session_info()
+sessionInfo()
 ```

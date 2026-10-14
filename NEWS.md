@@ -25,6 +25,12 @@
 * `step_filter_taxa()` documentation and examples describe the restricted
   serializable predicate syntax and filtering during `prep()`, rather than
   promising arbitrary function lists or a `prune` option.
+* Vignettes use the central model API, execute self-contained adjusted and
+  longitudinal examples, and enable the bundled QIIME 2 import example.
+  MetaPhlAn import selects its relative-abundance assay explicitly, and the
+  advanced ANCOM-BC2 example supplies a complete native control list.
+  Consensus explanations no longer promise calibrated error rates or use
+  fixed historical discovery counts.
 
 ## SCIENTIFIC VALIDATION
 
