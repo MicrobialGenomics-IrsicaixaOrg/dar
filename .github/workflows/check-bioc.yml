@@ -388,7 +388,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y rsync
 
       - name: Deploy pkgdown site to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@800bbc83122db9d4c38fcd284782d5afe62e52df # releases/v4
+        uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # releases/v4
         with:
           clean: false
           branch: gh-pages
