@@ -31,17 +31,9 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init Recipe
-#' rec <- recipe(metaHIV_phy)
-#' rec
-#'
-#' ## Define step_subset_taxa step with default parameters
-#' rec <- step_subset_taxa(
-#'   rec, 
-#'   tax_level = "Kingdom",
-#'   taxa = c("Bacteria", "Archaea")
-#' )
-#' prep(rec)
+#' recipe(metaHIV_phy) |>
+#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+#'   prep()
 step_subset_taxa <- function(rec, tax_level, taxa, id = rand_id("subset_taxa")) {
 
   check_recipe(rec)

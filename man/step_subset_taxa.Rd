@@ -39,17 +39,9 @@ This function modifies \code{rec} in place, you might want to make a copy of
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- recipe(metaHIV_phy)
-rec
-
-## Define step_subset_taxa step with default parameters
-rec <- step_subset_taxa(
-  rec, 
-  tax_level = "Kingdom",
-  taxa = c("Bacteria", "Archaea")
-)
-prep(rec)
+recipe(metaHIV_phy) |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+  prep()
 }
 \seealso{
 \code{\link[phyloseq]{subset_taxa}}

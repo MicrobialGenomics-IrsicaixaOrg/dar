@@ -16,9 +16,3 @@ Tibble containing \code{tax_info}.
 \code{get_tax()} is deprecated. Use \code{get_model(rec)$tax_level} for modeled
 recipes.
 }
-\examples{
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-suppressWarnings(get_tax(rec))
-}

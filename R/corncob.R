@@ -14,9 +14,13 @@
 #'   operations for this Recipe.
 #' @param phi.formula An object of class formula without the response: a
 #'   symbolic description of the model to be fitted to the dispersion.
-#' @param formula_null Formula for mean under null, without response.
+#' @param formula_null Formula for mean under null, without response. Defaults
+#'   to `NULL`, which uses `~ 1` during deprecated model-free execution.
+#'   An explicit formula is overridden with a warning by a centralized model.
 #' @param phi.formula_null Formula for overdispersion under null, without
-#'   response.
+#'   response. Defaults to `NULL`, which uses `~ 1` during deprecated model-free
+#'   execution. An explicit formula is overridden with a warning by a
+#'   centralized model.
 #' @param link Link function for abundance covariates, defaults to "logit".
 #' @param phi.link Link function for dispersion covariates, defaults to "logit".
 #' @param test Character. Hypothesis testing procedure to use. One of "Wald" or
@@ -63,28 +67,20 @@
 #' 
 #' data(test_prep_rec)
 #' expect_error(step_corncob(test_prep_rec))
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
-#' ## Init Recipe
-#' rec <- 
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
-#' 
-#' rec
-#' 
-#' ## Define step with default parameters and prep
-#' rec <- 
-#'   step_corncob(rec) |>
-#'   prep(parallel = FALSE)
-#'   
-#' rec
+#'
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
+#'
+#' rec_default <- step_corncob(rec)
+#'
+#' # Use a stricter significance threshold.
+#' rec_strict <- step_corncob(rec, fdr_cutoff = 0.01)
 step_corncob <- function(rec,
                          phi.formula = stats::formula(~ 1),
-                         formula_null = stats::formula(~ 1),
-                         phi.formula_null = stats::formula(~ 1),
+                         formula_null = NULL,
+                         phi.formula_null = NULL,
                          link = "logit",
                          phi.link = "logit",
                          test = "Wald",
@@ -163,6 +159,8 @@ run_corncob <- function(rec,
     ))
   }
   
+  formula_null <- formula_null %||% stats::formula(~ 1)
+  phi.formula_null <- phi.formula_null %||% stats::formula(~ 1)
   vars <- recipe_targets(rec)
   tax_level <- recipe_tax_level(rec)
   phy <- get_phy(rec) %>% use_rarefy(rarefy)

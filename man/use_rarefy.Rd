@@ -26,13 +26,4 @@ controversy. Rarefaction can lead to loss of information and can also lead to
 false positives in differential abundance testing. For more information, see
 https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2
 }
-\examples{
-data(metaHIV_phy)
-
-## With seed
-# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
-
-## Witout seed
-# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
-}
 \keyword{internal}

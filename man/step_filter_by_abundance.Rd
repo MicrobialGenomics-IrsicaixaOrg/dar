@@ -45,13 +45,8 @@ This function modifies \code{rec} in place, you might want to make a copy of
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- recipe(metaHIV_phy)
-rec
-
-## Define filter_by_abundance step with default parameters
-rec <- step_filter_by_abundance(rec, threshold = 0.01)
-rec
+recipe(metaHIV_phy) |>
+  step_filter_by_abundance()
 }
 \seealso{
 \code{\link[phyloseq]{filter_taxa}}

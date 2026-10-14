@@ -6,7 +6,7 @@
 \usage{
 step_ancom(
   rec,
-  fix_formula = recipe_targets(rec),
+  fix_formula = NULL,
   rand_formula = NULL,
   p_adj_method = "holm",
   prv_cut = 0.1,
@@ -34,7 +34,9 @@ operations for this Recipe.}
 \item{fix_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the fixed effects in metadata. When
 specifying the fix_formula, make sure to include the group variable in the
-formula if it is not NULL.}
+formula if it is not NULL. Defaults to \code{NULL}: use the centralized model,
+or the recipe targets during deprecated model-free execution. An explicit
+formula is overridden with a warning when a centralized model is defined.}
 
 \item{rand_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the random effects in metadata.
@@ -122,37 +124,21 @@ test, Dunnett's type of test, and trend test.
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
 
-rec
+rec_default <- step_ancom(rec)
 
-## Pass advanced arguments to ANCOM-BC2
-step_ancom(
+# Pass advanced convergence controls to ANCOM-BC2.
+rec_custom <- step_ancom(
   rec,
   engine_args = list(
     fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
   )
 )
 
-## Define step with default parameters and prep
-rec <-
-  step_ancom(rec) |>
-  prep(parallel = FALSE)
-
-rec
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-  step_ancom(rarefy = TRUE)
-
-rec
+# Rarefy counts only when this step runs.
+rec_rarefied <- step_ancom(rec, rarefy = TRUE)
 }
 \seealso{
 Other Diff taxa steps:

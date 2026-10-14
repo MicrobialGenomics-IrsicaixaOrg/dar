@@ -32,6 +32,6 @@ Overlap of significant OTUs between tested methods.
 }
 \examples{
 data(test_prep_rec)
-df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
+df <- overlap_df(test_prep_rec)
 head(df)
 }

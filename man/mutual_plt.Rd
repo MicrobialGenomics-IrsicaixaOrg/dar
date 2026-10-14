@@ -45,28 +45,17 @@ separated by comparison.
 \examples{
 data(test_prep_rec)
 
-## Running the function returns a tile plot,
 mutual_plt(test_prep_rec)
 
-## The count_cutoff indicates the minimum number of methods in which an OTU
-## must be present. By default the value is equal to
-## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
+## Require agreement among all methods
 mutual_plt(
-  test_prep_rec, 
+  test_prep_rec,
   count_cutoff = length(steps_ids(test_prep_rec, "da"))
 )
 
-## A single comparisons can be plotted through the comparison parameter.
-mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
+## Show a single comparison
+mutual_plt(test_prep_rec, comparisons = "hts_msm")
 
-## If you want to exclude a method for the plot, you can remove it with the
-## step parameter. In the following example we eliminate from the graph the
-## results of maaslin.
+## Exclude the first method from the plot
 mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-
-## mutual_plt function needs a PrepRecipe. If you pass a a non-PrepRecipe
-## the output is an error.
-data(test_rec)
-err <- testthat::expect_error(mutual_plt(test_rec))
-err
 }

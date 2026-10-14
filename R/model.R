@@ -888,7 +888,7 @@ model_override_arguments <- function(step) {
         function(arg) isTRUE(step[[arg]]), logical(1)
       )]
     ),
-    corncob = "formula_null",
+    corncob = c("formula_null", "phi.formula_null"),
     maaslin = c("random_effects", "reference"),
     lefse = "subclassCol",
     character()

@@ -37,15 +37,11 @@ Plot results using UpSet plot
 \examples{
 data(test_prep_rec)
 
-## Running the function returns a UpSet plot ordered by frequency.
-intersection_plt(test_prep_rec)
+if (requireNamespace("UpSetR", quietly = TRUE)) {
+  ## UpSet plot of shared discoveries
+  intersection_plt(test_prep_rec)
 
-## Alternatively, you can order the plot by degree
-intersection_plt(test_prep_rec, ordered_by = "degree")
-
-## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
-## Recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(intersection_plt(test_rec))
-err
+  ## Order intersections by the number of methods involved
+  intersection_plt(test_prep_rec, ordered_by = "degree")
+}
 }

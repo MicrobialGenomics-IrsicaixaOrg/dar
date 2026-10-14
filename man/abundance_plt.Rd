@@ -51,23 +51,16 @@ Abundance boxplot
 \examples{
 data(test_prep_rec)
 
-## Running the function returns a boxplot,
+## Boxplots of taxa detected by all methods
 abundance_plt(test_prep_rec)
 
-## Giving the value "heatmap" to the type parameter, the resulting graph
-## a heatmap.
-# abundance_plt(test_prep_rec, type = "heatmap")
+## Display the same abundances as a heatmap
+if (requireNamespace("ComplexHeatmap", quietly = TRUE) &&
+    requireNamespace("gplots", quietly = TRUE)) {
+  abundance_plt(test_prep_rec, type = "heatmap")
+}
 
-## By default, those taxa significant in all methods are plotted. If you want
-## to graph some determined features, you can pass them as vector through the
-## taxa_ids parameter.
-# taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
-# abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
-# abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
-
-## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
-## Recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(abundance_plt(test_rec))
-err
+## Select taxa explicitly
+taxa_ids <- head(tax_table(test_prep_rec)$taxa_id, 3)
+abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
 }

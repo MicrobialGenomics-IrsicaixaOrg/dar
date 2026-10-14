@@ -44,11 +44,6 @@ warn_deprecated_selector <- function(selector, replacement) {
 #' @return Tibble containing `var_info`.
 #' @export
 #' @autoglobal
-#' @examples
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-#' suppressWarnings(get_var(rec))
 get_var <- function(rec) {
   check_any_recipe(rec)
   warn_deprecated_selector("get_var", "get_model")
@@ -65,11 +60,6 @@ get_var <- function(rec) {
 #' @return Tibble containing `tax_info`.
 #' @export
 #' @autoglobal
-#' @examples
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-#' suppressWarnings(get_tax(rec))
 get_tax <- function(rec) {
   check_any_recipe(rec)
   warn_deprecated_selector("get_tax", "get_model")
@@ -106,11 +96,6 @@ get_phy <- function(rec) {
 #' @return A `Recipe` object.
 #' @export
 #' @autoglobal
-#' @examples
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy)
-#' rec <- suppressWarnings(add_var(rec, var_info = "RiskGroup2"))
-#' rec
 #' @tests
 #' data(metaHIV_phy)
 #' rec <- recipe(metaHIV_phy)
@@ -152,11 +137,6 @@ add_var <- function(rec, var_info) {
 #' @return A `Recipe` object.
 #' @export
 #' @autoglobal
-#' @examples
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy)
-#' rec <- suppressWarnings(add_tax(rec, tax_info = "Species"))
-#' rec
 #' @tests
 #' data(metaHIV_phy)
 #' rec <- recipe(metaHIV_phy)
@@ -344,14 +324,12 @@ required_pkgs_prep <- function(x, ...) { c("furrr", "future") }
 #' @autoglobal
 #' @examples
 #' data(metaHIV_phy)
-#' rec <-
-#'   recipe(metaHIV_phy) |>
+#' rec <- recipe(metaHIV_phy) |>
 #'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Class") |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x))) |>
-#'   step_maaslin()
+#'   step_filter_by_prevalence(threshold = 0.03) |>
+#'   step_wilcox()
 #'
-#' da_results <- prep(rec)
+#' da_results <- prep(rec, parallel = FALSE)
 #'
 #' @tests
 #' data(metaHIV_phy)
@@ -656,7 +634,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
 #' @autoglobal
 #' @examples
 #' data(test_prep_rec)
-#' df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
+#' df <- overlap_df(test_prep_rec)
 #' head(df)
 overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all",
                        target = NULL, contrast_id = NULL) {

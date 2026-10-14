@@ -65,38 +65,19 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init Recipe
-#' rec <-
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 #'
-#' rec
+#' rec_default <- step_deseq(rec)
 #'
-#' ## Pass advanced arguments to native DESeq2 stages
-#' step_deseq(
+#' # Pass advanced arguments to native DESeq2 stages.
+#' rec_custom <- step_deseq(
 #'   rec,
 #'   engine_args = list(
 #'     fit = list(minReplicatesForReplace = Inf),
 #'     shrink = list(lfcThreshold = 1)
 #'   )
 #' )
-#'
-#' ## Define step with default parameters and prep
-#' rec <-
-#'   step_deseq(rec) |>
-#'   prep(parallel = FALSE)
-#'
-#' rec
-#'
-#' ## Wearing rarefaction only for this step
-#' rec <-
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-#'   step_deseq(rarefy = TRUE)
-#'
-#' rec
 step_deseq <- function(rec,
                        test = "Wald",
                        fitType = "local",

@@ -40,14 +40,12 @@
 #' data(metaHIV_phy)
 #'
 #' rec <- recipe(metaHIV_phy) |>
-#'   add_model(
-#'     ~ RiskGroup2,
-#'     targets = "RiskGroup2",
-#'     tax_level = "Species"
-#'   ) |>
-#'   step_linda(prev_filter = 0.1, adaptive = TRUE)
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #'
-#' rec
+#' rec_default <- step_linda(rec)
+#'
+#' # Retain features present in at least 10% of samples.
+#' rec_filtered <- step_linda(rec, prev_filter = 0.1)
 step_linda <- function(rec,
                        prev_filter = 0,
                        mean_abund_filter = 0,

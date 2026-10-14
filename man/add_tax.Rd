@@ -18,9 +18,3 @@ A \code{Recipe} object.
 \description{
 \code{add_tax()} is deprecated. Supply \code{tax_level} to \code{\link[=add_model]{add_model()}} instead.
 }
-\examples{
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy)
-rec <- suppressWarnings(add_tax(rec, tax_info = "Species"))
-rec
-}

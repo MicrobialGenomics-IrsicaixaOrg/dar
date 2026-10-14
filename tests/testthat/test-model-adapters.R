@@ -52,6 +52,48 @@ test_that("ANCOM-BC2 compiles and executes a centralized contrast", {
   )
   expect_complete_model_result(result, rec)
   expect_model_directions(result)
+  table <- dar:::flatten_model_output(result)
+  expect_false(anyNA(table$taxa_id))
+  expect_setequal(table$taxa_id, phyloseq::taxa_names(get_phy(rec)))
+})
+
+test_that("ANCOM-BC2 preserves aggregated taxon IDs across planned contrasts", {
+  skip_if_not_installed("ANCOMBC")
+  phy <- make_multilevel_phy()
+  phyloseq::taxa_names(phy) <- paste0("ASV_", seq_len(phyloseq::ntaxa(phy)))
+  taxonomy <- cbind(
+    Genus = paste0("Genus_", seq_len(phyloseq::ntaxa(phy))),
+    as(phyloseq::tax_table(phy), "matrix")
+  )
+  taxonomy[1:2, "Species"] <- "Shared_species"
+  taxonomy[4, c("Genus", "Species")] <- taxonomy[3, c("Genus", "Species")]
+  phyloseq::tax_table(phy) <- phyloseq::tax_table(taxonomy)
+  aggregated <- phyloseq::tax_glom(phy, taxrank = "Species", NArm = FALSE)
+  expected_ids <- phyloseq::taxa_names(aggregated)
+  expected_taxa <- as(phyloseq::tax_table(aggregated), "matrix")[, "Species"]
+  rec <- suppressWarnings(
+    recipe(phy) |>
+      add_model(~ condition, targets = "condition", tax_level = "Species") |>
+      step_ancom(prv_cut = 0, id = "ancom__taxonomy")
+  )
+
+  prepared <- suppressWarnings(prep(rec, parallel = FALSE))
+  table <- tidy_results(prepared)
+
+  expect_false(anyNA(table$taxa_id))
+  expect_setequal(table$taxa_id, expected_ids)
+  expect_length(expected_ids, 5L)
+  expect_equal(nrow(table), length(expected_ids) * 3L)
+  expect_equal(sum(table$taxa == "Shared_species"), 6L)
+  expect_identical(
+    anyDuplicated(dplyr::select(table, "taxa_id", "contrast_id")),
+    0L
+  )
+  expect_setequal(
+    table$contrast_id,
+    dar:::resolve_model(rec)$contrast_plan$contrast_id
+  )
+  expect_equal(table$taxa, unname(expected_taxa[table$taxa_id]))
 })
 
 test_that("corncob compiles and executes a centralized contrast", {

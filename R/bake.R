@@ -55,33 +55,21 @@
 #'
 #' @examples
 #' data(test_prep_rec)
-#' rec <- test_prep_rec
 #'
-#' ## Default bake extracts common OTUs in all DA tested methods
-#' ## (In this case the Recipe contains 3 methods)
-#' res <- bake(rec)
-#' cool(res)
+#' ## Require agreement among all differential-abundance methods
+#' cool(bake(test_prep_rec))
 #'
-#' ## bake() requires a PrepRecipe
-#' data(test_rec)
-#' err <- testthat::expect_error(bake(test_rec))
-#' err
+#' ## Retain taxa detected by at least one method
+#' cool(bake(test_prep_rec, count_cutoff = 1))
 #'
-#' ## We can use the parameter `count_cutoff` to select those OTUs
-#' ## shared by at least two methods
-#' res <- bake(rec, count_cutoff = 2)
-#' cool(res)
+#' ## Exclude a method from the consensus
+#' method_ids <- steps_ids(test_prep_rec, "da")
+#' cool(bake(test_prep_rec, exclude = method_ids[1]))
 #'
-#' ## Furthermore, we can exclude methods from the consensus strategy
-#' ## with the `exclude` parameter.
-#' res <- bake(rec, exclude = steps_ids(rec, "da")[1])
-#' cool(res)
-#'
-#' ## Finally, we can use the `weights` parameter to weigh each method.
-#' weights <- c(2, 1)
-#' names(weights) <- steps_ids(rec, "da")
-#' res <- bake(rec, weights = weights)
-#' cool(res)
+#' ## Give the first method twice the weight of the others
+#' weights <- setNames(rep(1, length(method_ids)), method_ids)
+#' weights[1] <- 2
+#' cool(bake(test_prep_rec, weights = weights))
 bake <- function(rec,
                  count_cutoff = NULL,
                  weights = NULL,

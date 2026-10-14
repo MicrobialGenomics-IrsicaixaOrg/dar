@@ -7,8 +7,8 @@
 step_corncob(
   rec,
   phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
+  formula_null = NULL,
+  phi.formula_null = NULL,
   link = "logit",
   phi.link = "logit",
   test = "Wald",
@@ -30,10 +30,14 @@ operations for this Recipe.}
 \item{phi.formula}{An object of class formula without the response: a
 symbolic description of the model to be fitted to the dispersion.}
 
-\item{formula_null}{Formula for mean under null, without response.}
+\item{formula_null}{Formula for mean under null, without response. Defaults
+to \code{NULL}, which uses \code{~ 1} during deprecated model-free execution.
+An explicit formula is overridden with a warning by a centralized model.}
 
 \item{phi.formula_null}{Formula for overdispersion under null, without
-response.}
+response. Defaults to \code{NULL}, which uses \code{~ 1} during deprecated model-free
+execution. An explicit formula is overridden with a warning by a
+centralized model.}
 
 \item{link}{Link function for abundance covariates, defaults to "logit".}
 
@@ -91,21 +95,13 @@ variability, and addresses each of the challenges presented below:
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- 
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 
-rec
+rec_default <- step_corncob(rec)
 
-## Define step with default parameters and prep
-rec <- 
-  step_corncob(rec) |>
-  prep(parallel = FALSE)
-  
-rec
+# Use a stricter significance threshold.
+rec_strict <- step_corncob(rec, fdr_cutoff = 0.01)
 }
 \seealso{
 Other Diff taxa steps:

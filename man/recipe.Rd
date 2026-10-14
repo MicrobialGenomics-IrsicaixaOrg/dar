@@ -38,42 +38,18 @@ to prepare it for data analysis.
 \examples{
 data(metaHIV_phy)
 
-## Define recipe
-rec <-
-  recipe(metaHIV_phy) |>
+## Configure, prepare and obtain a consensus
+rec <- recipe(metaHIV_phy) |>
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+  step_filter_by_prevalence(threshold = 0.3) |>
   step_deseq() |>
   step_maaslin()
 
-## Prep recipe
-da_results <- prep(rec)
-
-## Consensus strategy
-n_methods <- 2
-da_results <- bake(da_results, count_cutoff = n_methods)
-
-## Results
+da_results <- prep(rec, parallel = FALSE) |>
+  bake()
 cool(da_results)
 
 ## A recipe without a model can be used for preprocessing
-rec <- recipe(metaHIV_phy)
-
-rec
-
-## Define the complete analysis configuration later
-rec <- rec |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
-
-rec
-
-## When trying to add an identical step to an existing one, the system
-## returns an information message.
-rec <- step_aldex(rec)
-rec <- step_aldex(rec)
-
-## The same with bake
-da_results <- bake(da_results)
-da_results <- bake(da_results)
+rec <- recipe(metaHIV_phy) |>
+  step_filter_by_prevalence(threshold = 0.1)
 }

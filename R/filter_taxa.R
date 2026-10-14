@@ -26,16 +26,10 @@
 #' expect_error(step_filter_taxa(test_prep_rec))
 #' @examples
 #' data(metaHIV_phy)
-#' 
-#' ## Init Recipe
-#' rec <- recipe(metaHIV_phy)
-#' rec
-#' 
-#' ## Define filter taxa step with default parameters
-#' rec <- 
-#'   step_filter_taxa(rec, .f = "function(x) sum(x > 0) >= (0.03 * length(x))")
-#'   
-#' rec
+#'
+#' ## Keep taxa present in at least 3% of samples
+#' recipe(metaHIV_phy) |>
+#'   step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x))
 step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
   
   check_recipe(rec)

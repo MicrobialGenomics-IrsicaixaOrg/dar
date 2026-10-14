@@ -29,15 +29,12 @@ Finds common OTU between method results
 \examples{
 data(test_prep_rec)
 
-## From a PrepRecipe we can extract a tibble with all intersections
-intersections <- find_intersections(test_prep_rec)
-intersections
+## Extract all intersections
+find_intersections(test_prep_rec)
 
-## Additionally, we can exclude some methods form the table
-intersections <- find_intersections(
+## Exclude the first method
+find_intersections(
   test_prep_rec,
   steps = steps_ids(test_prep_rec, "da")[-1]
 )
-
-intersections
 }

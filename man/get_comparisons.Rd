@@ -22,7 +22,7 @@ tibble or list
 Generate all unique contrasts between levels of a categorical variable.
 }
 \examples{
-data(test_rec)
-dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
+data(metaHIV_phy)
+dar:::get_comparisons("RiskGroup2", metaHIV_phy)
 }
 \keyword{internal}

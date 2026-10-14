@@ -78,29 +78,13 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init Recipe
-#' rec <-
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 #'
-#' rec
+#' rec_default <- step_aldex(rec)
 #'
-#' ## Define ALDEX step with default parameters and prep
-#' rec <-
-#'   step_aldex(rec) |>
-#'   prep(parallel = FALSE)
-#'
-#' rec
-#'
-#' ## Wearing rarefaction only for this step
-#' rec <-
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-#'   step_aldex(rarefy = TRUE)
-#'
-#' rec
+#' # Increase the number of Monte Carlo instances.
+#' rec_more_instances <- step_aldex(rec, mc.samples = 256)
 step_aldex <- function(rec,
                        max_significance = 0.05,
                        mc.samples = 128,
@@ -137,9 +121,7 @@ run_aldex <- function(rec,
                       id,
                       engine_args = list()) {
 
-  engine_args <- check_engine_args_execution(
-    rec, "aldex", engine_args, id
-  )
+  engine_args <- check_engine_args_execution(rec, "aldex", engine_args, id)
 
   if (!is.null(get_model(rec))) {
     return(run_aldex_model(

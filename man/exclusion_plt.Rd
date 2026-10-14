@@ -29,17 +29,8 @@ Plot the number of shared DA OTUs between methods.
 \examples{
 data(test_prep_rec)
 
-## Running the function returns a barplot plot,
 exclusion_plt(test_prep_rec)
 
-## If you want to exclude a method for the plot, you can remove it with the
-## step parameter. In the following example we eliminate from the graph the
-## results of maaslin
+## Exclude the first method from the plot
 exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-
-## exclusion_plt function needs a PrepRecipe. If you pass a a non-prep
-## Recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(exclusion_plt(test_rec))
-err
 }

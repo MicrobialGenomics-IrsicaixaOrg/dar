@@ -1,5 +1,14 @@
 # dar 1.9.12
 
+## FIXED
+
+* ANCOM-BC2 preserves stable taxon identifiers after aggregation at the modeled
+  taxonomic rank, preventing duplicate or missing IDs in prepared results.
+* Design-override warnings are emitted only for explicitly configured
+  engine-specific designs; default ANCOM-BC2 and corncob steps no longer warn.
+* Function examples focus on supported workflows and distinct options, without
+  redundant setup, repeated defaults or intentional error demonstrations.
+
 ## SCIENTIFIC VALIDATION
 
 * IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA bias and

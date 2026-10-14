@@ -44,8 +44,8 @@ rand_id <- function(prefix = "step") {
 #' expect_length(filtered, 1)
 #'
 #' @examples
-#' data(test_rec)
-#' dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
+#' data(metaHIV_phy)
+#' dar:::get_comparisons("RiskGroup2", metaHIV_phy)
 get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
   dat <-
     phyloseq::sample_data(phy) %>%
@@ -91,12 +91,8 @@ get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
 #' expect_equal(names(test_2)[1], "random_id")
 #'
 #' @examples
-#' data(test_rec)
-#' otu_table <-
-#'   get_phy(test_rec) |>
-#'   phyloseq::otu_table()
-#'
-#' dar:::to_tibble(otu_table)
+#' data(metaHIV_phy)
+#' dar:::to_tibble(phyloseq::otu_table(metaHIV_phy))
 to_tibble <- function(df, id_name = "otu_id") {
   df %>%
     data.frame(check.names = FALSE) %>%
@@ -211,17 +207,14 @@ step_call_label <- function(step) {
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## From a PrepRecipe we can extract a tibble with all intersections
-#' intersections <- find_intersections(test_prep_rec)
-#' intersections
+#' ## Extract all intersections
+#' find_intersections(test_prep_rec)
 #'
-#' ## Additionally, we can exclude some methods form the table
-#' intersections <- find_intersections(
+#' ## Exclude the first method
+#' find_intersections(
 #'   test_prep_rec,
 #'   steps = steps_ids(test_prep_rec, "da")[-1]
 #' )
-#'
-#' intersections
 find_intersections <- function(rec, steps = steps_ids(rec, "da"),
                                target = NULL, contrast_id = NULL) {
   df <- intersection_df(
@@ -297,16 +290,11 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da"),
 #' @examples
 #' data(test_rec)
 #'
-#' ## We can extract the step identifiers from a Recipe with `step_ids`
-#' ids <- steps_ids(test_rec)
-#' ids
+#' steps_ids(test_rec)
 #'
-#' ## With the `type` parameter, extract the prepro and da steps separately.
-#' da_ids <- steps_ids(test_rec, type = "da")
-#' da_ids
-#'
-#' prepro_ids <- steps_ids(test_rec, type = "prepro")
-#' prepro_ids
+#' ## Select differential-abundance or preprocessing steps
+#' steps_ids(test_rec, type = "da")
+#' steps_ids(test_rec, type = "prepro")
 steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
   check_any_recipe(rec)
   if (!type %in% c("all", "da", "prepro")) {
@@ -450,28 +438,6 @@ dot <- function() {
 #' @return recipe-class object
 #' @noRd
 #' @autoglobal
-#' @examples
-#' data(metaHIV_phy)
-#'
-#' ## Initialize the Recipe with a phyloseq object
-#' rec <- recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-#' rec
-#'
-#' ## Import steps
-#' json_file <- system.file("extdata", "test.json", package = "dar")
-#' rec <- import_steps(rec, json_file)
-#' rec
-#'
-#' ## Legacy executable imports are disabled.
-#' json_file <- system.file("extdata", "test_bake.json", package = "dar")
-#' rec <-
-#'   recipe(metaHIV_phy) |>
-#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-#'   import_steps(json_file)
-#'
-#' rec
-#' cool(rec)
 .legacy_import_steps <- function(
   rec,
   file,
@@ -580,15 +546,10 @@ extract_instructions <- function(lines) {
 #' @autoglobal
 #' @return boolean
 #' @examples
-#' data(GlobalPatterns, package = "phyloseq")
-#' rec <-
-#'   phyloseq::subset_samples(
-#'     GlobalPatterns, SampleType %in% c("Soil", "Skin")
-#'   ) |>
-#'   recipe() |>
-#'   step_rarefaction()
-#'
+#' data(metaHIV_phy)
+#' rec <- recipe(metaHIV_phy)
 #' contains_rarefaction(rec)
+#' contains_rarefaction(step_rarefaction(rec))
 contains_rarefaction <- function(rec) {
   check_any_recipe(rec)
   any(purrr::map_lgl(rec@steps, function(configured_step) {
@@ -615,14 +576,6 @@ contains_rarefaction <- function(rec) {
 #' @return A phyloseq object after rarefaction if `rarefy` is TRUE or "no_seed",
 #'   otherwise the original phyloseq object is returned.
 #' @keywords internal
-#' @examples
-#' data(metaHIV_phy)
-#'
-#' ## With seed
-#' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
-#'
-#' ## Witout seed
-#' # phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
 use_rarefy <- function(phy, rarefy) {
   if (isTRUE(rarefy)) {
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)

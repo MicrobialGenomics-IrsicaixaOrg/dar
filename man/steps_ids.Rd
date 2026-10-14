@@ -23,14 +23,9 @@ Get step_ids from recipe
 \examples{
 data(test_rec)
 
-## We can extract the step identifiers from a Recipe with `step_ids`
-ids <- steps_ids(test_rec)
-ids
+steps_ids(test_rec)
 
-## With the `type` parameter, extract the prepro and da steps separately.
-da_ids <- steps_ids(test_rec, type = "da")
-da_ids
-
-prepro_ids <- steps_ids(test_rec, type = "prepro")
-prepro_ids
+## Select differential-abundance or preprocessing steps
+steps_ids(test_rec, type = "da")
+steps_ids(test_rec, type = "prepro")
 }

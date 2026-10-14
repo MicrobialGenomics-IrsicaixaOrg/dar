@@ -75,29 +75,13 @@ complex metadata. It uses a unified framework to test for both abundance
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 
-rec
+rec_default <- step_maaslin(rec)
 
-## Define step with default parameters and prep
-rec <-
-  step_maaslin(rec) |>
-  prep(parallel = FALSE)
-
-rec
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-  step_maaslin(rarefy = TRUE)
-
-rec
+# Increase the minimum feature prevalence.
+rec_filtered <- step_maaslin(rec, min_prevalence = 0.2)
 }
 \seealso{
 Other Diff taxa steps:

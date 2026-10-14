@@ -71,14 +71,12 @@ A \link[=Recipe-class]{Recipe} object.
 data(metaHIV_phy)
 
 rec <- recipe(metaHIV_phy) |>
-  add_model(
-    ~ RiskGroup2,
-    targets = "RiskGroup2",
-    tax_level = "Species"
-  ) |>
-  step_linda(prev_filter = 0.1, adaptive = TRUE)
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
-rec
+rec_default <- step_linda(rec)
+
+# Retain features present in at least 10\% of samples.
+rec_filtered <- step_linda(rec, prev_filter = 0.1)
 }
 \seealso{
 Other Diff taxa steps:

@@ -18,9 +18,3 @@ A \code{Recipe} object.
 \description{
 \code{add_var()} is deprecated. Supply \code{targets} to \code{\link[=add_model]{add_model()}} instead.
 }
-\examples{
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy)
-rec <- suppressWarnings(add_var(rec, var_info = "RiskGroup2"))
-rec
-}

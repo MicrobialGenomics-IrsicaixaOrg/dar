@@ -117,18 +117,9 @@ f <- function(...) {
 
 f(1 + 1, 2 * 10)
 
-# Let's create some symbols:
-foo <- quote(foo)
-bar <- rlang::sym("bar")
-
-# as_name() converts symbols to strings:
-foo
-
+# Convert a symbol to its name
+foo <- rlang::sym("foo")
 rlang::as_name(foo)
-
-typeof(bar)
-
-typeof(rlang::as_name(bar))
 
 # as_name() unwraps quosured symbols automatically:
 rlang::as_name(rlang::quo(foo))

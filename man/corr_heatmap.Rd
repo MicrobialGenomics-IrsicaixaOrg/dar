@@ -36,12 +36,8 @@ Plot otuput of the \code{overlap_df} function as a heatmap.
 \examples{
 data(test_prep_rec)
 
-## Running the function returns a UpSet plot ordered by frequency.
-corr_heatmap(test_prep_rec)
-
-## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
-## Recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(corr_heatmap(test_rec))
-err
+## Correlation heatmap of discoveries shared between methods
+if (requireNamespace("heatmaply", quietly = TRUE)) {
+  corr_heatmap(test_prep_rec)
+}
 }

@@ -35,13 +35,8 @@
 #' @examples
 #' data(metaHIV_phy)
 #'
-#' ## Init Recipe
-#' rec <- recipe(metaHIV_phy)
-#' rec
-#'
-#' ## Define step_filter_by_rarity step with default parameters
-#' rec <- step_filter_by_rarity(rec, threshold = 0.01)
-#' rec
+#' recipe(metaHIV_phy) |>
+#'   step_filter_by_rarity()
 step_filter_by_rarity <- function(rec, 
                                   threshold = 0.01, 
                                   id = rand_id("filter_by_rarity")) {

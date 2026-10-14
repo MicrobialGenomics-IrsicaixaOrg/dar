@@ -40,21 +40,11 @@
 #'   
 #' expect_s4_class(prep(test), "PrepRecipe")
 #' expect_error(step_rarefaction(test_prep_rec))
-#' @examples 
+#' @examples
 #' data(metaHIV_phy)
-#' 
-#' ## Init Recipe
-#' rec <- 
-#'   recipe(metaHIV_phy) |>
-#'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-#'   step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
-#' 
-#' rec
-#' 
-#' ## Define step with default parameters and prep
-#' rec <- step_rarefaction(rec) 
-#'   
-#' rec
+#'
+#' recipe(metaHIV_phy) |>
+#'   step_rarefaction()
 step_rarefaction <- function(rec, id = rand_id("rarefaction")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")

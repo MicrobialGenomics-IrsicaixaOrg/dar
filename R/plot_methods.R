@@ -25,14 +25,10 @@
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## Running the function returns a UpSet plot ordered by frequency.
-#' corr_heatmap(test_prep_rec)
-#'
-#' ## corr_heatmap function needs a PrepRecipe. If you pass a a non-prep
-#' ## Recipe the output is an error.
-#' data(test_rec)
-#' err <- testthat::expect_error(corr_heatmap(test_rec))
-#' err
+#' ## Correlation heatmap of discoveries shared between methods
+#' if (requireNamespace("heatmaply", quietly = TRUE)) {
+#'   corr_heatmap(test_prep_rec)
+#' }
 corr_heatmap <- function(rec,
                          steps = steps_ids(rec, "da"),
                          font_size = 15,
@@ -97,17 +93,13 @@ corr_heatmap <- function(rec,
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## Running the function returns a UpSet plot ordered by frequency.
-#' intersection_plt(test_prep_rec)
+#' if (requireNamespace("UpSetR", quietly = TRUE)) {
+#'   ## UpSet plot of shared discoveries
+#'   intersection_plt(test_prep_rec)
 #'
-#' ## Alternatively, you can order the plot by degree
-#' intersection_plt(test_prep_rec, ordered_by = "degree")
-#'
-#' ## intersection_plt function needs a PrepRecipe. If you pass a a non-prep
-#' ## Recipe the output is an error.
-#' data(test_rec)
-#' err <- testthat::expect_error(intersection_plt(test_rec))
-#' err
+#'   ## Order intersections by the number of methods involved
+#'   intersection_plt(test_prep_rec, ordered_by = "degree")
+#' }
 intersection_plt <- function(rec,
                              steps = steps_ids(rec, "da"),
                              ordered_by = c("freq", "degree"), 
@@ -155,19 +147,10 @@ intersection_plt <- function(rec,
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## Running the function returns a barplot plot,
 #' exclusion_plt(test_prep_rec)
 #'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin
+#' ## Exclude the first method from the plot
 #' exclusion_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#'
-#' ## exclusion_plt function needs a PrepRecipe. If you pass a a non-prep
-#' ## Recipe the output is an error.
-#' data(test_rec)
-#' err <- testthat::expect_error(exclusion_plt(test_rec))
-#' err
 exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
                           contrast_id = NULL) {
   
@@ -277,25 +260,18 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## Running the function returns a boxplot,
+#' ## Boxplots of taxa detected by all methods
 #' abundance_plt(test_prep_rec)
 #'
-#' ## Giving the value "heatmap" to the type parameter, the resulting graph
-#' ## a heatmap.
-#' # abundance_plt(test_prep_rec, type = "heatmap")
+#' ## Display the same abundances as a heatmap
+#' if (requireNamespace("ComplexHeatmap", quietly = TRUE) &&
+#'     requireNamespace("gplots", quietly = TRUE)) {
+#'   abundance_plt(test_prep_rec, type = "heatmap")
+#' }
 #'
-#' ## By default, those taxa significant in all methods are plotted. If you want
-#' ## to graph some determined features, you can pass them as vector through the
-#' ## taxa_ids parameter.
-#' # taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
-#' # abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
-#' # abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
-#'
-#' ## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
-#' ## Recipe the output is an error.
-#' data(test_rec)
-#' err <- testthat::expect_error(abundance_plt(test_rec))
-#' err
+#' ## Select taxa explicitly
+#' taxa_ids <- head(tax_table(test_prep_rec)$taxa_id, 3)
+#' abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
 abundance_plt <- function(rec,
                           taxa_ids = NULL,
                           type = "boxplot",
@@ -385,30 +361,19 @@ abundance_plt <- function(rec,
 #' @examples
 #' data(test_prep_rec)
 #'
-#' ## Running the function returns a tile plot,
 #' mutual_plt(test_prep_rec)
 #'
-#' ## The count_cutoff indicates the minimum number of methods in which an OTU
-#' ## must be present. By default the value is equal to
-#' ## length(steps_ids(rec, "da")) * 2 / 3 but it is customizable.
+#' ## Require agreement among all methods
 #' mutual_plt(
-#'   test_prep_rec, 
+#'   test_prep_rec,
 #'   count_cutoff = length(steps_ids(test_prep_rec, "da"))
 #' )
 #'
-#' ## A single comparisons can be plotted through the comparison parameter.
-#' mutual_plt(test_prep_rec, comparisons = c("hts_msm"))
+#' ## Show a single comparison
+#' mutual_plt(test_prep_rec, comparisons = "hts_msm")
 #'
-#' ## If you want to exclude a method for the plot, you can remove it with the
-#' ## step parameter. In the following example we eliminate from the graph the
-#' ## results of maaslin.
+#' ## Exclude the first method from the plot
 #' mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
-#'
-#' ## mutual_plt function needs a PrepRecipe. If you pass a a non-PrepRecipe
-#' ## the output is an error.
-#' data(test_rec)
-#' err <- testthat::expect_error(mutual_plt(test_rec))
-#' err
 mutual_plt <- function(rec,
                        count_cutoff = NULL,
                        comparisons = NULL,

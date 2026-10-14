@@ -292,11 +292,13 @@ run_ancom_model <- function(rec, p_adj_method, prv_cut, lib_cut, s0_perc,
       tibble::column_to_rownames("sample_id") |>
       data.frame(check.names = FALSE) |>
       phyloseq::sample_data()
+
     fit <- exec_engine_stage(
       "ancom", "fit", engine_args,
       fixed = list(
         data = mia::convertFromPhyloseq(contrast_phy),
-        tax_level = recipe_tax_level(rec),
+        # model_phyloseq() already aggregates counts; keep its stable taxon IDs.
+        tax_level = NULL,
         fix_formula = compiled$fix_formula,
         rand_formula = compiled$rand_formula,
         p_adj_method = p_adj_method,

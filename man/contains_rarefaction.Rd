@@ -17,13 +17,8 @@ boolean
 Checks if Recipe contains a rarefaction step
 }
 \examples{
-data(GlobalPatterns, package = "phyloseq")
-rec <-
-  phyloseq::subset_samples(
-    GlobalPatterns, SampleType \%in\% c("Soil", "Skin")
-  ) |>
-  recipe() |>
-  step_rarefaction()
-
+data(metaHIV_phy)
+rec <- recipe(metaHIV_phy)
 contains_rarefaction(rec)
+contains_rarefaction(step_rarefaction(rec))
 }

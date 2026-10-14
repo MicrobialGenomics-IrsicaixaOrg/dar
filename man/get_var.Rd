@@ -15,9 +15,3 @@ Tibble containing \code{var_info}.
 \description{
 \code{get_var()} is deprecated. Use \code{get_model(rec)$targets} for modeled recipes.
 }
-\examples{
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-suppressWarnings(get_var(rec))
-}

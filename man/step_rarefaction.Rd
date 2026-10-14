@@ -40,17 +40,7 @@ integer argument as rngseed.
 \examples{
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- 
-  recipe(metaHIV_phy) |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
-
-rec
-
-## Define step with default parameters and prep
-rec <- step_rarefaction(rec) 
-  
-rec
+recipe(metaHIV_phy) |>
+  step_rarefaction()
 }
 \concept{rarefaction phy steps}
