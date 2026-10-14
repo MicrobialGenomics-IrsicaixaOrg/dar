@@ -501,9 +501,13 @@ mutual_plt <- function(rec,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.annotated_counts <- function(rec) {
-  otu_table(rec) %>% 
-    tidyr::pivot_longer(-1, names_to = "sample_id") %>%
+.annotated_counts <- function(rec, counts = analysis_count_matrix(rec)) {
+  counts %>%
+    data.frame(check.names = FALSE) %>%
+    tibble::as_tibble(rownames = "taxa_id") %>%
+    tidyr::pivot_longer(
+      cols = -dplyr::all_of("taxa_id"), names_to = "sample_id"
+    ) %>%
     dplyr::left_join(analysis_sample_data(rec), by = "sample_id") %>%
     dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
 }
@@ -613,6 +617,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   }
   
   t_rec <- rec
+  t_rec@phyloseq <- analysis_phyloseq(rec)
   if (!is.null(transform)) {
     t_rec@phyloseq <- microbiome::transform(
       t_rec@phyloseq, 
@@ -623,7 +628,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
     transform <- "raw counts"
   }
   
-  .annotated_counts(t_rec) %>% 
+  .annotated_counts(t_rec, counts = recipe_count_matrix(t_rec)) %>%
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
     ggplot(aes(taxa, value, fill = !!dplyr::sym(target))) +
@@ -682,6 +687,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   }
   
   t_rec <- rec
+  t_rec@phyloseq <- analysis_phyloseq(rec)
   if (!is.null(transform)) {
     t_rec@phyloseq <- 
       microbiome::transform(t_rec@phyloseq, transform, scale = scale)
@@ -690,7 +696,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   }
     
   df <- 
-    .annotated_counts(t_rec) %>% 
+    .annotated_counts(t_rec, counts = recipe_count_matrix(t_rec)) %>%
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
     tidyr::unite("taxa", c(taxa_id, taxa), sep = "|")
   

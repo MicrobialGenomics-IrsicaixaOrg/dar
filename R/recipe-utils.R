@@ -243,8 +243,7 @@ recipe_metadata_data <- function(rec) {
 
 #' Extract complete taxonomy without invoking recipe validity recursively
 #' @noRd
-recipe_taxonomy_data <- function(rec) {
-  phy <- rec@phyloseq
+recipe_taxonomy_data <- function(rec, phy = rec@phyloseq) {
   taxa_ids <- phyloseq::taxa_names(phy)
   taxonomy <- tryCatch(
     as(phyloseq::tax_table(phy), "matrix"),
@@ -265,11 +264,64 @@ analysis_sample_data <- function(rec) {
     dplyr::select("sample_id", dplyr::all_of(recipe_targets(rec)))
 }
 
+#' Aggregate a single-rank taxonomy while preserving physical taxon IDs
+#' @noRd
+single_rank_tax_glom <- function(phy) {
+  taxonomy <- as(phyloseq::tax_table(phy), "matrix")
+  groups <- apply(taxonomy, 1L, function(rank) {
+    paste(rank, sep = ";_;", collapse = ";_;")
+  })
+  groups <- groups[!(groups %in% c(NA, "", " ", "\t"))]
+  groups <- tapply(names(groups), factor(groups), list)
+  groups <- groups[lengths(groups) > 1L]
+  if (length(groups) == 0L) {
+    return(phy)
+  }
+
+  merged_taxonomy <- taxonomy
+  phyloseq::tax_table(phy) <- NULL
+  for (taxa in groups) {
+    archetype <- taxa[
+      which.max(phyloseq::taxa_sums(phy)[taxa])
+    ]
+    if (length(unique(taxonomy[taxa, 1L])) != 1L) {
+      merged_taxonomy[archetype, 1L] <- NA_character_
+    }
+    phy <- phyloseq::merge_taxa(phy, taxa, archetype = archetype)
+  }
+  remaining <- phyloseq::taxa_names(phy)
+  phyloseq::tax_table(phy) <- phyloseq::tax_table(
+    merged_taxonomy[remaining, , drop = FALSE]
+  )
+  phy
+}
+
+#' Extract the canonical taxonomic analysis view without changing recipe data
+#' @noRd
+analysis_phyloseq <- function(rec) {
+  phy <- get_phy(rec)
+  if (is.null(get_model(rec))) {
+    return(phy)
+  }
+  if (length(phyloseq::rank_names(phy)) == 1L) {
+    return(single_rank_tax_glom(phy))
+  }
+  phyloseq::tax_glom(
+    phy, taxrank = recipe_tax_level(rec), NArm = FALSE
+  )
+}
+
+#' Extract analysis counts in canonical taxa-by-sample orientation
+#' @noRd
+analysis_count_matrix <- function(rec) {
+  recipe_count_matrix(rec, phy = analysis_phyloseq(rec))
+}
+
 #' Extract the selected-rank taxonomy view used by analysis engines
 #' @noRd
 analysis_tax_table <- function(rec) {
   tax_level <- recipe_tax_level(rec)
-  taxonomy <- recipe_taxonomy_data(rec)
+  taxonomy <- recipe_taxonomy_data(rec, phy = analysis_phyloseq(rec))
   if (length(tax_level) != 1L || !tax_level %in% names(taxonomy)) {
     cli::cli_abort(
       "A valid analysis taxonomic level is required for this operation.",
@@ -285,8 +337,7 @@ analysis_tax_table <- function(rec) {
 
 #' Extract counts in canonical taxa-by-sample orientation
 #' @noRd
-recipe_count_matrix <- function(rec) {
-  phy <- rec@phyloseq
+recipe_count_matrix <- function(rec, phy = rec@phyloseq) {
   counts <- as(phyloseq::otu_table(phy), "matrix")
   if (!phyloseq::taxa_are_rows(phy)) {
     counts <- t(counts)
@@ -537,6 +588,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
   validate_consensus_steps(rec, steps)
 
   if (!is.null(get_model(rec))) {
+    taxa_ids <- analysis_tax_table(rec)$taxa_id
     keys <- c(
       "taxa_id", "contrast_id", "comparison", "contrast_type", "var",
       "effect"
@@ -548,7 +600,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
     plan <- resolve_model(rec)$contrast_plan |>
       dplyr::select("contrast_id", "comparison", "contrast_type", "var")
     universe <- tidyr::crossing(
-      taxa_id = phyloseq::taxa_names(rec@phyloseq),
+      taxa_id = taxa_ids,
       plan
     ) |>
       dplyr::left_join(
@@ -576,7 +628,7 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
       filter_model_hypotheses(target = target, contrast_id = contrast_id) |>
       dplyr::mutate(
         .tax_order = match(
-          .data$taxa_id, phyloseq::taxa_names(rec@phyloseq)
+          .data$taxa_id, taxa_ids
         ),
         .contrast_order = match(
           .data$contrast_id, plan$contrast_id

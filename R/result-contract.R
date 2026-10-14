@@ -280,6 +280,30 @@ standardize_da_result <- function(result, rec, step_id) {
     )
   }
 
+  taxa <- result_character_column(result, "taxa")
+  if (!is.null(get_model(rec))) {
+    taxonomy <- analysis_tax_table(rec)
+    unknown <- setdiff(taxa_id, taxonomy$taxa_id)
+    if (length(unknown) > 0L) {
+      cli::cli_abort(
+        c(
+          "x" = "DA step {.val {step_id}} returned taxon identifiers outside the analysis universe.",
+          "i" = "Unknown taxon{?s}: {.val {unknown}}."
+        ),
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    expected_taxa <- taxonomy$taxa[match(taxa_id, taxonomy$taxa_id)]
+    mismatched <- !is.na(taxa) & (is.na(expected_taxa) | taxa != expected_taxa)
+    if (any(mismatched)) {
+      cli::cli_abort(
+        "DA step {.val {step_id}} returned labels inconsistent with its taxon identifiers.",
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    taxa <- expected_taxa
+  }
+
   comparison <- result_character_column(result, "comparison")
   var <- result_character_column(result, "var")
   contrast_id <- result_character_column(result, "contrast_id")
@@ -300,7 +324,7 @@ standardize_da_result <- function(result, rec, step_id) {
   config <- registry[[method]]
   standardized <- tibble::tibble(
     taxa_id = taxa_id,
-    taxa = result_character_column(result, "taxa"),
+    taxa = taxa,
     contrast_id = contrast_id,
     comparison = comparison,
     contrast_type = result_character_column(
@@ -392,7 +416,7 @@ order_tidy_results <- function(result, rec, steps) {
   }
   contrast_order <- rec@execution$contrasts$contrast_id
   contrast_order <- unique(c(contrast_order, result$contrast_id))
-  taxa_order <- phyloseq::taxa_names(rec@phyloseq)
+  taxa_order <- phyloseq::taxa_names(analysis_phyloseq(rec))
   taxa_order <- unique(c(taxa_order, result$taxa_id))
   result |>
     dplyr::mutate(

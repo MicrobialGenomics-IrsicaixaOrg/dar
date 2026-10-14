@@ -2,9 +2,8 @@
 
 #' @noRd
 model_phyloseq <- function(rec, rarefy = FALSE) {
-  phy <- get_phy(rec) |>
-    use_rarefy(rarefy) |>
-    phyloseq::tax_glom(taxrank = recipe_tax_level(rec), NArm = FALSE)
+  phy <- analysis_phyloseq(rec) |>
+    use_rarefy(rarefy)
   metadata <- resolve_model(rec)$data |>
     tibble::column_to_rownames("sample_id") |>
     data.frame(check.names = FALSE) |>
@@ -679,7 +678,17 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
                             lda.threshold, assay, trim.names, rarefy,
                             engine_args = list()) {
   compiled <- compile_model(rec, "lefse")
-  lefse_mat <- prepro_lefse(rec, rarefy)
+  phy <- model_phyloseq(rec, rarefy)
+  lefse_mat <- as(phyloseq::otu_table(phy), "matrix")
+  if (!phyloseq::taxa_are_rows(phy)) {
+    lefse_mat <- t(lefse_mat)
+  }
+  lefse_mat <- lefse_mat[, compiled$data$sample_id, drop = FALSE]
+  taxon_key <- tibble::tibble(
+    lefse_id = sprintf("dar_taxon_%08d", seq_len(nrow(lefse_mat))),
+    taxa_id = rownames(lefse_mat)
+  )
+  rownames(lefse_mat) <- taxon_key$lefse_id
   check_unused_engine_args("lefse", engine_args, c("transform", "fit"))
   out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
     contrast <- compiled$contrasts[index, , drop = FALSE]
@@ -715,7 +724,9 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
     ) |>
       tibble::as_tibble() |>
       dplyr::rename(lefse_id = "features") |>
-      dplyr::mutate(lefse_id = stringr::str_remove_all(.data$lefse_id, "`"))
+      dplyr::mutate(
+        lefse_id = stringr::str_remove_all(.data$lefse_id, "`")
+      )
     tests <- kruskal_test(se, metadata[[target]])
     abundance <- SummarizedExperiment::assay(se, i = assay)
     direction <- apply(abundance, 1, function(values) {
@@ -725,8 +736,8 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
 
     raw |>
       dplyr::left_join(tests, by = c("lefse_id" = "otu")) |>
+      dplyr::left_join(taxon_key, by = "lefse_id") |>
       dplyr::mutate(
-        taxa = stringr::str_remove_all(.data$lefse_id, ".*[|]"),
         effect = abs(.data$scores) * direction[.data$lefse_id],
         padj = .data$adjp,
         signif = !is.na(.data$padj) & .data$padj < kruskal.threshold &
@@ -736,7 +747,7 @@ run_lefse_model <- function(rec, kruskal.threshold, wilcox.threshold,
         contrast_type = contrast$contrast_type[[1]],
         var = target
       ) |>
-      dplyr::left_join(analysis_tax_table(rec), by = "taxa") |>
+      dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") |>
       dplyr::relocate("taxa_id", "taxa")
   })
   list(model = out)

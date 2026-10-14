@@ -8,6 +8,10 @@
   engine-specific designs; default ANCOM-BC2 and corncob steps no longer warn.
 * Function examples focus on supported workflows and distinct options, without
   redundant setup, repeated defaults or intentional error demonstrations.
+* Modeled engines, consensus tables and abundance plots share one aggregated
+  taxonomic view with stable IDs; public accessors retain the complete data.
+* Abundance transformations operate on aggregated counts, and modeled LEfSe
+  results join by taxon ID instead of potentially duplicated taxonomy labels.
 
 ## SCIENTIFIC VALIDATION
 
