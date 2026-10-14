@@ -90,6 +90,10 @@ difference-in-differences. More than 12 time points requires an explicit larger
 | Wilcoxon | no | no | no |
 | LEfSe | no | no | no |
 
+Fixed adjustment includes an additive time term, even when that column is
+declared with `time`. Wilcoxon and LEfSe support one categorical target without
+adjustment; they cannot execute `~ condition + time` with `targets = "condition"`.
+
 Incompatible steps are warned about when the chain is built and rechecked
 after preprocessing. `prep()` records them rather than treating them as failed
 fits. If no method is compatible, preparation stops. Real engine failures and

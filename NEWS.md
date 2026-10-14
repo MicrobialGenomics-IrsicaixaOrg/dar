@@ -12,6 +12,8 @@
   taxonomic view with stable IDs; public accessors retain the complete data.
 * Abundance transformations operate on aggregated counts, and modeled LEfSe
   results join by taxon ID instead of potentially duplicated taxonomy labels.
+* Wilcoxon and LEfSe skip designs with additive time adjustment, including when
+  the time column is explicitly declared, rather than silently ignoring it.
 
 ## SCIENTIFIC VALIDATION
 

@@ -596,7 +596,7 @@ resolve_model <- function(rec, check_design = TRUE) {
   }
 
   fixed_vars <- all.vars(fixed_formula)
-  confounders <- setdiff(fixed_vars, c(targets, model$time))
+  confounders <- setdiff(fixed_vars, targets)
   resolved <- list(
     formula = model$formula,
     tax_level = model$tax_level,
