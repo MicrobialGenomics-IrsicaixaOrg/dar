@@ -410,6 +410,16 @@ safe_predicate_aggregates <- c(
 )
 
 #' @noRd
+safe_predicate_environment <- function() {
+  # Bind only the allowlisted functions absent from base, not all of stats.
+  env <- rlang::env(
+    baseenv(), median = stats::median, var = stats::var, sd = stats::sd
+  )
+  lockEnvironment(env, bindings = TRUE)
+  env
+}
+
+#' @noRd
 encode_predicate_node <- function(node, context = ".f") {
   if (is.name(node)) {
     name <- as.character(node)
@@ -505,7 +515,7 @@ normalize_filter_predicate <- function(predicate, context = ".f") {
       )
     }
   )
-  rlang::new_function(formals(predicate), body, env = baseenv())
+  rlang::new_function(formals(predicate), body, env = safe_predicate_environment())
 }
 
 #' @noRd
@@ -605,7 +615,9 @@ decode_filter_predicate <- function(value, context = ".f") {
     )
   }
   body <- decode_predicate_node(value$body, context)
-  rlang::new_function(formals(function(x) NULL), body, env = baseenv())
+  rlang::new_function(
+    formals(function(x) NULL), body, env = safe_predicate_environment()
+  )
 }
 
 #' @noRd

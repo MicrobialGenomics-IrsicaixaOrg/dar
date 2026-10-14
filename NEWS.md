@@ -37,6 +37,9 @@
 * `step_ancom()` preserves stable taxon IDs after ANCOM-BC2 aggregation.
 * `step_corncob()` honors the requested absolute effect threshold in
   deprecated model-free execution.
+* `step_filter_taxa()` executes allowed `median()`, `var()` and `sd()`
+  predicates locally and after JSON import, using fixed trusted bindings
+  without expanding the permitted syntax or capturing external functions.
 * `step_lefse()` joins modeled results by taxon ID, keeping identically named
   taxa from different lineages distinct.
 * `step_wilcox()` and `step_lefse()` skip unsupported additive time
