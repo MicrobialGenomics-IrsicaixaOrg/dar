@@ -1,10 +1,10 @@
 ---
-title: "Central statistical models and longitudinal contrasts"
+title: "Statistical models and contrasts"
 author: "dar authors"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Central statistical models and longitudinal contrasts}
+  %\VignetteIndexEntry{Statistical models and contrasts}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,16 +17,18 @@ set.seed(130)
 
 `add_model()` defines one statistical design shared by every compatible
 differential-abundance step. Its `targets` and `tax_level` arguments are the
-single source of truth for the analysis configuration; other fixed terms adjust
-for confounding. Method-specific thresholds, normalization and rarefaction
+single source of truth for the analysis configuration; other fixed terms provide
+covariate adjustment. Method-specific thresholds, normalization and rarefaction
 settings remain active. A model-free recipe remains valid for preprocessing,
 but differential-abundance execution without a model is deprecated.
 
 ## Small example data
 
-These simulated counts illustrate the API, not biological findings or a
-benchmark. There are 12 subjects, each measured at three visits. The
-cross-sectional example uses only their baseline samples.
+These simulated counts illustrate model configuration, not biological findings,
+statistical performance or power. There are 12 subjects, each measured at three
+visits. The cross-sectional example uses only their baseline samples. Messages
+and warnings remain visible; this small example does not establish estimation
+quality or validate a method's assumptions.
 
 ```{r example-data}
 metadata <- expand.grid(
@@ -72,25 +74,18 @@ rec <- recipe(phy) |>
     reference = c(condition = "control"),
     na_action = "error"
   ) |>
-  step_deseq() |>
-  step_aldex() |>
-  step_ancom() |>
-  step_linda()
+  step_deseq()
 
 get_model(rec)
 cross_sectional_fit <- prep(rec, parallel = FALSE)
 ```
 
-With only 12 simulated taxa, ANCOM-BC2 warns that bias estimation requires a
-larger taxon set. ALDEx2 may also report that its standardized effect is not
-calculated for the numeric adjustment variable `age`; `age` is not a requested
-target here. These warnings are left visible: this is an API illustration,
-not a validation of estimation quality on such a small data set.
-
 The reference is the denominator, so a positive effect for
 `condition[treated-control]` means higher abundance in `treated`. With
 `na_action = "drop"`, `prep()` removes one common complete-case cohort before
 any engine runs and records the sample identifiers in the execution manifest.
+Use `na_action = "error"` when missing model variables should stop the analysis
+instead of changing the cohort.
 
 ## Longitudinal adjustment
 
@@ -108,9 +103,7 @@ longitudinal <- recipe(longitudinal_phy) |>
     contrasts = "all",
     na_action = "drop"
   ) |>
-  step_ancom(id = "ancom__primary") |>
-  step_linda() |>
-  step_maaslin(id = "maaslin__sensitivity")
+  step_linda()
 
 fit <- prep(longitudinal, parallel = FALSE)
 tidy_results(fit) |>
@@ -123,9 +116,14 @@ time values are numerators. `contrasts = "all"` additionally requests
 difference-in-differences. More than 12 time points requires an explicit larger
 `max_time_levels`, preventing accidental contrast explosions.
 
+`(1 | subject)` specifies a subject-level random intercept for repeated
+measurements. Declaring `time` does not itself add a random effect or establish
+that observations are independent. Include the subject structure required by
+the study design and choose a compatible method.
+
 ## Engine capabilities
 
-| Engine | Fixed confounders | Time interaction | Random effects |
+| Engine | Fixed adjustment | Time interaction | Random effects |
 |:--|:--:|:--:|:--:|
 | DESeq2 | yes | yes | no |
 | ALDEx2 | yes | yes | no |
@@ -145,49 +143,10 @@ after preprocessing. `prep()` records them rather than treating them as failed
 fits. If no method is compatible, preparation stops. Real engine failures and
 missing planned contrasts remain errors.
 
-Prepared modeled results contain `contrast_id`, `comparison`, `contrast_type`
-and `var`. Consensus operations group by `contrast_id` and effect direction, so
-different longitudinal hypotheses cannot contribute to the same vote.
-
-Plot selectors are validated against the planned hypotheses, not only the
-significant results. If a valid selection has no significant taxa,
-`abundance_plt()` (with automatic taxon selection), `mutual_plt()` and
-`intersection_plt()` report this with a message and return invisible `NULL`.
-Explicit `taxa_ids` can still be used to plot abundances regardless of significance.
-
-## A uniform tidy result contract
-
-`tidy_results()` exposes the same columns for every DA engine while preserving
-the engine-specific tables stored internally. The `method` column identifies the
-stable engine (`deseq`, `aldex`, and so on), whereas `step_id` identifies the
-configured instance and therefore distinguishes repeated configurations of one
-engine.
-
-DA step identifiers become columns in consensus tables. The internal names
-`taxa_id`, `contrast_id`, `comparison`, `contrast_type`, `var`, `effect`, `sum`,
-`.tax_order`, `.contrast_order` and `.effect_order` are therefore reserved.
-Use a distinct identifier such as `wilcox_effect` instead of `effect`.
-Other custom identifiers, including `.custom`, are retained unchanged; this
-restriction does not apply to preprocessing or bake IDs.
-
-```{r tidy-results}
-results <- tidy_results(
-  fit,
-  steps = c("ancom__primary", "maaslin__sensitivity"),
-  significant_only = TRUE
-)
-
-results |>
-  dplyr::select(
-    taxa_id, contrast_id, comparison, effect_size, effect_metric,
-    adj_p_value, significant, method, step_id
-  )
-```
-
-Effect values retain their native scientific scale. Use `effect_metric` when
-interpreting them: for example, a DESeq2 log2 fold change and an ALDEx2
-standardized CLR effect are labelled explicitly but are not converted to a
-common scale and should not be compared numerically.
+Use `contrast_id`, `comparison` and `contrast_type` to identify the hypothesis
+represented by each result. See
+[Exploring results and optional consensus](article.html) for the result columns,
+effect scales, selectors and plotting examples.
 
 ## Advanced native-engine arguments
 
@@ -212,7 +171,7 @@ advanced <- recipe(phy) |>
       fit = list(iter_control = list(tol = 1e-3, max_iter = 50, verbose = FALSE))
     )
   )
-advanced_fit <- prep(advanced, parallel = FALSE)
+advanced
 ```
 
 Nested native control lists replace the corresponding native argument; they
@@ -227,20 +186,16 @@ and arguments already exposed by each dar wrapper are protected. Non-empty
 `engine_args` require a centralized model. A configured stage that is not
 used by the selected execution route is reported as an error.
 
-`export_steps()` and `import_steps()` preserve the formula, targets, taxonomic
-level, time column, references, contrast mode, missing-value policy and
-time-level limit in the versioned `dar-recipe` JSON schema. Executable files
-created by the legacy exporter are rejected with migration guidance.
+See [Saving and sharing analysis recipes](import_export_recipes.html) for
+exporting model settings and native options without executing an analysis.
 
 ## Migrating legacy selectors
 
 The former `recipe(..., var_info=, tax_info=)`, `add_var()`, `add_tax()`,
-`get_var()` and `get_tax()` interfaces are deprecated in Bioconductor 3.24,
-become defunct in 3.25 and are scheduled for removal in 3.26. Model-free DA
-execution follows the same schedule; preprocessing without a model remains
-supported. New code should inspect `get_model(rec)$targets` and
-`get_model(rec)$tax_level`. Legacy recipe objects loaded from RDS can be
-migrated by moving both selectors into `add_model()`:
+`get_var()` and `get_tax()` interfaces, and model-free DA execution, are
+deprecated in Bioconductor 3.24, become defunct in 3.25 and are scheduled for
+removal in 3.26. Preprocessing without a model remains supported. Move the
+selectors into `add_model()` and inspect them with `get_model(rec)`:
 
 ```{r migration, eval=FALSE}
 # Deprecated
@@ -255,11 +210,10 @@ current <- recipe(phy) |>
   )
 ```
 
-The retired executable pseudo-JSON format cannot be imported safely. Recreate
-those steps in a current recipe and export them with `export_steps()` to obtain
-the versioned, non-executable JSON schema. `phy_qc()` is defunct in 3.24 and is
-replaced by `recipe_qc()`; `step_metagenomeseq()` has completed its lifecycle
-and is no longer exported.
+`phy_qc()` is defunct in 3.24; use `recipe_qc()`. The retired
+`step_metagenomeseq()` is no longer exported. Legacy executable recipe files
+must be recreated in the current API before export; they are not accepted by
+the current importer.
 
 ```{r session-info}
 sessionInfo()

@@ -1,280 +1,226 @@
 ---
-title: "Workflow with real data"
-output: rmarkdown::html_vignette
+title: "Exploring results and optional consensus"
 description: |
-  
+  Inspect per-method results, visualize selected contrasts and summarize agreement.
+output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Workflow with real data}
+  %\VignetteIndexEntry{Exploring results and optional consensus}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-<style>
-body {
-text-align: justify}
-</style>
-
-```{r article-setup, include = FALSE}
-knitr::opts_chunk$set(
-  message = FALSE,
-  digits = 3,
-  collapse = TRUE,
-  comment = "#>",
-  fig.align = "center", 
-  fig.width = 8
-)
-options(digits = 3)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(dar)
 set.seed(130)
 ```
 
-To illustrate the functionality of the `dar` package, this study will use the 
-included `metaHIV_phy` data set from Noguera-Julian, M., et al. (2016).
-We compare the recorded `RiskGroup2` categories to demonstrate the workflow.
-This unadjusted example describes associations, not causal effects or validated
-microbial biomarkers.
+This guide starts from individual method results. Agreement summaries and
+consensus rules are optional: neither replaces the methods' assumptions or
+establishes a calibrated false-discovery rate.
 
-## Load dar package and data
+## Prepare a small multi-method workflow
 
-```{r setup}
-library(dar)
-data("metaHIV_phy")
+The included real dataset makes this guide self-contained. Its unadjusted
+`RiskGroup2` comparison illustrates associations, not causal effects or validated
+biomarkers. DESeq2, LinDA and Wilcoxon can all execute this simple design;
+Wilcoxon cannot adjust for additional covariates. For other designs, consult
+[Statistical models and contrasts](statistical_models.html).
 
-metaHIV_phy
-```
+For illustration, fix an optional agreement rule of two supporting methods out
+of three before examining discoveries. This is not an optimized or generally
+recommended rule.
 
-## Recipe initialization
+```{r fit}
+data("metaHIV_phy", package = "dar")
+agreement_cutoff <- 2
 
-To begin the analysis process with the `dar` package, the first step is to 
-initialize a `Recipe` object, which is an S4 class. This recipe object serves as 
-a blueprint for the data preparation steps required for the differential 
-abundance analysis. The initialization of the recipe object is done through the 
-function `recipe()`, which takes as inputs a `phyloseq` or `TreeSummarizedExperiment` 
-(TSE) object. The statistical formula, target variable and taxonomic rank are
-then configured with `add_model()`. As
-previously mentioned, we will use the data set from 
-(Noguera-Julian, M., et al. 2016) and the variable of interest "RiskGroup2" 
-containing the categories: men who have sex with men (msm), non-MSM (hts) and 
-people who inject drugs (pwid) and we will perform the analysis at the species 
-level.
-
-```{r initialize-recipe}
-## Recipe initialization
 rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-rec
-```
-
-## Recipe QC and preprocessing steps definition
-
-Once the recipe object has been initialized, the next step is to populate it 
-with steps. Steps are the methods that will be applied to the data stored in the
-recipe. There are two types of steps: preprocessing (prepro) and differential 
-abundance (da) steps. Initially, we will focus on the prepro steps which are 
-used to modify the data loaded into the recipe, which will then be used for the 
-da steps. The ‘dar’ package includes 3 main preprocessing functionalities: 
-`step_subset_taxa`, which is used for subsetting columns and values in the taxon 
-table connected to the phyloseq object, `step_filter_taxa`, which is used to 
-filter the OTUs, and `step_rarefaction`, which is used to resample the OTU table 
-to ensure that all samples have the same library size. These functionalities 
-allow for a high level of flexibility and customization in the data preparation 
-process before performing the differential abundance analysis.
-
-The `dar` package provides convenient wrappers for the `step_filter_taxa` 
-function, designed to filter Operational Taxonomic Units (OTUs) based on 
-specific criteria: prevalence, variance, abundance, and rarity. 
-
-- `step_filter_by_prevalence`: Filters OTUs according to the number of samples 
-in which the OTU appears.
-- `step_filter_by_variance`: Filters OTUs based on the variance of their
-abundance across samples.
-- `step_filter_by_abundance`: Filters OTUs according to the OTU's abundance 
-across samples.
-- `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU across 
-samples.
-
-In addition to the preprocessing steps, `recipe_qc()` returns overall or
-explicitly grouped metrics that support informed preprocessing decisions.
-In our case, we decided to use the step_subset_taxa function to retain only 
-those observations annotated within the realm of Bacteria and Archaea. We also 
-used the `step_filter_by_prevalence` function to retain only those OTUs with
-more than 1% of the samples with values greater than 0. Filtering reduces the
-number of low-prevalence features; it does not by itself establish improved
-accuracy or reliability.
-
-```{r grouped-qc}
-## QC by analysis group
-recipe_qc(rec, group_by = "RiskGroup2")
-
-## Adding prepro steps
-rec <- 
-  rec |>
+  add_model(
+    ~ RiskGroup2,
+    targets = "RiskGroup2",
+    tax_level = "Species",
+    reference = c(RiskGroup2 = "hts")
+  ) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_by_prevalence()
+  step_filter_by_prevalence(threshold = 0.03) |>
+  step_deseq(id = "deseq") |>
+  step_linda(id = "linda") |>
+  step_wilcox(id = "wilcox")
 
-rec
+fit <- prep(rec, parallel = FALSE)
 ```
 
-## Define Differential Analysis (DA) steps
+## Inspect the result table
 
-Once data is preprocessed and cleaned, the next step is to add the da steps. 
-The `dar` package incorporates multiple methods to analyze the data, including: 
-ALDEx2, ANCOM-BC2, corncob, DESeq2, LEfSe, LinDA, MaAsLin3 and Wilcoxon.
-We set `min_prevalence = 0` for MaAsLin3 because a common prevalence filter is
-already included in the recipe. This avoids a second prevalence filter in that
-engine, but does not make the methods' assumptions or effect scales identical.
+`tidy_results()` exposes one row per returned taxon, contrast and configured
+step, without replacing the native tables held in the prepared recipe.
 
-Note: to reduce computation time, in this example we will only use the 
-DESeq2 and MaAsLin3. In a real analysis, choose methods compatible with the
-study design and data; adding every available method does not guarantee a
-more robust consensus.
+```{r tidy-results}
+results <- tidy_results(fit)
+results |>
+  dplyr::select(
+    taxa_id, contrast_id, numerator, denominator,
+    effect_size, effect_metric, adj_p_value, significant, method, step_id
+  ) |>
+  head()
 
-```{r define-da-steps}
-## DA steps definition
-rec <- rec |> 
-  step_deseq() |> 
-  step_maaslin(min_prevalence = 0) 
-
-rec
+results |>
+  dplyr::group_by(step_id, contrast_id) |>
+  dplyr::summarise(
+    n_returned = dplyr::n(),
+    n_finite_effects = sum(is.finite(effect_size)),
+    n_significant = sum(significant, na.rm = TRUE),
+    .groups = "drop"
+  )
 ```
 
-## Prep recipe
+Use `effect_metric` to interpret effect sizes. A log2 fold change and a
+difference in median relative abundance are not numerically interchangeable.
+The numerator and denominator define the orientation of each contrast.
+`significant` retains the configured method's decision, which can include
+criteria beyond an adjusted p-value, such as ANCOM-BC2's sensitivity filter.
+Missing statistics remain missing; a non-significant result alone does not
+prove that every native estimate was available or that there is no effect.
 
-Once the recipe has been defined, the next step is to execute all the steps 
-defined in the recipe. This is done through the function `prep()`. Internally, 
-it first executes the preprocessing steps, which modify the phyloseq object 
-stored in the recipe. Then, using the modified phyloseq, it executes each of 
-the defined differential abundance methods. To speed up the execution time, the 
-`prep()` function includes the option to run in parallel. The resulting object 
-has class `PrepRecipe` and when printed in the terminal, it displays the 
-number of taxa detected as significant in each of the methods and also the 
-total number of taxa shared across all methods. This allows for a provisional 
-overview of the results and a comparison between methods.
+`method` names the stable engine; `step_id` identifies its configuration. For
+example, select two executed steps without rerunning them:
 
-```{r execute-analysis}
-## Execute sequentially for this vignette
-da_results <- prep(rec, parallel = FALSE)
-da_results
+```{r selected-steps}
+tidy_results(fit, steps = c("deseq", "linda"), significant_only = TRUE) |>
+  head()
 ```
 
-## Default results extraction
+Custom DA step IDs must not collide with internal columns such as `effect`,
+`taxa_id` or `sum`; use a distinct name such as `linda_sensitivity`.
 
-At this point, we could extract the taxa shared across all methods using the 
-function `bake()` to define a default consensus strategy and then `cool()` to 
-extract the results. 
+## Select a contrast explicitly
 
-```{r default-results}
-## Default DA taxa results
-results <- 
-  bake(da_results) |> 
-  cool()
+```{r contrasts}
+results |>
+  dplyr::distinct(contrast_id, comparison, numerator, denominator)
 
-results
+comparison_id <- "RiskGroup2[msm-hts]"
+selected_results <- results |>
+  dplyr::filter(contrast_id == comparison_id)
 ```
 
-However, `dar` allows for complex consensus strategies based on the obtained 
-results. To that end, the user has access to different functions to graphically 
-represent different types of information. This feature allows for a more 
-in-depth analysis of the results and a better understanding of the underlying 
-patterns in the data.
+For longitudinal designs, `contrast_id` also distinguishes comparisons within
+visits and difference-in-differences. These hypotheses must not be pooled.
 
-## Exploration for consensus strategy definition
+## Visualize discoveries and agreement
 
-For example, `intersection_plt()` gives an overview of the overlaps between 
-methods by creating an UpSet plot. Counts are computed from the current
-results and may change with engine versions or settings.
+Select taxon IDs from the results you intend to plot. Here the selection is the
+union of discoveries for one contrast, not a consensus. `abundance_plt()` uses
+the same aggregated taxonomic analysis view as the modeled methods.
 
-```{r intersection-plot, fig.height=5}
-## Intersection plot 
-intersection_plt(da_results, ordered_by = "degree", font_size = 1)
+```{r abundance, fig.width=7, fig.height=5}
+taxa_ids <- selected_results |>
+  dplyr::filter(significant) |>
+  dplyr::distinct(taxa_id) |>
+  dplyr::pull(taxa_id) |>
+  head(6)
+
+if (length(taxa_ids)) {
+  abundance_plt(
+    fit, taxa_ids = taxa_ids,
+    contrast_id = comparison_id, type = "boxplot"
+  )
+} else {
+  message("No significant taxa for this comparison.")
+}
 ```
 
-In addition to the `intersection_plt()` function, `dar` also has the function 
-`exclusion_plt()` which provides information about the number of OTUs shared 
-between methods. This function allows to identify the OTUs that are specific to 
-each method and also the ones that are not shared among any method.
+`intersection_plt()` displays overlaps of discoveries, respecting contrast and
+effect direction. Overlap is descriptive evidence of agreement, not independent
+validation of a taxon or a measure of statistical accuracy.
 
-```{r exclusion-plot}
-## Exclusion plot 
-exclusion_plt(da_results)
+```{r intersections, fig.width=7, fig.height=5}
+intersection_plt(fit, contrast_id = comparison_id, font_size = 1)
 ```
 
-Besides to the previously mentioned functions, `dar` also includes the function 
-`corr_heatmap()`, which allows for visualization of the overlap of significant 
-OTUs between tested methods. This is an overlap heatmap, not a correlation
-matrix of taxon abundances.
+Despite its name, `corr_heatmap()` does not correlate taxon abundances. With
+`type = "all"`, it summarizes agreement in binary method decisions, including
+shared non-detections. A high value therefore need not mean many shared
+discoveries. `type = "da"` restricts the comparison to hypotheses detected by
+at least one method and requires a non-empty set.
 
-```{r correlation-heatmap, fig.height=6}
-## Correlation heatmap
-corr_heat <- corr_heatmap(da_results, font_size = 10) 
-corr_heat
+```{r agreement-heatmap, fig.width=6, fig.height=5}
+corr_heatmap(fit, type = "all", contrast_id = comparison_id, font_size = 9)
 ```
 
-Finally, `dar` also includes the function `mutual_plt()`, which plots the number 
-of differential abundant features mutually found by a defined number of 
-methods, colored by the differential abundance direction and separated by 
-comparison. The graph also allows us to observe the direction of the effect;
-whether a specific OTU is enriched or depleted for each comparison.
+`exclusion_plt()` and `mutual_plt()` provide alternative summaries of unique
+and shared detections. Automatic discovery plots report when no significant
+taxa are available. Some automatic selections fall back to the largest observed
+overlap when no taxon reaches the requested support. To plot exactly a specified
+selection, provide explicit `taxa_ids` as above rather than relying on that
+fallback.
 
-```{r mutual-plot, fig.height=6}
-## Mutual plot
-mutual_plt(
-  da_results, 
-  count_cutoff = length(steps_ids(da_results, type = "da"))
+## Optional consensus rules
+
+For confirmatory work, specify the panel, cutoff and any weights before
+inspecting discoveries. More agreement does not guarantee greater accuracy or
+false-discovery-rate control. Strict rules can discard true signals when
+components have low sensitivity or make correlated errors.
+
+`bake()` records a rule; `cool()` applies it without fitting the methods again.
+Votes are counted separately for each contrast and effect direction.
+
+```{r consensus}
+with_agreement <- bake(
+  fit, count_cutoff = agreement_cutoff, id = "two_of_three"
+)
+agreement <- cool(with_agreement, bake = "two_of_three")
+head(agreement)
+```
+
+With unit weights, the cutoff is the number of supporting steps. A taxon that
+is selected with conflicting directions does not combine those votes. The
+result retains the contrast, direction, support and contributing step IDs.
+
+To plot only this rule's selected taxa for the chosen contrast:
+
+```{r consensus-abundance, fig.width=7, fig.height=5}
+agreement_ids <- agreement |>
+  dplyr::filter(contrast_id == comparison_id) |>
+  dplyr::distinct(taxa_id) |>
+  dplyr::pull(taxa_id) |>
+  head(6)
+
+if (length(agreement_ids)) {
+  abundance_plt(
+    with_agreement, taxa_ids = agreement_ids,
+    contrast_id = comparison_id, type = "boxplot"
+  )
+} else {
+  message("No taxa satisfy the specified agreement rule for this comparison.")
+}
+```
+
+An empty consensus is valid and is not a reason to change the rule
+retrospectively. Per-method results remain available in `fit`.
+
+### Exclusions and weights
+
+These are configuration examples, not alternative rules selected for their
+discoveries. `exclude` uses executed step IDs. Named weights must exactly match
+the non-excluded steps; when using weights, set the cutoff explicitly because
+the default is the number of retained steps, not the sum of weights.
+
+```{r other-rules, eval=FALSE}
+bake(fit, exclude = "wilcox", count_cutoff = 2, id = "two_retained_steps")
+bake(
+  fit,
+  weights = c(deseq = 1, linda = 2, wilcox = 1),
+  count_cutoff = 3,
+  id = "weighted_support"
 )
 ```
 
-## Define a consensus strategy using bake
+Weights express a chosen rule, not estimated probabilities that the methods are
+correct. Repeated configurations of one engine are not independent sources of
+evidence.
 
-After visually inspecting the results from running all the differential 
-analysis methods on our data, we have the necessary information to define a 
-consensus strategy for this example. For confirmatory work, specify the rule
-before inspecting discoveries. Consensus agreement is not a calibrated
-false-discovery rate or independent validation. In our case, we retain all the
-methods. However if one or more methods are not desired, the `bake()` function
-includes the `exclude` parameter, which allows to exclude specific methods. 
-
-Additionally, the `bake()` function allows to further refine the consensus 
-strategy through its parameters, such as `count_cutoff`, which indicates the 
-minimum number of methods in which an OTU must be present, and `weights`, a 
-named vector with the ponderation value for each method. However, for 
-simplicity, these parameters are not used in this example.
-
-```{r consensus-strategy}
-## Define consensus strategy
-da_results <- bake(da_results)
-da_results
-```
-
-## Extract results
-
-To conclude, we can extract the final results using the `cool()` function. This 
-function takes a `PrepRecipe` object and the ID of the bake to be used as input 
-(by default it is 1, but if you have multiple consensus strategies, you can 
-change it to extract the desired results).
-
-```{r extract-consensus}
-## Extract results for bake id 1
-f_results <- cool(da_results, bake = 1)
-
-f_results
-```
-
-To further visualize the results, the `abundance_plt()` function can be utilized 
-to visualize the differences in abundance of the differential abundant taxa.
-
-```{r abundance-plot, fig.height=6}
-## IDs for Bacteroides and Prevotella species
-ids <- 
-  f_results |>
-  dplyr::filter(stringr::str_detect(taxa, "Bacteroi.*|Prevote.*")) |>
-  dplyr::pull(taxa_id) 
-
-## Abundance plot as boxplot
-abundance_plt(da_results, taxa_ids = ids, type = "boxplot") 
-```
-
-## Session info
-
-```{r article-session-info}
+```{r session-info}
 sessionInfo()
 ```

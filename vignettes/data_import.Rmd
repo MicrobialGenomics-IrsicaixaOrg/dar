@@ -1,293 +1,162 @@
 ---
-title: "Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment"
+title: "Data inputs and inspection"
 output: rmarkdown::html_vignette
+description: |
+  Prepare and inspect phyloseq and TreeSummarizedExperiment inputs for dar.
 vignette: >
-  %\VignetteIndexEntry{Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Data inputs and inspection}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
+  %\VignetteEncoding{UTF-8}
 ---
 
-<style>
-body {text-align: justify}
-</style>
-
 ```{r data-import-setup, include = FALSE}
-knitr::opts_chunk$set(
-  message = FALSE,
-  digits = 3,
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 options(digits = 3)
 ```
 
-The "dar" package is a versatile and user-friendly tool designed to accept 
-inputs in a variety of formats. It primarily utilizes the `phyloseq` format but 
-also supports the `TreeSummarizedExperiment` format. This flexibility allows 
-users to conduct differential abundance analysis smoothly, irrespective of 
-their initial data format. To facilitate this, a detailed guide is available 
-to aid users in converting other prevalent data formats, such as `BIOM`,
-`mothur`, `metaphlan`, and more, into the necessary `phyloseq` or 
-`TreeSummarizedExperiment` formats. 
+`recipe()` accepts a `phyloseq` or `TreeSummarizedExperiment` object. These
+containers connect an abundance matrix to sample metadata and, when available,
+taxonomy. Import files with the tools supplied by `phyloseq` or `mia`, then
+inspect the resulting object before configuring an analysis.
 
-```{r data-import-packages}
-suppressPackageStartupMessages(library(mia))
-suppressPackageStartupMessages(library(phyloseq))
+Importing data does not establish that their units, experimental design or
+taxonomic annotations are appropriate for a particular differential-abundance
+method.
+
+## Start with an existing phyloseq object
+
+The package includes `metaHIV_phy`, with its recorded sample metadata and
+taxonomy. No statistical model is needed to inspect the data or define
+preprocessing steps.
+
+```{r data-import-recipe}
+library(dar)
+data("metaHIV_phy", package = "dar")
+
+rec <- recipe(metaHIV_phy)
+rec
 ```
 
-## Importing Data from `BIOM` Format
+`recipe()` also accepts a `phyloseq` object whose stored abundance matrix has
+samples in rows: the accessors below return one consistent orientation. When
+constructing your own `phyloseq` object, set `taxa_are_rows` to match the actual
+matrix, rather than changing this flag without transposing the data.
 
-The `BIOM` format represents microbiome abundance tables. Here's how you can
-import data in `BIOM` format to
-both `phyloseq` and `TreeSummarizedExperiment.`
+## Inspect samples, taxonomy and abundances
 
+Use the dar accessors explicitly when other attached packages export functions
+with the same names.
 
-### To Phyloseq
+```{r data-import-accessors}
+samples <- dar::sample_data(rec)
+taxonomy <- dar::tax_table(rec)
+abundances <- dar::otu_table(rec)
 
-To convert data from the `BIOM` format to the `phyloseq` format, you can use
-the `phyloseq::import_biom()` function. Here's a step-by-step example of how to 
-perform this conversion:
+head(samples[c("sample_id", "RiskGroup2")])
+head(taxonomy)
+abundances[seq_len(6), seq_len(5)]
+```
 
-```{r import-biom}
-# Example of a rich dense biom file
-rich_dense_biom  <-
-  system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
+The accessors expose the complete stored components, independently of the
+target or taxonomic rank later selected with `add_model()`:
 
-# Import biom as a phyloseq-class object
+- `sample_data()` returns `sample_id` followed by all sample metadata columns,
+  in `phyloseq::sample_names()` order.
+- `tax_table()` returns `taxa_id` followed by all taxonomic ranks, in
+  `phyloseq::taxa_names()` order.
+- `otu_table()` returns one row per taxon, with `taxa_id` first and one column
+  per sample. Taxon and sample order match the other two accessors.
+
+```{r data-import-alignment}
+stopifnot(
+  identical(colnames(abundances)[-1], samples$sample_id),
+  identical(abundances$taxa_id, taxonomy$taxa_id)
+)
+```
+
+Keep sample and taxon identifiers unique and consistent across input files.
+Taxonomic labels are annotations, not replacements for feature identifiers:
+several features can share a species name. Inspect missing annotations and use
+standard rank names such as `Kingdom`, `Genus` and `Species`.
+
+If metadata or taxonomy is absent, the corresponding accessor returns an
+ID-only tibble. That is sufficient for inspection, but it does not supply the
+real covariates or taxonomic rank needed by a model. Add genuine study metadata
+before calling `add_model()`; do not manufacture groups just to make an example
+run.
+
+## Import a BIOM table
+
+This example uses a file distributed with `phyloseq`, without downloading data.
+The importer reads the sample metadata already present in that file.
+
+```{r data-import-biom}
+biom_file <- system.file(
+  "extdata", "rich_dense_otu_table.biom", package = "phyloseq"
+)
+
 phy <- phyloseq::import_biom(
-  rich_dense_biom,  
-  parseFunction = parse_taxonomy_greengenes
+  biom_file,
+  parseFunction = phyloseq::parse_taxonomy_greengenes
+)
+biom_rec <- recipe(phy)
+head(dar::sample_data(biom_rec))
+head(dar::tax_table(biom_rec))
+```
+
+The same file can be imported as a `TreeSummarizedExperiment`. Rows of a TSE
+represent features, columns represent samples, `rowData()` holds feature
+annotations and `colData()` holds sample metadata.
+
+```{r data-import-tse}
+tse <- mia::importBIOM(biom_file)
+
+# This bundled example contains these seven ranks, in this order.
+colnames(SummarizedExperiment::rowData(tse)) <- c(
+  "Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species"
 )
 
-phy
-
-# Print sample_data
-phyloseq::sample_data(phy)
-
-# Print tax_table
-phyloseq::tax_table(phy)
-
-# Recipe init
-rec <- dar::recipe(phy) |>
-  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
-
-rec
+tse_rec <- recipe(tse)
+head(dar::tax_table(tse_rec))
 ```
 
-## Inspecting Recipe Components
+The rank relabeling above is specific to this file. Inspect the annotations in
+your own data instead of assigning rank names by position without checking
+their meaning. A TSE input is converted internally to `phyloseq`; if the
+intended abundance table is not the default assay, select it explicitly with
+`mia::convertToPhyloseq(..., assay.type = "your_assay")` before creating the
+recipe.
 
-Recipe accessors expose the complete underlying components and do not depend
-on the targets or taxonomic level selected by `add_model()`. Their ordering is
-stable: samples follow `phyloseq::sample_names()`, taxa follow
-`phyloseq::taxa_names()`, and counts are always returned with taxa in rows.
+For other formats, consult the importers' documentation rather than treating
+all formats as equivalent:
 
-```{r inspect-sample-data}
-dar::sample_data(rec)
-dar::tax_table(rec)
-dar::otu_table(rec)
-```
+- `phyloseq::import_qiime()` reads legacy QIIME tables;
+  `mia::importQIIME2()` reads QIIME 2 artifacts.
+- `phyloseq::import_mothur()` and `mia::importMothur()` read the supported
+  mothur files.
+- `mia::importMetaPhlAn()` reads MetaPhlAn abundance profiles.
 
-When sample metadata or taxonomy is absent, the corresponding accessor returns
-an ID-only tibble. Analysis engines use separate internal target and rank views,
-so additional metadata and taxonomy columns are not passed implicitly to a
-statistical method.
+For example, open the installed help with
+`help("importQIIME2", package = "mia")` or
+`help("import_biom", package = "phyloseq")`.
 
+## Check the measurement scale
 
-### To TreeSummarizedExperiment
+An abundance matrix can contain raw read counts, proportions, percentages or
+other transformed values. These are not interchangeable inputs. In particular,
+MetaPhlAn relative-abundance profiles are not raw read counts. Neither importing
+them nor converting their container makes them suitable for a count-based
+model; rounding percentages does not recover read counts.
 
-To convert data from the `BIOM` format to the `TreeSummarizedExperiment` format,
-you can use the `mia::importBIOM()` function. Here's a step-by-step example 
-of how to perform this conversion:
+Check the provenance and assay units, not just whether values happen to be
+integers. Retain raw counts when they are available and choose a method whose
+input requirements match the measurements. Missing values are also distinct
+from observed zeros.
 
-```{r import-biom-tse}
-# Example of a rich dense biom file
-rich_dense_biom  <-
-  system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
-
-# Import biom as a phyloseq-class object
-tse <- mia::importBIOM(rich_dense_biom)
-
-tse
-
-# Print sample_data
-colData(tse)
-
-# Print tax_table
-rowData(tse)
-
-# Change the column names of the tax_table
-colnames(rowData(tse)) <- 
-  c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
-
-rowData(tse)
-
-# Recipe init
-rec <- dar::recipe(tse) |>
-  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
-
-rec
-```
-
-
-## Importing Data from QIIME Formats
-
-The examples below use different file formats: a legacy QIIME text table for
-`phyloseq`, and QIIME 2 `.qza` artifacts for `TreeSummarizedExperiment`.
-
-
-### To Phyloseq
-
-To convert data from the `qiime` format to the `Phyloseq` format, you can use 
-the `phyloseq::import_qiime()` function. Here's a step-by-step example of how 
-to perform this conversion:
-
-```{r import-qiime-phyloseq}
-# Import QIIME data
-phy_qiime <- phyloseq::import_qiime(
-  otufilename = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package = "phyloseq"),
-  mapfilename = system.file("extdata", "master_map.txt", package = "phyloseq"),
-  treefilename = system.file("extdata", "GP_tree_rand_short.newick.gz", package = "phyloseq")
-)
-
-phy_qiime
-
-# Recipe init
-rec <- dar::recipe(phy_qiime) |>
-  dar::add_model(~ SampleType, targets = "SampleType", tax_level = "Genus")
-
-rec
-```
-
-
-### To TreeSummarizedExperiment
-
-To convert data from the `qiime` format to the `TreeSummarizedExperiment` format, 
-you can use the `mia::importQIIME2()` function. Here's a step-by-step example 
-of how to perform this conversion:
-
-```{r import-qiime-tse}
-# Import QIIME data to tse
-tse_qiime <- mia::importQIIME2(
-  featureTableFile = system.file("extdata", "table.qza", package = "mia"),
-  taxonomyTableFile = system.file("extdata", "taxonomy.qza", package = "mia"),
-  sampleMetaFile = system.file("extdata", "sample-metadata.tsv", package = "mia"),
-  refSeqFile = system.file("extdata", "refseq.qza", package = "mia"),
-  phyTreeFile = system.file("extdata", "tree.qza", package = "mia")
-)
-
-tse_qiime
-
-# Recipe init
-rec <- dar::recipe(tse_qiime) |>
-  dar::add_model(~ body.site, targets = "body.site", tax_level = "Genus")
-
-rec
-```
-
-
-## Importing Data from `mothur` Format
-
-The `mothur` format is another commonly used format in bioinformatics for 
-microbiome sequencing data. Here's how you can import data in `mothur` format 
-to both `Phyloseq` and `TreeSummarizedExperiment.`
-
-
-### To Phyloseq
-
-To convert data from the `mothur` format to the `Phyloseq` format, you can use 
-the `phyloseq::import_mothur()` function. Here's a step-by-step example of how 
-to perform this conversion:
-
-```{r import-mothur-phyloseq}
-# Import Mothur data
-phy_mothur <- phyloseq::import_mothur(
-  mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package = "phyloseq"),
-  mothur_group_file = system.file("extdata", "esophagus.good.groups.gz", package = "phyloseq"),
-  mothur_tree_file = system.file("extdata", "esophagus.tree.gz", package = "phyloseq")
-)
-
-phy_mothur
-
-# Recipe init
-rec <- dar::recipe(phy_mothur)
-
-rec
-```
-
-
-### To TreeSummarizedExperiment
-
-To convert data from the `mothur` format to the `TreeSummarizedExperiment` 
-format, you can use the `mia::importMothur()` function. Here's a step-by-step 
-example of how to perform this conversion:
-
-```{r import-mothur-tse}
-# Import Mothur data to TreeSummarizedExperiment
-tse_mothur <- mia::importMothur(
-  sharedFile = system.file("extdata", "mothur_example.shared", package = "mia"),
-  taxonomyFile = system.file("extdata", "mothur_example.cons.taxonomy", package = "mia"),
-  designFile = system.file("extdata", "mothur_example.design", package = "mia")
-) |> methods::as("TreeSummarizedExperiment")
-
-tse_mothur
-
-# Recipe init
-rec <- dar::recipe(tse_mothur) |>
-  dar::add_model(~ drug, targets = "drug", tax_level = "Genus")
-
-rec
-```
-
-
-## Importing Data from `metaphlan` Format
-
-The `metaphlan` format is another commonly used format in bioinformatics for 
-microbiome sequencing data. Here's how you can import data in `metaphlan` 
-format to `TreeSummarizedExperiment.`
-
-### To TreeSummarizedExperiment
-
-To convert data from the `metaphlan` format to the `TreeSummarizedExperiment` 
-format, you can use the `mia::importMetaPhlAn()` function. Here's a 
-step-by-step example of how to perform this conversion:
-
-```{r import-metaphlan}
-# Importing data from Metaphlan
-tse_metaphlan <- mia::importMetaPhlAn(
-  file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
-)
-
-# Recipe init: no invented sample groups
-phy_metaphlan <- mia::convertToPhyloseq(tse_metaphlan, assay.type = "metaphlan")
-rec <- dar::recipe(phy_metaphlan)
-
-rec
-```
-
-MetaPhlAn abundance profiles are not raw read counts. Inspect the assay and
-its units before choosing a DA engine; importing a profile does not make it
-appropriate for a count-based model. Add genuine study metadata before
-configuring a target with `add_model()`.
-
-## Conclusion
-
-In this guide, we have explored various methods for importing microbiome 
-sequencing data from different formats into `Phyloseq` and 
-`TreeSummarizedExperiment`. We've covered BIOM, QIIME, mothur and MetaPhlAn
-formats with example files included in the corresponding dependencies.
-
-The flexibility of these tools allows for a smooth transition between different
-data formats, making it easier to conduct your analysis irrespective of the
-initial data format. By following the steps outlined in this guide, you should 
-be able to successfully convert your data and carry out further differential 
-abundance analysis.
-
-Remember, the specific details of your data may require you to adjust the 
-parameters in the import functions. Always inspect your data after conversion 
-to ensure it has been imported correctly.
-
+For QC and filtering, continue with
+[Quality control and preprocessing](filtering_subsetting.html).
+For formulas, target variables and engine compatibility, see
+[Statistical models and contrasts](statistical_models.html).
 
 ## Session info
 

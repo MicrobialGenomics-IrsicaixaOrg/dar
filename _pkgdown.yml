@@ -2,6 +2,16 @@ url: https://microbialgenomics-irsicaixaorg.github.io/dar/
 template:
   bootstrap: 5
   bootswatch: minty
+articles:
+- title: "Guides"
+  navbar: ~
+  contents:
+  - dar
+  - data_import
+  - filtering_subsetting
+  - statistical_models
+  - article
+  - import_export_recipes
 reference:
 - title: "Basic Functions"
   contents:

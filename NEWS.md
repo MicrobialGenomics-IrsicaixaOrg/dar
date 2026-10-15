@@ -62,12 +62,15 @@
 * `step_filter_taxa()` documents its single, restricted serializable
   predicate and filtering during `prep()`, rather than arbitrary function
   lists or a `prune` argument.
-* Vignettes use the central model API and provide executable adjusted and
-  longitudinal examples, including the bundled QIIME 2 import.
-* The MetaPhlAn example selects its relative-abundance assay explicitly;
-  the advanced ANCOM-BC2 example supplies a complete native control list.
-  Consensus explanations distinguish method agreement from calibrated error
-  control and use current results instead of fixed historical counts.
+* Six focused vignettes cover getting started, data inputs, preprocessing,
+  models and contrasts, results and optional consensus, and recipe sharing.
+  The duplicate case study is merged into the results guide. Examples use
+  the central model API, execute adjusted and longitudinal designs, and
+  import a bundled BIOM file into both supported input classes.
+* Results guides start with per-method findings and distinguish agreement
+  from calibrated error control and comparable effect scales. Input guidance
+  distinguishes relative abundances from raw counts; the advanced ANCOM-BC2
+  example supplies a complete native control list.
 
 ## Scientific validation
 

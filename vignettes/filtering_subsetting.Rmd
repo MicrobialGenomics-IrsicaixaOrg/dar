@@ -1,140 +1,163 @@
 ---
-title: "Filtering and Subsetting"
+title: "Quality control and preprocessing"
 output: rmarkdown::html_vignette
 description: |
-  Filtering and subsetting recipe data with preprocessing steps.
+  Inspect recipe data and define ordered, explicit preprocessing steps.
 vignette: >
-  %\VignetteIndexEntry{Filtering and Subsetting}
+  %\VignetteIndexEntry{Quality control and preprocessing}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-<style>
-body {
-text-align: justify}
-</style>
-
 ```{r filtering-setup, include = FALSE}
-knitr::opts_chunk$set(
-  message = FALSE,
-  digits = 3,
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 options(digits = 3)
 ```
 
-The `step_filter_taxa` function is a general function that allows for flexible 
-filtering of OTUs based on across-sample abundance criteria. The other 
-functions, `step_filter_by_prevalence`, `step_filter_by_variance`, 
-`step_filter_by_abundance`, and `step_filter_by_rarity`, are convenience 
-wrappers around `step_filter_taxa`, each designed to filter OTUs based on a 
-specific criterion: prevalence, variance, abundance, and rarity, respectively.
+Preprocessing steps describe changes to the data stored in a recipe. Adding a
+step does not execute it: `prep()` applies preprocessing in the configured
+order, before running differential-abundance methods. A recipe without a
+statistical model is valid for preprocessing alone.
 
-The `step_subset_taxa` function is used to subset taxa based on their taxonomic 
-level.
+The examples below use the included data and run only preprocessing, not
+statistical models. The thresholds illustrate the API; they are not universal
+recommendations for microbiome studies.
 
-The phyloseq or TSE used as input can be pre-filtered using methods that are 
-most convenient to the user. However, the `dar` package provides several 
-functions to perform this filtering directly on the recipe object.
+## Inspect overall and grouped QC
 
-## step_filter_taxa
-
-The `step_filter_taxa` function adds one across-sample abundance predicate to a
-recipe. It returns a `Recipe`; filtering takes place during `prep()`, which
-removes taxa that do not pass the predicate. This wrapper does not expose a
-`prune` argument or return a logical vector.
-
-Supply a function with exactly one argument named `x` and no default, or a
-string containing that function expression. Its body must be a single
-expression returning one logical value, using the restricted syntax documented
-in `?step_filter_taxa`. Lists of functions, braces, assignments, external
-variables and user-defined helper calls are not accepted, including in local R
-use. Write thresholds directly in the expression so the recipe remains safely
-serializable.
-
-For example, keep taxa present in at least 3% of samples:
-
-```{r step_filter_taxa}
+```{r filtering-qc-before}
 library(dar)
-data("metaHIV_phy")
+data("metaHIV_phy", package = "dar")
 
-rec <- recipe(metaHIV_phy) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)") |>
-  prep()
+rec <- recipe(metaHIV_phy)
+recipe_qc(rec)
+recipe_qc(rec, group_by = "RiskGroup2")
 ```
 
-## Convenience Wrappers
+`recipe_qc()` summarizes the stored abundance matrix independently of any
+model. It reports sample counts, sparsity, taxa detected in zero, one or two
+samples, and library-size and count summaries. Singleton and doubleton metrics
+refer to the number of samples with a detection, not to a taxon's total read
+count. The `n` column counts matrix entries, not biological replicates.
 
-### step_filter_by_abundance
+With `group_by`, the overall row is followed by one row per observed metadata
+group. The overall row has missing `group_by` and `group` identifiers; it is not
+a group called `"all"`. Grouping is explicit and is not inferred from the
+statistical target.
 
-This function filters OTUs based on their abundance. The taxa retained in the
-dataset are those where the sum of their abundance is greater than the product 
-of the total abundance and the provided threshold.
+Use these summaries to inspect depth or sparsity differences between groups.
+They do not establish the absence of confounding or that a particular filter
+will improve statistical accuracy.
 
-```{r step_filter_by_abundance}
-rec <- recipe(metaHIV_phy) |>
-  step_filter_by_abundance(threshold = 0.01) |>
-  prep()
+## Define and apply a shared preprocessing sequence
+
+Here we first retain Bacteria and Archaea, then keep taxa observed in more than
+3% of samples. These operations act on the stored features; selecting a rank
+later with `add_model()` determines the taxonomic analysis view used by the DA
+methods.
+
+```{r filtering-shared-steps}
+filtered_rec <- rec |>
+  step_subset_taxa(
+    tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")
+  ) |>
+  step_filter_by_prevalence(threshold = 0.03)
+
+filtered <- prep(filtered_rec, parallel = FALSE)
 ```
 
-### step_filter_by_prevalence
+`step_subset_taxa()` matches annotations at the specified rank. The prevalence
+filter then uses all samples in the recipe, not one threshold calculated
+separately within each QC group. Preprocessing preserves the original input
+object; the prepared recipe contains the filtered data.
 
-This function filters OTUs based on their prevalence. The taxa retained in the
-dataset are those where the prevalence is strictly greater than the provided
-threshold. Unlike the custom predicate above, equality does not pass.
+Compare the stored data before and after preprocessing:
 
-```{r step_filter_by_prevalence}
-rec <- recipe(metaHIV_phy) |>
-  step_filter_by_prevalence(threshold = 0.01) |>
-  prep()
+```{r filtering-qc-after}
+data.frame(
+  stage = c("before", "after"),
+  n_taxa = c(nrow(dar::otu_table(rec)), nrow(dar::otu_table(filtered)))
+)
+recipe_qc(filtered)
+recipe_qc(filtered, group_by = "RiskGroup2")
 ```
 
-### step_filter_by_rarity
+Order matters. An abundance threshold expressed relative to all reads uses the
+total remaining at that point in the sequence. Resampling before a prevalence
+filter can change which taxa pass it. Specify the intended order explicitly,
+and remember that engines may also apply their own internal filters. A shared
+input does not make every engine's tested-feature set or assumptions identical.
 
-This function retains rare OTUs whose prevalence (proportion of samples with
-nonzero abundance) is strictly below the threshold. It selects rare taxa;
-use `step_filter_by_prevalence()` to remove them instead.
+## Choose a filtering predicate
 
-```{r step_filter_by_rarity}
-rec <- recipe(metaHIV_phy) |>
-  step_filter_by_rarity(threshold = 0.01) |>
-  prep()
+The convenience wrappers apply across-sample criteria to each stored taxon:
+
+| Step | Criterion for retaining a taxon |
+|:--|:--|
+| `step_filter_by_prevalence(threshold)` | Proportion of samples with nonzero abundance is strictly greater than the threshold. |
+| `step_filter_by_abundance(threshold)` | Its total abundance is strictly greater than the threshold times the total abundance of the current table. |
+| `step_filter_by_variance(threshold)` | Its across-sample variance is strictly greater than the threshold, on the stored abundance scale. |
+| `step_filter_by_rarity(threshold)` | Proportion of samples with nonzero abundance is strictly below the threshold. |
+
+`step_filter_by_rarity()` selects rare taxa; it does not remove rare taxa.
+Use `step_filter_by_prevalence()` for that purpose. The variance threshold is
+not a proportion and depends on the abundance units.
+
+For a custom rule, `step_filter_taxa()` accepts a function with exactly one
+argument named `x` and no default. This example includes taxa exactly on the 3%
+boundary, unlike the strict prevalence wrapper above.
+
+```{r filtering-custom-predicate}
+custom_rec <- recipe(metaHIV_phy) |>
+  step_filter_taxa(.f = function(x) sum(x > 0) >= 0.03 * length(x))
 ```
 
-### step_filter_by_variance
+The same predicate may be supplied as a character string:
 
-This function filters OTUs based on their variance. The taxa retained in the 
-dataset are those where the variance of their abundance is greater than the 
-provided threshold.
-
-```{r step_filter_by_variance}
-rec <- recipe(metaHIV_phy) |>
-  step_filter_by_variance(threshold = 0.01) |>
-  prep()
+```{r filtering-custom-string}
+custom_string_rec <- recipe(metaHIV_phy) |>
+  step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)")
 ```
 
-## step_subset_taxa
+Both forms return a recipe, not filtered data or a logical vector. The
+predicate must return one logical value when applied to each abundance vector
+during `prep()`; the wrapper has no `prune` argument.
 
-The `step_subset_taxa` function subsets taxa based on their taxonomic level. The
-taxa retained in the dataset are those where the taxonomic level matches the 
-provided taxa.
+To keep recipes safely serializable, the predicate body must be a single
+expression. Braces, assignments, external variables, namespace-qualified calls,
+user-defined helpers and lists of functions are not supported, even in local R
+use. Write thresholds as literal numbers. Accepted expressions include
+arithmetic, comparisons, logical operators and approved summaries such as
+`sum`, `mean`, `median`, `var` and `sd`; see `?step_filter_taxa` for the complete
+syntax and supported `na.rm` arguments. The restrictions are checked when the
+step is added, not only on export.
 
-```{r subset_taxa}
-rec <- recipe(metaHIV_phy) |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  prep()
+## Rarefaction is optional
+
+The workflow above does not rarefy. `step_rarefaction()` is available when an
+explicitly chosen analysis calls for shared equal-depth resampling:
+
+```{r filtering-rarefaction, eval = FALSE}
+rarefied_rec <- recipe(metaHIV_phy) |>
+  step_rarefaction()
+rarefied <- prep(rarefied_rec, parallel = FALSE)
 ```
 
-## Conclusion
+This is not a general recommendation to normalize DA inputs by rarefaction.
+Subsampling discards observations and changes the data supplied to downstream
+methods. Select preprocessing in the context of the scientific question and
+the methods' assumptions; equal library sizes do not guarantee valid inference.
+`rarefaction_help()` describes the cautions in more detail.
 
-These functions provide a powerful and flexible way to filter and subset OTUs 
-in phyloseq objects contained within a recipe object, making it easier 
-to work with complex experimental data. By understanding how to use these 
-functions effectively, you can streamline your data analysis workflow and focus 
-on the aspects of your data that are most relevant to your research questions. 
-The `dar` package offers the added convenience of performing these operations 
-directly on the recipe object.
+Some DA steps also accept `rarefy = TRUE` to resample only for that step, rather
+than altering the shared preprocessing data. For those configured DA steps,
+the informational note about rarefaction's controversy appears during `prep()`,
+not when the step is added. A shared `step_rarefaction()` and a method-specific
+`rarefy` option are different configurations; do not combine them unless repeat
+resampling is intentional.
+
+For selecting a central statistical model after defining preprocessing, see
+[Statistical models and contrasts](statistical_models.html).
 
 ## Session info
 

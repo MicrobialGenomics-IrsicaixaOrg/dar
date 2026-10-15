@@ -1,140 +1,100 @@
 ---
-title: "Reproducibility in Microbiome Data Analysis"
+title: "Saving and sharing analysis recipes"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Reproducibility in Microbiome Data Analysis}
+  %\VignetteIndexEntry{Saving and sharing analysis recipes}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r import-export-setup, include = FALSE}
-knitr::opts_chunk$set(
-  message = FALSE,
-  digits = 3,
-  collapse = TRUE,
-  comment = "#>"
-)
-options(digits = 3)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(dar)
 set.seed(130)
 ```
 
-<style>
-body {
-text-align: justify}
-</style>
+`export_steps()` saves an analysis configuration; `import_steps()` restores it
+onto data supplied by the user. The versioned, non-executable `dar-recipe` JSON
+format stores the central model, ordered preprocessing and differential
+abundance steps, their identifiers and native options. Optional consensus
+configurations are stored separately when exporting a prepared recipe.
 
-Reproducibility is a crucial aspect of data analysis, particularly in the 
-context of microbiome data. The ability to consistently replicate an analysis 
-and obtain the same results is essential for ensuring the reliability of 
-findings and facilitating scientific collaboration.
+The file does not contain the input data, fitted results, active random-number
+state or software environment. Sharing the JSON alone therefore does not
+guarantee identical results on another computer.
 
-The `dar` package includes two key functions, `export_steps()` and
-`import_steps()`, which promote reproducibility in microbiome data analysis.
-They use a versioned, non-executable JSON schema that stores the central model,
-ordered recipe steps and bake configurations separately.
+## Save a configuration
 
-## Exporting Steps of a Recipe
-
-The `export_steps` function facilitates the export of a recipe's steps to a 
-JSON file. This is useful for documenting and sharing the parameters used in 
-the analysis.
-
-Here's an example of how to use the `export_steps` function:
+This example configures an analysis without fitting a model. The temporary
+path keeps the example self-contained; use a persistent path when saving a
+recipe for later work.
 
 ```{r export-recipe}
-library(dar)
 data(metaHIV_phy)
 
-# Create a recipe with steps
-rec <- 
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
+configured <- recipe(metaHIV_phy) |>
+  add_model(
+    ~ RiskGroup2,
+    targets = "RiskGroup2",
+    tax_level = "Species"
+  ) |>
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+  step_filter_by_prevalence(threshold = 0.03) |>
   step_maaslin()
 
-# Export the steps to a JSON file
-out_file <- tempfile(fileext = ".json")
-export_steps(rec, out_file)
+recipe_file <- tempfile(fileext = ".json")
+export_steps(configured, recipe_file)
 ```
 
-In this example, a recipe with multiple steps is created, and then the steps 
-are exported to a JSON file using the `export_steps` function.
+The model record includes references, contrasts, the missing-value policy and
+any time settings. See [Statistical models and contrasts](statistical_models.html)
+for configuring those fields.
 
-## Importing Steps from a JSON File
+## Restore onto data
 
-The `import_steps` function allows you to import steps from a JSON file and 
-add them to an existing recipe. This is useful when you want to reuse a 
-previously saved set of steps or incorporate steps from another recipe into 
-your current analysis.
-
-Here's an example of how to use the `import_steps` function:
+Start with a new recipe containing the intended data. The JSON supplies the
+model and steps; importing this file does not run the analysis.
 
 ```{r import-recipe}
-# Initialize a recipe with the same phyloseq object. The model is in the file.
-rec <- recipe(metaHIV_phy)
-
-# Import the steps from a JSON file
-json_file <- out_file
-rec <- import_steps(rec, json_file)
-rec
+restored <- import_steps(recipe(metaHIV_phy), recipe_file)
+get_model(restored)
+steps_ids(restored)
 ```
 
-In this example, an empty recipe is initialized, and then the steps are 
-imported from a JSON file using the `import_steps` function. The imported steps 
-are added to the existing recipe.
+Using other data reuses the configuration, not the original analysis. Check that
+the required metadata, factor levels, reference categories and taxonomic ranks
+are present and appropriate for the new study.
 
-Once the recipe is imported, we can choose to add more steps or execute the 
-code using the `prep` function. In this case, we choose to execute `prep` 
-directly.
+Run `prep()` explicitly when ready. Set the execution seed immediately before
+the run; it is not restored from the JSON:
 
-```{r execute-imported-recipe}
-## Execute
-da_results <- prep(rec, parallel = FALSE) |> bake()
-da_results
+```{r execute-imported-recipe, eval = FALSE}
+set.seed(130)
+results <- prep(restored, parallel = FALSE)
+tidy_results(results)
 ```
 
-## Limitations and Considerations
+`bake()` is not required to execute a recipe or inspect its per-method results.
+If an exported file does contain consensus configurations, importing it into an
+unprepared recipe requires explicit `prepare = TRUE`; otherwise import stops
+without fitting models. The `parallel` and `workers` arguments apply only to
+that explicit preparation path. Importing into an already prepared recipe
+requires its model and analysis steps to match the file.
 
-It's important to note some limitations and considerations when using the 
-`export_steps` and `import_steps` functions:
+## What to archive alongside the recipe
 
-- The JSON files generated by `export_steps` contain the central model and
-parameters of recipe steps and bakes, not the original data or fitted results.
-Therefore,
-when importing the steps from a JSON file, ensure that you have access to the 
-same data that was originally used.
+For a reproducible handoff, keep the input data and preprocessing provenance,
+the execution script with its seed and execution settings, fitted results, and
+the R, dar and engine-package versions. `sessionInfo()` records loaded versions;
+an environment lockfile or container can additionally preserve the dependencies.
+Stochastic methods and execution settings can affect results even when the
+recipe parameters match.
 
-- The `export_steps` and `import_steps` functions are specific to the `dar` 
-package and are designed for use in microbiome data analysis. They are not 
-applicable to other types of analyses or packages.
-
-- Import treats files as untrusted data. Constructors, fields, formulas and
-filter predicates are checked against explicit allowlists before the recipe is
-changed. R functions inside `engine_args` are intentionally not serializable.
-
-- Import never starts an analysis implicitly. If a file contains bake
-configurations and the input is an unprepared recipe, `import_steps()` aborts
-unless `prepare = TRUE` is supplied explicitly. The `parallel` and `workers`
-arguments are used only in that explicit preparation path.
-
-- Files generated by dar 1.9.8 or earlier used an executable pseudo-JSON
-format. Current releases reject those files. Migrate only files you trust in an
-isolated environment with the older release, save the resulting recipe, and
-export it again with the current dar version.
-
-- Make sure you have the correct versions of the dependencies of the `dar` 
-package when exporting and importing recipe steps. Updates in dependencies can 
-affect the compatibility and reproducibility of the analyses.
-
-## Conclusion
-
-Reproducibility is essential in microbiome data analysis, and the `dar` package 
-facilitates this aspect by providing the `export_steps` and `import_steps` 
-functions. These functions allow you to export the steps of a recipe to a JSON 
-file and then import them to reproduce the analysis in a different environment. 
-With these tools, you can effectively document and share your analyses, 
-increasing transparency and the reliability of your results.
+Recipe files are treated as untrusted data: constructors, fields, formulas and
+filter predicates are validated against explicit allowlists before the recipe
+is changed. R functions in `engine_args` are not serializable. Legacy executable
+exports are rejected; recreate their configuration using the current API and
+export it again rather than executing an old recipe file.
 
 ## Session info
 
