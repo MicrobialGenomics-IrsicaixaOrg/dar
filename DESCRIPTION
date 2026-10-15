@@ -1,5 +1,5 @@
 Package: dar
-Title: Differential Abundance Analysis by Consensus
+Title: Differential Abundance Workflows for Microbiome Data
 Version: 1.9.12
 Date: 2026-08-04
 Authors@R: 
@@ -9,18 +9,15 @@ Authors@R:
              email = "fcatala@irsicaixa.es",
              comment = c(ORCID = "0000-0002-2354-8648"))
     )
-Description: Differential abundance testing in microbiome data challenges both 
-    parametric and non-parametric statistical methods, due to its sparsity, high 
-    variability and compositional nature. Microbiome-specific statistical 
-    methods often assume classical distribution models or take into account 
-    compositional specifics. These produce results that range within the 
-    specificity versus sensitivity space in such a way that type I and type II
-    errors are difficult to ascertain in real microbiome data when a single
-    method is used. A consensus approach based on multiple differential
-    abundance (DA) methods has been suggested to increase robustness.
-    With dar, you can use dplyr-like pipeable sequences of DA methods and then 
-    apply different consensus strategies. In this way we can obtain more reliable 
-    results in a fast, consistent and reproducible way.
+Description: Provides a recipe-based interface for differential abundance
+    analysis of microbiome data. A shared model specification defines
+    covariates, contrasts, reference levels and taxonomic aggregation, with
+    compatibility checks for each method. Pipeable workflows combine
+    preprocessing, quality control and multiple differential abundance methods.
+    Results can be inspected in a common format that preserves method-specific
+    effect scales, visualized and compared. Recipes can be exported and imported
+    using a versioned, non-executable format. Optional consensus rules summarize
+    agreement across methods for each contrast and effect direction.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(roclets = c("collate", "namespace", "rd", "roxytest::testthat_roclet",

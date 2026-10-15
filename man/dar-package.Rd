@@ -4,7 +4,7 @@
 \name{dar-package}
 \alias{dar}
 \alias{dar-package}
-\title{dar: Differential Abundance Analysis by Consensus}
+\title{dar: Differential Abundance Workflows for Microbiome Data}
 \description{
 To learn more about dar, start with the vignettes:
 \code{browseVignettes(package = "dar")}
