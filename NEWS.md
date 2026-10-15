@@ -72,21 +72,15 @@
   distinguishes relative abundances from raw counts; the advanced ANCOM-BC2
   example supplies a complete native control list.
 
-## Scientific validation
+## Development infrastructure
 
-* Development validation metrics use the complete expected taxon-contrast
-  universe, retaining absent results and failed fits in recovery denominators
-  and reporting explicit availability counts.
-* Relative mean absolute estimation error replaces the cancelling absolute
-  mean signed-bias criterion. Gates remain restricted to strong comparable
-  contrasts; historical baseline values are not relabelled, and new
-  regression tolerances require calibration before promotion.
-* Full Monte Carlo validation tracks comparable LinDA effects and interval
-  coverage, records dependency versions and publishes concise execution
-  summaries (#155).
-* Full validation reports are retained as compact machine-readable history
-  on the `validation-results` branch. Weak longitudinal contrasts remain
-  descriptive rather than receiving inappropriate power gates (#155).
+* The development-only Monte Carlo validation suite and its dedicated
+  workflow are archived in the frozen
+  `codex/scientific-validation-frozen-20261015` branch and removed from
+  `devel`. The historical baseline is preserved without recalibration or
+  relabeling. Previously generated reports are retained separately.
+* Statistical correctness and native-engine regression tests remain in
+  `tests/testthat`, alongside the ordinary package checks and vignette builds.
 
 # dar 1.9.11
 
