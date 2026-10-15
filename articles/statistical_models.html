@@ -300,6 +300,15 @@ remain errors.</p>
 each result. See <a href="article.html">Exploring results and optional
 consensus</a> for the result columns, effect scales, selectors and
 plotting examples.</p>
+<p>For centralized ALDEx2 analyses, <code>effect</code> is the
+contrast-oriented coefficient from the same GLM as the adjusted P value,
+averaged over Monte Carlo instances and labeled
+<code>aldex_glm_coefficient</code>. With default settings it is on the
+base-2 CLR response scale, not an absolute-abundance fold change or
+ALDEx2’s standardized two-group effect. Advanced native settings can
+change its scale. Recompute previously prepared centralized ALDEx2
+results to obtain the GLM coefficients; deprecated model-free analyses
+retain their standardized effects.</p>
 </div>
 <div class="section level2">
 <h2 id="advanced-native-engine-arguments">Advanced native-engine arguments<a class="anchor" aria-label="anchor" href="#advanced-native-engine-arguments"></a>
@@ -353,14 +362,16 @@ the complete <code>iter_control</code> list, including
 <code>verbose</code>, rather than only the values changed.</p>
 <p>Available stages are <code>size_factors</code>, <code>fit</code>,
 <code>results</code>, and <code>shrink</code> for DESeq2;
-<code>clr</code>, <code>fit</code>, and <code>effect</code> for ALDEx2;
-<code>fit</code> for ANCOM-BC2, corncob, and LinDA; <code>fit</code> and
+<code>clr</code> and <code>fit</code> for ALDEx2; <code>fit</code> for
+ANCOM-BC2, corncob, and LinDA; <code>fit</code> and
 <code>contrast</code> for MaAsLin3; <code>test</code> for Wilcoxon; and
 <code>transform</code> and <code>fit</code> for LEfSe. Data, formulas,
 contrasts, output paths and arguments already exposed by each dar
 wrapper are protected. Non-empty <code>engine_args</code> require a
 centralized model. A configured stage that is not used by the selected
-execution route is reported as an error.</p>
+execution route is reported as an error. ALDEx2’s former
+<code>effect</code> stage is rejected because centralized effects now
+come directly from the GLM fit.</p>
 <p>See <a href="import_export_recipes.html">Saving and sharing analysis
 recipes</a> for exporting model settings and native options without
 executing an analysis.</p>

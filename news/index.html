@@ -49,6 +49,7 @@
 <code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> is removed after its defunct release cycle. Replace it with a supported DA step when rebuilding legacy recipes (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
 <li>DA step IDs must not use reserved consensus column names such as <code>effect</code> or <code>sum</code>. Rename conflicting IDs, for example to <code>da_effect</code>, before constructing or importing a recipe. Other IDs, including those beginning with a dot, remain unchanged.</li>
 <li>ComplexHeatmap, gplots, heatmaply and UpSetR are optional dependencies. Install the relevant package explicitly to use its plotting functions; missing dependencies produce installation guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<li>Centralized ALDEx2 results report <code>aldex_glm_coefficient</code> rather than a standardized two-group effect. Recompute previously prepared results to obtain the corrected effects; their former effect values are not relabeled. The obsolete <code>engine_args$effect</code> stage is rejected. Deprecated model-free ALDEx2 execution retains its standardized effect.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="deprecations-1-9-12">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-1-9-12"></a></h3>
@@ -56,7 +57,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-1-9-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-9-12"></a></h3>
-<ul><li>Modeled engines, consensus tables and abundance plots share one aggregated taxonomic view with stable IDs. Abundance transformations use aggregated counts, and public accessors retain the complete underlying data.</li>
+<ul><li>
+<code><a href="../reference/step_aldex.html">step_aldex()</a></code> extracts centralized effects from the same native GLM and contrast as its adjusted P values, preserving adjustment and interaction semantics instead of combining them with a post-hoc binary-group effect.</li>
+<li>Modeled engines, consensus tables and abundance plots share one aggregated taxonomic view with stable IDs. Abundance transformations use aggregated counts, and public accessors retain the complete underlying data.</li>
 <li>
 <code><a href="../reference/abundance_plt.html">abundance_plt()</a></code>, <code><a href="../reference/intersection_plt.html">intersection_plt()</a></code> and <code><a href="../reference/mutual_plt.html">mutual_plt()</a></code> check selectors against planned model hypotheses, including those with no significant taxa. For empty selections, discovery plots report a message and return invisible <code>NULL</code>. Abundance plots with explicit <code>taxa_ids</code> remain available regardless of significance.</li>
 <li>

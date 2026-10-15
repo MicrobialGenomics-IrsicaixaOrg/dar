@@ -1,16 +1,9 @@
 # ALDEx2 analysis
 
-A differential abundance analysis for the comparison of two or more
-conditions. For example, single-organism and meta-RNA-seq
-high-throughput sequencing assays, or of selected and unselected values
-from in-vitro sequence selections. Uses a Dirichlet-multinomial model to
-infer abundance from counts, that has been optimized for three or more
-experimental replicates. Infers sampling variation and calculates the
-expected false discovery rate given the biological and sampling
-variation using the Wilcox rank test or Welches t-test (aldex.ttest) or
-the glm and Kruskal Wallis tests (aldex.glm). Reports both P and fdr
-values calculated by the Benjamini Hochberg correction (Not supported in
-`dar` package).
+Differential abundance analysis using ALDEx2's Monte Carlo log-ratio
+transformation and native statistical tests. With a centralized model,
+fits a GLM for each planned contrast and reports its coefficient and
+adjusted P value.
 
 ## Usage
 
@@ -35,13 +28,13 @@ step_aldex(
 
 - max_significance:
 
-  Benjamini-Hochberg corrected P value of Welch’s t test cutoff.
+  Adjusted P value cutoff for the GLM, or the Benjamini-Hochberg
+  corrected Welch P value in model-free execution.
 
 - mc.samples:
 
   The number of Monte Carlo instances to use to estimate the underlying
-  distributions; since we are estimating central tendencies, 128 is
-  usually sufficient, but larger numbers may be .
+  distributions. The default is 128.
 
 - denom:
 
@@ -62,7 +55,8 @@ step_aldex(
   other house-keeping genes. This should be used with caution because
   the offsets may be different in the original data and in the data used
   by the function because features that are 0 in all samples are removed
-  by aldex.clr.
+  by aldex.clr. Centralized models require `"all"` or explicit numeric
+  denominator indices.
 
 - rarefy:
 
@@ -85,9 +79,10 @@ step_aldex(
 
 - engine_args:
 
-  Named lists of advanced arguments for the native `clr`, `fit`, or
-  `effect` stage. Arguments managed by dar or exposed above cannot be
-  overridden.
+  Named lists of advanced arguments for the native `clr` and `fit`
+  stages. The former `effect` stage is not supported: centralized
+  effects now come from the GLM. Arguments managed by dar or exposed
+  above cannot be overridden.
 
 ## Value
 
@@ -95,13 +90,25 @@ An object of class `Recipe`
 
 ## Details
 
-The run_aldex function is a wrapper that performs log-ratio
-transformation and statistical testing in a single line of code.
-Specifically, this function: (a) generates Monte Carlo samples of the
-Dirichlet distribution for each sample, (b) converts each instance using
-a log-ratio transform, then (c) returns test results for two sample
-(Welch's t, Wilcoxon) test. This function also estimates effect size for
-two sample analyses.
+With
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md),
+`effect` is the contrast-oriented coefficient from
+[`ALDEx2::aldex.glm()`](https://rdrr.io/pkg/ALDEx2/man/aldex.glm.html),
+averaged over Monte Carlo instances, and `effect_metric` is
+`"aldex_glm_coefficient"`. It comes from the same GLM as the reported
+adjusted P value. Under the default denominator, scale and Gaussian
+identity-link settings, the response is CLR in base 2; this coefficient
+is not an absolute-abundance log2 fold change or the standardized effect
+from
+[`ALDEx2::aldex.effect()`](https://rdrr.io/pkg/ALDEx2/man/aldex.effect.html).
+Advanced native settings can change the response or link scale.
+Recompute previously prepared centralized ALDEx2 results to obtain these
+coefficients.
+
+Deprecated model-free execution retains native two-group Welch tests and
+standardized effects from
+[`ALDEx2::aldex.effect()`](https://rdrr.io/pkg/ALDEx2/man/aldex.effect.html),
+identified as `"standardized_clr_effect"` in tidy results.
 
 ## See also
 
