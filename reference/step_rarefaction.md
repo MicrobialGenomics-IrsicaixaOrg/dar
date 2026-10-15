@@ -48,13 +48,8 @@ An object of class `Recipe`
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- 
-  recipe(metaHIV_phy) |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x)))
-
-rec
+recipe(metaHIV_phy) |>
+  step_rarefaction()
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
@@ -63,27 +58,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
-#>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 
-#> 
-#> DA steps:
-#> 
-
-## Define step with default parameters and prep
-rec <- step_rarefaction(rec) 
-  
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Marillenknödel 
-#>      ◉ step_filter_taxa() id = filter_taxa__Punschkrapfen 
-#>      ◉ step_rarefaction() id = rarefaction__Paste 
+#>      ◉ step_rarefaction() id = rarefaction__Hot_water_crust_pastry 
 #> 
 #> DA steps:
 #> 

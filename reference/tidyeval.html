@@ -173,12 +173,11 @@ because it throws an error if the input is not a name as expected.
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -285,7 +284,7 @@ because it throws an error if the input is not a name as expected.</p></li>
 <span class="r-in"><span><span class="fu">f</span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^1 + 1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55dc3188c578</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x562729a4df70</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># `enquos()` works with arguments and dots. It returns a list of</span></span></span>
 <span class="r-in"><span><span class="co"># expressions</span></span></span>
@@ -299,30 +298,18 @@ because it throws an error if the input is not a name as expected.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^1 + 1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55dc3188c578</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x562729a4df70</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">&lt;quosure&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expr: <span style="color: #0000BB;">^2 * 10</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x55dc3188c578</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> env:  <span style="color: #0000BB;">0x562729a4df70</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Let's create some symbols:</span></span></span>
-<span class="r-in"><span><span class="va">foo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">quote</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">bar</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/sym.html" class="external-link">sym</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># as_name() converts symbols to strings:</span></span></span>
-<span class="r-in"><span><span class="va">foo</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> foo</span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Convert a symbol to its name</span></span></span>
+<span class="r-in"><span><span class="va">foo</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/sym.html" class="external-link">sym</a></span><span class="op">(</span><span class="st">"foo"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "foo"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/typeof.html" class="external-link">typeof</a></span><span class="op">(</span><span class="va">bar</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "symbol"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/typeof.html" class="external-link">typeof</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="va">bar</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "character"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># as_name() unwraps quosured symbols automatically:</span></span></span>
 <span class="r-in"><span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/as_name.html" class="external-link">as_name</a></span><span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">quo</a></span><span class="op">(</span><span class="va">foo</span><span class="op">)</span><span class="op">)</span></span></span>

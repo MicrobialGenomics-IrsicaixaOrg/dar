@@ -1,656 +1,313 @@
-# Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment
-
-The “dar” package is a versatile and user-friendly tool designed to
-accept inputs in a variety of formats. It primarily utilizes the
-`phyloseq` format but also supports the `TreeSummarizedExperiment`
-format. This flexibility allows users to conduct differential abundance
-analysis smoothly, irrespective of their initial data format. To
-facilitate this, a detailed guide is available to aid users in
-converting other prevalent data formats, such as `biome`, `mothur`,
-`metaphlan`, and more, into the necessary `phyloseq` or
-`TreeSummarizedExperiment` formats.
-
-``` r
-
-suppressPackageStartupMessages(library(mia))
-suppressPackageStartupMessages(library(phyloseq))
-```
-
-## Importing Data from `biome` Format
-
-The `biome` format is a commonly used format in bioinformatics to
-represent microbiome sequencing data. Here’s how you can import data in
-`biome` format to both `phyloseq` and `TreeSummarizedExperiment.`
-
-### To Phyloseq
-
-To convert data from the `biome` format to the `phyloseq` format, you
-can use the
-[`phyloseq::import_biom()`](https://rdrr.io/pkg/phyloseq/man/import_biom.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Example of a rich dense biom file
-rich_dense_biom  <-
-  system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
-
-# Import biom as a phyloseq-class object
-phy <- phyloseq::import_biom(
-  rich_dense_biom,  
-  parseFunction = parse_taxonomy_greengenes
-)
-
-phy
-#> phyloseq-class experiment-level object
-#> otu_table()   OTU Table:         [ 5 taxa and 6 samples ]
-#> sample_data() Sample Data:       [ 6 samples by 4 sample variables ]
-#> tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]
-
-# Print sample_data
-phyloseq::sample_data(phy)
-#>         BarcodeSequence  LinkerPrimerSequence BODY_SITE Description
-#> Sample1    CGCTTATCGAGA CATGCTGCCTCCCGTAGGAGT       gut   human gut
-#> Sample2    CATACCAGTAGC CATGCTGCCTCCCGTAGGAGT       gut   human gut
-#> Sample3    CTCTCTACCTGT CATGCTGCCTCCCGTAGGAGT       gut   human gut
-#> Sample4    CTCTCGGCCTGT CATGCTGCCTCCCGTAGGAGT      skin  human skin
-#> Sample5    CTCTCTACCAAT CATGCTGCCTCCCGTAGGAGT      skin  human skin
-#> Sample6    CTAACTACCAAT CATGCTGCCTCCCGTAGGAGT      skin  human skin
-
-# Print tax_table
-phyloseq::tax_table(phy)
-#> Taxonomy Table:     [5 taxa by 7 taxonomic ranks]:
-#>          Kingdom    Phylum           Class                 Order              
-#> GG_OTU_1 "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Enterobacteriales"
-#> GG_OTU_2 "Bacteria" "Cyanobacteria"  "Nostocophycideae"    "Nostocales"       
-#> GG_OTU_3 "Archaea"  "Euryarchaeota"  "Methanomicrobia"     "Methanosarcinales"
-#> GG_OTU_4 "Bacteria" "Firmicutes"     "Clostridia"          "Halanaerobiales"  
-#> GG_OTU_5 "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Enterobacteriales"
-#>          Family               Genus            Species                       
-#> GG_OTU_1 "Enterobacteriaceae" "Escherichia"    NA                            
-#> GG_OTU_2 "Nostocaceae"        "Dolichospermum" NA                            
-#> GG_OTU_3 "Methanosarcinaceae" "Methanosarcina" NA                            
-#> GG_OTU_4 "Halanaerobiaceae"   "Halanaerobium"  "Halanaerobiumsaccharolyticum"
-#> GG_OTU_5 "Enterobacteriaceae" "Escherichia"    NA
-
-# Recipe init
-rec <- dar::recipe(phy) |>
-  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 5 taxa and 6 samples 
-#>      ℹ variable of interes BODY_SITE (class: character, levels: gut, skin) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~BODY_SITE
-```
-
-## Inspecting Recipe Components
-
-Recipe accessors expose the complete underlying components and do not
-depend on the targets or taxonomic level selected by
-[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md).
-Their ordering is stable: samples follow
-[`phyloseq::sample_names()`](https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html),
-taxa follow
-[`phyloseq::taxa_names()`](https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html),
-and counts are always returned with taxa in rows.
-
-``` r
-
-dar::sample_data(rec)
-#> # A tibble: 6 × 5
-#>   sample_id BarcodeSequence LinkerPrimerSequence  BODY_SITE Description
-#>   <chr>     <chr>           <chr>                 <chr>     <chr>      
-#> 1 Sample1   CGCTTATCGAGA    CATGCTGCCTCCCGTAGGAGT gut       human gut  
-#> 2 Sample2   CATACCAGTAGC    CATGCTGCCTCCCGTAGGAGT gut       human gut  
-#> 3 Sample3   CTCTCTACCTGT    CATGCTGCCTCCCGTAGGAGT gut       human gut  
-#> 4 Sample4   CTCTCGGCCTGT    CATGCTGCCTCCCGTAGGAGT skin      human skin 
-#> 5 Sample5   CTCTCTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin 
-#> 6 Sample6   CTAACTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin
-dar::tax_table(rec)
-#> # A tibble: 5 × 8
-#>   taxa_id  Kingdom  Phylum         Class              Order Family Genus Species
-#>   <chr>    <chr>    <chr>          <chr>              <chr> <chr>  <chr> <chr>  
-#> 1 GG_OTU_1 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… NA     
-#> 2 GG_OTU_2 Bacteria Cyanobacteria  Nostocophycideae   Nost… Nosto… Doli… NA     
-#> 3 GG_OTU_3 Archaea  Euryarchaeota  Methanomicrobia    Meth… Metha… Meth… NA     
-#> 4 GG_OTU_4 Bacteria Firmicutes     Clostridia         Hala… Halan… Hala… Halana…
-#> 5 GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… NA
-dar::otu_table(rec)
-#> # A tibble: 5 × 7
-#>   taxa_id  Sample1 Sample2 Sample3 Sample4 Sample5 Sample6
-#>   <chr>      <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-#> 1 GG_OTU_1       0       0       1       0       0       0
-#> 2 GG_OTU_2       5       1       0       2       3       1
-#> 3 GG_OTU_3       0       0       1       4       2       0
-#> 4 GG_OTU_4       2       1       1       0       0       1
-#> 5 GG_OTU_5       0       1       1       0       0       0
-```
-
-When sample metadata or taxonomy is absent, the corresponding accessor
-returns an ID-only tibble. Analysis engines use separate internal target
-and rank views, so additional metadata and taxonomy columns are not
-passed implicitly to a statistical method.
-
-### To TreeSummarizedExperiment
-
-To convert data from the `biome` format to the
-`TreeSummarizedExperiment` format, you can use the
-[`mia::importBIOM()`](https://microbiome.github.io/mia/reference/importBIOM.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Example of a rich dense biom file
-rich_dense_biom  <-
-  system.file("extdata", "rich_dense_otu_table.biom",  package = "phyloseq")
-
-# Import biom as a phyloseq-class object
-tse <- mia::importBIOM(rich_dense_biom)
-
-tse
-#> class: TreeSummarizedExperiment 
-#> dim: 5 6 
-#> metadata(0):
-#> assays(1): counts
-#> rownames(5): GG_OTU_1 GG_OTU_2 GG_OTU_3 GG_OTU_4 GG_OTU_5
-#> rowData names(7): taxonomy1 taxonomy2 ... taxonomy6 taxonomy7
-#> colnames(6): Sample1 Sample2 ... Sample5 Sample6
-#> colData names(4): BarcodeSequence LinkerPrimerSequence BODY_SITE
-#>   Description
-#> reducedDimNames(0):
-#> mainExpName: NULL
-#> altExpNames(0):
-#> rowLinks: NULL
-#> rowTree: NULL
-#> colLinks: NULL
-#> colTree: NULL
-
-# Print sample_data
-colData(tse)
-#> DataFrame with 6 rows and 4 columns
-#>         BarcodeSequence  LinkerPrimerSequence   BODY_SITE Description
-#>             <character>           <character> <character> <character>
-#> Sample1    CGCTTATCGAGA CATGCTGCCTCCCGTAGGAGT         gut   human gut
-#> Sample2    CATACCAGTAGC CATGCTGCCTCCCGTAGGAGT         gut   human gut
-#> Sample3    CTCTCTACCTGT CATGCTGCCTCCCGTAGGAGT         gut   human gut
-#> Sample4    CTCTCGGCCTGT CATGCTGCCTCCCGTAGGAGT        skin  human skin
-#> Sample5    CTCTCTACCAAT CATGCTGCCTCCCGTAGGAGT        skin  human skin
-#> Sample6    CTAACTACCAAT CATGCTGCCTCCCGTAGGAGT        skin  human skin
-
-# Print tax_table
-rowData(tse)
-#> DataFrame with 5 rows and 7 columns
-#>            taxonomy1         taxonomy2              taxonomy3
-#>          <character>       <character>            <character>
-#> GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammaproteobacteria
-#> GG_OTU_2 k__Bacteria  p__Cyanobacteria    c__Nostocophycideae
-#> GG_OTU_3  k__Archaea  p__Euryarchaeota     c__Methanomicrobia
-#> GG_OTU_4 k__Bacteria     p__Firmicutes          c__Clostridia
-#> GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammaproteobacteria
-#>                     taxonomy4             taxonomy5         taxonomy6
-#>                   <character>           <character>       <character>
-#> GG_OTU_1 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia
-#> GG_OTU_2        o__Nostocales        f__Nostocaceae g__Dolichospermum
-#> GG_OTU_3 o__Methanosarcinales f__Methanosarcinaceae g__Methanosarcina
-#> GG_OTU_4   o__Halanaerobiales   f__Halanaerobiaceae  g__Halanaerobium
-#> GG_OTU_5 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia
-#>                       taxonomy7
-#>                     <character>
-#> GG_OTU_1                    s__
-#> GG_OTU_2                    s__
-#> GG_OTU_3                    s__
-#> GG_OTU_4 s__Halanaerobiumsacc..
-#> GG_OTU_5                    s__
-
-# Change the column names of the tax_table
-colnames(rowData(tse)) <- 
-  c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species")
-
-rowData(tse)
-#> DataFrame with 5 rows and 7 columns
-#>              Kingdom            Phylum                  Class
-#>          <character>       <character>            <character>
-#> GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammaproteobacteria
-#> GG_OTU_2 k__Bacteria  p__Cyanobacteria    c__Nostocophycideae
-#> GG_OTU_3  k__Archaea  p__Euryarchaeota     c__Methanomicrobia
-#> GG_OTU_4 k__Bacteria     p__Firmicutes          c__Clostridia
-#> GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammaproteobacteria
-#>                         Order                Family             Genus
-#>                   <character>           <character>       <character>
-#> GG_OTU_1 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia
-#> GG_OTU_2        o__Nostocales        f__Nostocaceae g__Dolichospermum
-#> GG_OTU_3 o__Methanosarcinales f__Methanosarcinaceae g__Methanosarcina
-#> GG_OTU_4   o__Halanaerobiales   f__Halanaerobiaceae  g__Halanaerobium
-#> GG_OTU_5 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia
-#>                         Species
-#>                     <character>
-#> GG_OTU_1                    s__
-#> GG_OTU_2                    s__
-#> GG_OTU_3                    s__
-#> GG_OTU_4 s__Halanaerobiumsacc..
-#> GG_OTU_5                    s__
-
-# Recipe init
-rec <- dar::recipe(tse) |>
-  dar::add_model(~ BODY_SITE, targets = "BODY_SITE", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 5 taxa and 6 samples 
-#>      ℹ variable of interes BODY_SITE (class: character, levels: gut, skin) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~BODY_SITE
-```
-
-## Importing Data from `qiime` Format
-
-The `qiime` format is another commonly used format in bioinformatics for
-microbiome sequencing data. Here’s how you can import data in `qiime`
-format to both `Phyloseq` and `TreeSummarizedExperiment.`
-
-### To Phyloseq
-
-To convert data from the `qiime` format to the `Phyloseq` format, you
-can use the
-[`phyloseq::import_qiime()`](https://rdrr.io/pkg/phyloseq/man/import_qiime.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Import QIIME data
-phy_qiime <- phyloseq::import_qiime(
-  otufilename = system.file("extdata", "GP_otu_table_rand_short.txt.gz", package = "phyloseq"),
-  mapfilename = system.file("extdata", "master_map.txt", package = "phyloseq"),
-  treefilename = system.file("extdata", "GP_tree_rand_short.newick.gz", package = "phyloseq")
-)
-#> Processing map file...
-#> Processing otu/tax file...
-#> Reading file into memory prior to parsing...
-#> Detecting first header line...
-#> Header is on line 2  
-#> Converting input file to a table...
-#> Defining OTU table... 
-#> Parsing taxonomy table...
-#> Processing phylogenetic tree...
-#>  /__w/_temp/Library/phyloseq/extdata/GP_tree_rand_short.newick.gz ...
-
-phy_qiime
-#> phyloseq-class experiment-level object
-#> otu_table()   OTU Table:         [ 500 taxa and 26 samples ]
-#> sample_data() Sample Data:       [ 26 samples by 7 sample variables ]
-#> tax_table()   Taxonomy Table:    [ 500 taxa by 7 taxonomic ranks ]
-#> phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]
-
-# Recipe init
-rec <- dar::recipe(phy_qiime) |>
-  dar::add_model(~ SampleType, targets = "SampleType", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 500 taxa and 26 samples 
-#>      ℹ variable of interes SampleType (class: character, levels: Feces, Freshwater, Freshwater (creek), Mock, Ocean, Sediment (estuary), Skin, Soil, Tongue) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~SampleType
-```
-
-### To TreeSummarizedExperiment
-
-To convert data from the `qiime` format to the
-`TreeSummarizedExperiment` format, you can use the
-[`mia::importQIIME2()`](https://microbiome.github.io/mia/reference/importQIIME2.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Import QIIME data to tse
-tse_qiime <- mia::importQIIME2(
-  featureTableFile = system.file("extdata", "table.qza", package = "mia"),
-  taxonomyTableFile = system.file("extdata", "taxonomy.qza", package = "mia"),
-  sampleMetaFile = system.file("extdata", "sample-metadata.tsv", package = "mia"),
-  refSeqFile = system.file("extdata", "refseq.qza", package = "mia"),
-  phyTreeFile = system.file("extdata", "tree.qza", package = "mia")
-)
-
-tse_qiime
-
-# Recipe init
-rec <- dar::recipe(tse_qiime) |>
-  dar::add_model(~ body.site, targets = "body.site", tax_level = "Genus")
-
-rec
-```
-
-## Importing Data from `mothur` Format
-
-The `mothur` format is another commonly used format in bioinformatics
-for microbiome sequencing data. Here’s how you can import data in
-`mothur` format to both `Phyloseq` and `TreeSummarizedExperiment.`
-
-### To Phyloseq
-
-To convert data from the `mothur` format to the `Phyloseq` format, you
-can use the
-[`phyloseq::import_mothur()`](https://rdrr.io/pkg/phyloseq/man/import_mothur.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Import Mothur data
-phy_mothur <- phyloseq::import_mothur(
-  mothur_list_file = system.file("extdata", "esophagus.fn.list.gz", package = "phyloseq"),
-  mothur_group_file = system.file("extdata", "esophagus.good.groups.gz", package = "phyloseq"),
-  mothur_tree_file = system.file("extdata", "esophagus.tree.gz", package = "phyloseq")
-)
-
-phy_mothur
-#> phyloseq-class experiment-level object
-#> otu_table()   OTU Table:         [ 591 taxa and 3 samples ]
-#> phy_tree()    Phylogenetic Tree: [ 591 tips and 590 internal nodes ]
-
-# Recipe init
-rec <- dar::recipe(phy_mothur)
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 591 taxa and 3 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis!
-```
-
-### To TreeSummarizedExperiment
-
-To convert data from the `mothur` format to the
-`TreeSummarizedExperiment` format, you can use the
-[`mia::importMothur()`](https://microbiome.github.io/mia/reference/importMothur.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Import Mothur data to TreeSummarizedExperiment
-tse_mothur <- mia::importMothur(
-  sharedFile = system.file("extdata", "mothur_example.shared", package = "mia"),
-  taxonomyFile = system.file("extdata", "mothur_example.cons.taxonomy", package = "mia"),
-  designFile = system.file("extdata", "mothur_example.design", package = "mia")
-) |> methods::as("TreeSummarizedExperiment")
-
-tse_mothur
-#> class: TreeSummarizedExperiment 
-#> dim: 100 100 
-#> metadata(0):
-#> assays(1): counts
-#> rownames(100): Otu001 Otu002 ... Otu099 Otu100
-#> rowData names(8): OTU Size ... Family Genus
-#> colnames(100): Sample1 Sample2 ... Sample99 Sample100
-#> colData names(7): group sex ... numOtus Group
-#> reducedDimNames(0):
-#> mainExpName: NULL
-#> altExpNames(0):
-#> rowLinks: NULL
-#> rowTree: NULL
-#> colLinks: NULL
-#> colTree: NULL
-
-# Recipe init
-rec <- dar::recipe(tse_mothur) |>
-  dar::add_model(~ drug, targets = "drug", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 100 taxa and 100 samples 
-#>      ℹ variable of interes drug (class: character, levels: A, B) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~drug
-```
-
-## Importing Data from `metaphlan` Format
-
-The `metaphlan` format is another commonly used format in bioinformatics
-for microbiome sequencing data. Here’s how you can import data in
-`metaphlan` format to `TreeSummarizedExperiment.`
-
-### To TreeSummarizedExperiment
-
-To convert data from the `metaphlan` format to the
-`TreeSummarizedExperiment` format, you can use the
-[`mia::importMetaPhlAn()`](https://microbiome.github.io/mia/reference/importMetaPhlAn.html)
-function. Here’s a step-by-step example of how to perform this
-conversion:
-
-``` r
-
-# Importing data from Metaphlan
-tse_metaphlan <- mia::importMetaPhlAn(
-  file = system.file("extdata", "merged_abundance_table.txt", package = "mia")
-)
-
-# Recipe init
-tse_metaphlan <- TreeSummarizedExperiment::TreeSummarizedExperiment(
-  assays = list(counts = SummarizedExperiment::assay(tse_metaphlan)),
-  rowData = SummarizedExperiment::rowData(tse_metaphlan),
-  colData = SummarizedExperiment::colData(tse_metaphlan) |> 
-    as.data.frame() |> 
-    dplyr::mutate(condition = rep(c("A", "B"), times = 3))
-)
-
-rec <- dar::recipe(tse_metaphlan) |>
-  dar::add_model(~ condition, targets = "condition", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 16 taxa and 6 samples 
-#>      ℹ variable of interes condition (class: character, levels: A, B) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~condition
-```
-
-## Conclusion
-
-In this guide, we have explored various methods for importing microbiome
-sequencing data from different formats into `Phyloseq` and
-`TreeSummarizedExperiment.` We’ve covered the `biome`, `qiime`,
-`mothur`, `metaphlan`, and `humann` formats, providing step-by-step
-examples for each.
-
-The flexibility of these tools allows for a smooth transition between
-different data formats, making it easier to conduct your analysis
-irrespective of the initial data format. By following the steps outlined
-in this guide, you should be able to successfully convert your data and
-carry out further differential abundance analysis.
-
-Remember, the specific details of your data may require you to adjust
-the parameters in the import functions. Always inspect your data after
-conversion to ensure it has been imported correctly.
+# Data inputs and inspection
+
+[`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+accepts a `phyloseq` or `TreeSummarizedExperiment` object. These
+containers connect an abundance matrix to sample metadata and, when
+available, taxonomy. Import files with the tools supplied by `phyloseq`
+or `mia`, then inspect the resulting object before configuring an
+analysis.
+
+Importing data does not establish that their units, experimental design
+or taxonomic annotations are appropriate for a particular
+differential-abundance method.
+
+## Start with an existing phyloseq object
+
+The package includes `metaHIV_phy`, with its recorded sample metadata
+and taxonomy. No statistical model is needed to inspect the data or
+define preprocessing steps.
+
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dar`](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar)`)`\
+[`data`](https://rdrr.io/r/utils/data.html)`(``"metaHIV_phy"``, package ``=`` ``"dar"``)`\
+\
+`rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``metaHIV_phy``)`\
+`rec`\
+`#> ── ``DAR Recipe`` ──────────────────────────────────────────────────────────────────`\
+`#> Inputs:`\
+`#> `\
+`#>      ``ℹ`` phyloseq object with ``451`` taxa and ``156`` samples `\
+`#>      ``✖`` undefined analysis target. Use ``add_model()`` to define the analysis! `\
+`#>      ``✖`` undefined taxonomic level. Use ``add_model()`` to define the analysis!`
+
+[`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
+also accepts a `phyloseq` object whose stored abundance matrix has
+samples in rows: the accessors below return one consistent orientation.
+When constructing your own `phyloseq` object, set `taxa_are_rows` to
+match the actual matrix, rather than changing this flag without
+transposing the data.
+
+## Inspect samples, taxonomy and abundances
+
+Use the dar accessors explicitly when other attached packages export
+functions with the same names.
+
+\
+`samples`` ``<-`` ``dar``::`[`sample_data`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)`(``rec``)`\
+`taxonomy`` ``<-`` ``dar``::`[`tax_table`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)`(``rec``)`\
+`abundances`` ``<-`` ``dar``::`[`otu_table`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)`(``rec``)`\
+\
+[`head`](https://rdrr.io/r/utils/head.html)`(``samples``[`[`c`](https://rdrr.io/r/base/c.html)`(``"sample_id"``, ``"RiskGroup2"``)``]``)`\
+`#> ``# A tibble: 6 × 2`\
+`#>   sample_id  RiskGroup2`\
+`#>   ``<chr>``      ``<chr>``     `\
+`#> ``1`` Sample_186 msm       `\
+`#> ``2`` Sample_185 msm       `\
+`#> ``3`` Sample_184 hts       `\
+`#> ``4`` Sample_182 pwid      `\
+`#> ``5`` Sample_181 msm       `\
+`#> ``6`` Sample_170 msm`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``taxonomy``)`\
+`#> ``# A tibble: 6 × 8`\
+`#>   taxa_id Kingdom  Phylum         Class           Order     Family Genus Species`\
+`#>   ``<chr>``   ``<chr>``    ``<chr>``          ``<chr>``           ``<chr>``     ``<chr>``  ``<chr>`` ``<chr>``  `\
+`#> ``1`` Otu_1   Archaea  Euryarchaeota  Methanobacteria Methanob… Metha… Meth… Methan…`\
+`#> ``2`` Otu_2   Archaea  Euryarchaeota  Methanobacteria Methanob… Metha… Meth… Methan…`\
+`#> ``3`` Otu_3   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…`\
+`#> ``4`` Otu_4   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…`\
+`#> ``5`` Otu_5   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…`\
+`#> ``6`` Otu_6   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…`\
+`abundances``[`[`seq_len`](https://rdrr.io/r/base/seq.html)`(``6``)``, `[`seq_len`](https://rdrr.io/r/base/seq.html)`(``5``)``]`\
+`#> ``# A tibble: 6 × 5`\
+`#>   taxa_id Sample_186 Sample_185 Sample_184 Sample_182`\
+`#>   ``<chr>``        ``<dbl>``      ``<dbl>``      ``<dbl>``      ``<dbl>`\
+`#> ``1`` Otu_1         ``2``538          0       ``9``026      ``12``049`\
+`#> ``2`` Otu_2            0          0          0        609`\
+`#> ``3`` Otu_3            0          0          0          0`\
+`#> ``4`` Otu_4            0          0          0          0`\
+`#> ``5`` Otu_5            0          0          0          0`\
+`#> ``6`` Otu_6            0          0          0          0`
+
+The accessors expose the complete stored components, independently of
+the target or taxonomic rank later selected with
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md):
+
+- [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
+  returns `sample_id` followed by all sample metadata columns, in
+  [`phyloseq::sample_names()`](https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html)
+  order.
+- [`tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)
+  returns `taxa_id` followed by all taxonomic ranks, in
+  [`phyloseq::taxa_names()`](https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html)
+  order.
+- [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
+  returns one row per taxon, with `taxa_id` first and one column per
+  sample. Taxon and sample order match the other two accessors.
+
+\
+[`stopifnot`](https://rdrr.io/r/base/stopifnot.html)`(`\
+`  `[`identical`](https://rdrr.io/r/base/identical.html)`(`[`colnames`](https://rdrr.io/r/base/colnames.html)`(``abundances``)``[``-``1``]``, ``samples``$``sample_id``)``,`\
+`  `[`identical`](https://rdrr.io/r/base/identical.html)`(``abundances``$``taxa_id``, ``taxonomy``$``taxa_id``)`\
+`)`
+
+Keep sample and taxon identifiers unique and consistent across input
+files. Taxonomic labels are annotations, not replacements for feature
+identifiers: several features can share a species name. Inspect missing
+annotations and use standard rank names such as `Kingdom`, `Genus` and
+`Species`.
+
+If metadata or taxonomy is absent, the corresponding accessor returns an
+ID-only tibble. That is sufficient for inspection, but it does not
+supply the real covariates or taxonomic rank needed by a model. Add
+genuine study metadata before calling
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md);
+do not manufacture groups just to make an example run.
+
+## Import a BIOM table
+
+This example uses a file distributed with `phyloseq`, without
+downloading data. The importer reads the sample metadata already present
+in that file.
+
+\
+`biom_file`` ``<-`` `[`system.file`](https://rdrr.io/r/base/system.file.html)`(`\
+`  ``"extdata"``, ``"rich_dense_otu_table.biom"``, package ``=`` ``"phyloseq"`\
+`)`\
+\
+`phy`` ``<-`` ``phyloseq``::`[`import_biom`](https://rdrr.io/pkg/phyloseq/man/import_biom.html)`(`\
+`  ``biom_file``,`\
+`  parseFunction ``=`` ``phyloseq``::`[`parse_taxonomy_greengenes`](https://rdrr.io/pkg/phyloseq/man/parseTaxonomy-functions.html)\
+`)`\
+`biom_rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``phy``)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``dar``::`[`sample_data`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)`(``biom_rec``)``)`\
+`#> ``# A tibble: 6 × 5`\
+`#>   sample_id BarcodeSequence LinkerPrimerSequence  BODY_SITE Description`\
+`#>   ``<chr>``     ``<chr>``           ``<chr>``                 ``<chr>``     ``<chr>``      `\
+`#> ``1`` Sample1   CGCTTATCGAGA    CATGCTGCCTCCCGTAGGAGT gut       human gut  `\
+`#> ``2`` Sample2   CATACCAGTAGC    CATGCTGCCTCCCGTAGGAGT gut       human gut  `\
+`#> ``3`` Sample3   CTCTCTACCTGT    CATGCTGCCTCCCGTAGGAGT gut       human gut  `\
+`#> ``4`` Sample4   CTCTCGGCCTGT    CATGCTGCCTCCCGTAGGAGT skin      human skin `\
+`#> ``5`` Sample5   CTCTCTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin `\
+`#> ``6`` Sample6   CTAACTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``dar``::`[`tax_table`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)`(``biom_rec``)``)`\
+`#> ``# A tibble: 5 × 8`\
+`#>   taxa_id  Kingdom  Phylum         Class              Order Family Genus Species`\
+`#>   ``<chr>``    ``<chr>``    ``<chr>``          ``<chr>``              ``<chr>`` ``<chr>``  ``<chr>`` ``<chr>``  `\
+`#> ``1`` GG_OTU_1 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… ``NA``     `\
+`#> ``2`` GG_OTU_2 Bacteria Cyanobacteria  Nostocophycideae   Nost… Nosto… Doli… ``NA``     `\
+`#> ``3`` GG_OTU_3 Archaea  Euryarchaeota  Methanomicrobia    Meth… Metha… Meth… ``NA``     `\
+`#> ``4`` GG_OTU_4 Bacteria Firmicutes     Clostridia         Hala… Halan… Hala… Halana…`\
+`#> ``5`` GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… ``NA`
+
+The same file can be imported as a `TreeSummarizedExperiment`. Rows of a
+TSE represent features, columns represent samples, `rowData()` holds
+feature annotations and `colData()` holds sample metadata.
+
+\
+`tse`` ``<-`` ``mia``::`[`importBIOM`](https://microbiome.github.io/mia/reference/importBIOM.html)`(``biom_file``)`\
+\
+`# This bundled example contains these seven ranks, in this order.`\
+[`colnames`](https://rdrr.io/r/base/colnames.html)`(``SummarizedExperiment``::`[`rowData`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)`(``tse``)``)`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(`\
+`  ``"Kingdom"``, ``"Phylum"``, ``"Class"``, ``"Order"``, ``"Family"``, ``"Genus"``, ``"Species"`\
+`)`\
+\
+`tse_rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``tse``)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``dar``::`[`tax_table`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)`(``tse_rec``)``)`\
+`#> ``# A tibble: 5 × 8`\
+`#>   taxa_id  Kingdom     Phylum            Class        Order Family Genus Species`\
+`#>   ``<chr>``    ``<chr>``       ``<chr>``             ``<chr>``        ``<chr>`` ``<chr>``  ``<chr>`` ``<chr>``  `\
+`#> ``1`` GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammapro… o__E… f__En… g__E… s__    `\
+`#> ``2`` GG_OTU_2 k__Bacteria p__Cyanobacteria  c__Nostocop… o__N… f__No… g__D… s__    `\
+`#> ``3`` GG_OTU_3 k__Archaea  p__Euryarchaeota  c__Methanom… o__M… f__Me… g__M… s__    `\
+`#> ``4`` GG_OTU_4 k__Bacteria p__Firmicutes     c__Clostrid… o__H… f__Ha… g__H… s__Hal…`\
+`#> ``5`` GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammapro… o__E… f__En… g__E… s__`
+
+The rank relabeling above is specific to this file. Inspect the
+annotations in your own data instead of assigning rank names by position
+without checking their meaning. A TSE input is converted internally to
+`phyloseq`; if the intended abundance table is not the default assay,
+select it explicitly with
+`mia::convertToPhyloseq(..., assay.type = "your_assay")` before creating
+the recipe.
+
+For other formats, consult the importers’ documentation rather than
+treating all formats as equivalent:
+
+- [`phyloseq::import_qiime()`](https://rdrr.io/pkg/phyloseq/man/import_qiime.html)
+  reads legacy QIIME tables;
+  [`mia::importQIIME2()`](https://microbiome.github.io/mia/reference/importQIIME2.html)
+  reads QIIME 2 artifacts.
+- [`phyloseq::import_mothur()`](https://rdrr.io/pkg/phyloseq/man/import_mothur.html)
+  and
+  [`mia::importMothur()`](https://microbiome.github.io/mia/reference/importMothur.html)
+  read the supported mothur files.
+- [`mia::importMetaPhlAn()`](https://microbiome.github.io/mia/reference/importMetaPhlAn.html)
+  reads MetaPhlAn abundance profiles.
+
+For example, open the installed help with
+[`help("importQIIME2", package = "mia")`](https://microbiome.github.io/mia/reference/importQIIME2.html)
+or
+[`help("import_biom", package = "phyloseq")`](https://rdrr.io/pkg/phyloseq/man/import_biom.html).
+
+## Check the measurement scale
+
+An abundance matrix can contain raw read counts, proportions,
+percentages or other transformed values. These are not interchangeable
+inputs. In particular, MetaPhlAn relative-abundance profiles are not raw
+read counts. Neither importing them nor converting their container makes
+them suitable for a count-based model; rounding percentages does not
+recover read counts.
+
+Check the provenance and assay units, not just whether values happen to
+be integers. Retain raw counts when they are available and choose a
+method whose input requirements match the measurements. Missing values
+are also distinct from observed zeros.
+
+For QC and filtering, continue with [Quality control and
+preprocessing](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.md).
+For formulas, target variables and engine compatibility, see
+[Statistical models and
+contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md).
 
 ## Session info
 
-``` r
-
-devtools::session_info()
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value
-#>  version  R version 4.6.1 (2026-06-24)
-#>  os       Ubuntu 24.04.4 LTS
-#>  system   x86_64, linux-gnu
-#>  ui       X11
-#>  language en
-#>  collate  en_US.UTF-8
-#>  ctype    en_US.UTF-8
-#>  tz       UTC
-#>  date     2026-08-04
-#>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
-#>  quarto   1.9.38 @ /usr/local/bin/quarto
-#> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package                  * version date (UTC) lib source
-#>  abind                      1.4-8   2024-09-12 [1] RSPM (R 4.6.0)
-#>  ade4                       1.7-24  2026-03-21 [1] RSPM (R 4.6.0)
-#>  ape                        5.8-1   2024-12-16 [1] RSPM (R 4.6.0)
-#>  backports                  1.5.1   2026-04-03 [1] RSPM (R 4.6.0)
-#>  beachmat                   2.29.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  beeswarm                   0.4.0   2021-06-01 [1] RSPM (R 4.6.0)
-#>  Biobase                  * 2.73.2  2026-07-29 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocGenerics             * 0.59.10 2026-07-07 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocNeighbors              2.7.2   2026-05-10 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocParallel               1.47.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocSingular               1.29.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  biomformat                 1.41.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  Biostrings               * 2.81.6  2026-07-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  bluster                    1.23.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  bslib                      0.12.0  2026-08-04 [2] RSPM (R 4.6.0)
-#>  cachem                     1.1.0   2024-05-16 [2] RSPM (R 4.6.0)
-#>  checkmate                  2.3.4   2026-02-03 [1] RSPM (R 4.6.0)
-#>  cli                        3.6.6   2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.3 2026-07-30 [2] RSPM (R 4.6.0)
-#>  codetools                  0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
-#>  crayon                     1.5.3   2024-06-20 [2] RSPM (R 4.6.0)
-#>  dar                        1.9.12  2026-08-04 [1] Bioconductor
-#>  data.table                 1.18.4  2026-05-06 [1] RSPM (R 4.6.0)
-#>  DBI                        1.3.0   2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.9.2   2026-07-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  decontam                   1.33.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  DelayedArray               0.39.3  2026-06-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  DelayedMatrixStats         1.35.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  desc                       1.4.3   2023-12-10 [2] RSPM (R 4.6.0)
-#>  devtools                   2.5.2   2026-04-30 [2] RSPM (R 4.6.0)
-#>  digest                     0.6.39  2025-11-19 [2] RSPM (R 4.6.0)
-#>  DirichletMultinomial       1.55.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  dplyr                      1.2.1   2026-04-03 [1] RSPM (R 4.6.0)
-#>  ellipsis                   0.3.3   2026-04-04 [2] RSPM (R 4.6.0)
-#>  evaluate                   1.0.5   2025-08-27 [2] RSPM (R 4.6.0)
-#>  farver                     2.1.2   2024-05-13 [1] RSPM (R 4.6.0)
-#>  fastmap                    1.2.0   2024-05-15 [2] RSPM (R 4.6.0)
-#>  foreach                    1.5.2   2022-02-02 [1] RSPM (R 4.6.0)
-#>  fs                         2.1.0   2026-04-18 [2] RSPM (R 4.6.0)
-#>  generics                 * 0.1.4   2025-05-09 [1] RSPM (R 4.6.0)
-#>  GenomicRanges            * 1.65.1  2026-07-08 [1] Bioconductor 3.24 (R 4.6.1)
-#>  ggbeeswarm                 0.7.3   2025-11-29 [1] RSPM (R 4.6.0)
-#>  ggplot2                    4.0.3   2026-04-22 [1] RSPM (R 4.6.0)
-#>  ggrepel                    0.9.8   2026-03-17 [1] RSPM (R 4.6.0)
-#>  glue                       1.8.1   2026-04-17 [2] RSPM (R 4.6.0)
-#>  gridExtra                  2.3.1   2026-06-25 [1] RSPM (R 4.6.0)
-#>  gtable                     0.3.6   2024-10-25 [1] RSPM (R 4.6.0)
-#>  htmltools                  0.5.9   2025-12-04 [2] RSPM (R 4.6.0)
-#>  htmlwidgets                1.6.4   2023-12-06 [2] RSPM (R 4.6.0)
-#>  igraph                     2.3.3   2026-06-26 [1] RSPM (R 4.6.0)
-#>  IRanges                  * 2.47.2  2026-06-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  irlba                      2.3.7   2026-01-30 [1] RSPM (R 4.6.0)
-#>  iterators                  1.0.14  2022-02-05 [1] RSPM (R 4.6.0)
-#>  jquerylib                  0.1.4   2021-04-26 [2] RSPM (R 4.6.0)
-#>  jsonlite                   2.0.0   2025-03-27 [2] RSPM (R 4.6.0)
-#>  knitr                      1.51    2025-12-20 [2] RSPM (R 4.6.0)
-#>  lattice                    0.22-9  2026-02-09 [3] CRAN (R 4.6.1)
-#>  lazyeval                   0.2.3   2026-04-04 [1] RSPM (R 4.6.0)
-#>  lifecycle                  1.0.5   2026-01-08 [2] RSPM (R 4.6.0)
-#>  magrittr                   2.0.5   2026-04-04 [2] RSPM (R 4.6.0)
-#>  MASS                       7.3-66  2026-07-15 [2] RSPM (R 4.6.0)
-#>  Matrix                     1.7-6   2026-07-25 [2] RSPM (R 4.6.0)
-#>  MatrixGenerics           * 1.25.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  matrixStats              * 1.5.0   2025-01-07 [1] RSPM (R 4.6.0)
-#>  memoise                    2.0.1   2021-11-26 [2] RSPM (R 4.6.0)
-#>  mgcv                       1.9-4   2025-11-07 [3] CRAN (R 4.6.1)
-#>  mia                      * 1.21.6  2026-07-31 [1] Bioconductor 3.24 (R 4.6.1)
-#>  MultiAssayExperiment     * 1.39.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  multtest                   2.69.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  nlme                       3.1-170 2026-07-15 [2] RSPM (R 4.6.0)
-#>  otel                       0.2.0   2025-08-29 [2] RSPM (R 4.6.0)
-#>  permute                    0.9-10  2026-02-06 [1] RSPM (R 4.6.0)
-#>  phyloseq                 * 1.57.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  pillar                     1.11.1  2025-09-17 [2] RSPM (R 4.6.0)
-#>  pkgbuild                   1.4.8   2025-05-26 [2] RSPM (R 4.6.0)
-#>  pkgconfig                  2.0.3   2019-09-22 [2] RSPM (R 4.6.0)
-#>  pkgdown                    2.2.1   2026-07-07 [2] RSPM (R 4.6.0)
-#>  pkgload                    1.5.3   2026-06-15 [2] RSPM (R 4.6.0)
-#>  plyr                       1.8.9   2023-10-02 [1] RSPM (R 4.6.0)
-#>  purrr                      1.2.2   2026-04-10 [2] RSPM (R 4.6.0)
-#>  R6                         2.6.1   2025-02-15 [2] RSPM (R 4.6.0)
-#>  ragg                       1.5.2   2026-03-23 [2] RSPM (R 4.6.0)
-#>  rappdirs                   0.3.4   2026-01-17 [2] RSPM (R 4.6.0)
-#>  rbibutils                  2.4.1   2026-01-21 [1] RSPM (R 4.6.0)
-#>  RColorBrewer               1.1-3   2022-04-03 [1] RSPM (R 4.6.0)
-#>  Rcpp                       1.1.2   2026-07-05 [2] RSPM (R 4.6.0)
-#>  Rdpack                     2.6.6   2026-02-08 [1] RSPM (R 4.6.0)
-#>  reformulas                 0.4.4   2026-02-02 [1] RSPM (R 4.6.0)
-#>  reshape2                   1.4.5   2025-11-12 [1] RSPM (R 4.6.0)
-#>  rlang                      1.3.0   2026-07-05 [2] RSPM (R 4.6.0)
-#>  rmarkdown                  2.31    2026-03-26 [2] RSPM (R 4.6.0)
-#>  rsvd                       1.0.5   2021-04-16 [1] RSPM (R 4.6.0)
-#>  S4Arrays                   1.13.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  S4Vectors                * 0.51.6  2026-07-29 [1] Bioconductor 3.24 (R 4.6.1)
-#>  S7                         0.2.2   2026-04-22 [1] CRAN (R 4.6.1)
-#>  sass                       0.4.10  2025-04-11 [2] RSPM (R 4.6.0)
-#>  ScaledMatrix               1.21.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  scales                     1.4.0   2025-04-24 [1] RSPM (R 4.6.0)
-#>  scater                     1.41.2  2026-06-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  scuttle                    1.23.1  2026-05-18 [1] Bioconductor 3.24 (R 4.6.1)
-#>  Seqinfo                  * 1.3.0   2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  sessioninfo                1.2.4   2026-06-04 [2] RSPM (R 4.6.0)
-#>  SingleCellExperiment     * 1.35.2  2026-07-16 [1] Bioconductor 3.24 (R 4.6.1)
-#>  SparseArray                1.13.2  2026-05-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  sparseMatrixStats          1.25.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  stringi                    1.8.7   2025-03-27 [2] RSPM (R 4.6.0)
-#>  stringr                    1.6.0   2025-11-04 [1] RSPM (R 4.6.0)
-#>  SummarizedExperiment     * 1.43.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  survival                   3.8-9   2026-07-08 [2] RSPM (R 4.6.0)
-#>  systemfonts                1.3.2   2026-03-05 [2] RSPM (R 4.6.0)
-#>  textshaping                1.0.5   2026-03-06 [2] RSPM (R 4.6.0)
-#>  tibble                     3.3.1   2026-01-11 [2] RSPM (R 4.6.0)
-#>  tidyr                      1.3.2   2025-12-19 [1] RSPM (R 4.6.0)
-#>  tidyselect                 1.2.1   2024-03-11 [1] RSPM (R 4.6.0)
-#>  tidytree                   0.4.8   2026-07-02 [1] RSPM (R 4.6.0)
-#>  treeio                     1.37.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  TreeSummarizedExperiment * 2.21.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  usethis                    3.2.1   2025-09-06 [2] RSPM (R 4.6.0)
-#>  utf8                       1.2.6   2025-06-08 [2] RSPM (R 4.6.0)
-#>  vctrs                      0.7.3   2026-04-11 [2] RSPM (R 4.6.0)
-#>  vegan                      2.7-5   2026-05-25 [1] RSPM (R 4.6.0)
-#>  vipor                      0.4.7   2023-12-18 [1] RSPM (R 4.6.0)
-#>  viridis                    0.6.5   2024-01-29 [1] RSPM (R 4.6.0)
-#>  viridisLite                0.4.3   2026-02-04 [1] RSPM (R 4.6.0)
-#>  withr                      3.0.3   2026-06-19 [2] RSPM (R 4.6.0)
-#>  xfun                       0.60    2026-07-09 [2] RSPM (R 4.6.0)
-#>  XVector                  * 0.53.0  2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  yaml                       2.3.12  2025-12-10 [2] RSPM (R 4.6.0)
-#>  yulab.utils                0.2.4   2026-02-02 [1] RSPM (R 4.6.0)
-#> 
-#>  [1] /__w/_temp/Library
-#>  [2] /usr/local/lib/R/site-library
-#>  [3] /usr/local/lib/R/library
-#>  * ── Packages attached to the search path.
-#> 
-#> ──────────────────────────────────────────────────────────────────────────────
-```
+\
+[`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
+`#> R version 4.6.1 (2026-06-24)`\
+`#> Platform: x86_64-pc-linux-gnu`\
+`#> Running under: Ubuntu 24.04.4 LTS`\
+`#> `\
+`#> Matrix products: default`\
+`#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 `\
+`#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0`\
+`#> `\
+`#> locale:`\
+`#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              `\
+`#>  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    `\
+`#>  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   `\
+`#>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 `\
+`#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            `\
+`#> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       `\
+`#> `\
+`#> time zone: UTC`\
+`#> tzcode source: system (glibc)`\
+`#> `\
+`#> attached base packages:`\
+`#> [1] stats     graphics  grDevices utils     datasets  methods   base     `\
+`#> `\
+`#> other attached packages:`\
+`#> [1] dar_1.9.12`\
+`#> `\
+`#> loaded via a namespace (and not attached):`\
+`#>   [1] DBI_1.3.0                       gridExtra_2.3.1                `\
+`#>   [3] permute_0.9-10                  rlang_1.3.0                    `\
+`#>   [5] magrittr_2.0.5                  ade4_1.7-24                    `\
+`#>   [7] scater_1.41.2                   otel_0.2.0                     `\
+`#>   [9] matrixStats_1.5.0               compiler_4.6.1                 `\
+`#>  [11] DelayedMatrixStats_1.35.0       mgcv_1.9-4                     `\
+`#>  [13] systemfonts_1.3.2               vctrs_0.7.3                    `\
+`#>  [15] reshape2_1.4.5                  stringr_1.6.0                  `\
+`#>  [17] pkgconfig_2.0.3                 crayon_1.5.3                   `\
+`#>  [19] fastmap_1.2.0                   backports_1.5.1                `\
+`#>  [21] XVector_0.53.0                  scuttle_1.23.2                 `\
+`#>  [23] utf8_1.2.6                      rmarkdown_2.32                 `\
+`#>  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    `\
+`#>  [27] ragg_1.5.2                      purrr_1.2.2                    `\
+`#>  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    `\
+`#>  [31] xfun_0.61                       cachem_1.1.0                   `\
+`#>  [33] beachmat_2.29.3                 jsonlite_2.0.0                 `\
+`#>  [35] biomformat_1.41.0               DelayedArray_0.39.8            `\
+`#>  [37] BiocParallel_1.47.0             irlba_2.4.1                    `\
+`#>  [39] parallel_4.6.1                  cluster_2.1.8.3                `\
+`#>  [41] R6_2.6.1                        bslib_0.12.0                   `\
+`#>  [43] stringi_1.8.9                   RColorBrewer_1.1-3             `\
+`#>  [45] GenomicRanges_1.65.4            jquerylib_0.1.4                `\
+`#>  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  `\
+`#>  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               `\
+`#>  [51] knitr_1.52                      DECIPHER_3.9.3                 `\
+`#>  [53] IRanges_2.47.5                  mia_1.21.11                    `\
+`#>  [55] Matrix_1.7-6                    splines_4.6.1                  `\
+`#>  [57] igraph_2.3.4                    tidyselect_1.2.1               `\
+`#>  [59] viridis_0.6.5                   abind_1.4-8                    `\
+`#>  [61] yaml_2.3.12                     vegan_2.7-6                    `\
+`#>  [63] TreeSummarizedExperiment_2.21.0 codetools_0.2-20               `\
+`#>  [65] lattice_0.23-1                  tibble_3.3.1                   `\
+`#>  [67] plyr_1.8.9                      Biobase_2.73.2                 `\
+`#>  [69] treeio_1.37.1                   S7_0.2.2                       `\
+`#>  [71] evaluate_1.0.5                  desc_1.4.3                     `\
+`#>  [73] survival_3.8-12                 Biostrings_2.81.9              `\
+`#>  [75] pillar_1.11.1                   phyloseq_1.57.0                `\
+`#>  [77] MatrixGenerics_1.25.0           checkmate_2.3.4                `\
+`#>  [79] foreach_1.5.2                   stats4_4.6.1                   `\
+`#>  [81] generics_0.1.4                  S4Vectors_0.51.10              `\
+`#>  [83] ggplot2_4.0.3                   sparseMatrixStats_1.25.0       `\
+`#>  [85] scales_1.4.0                    tidytree_0.4.8                 `\
+`#>  [87] glue_1.8.1                      lazyeval_0.2.3                 `\
+`#>  [89] tools_4.6.1                     BiocNeighbors_2.7.3            `\
+`#>  [91] data.table_1.18.6.1             ScaledMatrix_1.21.0            `\
+`#>  [93] fs_2.1.0                        grid_4.6.1                     `\
+`#>  [95] tidyr_1.3.2                     ape_5.8-1                      `\
+`#>  [97] SingleCellExperiment_1.35.2     nlme_3.1-171                   `\
+`#>  [99] beeswarm_0.4.0                  BiocSingular_1.29.2            `\
+`#> [101] vipor_0.4.7                     cli_3.6.6                      `\
+`#> [103] rsvd_1.0.5                      rappdirs_0.3.4                 `\
+`#> [105] textshaping_1.0.5               viridisLite_0.4.3              `\
+`#> [107] S4Arrays_1.13.2                 dplyr_1.2.1                    `\
+`#> [109] gtable_0.3.6                    yulab.utils_0.2.5              `\
+`#> [111] sass_0.4.10                     digest_0.6.39                  `\
+`#> [113] BiocGenerics_0.59.12            ggrepel_0.9.8                  `\
+`#> [115] SparseArray_1.13.4              decontam_1.33.0                `\
+`#> [117] htmlwidgets_1.6.4               farver_2.1.2                   `\
+`#> [119] htmltools_0.5.9                 pkgdown_2.2.1                  `\
+`#> [121] multtest_2.69.0                 lifecycle_1.0.5                `\
+`#> [123] MASS_7.3-66`

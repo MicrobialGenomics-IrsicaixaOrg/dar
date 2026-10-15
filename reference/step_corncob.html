@@ -23,12 +23,11 @@ variability, and addresses each of the challenges presented below:"><meta proper
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -57,8 +56,8 @@ variability, and addresses each of the challenges presented below:</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">step_corncob</span><span class="op">(</span></span>
 <span>  <span class="va">rec</span>,</span>
 <span>  phi.formula <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span><span class="op">)</span>,</span>
-<span>  formula_null <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span><span class="op">)</span>,</span>
-<span>  phi.formula_null <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>  formula_null <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  phi.formula_null <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  link <span class="op">=</span> <span class="st">"logit"</span>,</span>
 <span>  phi.link <span class="op">=</span> <span class="st">"logit"</span>,</span>
 <span>  test <span class="op">=</span> <span class="st">"Wald"</span>,</span>
@@ -89,12 +88,16 @@ symbolic description of the model to be fitted to the dispersion.</p></dd>
 
 
 <dt id="arg-formula-null">formula_null<a class="anchor" aria-label="anchor" href="#arg-formula-null"></a></dt>
-<dd><p>Formula for mean under null, without response.</p></dd>
+<dd><p>Formula for mean under null, without response. Defaults
+to <code>NULL</code>, which uses <code>~ 1</code> during deprecated model-free execution.
+An explicit formula is overridden with a warning by a centralized model.</p></dd>
 
 
 <dt id="arg-phi-formula-null">phi.formula_null<a class="anchor" aria-label="anchor" href="#arg-phi-formula-null"></a></dt>
 <dd><p>Formula for overdispersion under null, without
-response.</p></dd>
+response. Defaults to <code>NULL</code>, which uses <code>~ 1</code> during deprecated model-free
+execution. An explicit formula is overridden with a warning by a
+centralized model.</p></dd>
 
 
 <dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
@@ -149,7 +152,11 @@ is expected. If 'no_seed', rarefaction is performed without a set seed.</p></dd>
 
 
 <dt id="arg-id">id<a class="anchor" aria-label="anchor" href="#arg-id"></a></dt>
-<dd><p>A character string that is unique to this step to identify it.</p></dd>
+<dd><p>Unique, non-empty identifier for this step. DA step IDs must not
+use the reserved internal names <code>taxa_id</code>, <code>contrast_id</code>, <code>comparison</code>,
+<code>contrast_type</code>, <code>var</code>, <code>effect</code>, <code>sum</code>, <code>.tax_order</code>, <code>.contrast_order</code> or
+<code>.effect_order</code>. Other identifiers, including names such as <code>.custom</code>,
+are retained unchanged.</p></dd>
 
 
 <dt id="arg-engine-args">engine_args<a class="anchor" aria-label="anchor" href="#arg-engine-args"></a></dt>
@@ -169,7 +176,11 @@ stage. Arguments managed by dar or exposed above cannot be overridden.</p></dd>
 <li><p>high variability of empirical relative abundances (overdispersion)</p></li>
 <li><p>within-taxon correlation</p></li>
 <li><p>hypothesis testing with categorical and continuous covariates</p></li>
-</ul></div>
+</ul><p>Centralized models use non-bootstrap Wald contrasts. With
+<code>engine_args = list(fit = list(robust = TRUE))</code>, inference uses corncob's
+native sandwich covariance rather than the inverse Hessian. This does not
+add support for random effects or repeated-measures dependence.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Diff taxa steps:
@@ -186,55 +197,13 @@ stage. Arguments managed by dar or exposed above cannot be overridden.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Init Recipe</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.3 * length(x))"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Phylum"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">rec</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Phylum</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Statistical model:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~RiskGroup2</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Preprocessing steps:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_subset_taxa() <span style="color: #555555;">id = subset_taxa__Pogača</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">◉</span> step_filter_taxa() <span style="color: #555555;">id = filter_taxa__Cronut</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DA steps:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">rec_default</span> <span class="op">&lt;-</span> <span class="fu">step_corncob</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Define step with default parameters and prep</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> </span></span>
-<span class="r-in"><span>  <span class="fu">step_corncob</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="prep.html">prep</a></span><span class="op">(</span>parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> The centralized model overrides design arguments in 1 step.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> corncob__Börek: formula_null</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Method-specific thresholds and preprocessing controls are unchanged.</span>
-<span class="r-in"><span>  </span></span>
-<span class="r-in"><span><span class="va">rec</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ── <span style="color: #0000BB;">DAR Results</span> ─────────────────────────────────────────────────────────────────</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inputs:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">101</span> taxa and <span style="color: #0000BB;">156</span> samples </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">RiskGroup2</span> (class: character, levels: hts, msm, pwid) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Phylum</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Results:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #00BB00;">✔</span> corncob__Börek <span style="color: #555555;">diff_taxa = 4</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #0000BB;">ℹ</span> 7 taxon-contrast effects are present in all tested methods </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># Use a stricter significance threshold.</span></span></span>
+<span class="r-in"><span><span class="va">rec_strict</span> <span class="op">&lt;-</span> <span class="fu">step_corncob</span><span class="op">(</span><span class="va">rec</span>, fdr_cutoff <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

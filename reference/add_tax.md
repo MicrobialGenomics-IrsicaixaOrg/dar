@@ -24,20 +24,3 @@ add_tax(rec, tax_info)
 ## Value
 
 A `Recipe` object.
-
-## Examples
-
-``` r
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy)
-rec <- suppressWarnings(add_tax(rec, tax_info = "Species"))
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ℹ taxonomic level Species 
-#> 
-#> 
-```

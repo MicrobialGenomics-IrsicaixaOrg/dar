@@ -94,7 +94,11 @@ step_linda(
 
 - id:
 
-  Unique identifier for this configured step.
+  Unique, non-empty identifier for this step. DA step IDs must not use
+  the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+  `contrast_type`, `var`, `effect`, `sum`, `.tax_order`,
+  `.contrast_order` or `.effect_order`. Other identifiers, including
+  names such as `.custom`, are retained unchanged.
 
 - engine_args:
 
@@ -106,6 +110,14 @@ step_linda(
 A
 [Recipe](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/Recipe-class.md)
 object.
+
+## Details
+
+With MicrobiomeStat 1.4, dar uses a local copy of the native function
+with the adaptive zero-handling capitalization error corrected. This
+restores the native choice of imputation when sequencing depth is
+associated with the design. The installed package, model fitting,
+winsorization and multiple-testing correction are unchanged.
 
 ## See also
 
@@ -124,29 +136,10 @@ Other Diff taxa steps:
 data(metaHIV_phy)
 
 rec <- recipe(metaHIV_phy) |>
-  add_model(
-    ~ RiskGroup2,
-    targets = "RiskGroup2",
-    tax_level = "Species"
-  ) |>
-  step_linda(prev_filter = 0.1, adaptive = TRUE)
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_linda() id = linda__Remonce 
+rec_default <- step_linda(rec)
+
+# Retain features present in at least 10% of samples.
+rec_filtered <- step_linda(rec, prev_filter = 0.1)
 ```

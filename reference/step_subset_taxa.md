@@ -56,24 +56,9 @@ This function modifies `rec` in place, you might want to make a copy of
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- recipe(metaHIV_phy)
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> 
-
-## Define step_subset_taxa step with default parameters
-rec <- step_subset_taxa(
-  rec, 
-  tax_level = "Kingdom",
-  taxa = c("Bacteria", "Archaea")
-)
-prep(rec)
+recipe(metaHIV_phy) |>
+  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
+  prep()
 #> ── DAR Results ─────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 

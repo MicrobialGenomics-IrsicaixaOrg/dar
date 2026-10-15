@@ -1,4 +1,4 @@
-# dar: Differential Abundance Analysis by Consensus
+# dar: Differential Abundance Workflows for Microbiome Data
 
 To learn more about dar, start with the vignettes:
 `browseVignettes(package = "dar")`

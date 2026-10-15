@@ -18,16 +18,3 @@ get_tax(rec)
 ## Value
 
 Tibble containing `tax_info`.
-
-## Examples
-
-``` r
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-suppressWarnings(get_tax(rec))
-#> # A tibble: 1 × 1
-#>   tax_lev
-#>   <chr>  
-#> 1 Species
-```

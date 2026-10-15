@@ -1,647 +1,434 @@
-# Workflow with real data
+# Exploring results and optional consensus
 
-To illustrate the functionality of the `dar` package, this study will
-use the data set from (Noguera-Julian, M., et al. 2016). The authors of
-this study found that men who have sex with men (MSM) predominantly
-belonged to the Prevotella-rich enterotype whereas most non-MSM subjects
-were enriched in Bacteroides, independently of HIV-1 status. This result
-highlights the potential impact of sexual orientation on the gut
-microbiome and emphasizes the importance of controlling for such
-variables in microbiome research. Using the `dar` package, we will
-conduct a differential abundance analysis to further explore this
-finding and uncover potential microbial biomarkers associated with this
-specific population.
+This guide starts from individual method results. Agreement summaries
+and consensus rules are optional: neither replaces the methods’
+assumptions or establishes a calibrated false-discovery rate.
 
-## Load dar package and data
+## Prepare a small multi-method workflow
 
-``` r
+The included real dataset makes this guide self-contained. Its
+unadjusted `RiskGroup2` comparison illustrates associations, not causal
+effects or validated biomarkers. DESeq2, LinDA and Wilcoxon can all
+execute this simple design; Wilcoxon cannot adjust for additional
+covariates. For other designs, consult [Statistical models and
+contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md).
 
-library(dar)
-# suppressPackageStartupMessages(library(plotly))
-data("metaHIV_phy")
+For illustration, fix an optional agreement rule of two supporting
+methods out of three before examining discoveries. This is not an
+optimized or generally recommended rule.
 
-metaHIV_phy
-#> phyloseq-class experiment-level object
-#> otu_table()   OTU Table:         [ 451 taxa and 156 samples ]
-#> sample_data() Sample Data:       [ 156 samples by 3 sample variables ]
-#> tax_table()   Taxonomy Table:    [ 451 taxa by 7 taxonomic ranks ]
-```
+\
+[`data`](https://rdrr.io/r/utils/data.html)`(``"metaHIV_phy"``, package ``=`` ``"dar"``)`\
+`agreement_cutoff`` ``<-`` ``2`\
+\
+`rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``metaHIV_phy``)`` ``|>`\
+`  `[`add_model`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)`(`\
+`    ``~`` ``RiskGroup2``,`\
+`    targets ``=`` ``"RiskGroup2"``,`\
+`    tax_level ``=`` ``"Species"``,`\
+`    reference ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``RiskGroup2 ``=`` ``"hts"``)`\
+`  ``)`` ``|>`\
+`  `[`step_subset_taxa`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.md)`(``tax_level ``=`` ``"Kingdom"``, taxa ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"Bacteria"``, ``"Archaea"``)``)`` ``|>`\
+`  `[`step_filter_by_prevalence`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_by_prevalence.md)`(``threshold ``=`` ``0.03``)`` ``|>`\
+`  `[`step_deseq`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md)`(``id ``=`` ``"deseq"``)`` ``|>`\
+`  `[`step_linda`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md)`(``id ``=`` ``"linda"``)`` ``|>`\
+`  `[`step_wilcox`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)`(``id ``=`` ``"wilcox"``)`\
+`#> Registered S3 method overwritten by 'car':`\
+`#>   method           from`\
+`#>   na.action.merMod lme4`\
+\
+`fit`` ``<-`` `[`prep`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)`(``rec``, parallel ``=`` ``FALSE``)`\
+`#> You have inserted a phyloseq object. The phyloseq-based methods will be deprecated. We recommend switching to the (Tree)SummarizedExperiment framework and mia R/Bioconductor package.`
 
-## Recipe initialization
+## Inspect the result table
 
-To begin the analysis process with the `dar` package, the first step is
-to initialize a `Recipe` object, which is an S4 class. This recipe
-object serves as a blueprint for the data preparation steps required for
-the differential abundance analysis. The initialization of the recipe
-object is done through the function
-[`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md),
-which takes as inputs a `phyloseq` or `TreeSummarizedExperiment` (TSE)
-object, the name of the categorical variable of interest and the
-taxonomic level at which the differential abundance analyses are to be
-performed. As previously mentioned, we will use the data set from
-(Noguera-Julian, M., et al. 2016) and the variable of interest
-“RiskGroup2” containing the categories: men who have sex with men (msm),
-non-MSM (hts) and people who inject drugs (pwid) and we will perform the
-analysis at the species level.
+[`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
+exposes one row per returned taxon, contrast and configured step,
+without replacing the native tables held in the prepared recipe.
 
-``` r
+\
+`results`` ``<-`` `[`tidy_results`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)`(``fit``)`\
+`results`` ``|>`\
+`  ``dplyr``::`[`select`](https://dplyr.tidyverse.org/reference/select.html)`(`\
+`    ``taxa_id``, ``contrast_id``, ``numerator``, ``denominator``,`\
+`    ``effect_size``, ``effect_metric``, ``adj_p_value``, ``significant``, ``method``, ``step_id`\
+`  ``)`` ``|>`\
+`  `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
+`#> ``# A tibble: 6 × 10`\
+`#>   taxa_id contrast_id         numerator denominator effect_size effect_metric   `\
+`#>   ``<chr>``   ``<chr>``               ``<chr>``     ``<chr>``             ``<dbl>`` ``<chr>``           `\
+`#> ``1`` Otu_1   RiskGroup2[msm-hts] msm       hts               0.640 log2_fold_change`\
+`#> ``2`` Otu_2   RiskGroup2[msm-hts] msm       hts               1.58  log2_fold_change`\
+`#> ``3`` Otu_7   RiskGroup2[msm-hts] msm       hts               1.28  log2_fold_change`\
+`#> ``4`` Otu_10  RiskGroup2[msm-hts] msm       hts               1.39  log2_fold_change`\
+`#> ``5`` Otu_11  RiskGroup2[msm-hts] msm       hts              23.3   log2_fold_change`\
+`#> ``6`` Otu_12  RiskGroup2[msm-hts] msm       hts               2.23  log2_fold_change`\
+`#> ``# ℹ 4 more variables: adj_p_value <dbl>, significant <lgl>, method <chr>,`\
+`#> ``#   step_id <chr>`\
+\
+`results`` ``|>`\
+`  ``dplyr``::`[`group_by`](https://dplyr.tidyverse.org/reference/group_by.html)`(``step_id``, ``contrast_id``)`` ``|>`\
+`  ``dplyr``::`[`summarise`](https://dplyr.tidyverse.org/reference/summarise.html)`(`\
+`    n_returned ``=`` ``dplyr``::`[`n`](https://dplyr.tidyverse.org/reference/context.html)`(``)``,`\
+`    n_finite_effects ``=`` `[`sum`](https://rdrr.io/r/base/sum.html)`(`[`is.finite`](https://rdrr.io/r/base/is.finite.html)`(``effect_size``)``)``,`\
+`    n_significant ``=`` `[`sum`](https://rdrr.io/r/base/sum.html)`(``significant``, na.rm ``=`` ``TRUE``)``,`\
+`    .groups ``=`` ``"drop"`\
+`  ``)`\
+`#> ``# A tibble: 9 × 5`\
+`#>   step_id contrast_id          n_returned n_finite_effects n_significant`\
+`#>   ``<chr>``   ``<chr>``                     ``<int>``            ``<int>``         ``<int>`\
+`#> ``1`` deseq   RiskGroup2[msm-hts]         278              278           121`\
+`#> ``2`` deseq   RiskGroup2[pwid-hts]        278              278            63`\
+`#> ``3`` deseq   RiskGroup2[pwid-msm]        278              278           108`\
+`#> ``4`` linda   RiskGroup2[msm-hts]         278              278           147`\
+`#> ``5`` linda   RiskGroup2[pwid-hts]        278              278             0`\
+`#> ``6`` linda   RiskGroup2[pwid-msm]        278              278            98`\
+`#> ``7`` wilcox  RiskGroup2[msm-hts]         278              278           155`\
+`#> ``8`` wilcox  RiskGroup2[pwid-hts]        278              278             0`\
+`#> ``9`` wilcox  RiskGroup2[pwid-msm]        278              278           106`
 
-## Recipe initialization
-rec <- recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2
-```
+Use `effect_metric` to interpret effect sizes. A log2 fold change and a
+difference in median relative abundance are not numerically
+interchangeable. The numerator and denominator define the orientation of
+each contrast. `significant` retains the configured method’s decision,
+which can include criteria beyond an adjusted p-value, such as
+ANCOM-BC2’s sensitivity filter. Missing statistics remain missing; a
+non-significant result alone does not prove that every native estimate
+was available or that there is no effect.
 
-## Recipe QC and preprocessing steps definition
+`method` names the stable engine; `step_id` identifies its
+configuration. For example, select two executed steps without rerunning
+them:
 
-Once the recipe object has been initialized, the next step is to
-populate it with steps. Steps are the methods that will be applied to
-the data stored in the recipe. There are two types of steps:
-preprocessing (prepro) and differential abundance (da) steps. Initially,
-we will focus on the prepro steps which are used to modify the data
-loaded into the recipe, which will then be used for the da steps. The
-‘dar’ package includes 3 main preprocessing functionalities:
-`step_subset_taxa`, which is used for subsetting columns and values in
-the taxon table connected to the phyloseq object, `step_filter_taxa`,
-which is used to filter the OTUs, and `step_rarefaction`, which is used
-to resample the OTU table to ensure that all samples have the same
-library size. These functionalities allow for a high level of
-flexibility and customization in the data preparation process before
-performing the differential abundance analysis.
+\
+[`tidy_results`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)`(``fit``, steps ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"deseq"``, ``"linda"``)``, significant_only ``=`` ``TRUE``)`` ``|>`\
+`  `[`head`](https://rdrr.io/r/utils/head.html)`(``)`\
+`#> ``# A tibble: 6 × 17`\
+`#>   taxa_id taxa  contrast_id comparison contrast_type var   numerator denominator`\
+`#>   ``<chr>``   ``<chr>`` ``<chr>``       ``<chr>``      ``<chr>``         ``<chr>`` ``<chr>``     ``<chr>``      `\
+`#> ``1`` Otu_11  Bifi… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``2`` Otu_15  Bifi… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``3`` Otu_19  Bifi… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``4`` Otu_34  Olse… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``5`` Otu_35  Coll… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``6`` Otu_37  Coll… RiskGroup2… RiskGroup… main          Risk… msm       hts        `\
+`#> ``# ℹ 9 more variables: at_var <chr>, at_level <chr>, effect_size <dbl>,`\
+`#> ``#   effect_metric <chr>, p_value <dbl>, adj_p_value <dbl>, significant <lgl>,`\
+`#> ``#   method <chr>, step_id <chr>`
 
-The `dar` package provides convenient wrappers for the
-`step_filter_taxa` function, designed to filter Operational Taxonomic
-Units (OTUs) based on specific criteria: prevalence, variance,
-abundance, and rarity.
+Custom DA step IDs must not collide with internal columns such as
+`effect`, `taxa_id` or `sum`; use a distinct name such as
+`linda_sensitivity`.
 
-- `step_filter_by_prevalence`: Filters OTUs according to the number of
-  samples in which the OTU appears.
-- `step_filter_by_variance`: Filters OTUs based on the variance of the
-  OTU’s presence across samples.
-- `step_filter_by_abundance`: Filters OTUs according to the OTU’s
-  abundance across samples.
-- `step_filter_by_rarity`: Filters OTUs based on the rarity of the OTU
-  across samples.
+## Select a contrast explicitly
 
-In addition to the preprocessing steps,
-[`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
-returns overall or explicitly grouped metrics that support informed
-preprocessing decisions. In our case, we decided to use the
-step_subset_taxa function to retain only those observations annotated
-within the realm of Bacteria and Archaea. We also used the
-`step_filter_by_prevalence` function to retain only those OTUs with at
-least 1% of the samples with values greater than 0. This approach
-ensured that we were working with a high-quality, informative subset of
-the data, which improved the overall accuracy and reliability of the
-differential abundance analysis.
+\
+`results`` ``|>`\
+`  ``dplyr``::`[`distinct`](https://dplyr.tidyverse.org/reference/distinct.html)`(``contrast_id``, ``comparison``, ``numerator``, ``denominator``)`\
+`#> ``# A tibble: 3 × 4`\
+`#>   contrast_id          comparison           numerator denominator`\
+`#>   ``<chr>``                ``<chr>``                ``<chr>``     ``<chr>``      `\
+`#> ``1`` RiskGroup2[msm-hts]  RiskGroup2[msm-hts]  msm       hts        `\
+`#> ``2`` RiskGroup2[pwid-hts] RiskGroup2[pwid-hts] pwid      hts        `\
+`#> ``3`` RiskGroup2[pwid-msm] RiskGroup2[pwid-msm] pwid      msm`\
+\
+`comparison_id`` ``<-`` ``"RiskGroup2[msm-hts]"`\
+`selected_results`` ``<-`` ``results`` ``|>`\
+`  ``dplyr``::`[`filter`](https://dplyr.tidyverse.org/reference/filter.html)`(``contrast_id`` ``==`` ``comparison_id``)`
 
-``` r
+For longitudinal designs, `contrast_id` also distinguishes comparisons
+within visits and difference-in-differences. These hypotheses must not
+be pooled.
 
-## QC by analysis group
-recipe_qc(rec, group_by = "RiskGroup2")
-#> # A tibble: 4 × 13
-#>   group_by   group     n n_zero pct_zero pct_all_zero pct_singletons
-#>   <chr>      <chr> <dbl>  <dbl>    <dbl>        <dbl>          <dbl>
-#> 1 NA         NA    70356  57632     81.9          0             20.6
-#> 2 RiskGroup2 hts   18491  15108     81.7         24.2           22.8
-#> 3 RiskGroup2 msm   45100  37019     82.1         16.0           20.2
-#> 4 RiskGroup2 pwid   6765   5505     81.4         41.2           16.6
-#> # ℹ 6 more variables: pct_doubletons <dbl>, n_samples <dbl>,
-#> #   lib_size_min <dbl>, lib_size_max <dbl>, count_mean <dbl>, count_max <dbl>
+## Visualize discoveries and agreement
 
-## Adding prepro steps
-rec <- 
-  rec |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_by_prevalence()
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Puff_pastry 
-#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Paris–Brest 
-#> 
-#> DA steps:
-```
-
-## Define Differential Analysis (DA) steps
-
-Once data is preprocessed and cleaned, the next step is to add the da
-steps. The `dar` package incorporates multiple methods to analyze the
-data, including: ALDEx2, ANCOM-BC, corncob, DESeq2, Lefse, LinDA,
-MaAsLin3 and Wilcox. These methods provide a range of options for
-uncovering potential microbial biomarkers associated with the variable
-of interest. To ensure consistency across methods, we decided not to use
-default parameters, but to set the `min_prevalence` parameter to 0 for
-MAaslin3. This approach ensured that the analysis was consistent across
-all methods and that the results were interpretable.
-
-Note: to reduce computation time, in this example we will only use the
-DESeq2 and MAaslin3 methods, that are the fastest ones. However, we
-recommend using all the methods available in the package to ensure a
-more robust analysis.
-
-``` r
-
-## DA steps definition
-rec <- rec |> 
-  step_deseq() |> 
-  step_maaslin(min_prevalence = 0) 
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Puff_pastry 
-#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Paris–Brest 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_deseq() id = deseq__Spina_santa 
-#>      ◉ step_maaslin() id = maaslin__Dutch_Baby_Pancake
-```
-
-## Prep recipe
-
-Once the recipe has been defined, the next step is to execute all the
-steps defined in the recipe. This is done through the function
-[`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md).
-Internally, it first executes the preprocessing steps, which modify the
-phyloseq object stored in the recipe. Then, using the modified phyloseq,
-it executes each of the defined differential abundance methods. To speed
-up the execution time, the
-[`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)
-function includes the option to run in parallel. The resulting object
-has class `PrepRecipe` and when printed in the terminal, it displays the
-number of taxa detected as significant in each of the methods and also
-the total number of taxa shared across all methods. This allows for a
-provisional overview of the results and a comparison between methods.
-
-``` r
-
-## Execute in parallel
-da_results <- prep(rec, parallel = TRUE)
-da_results
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Results:
-#> 
-#>      ✔ deseq__Spina_santa diff_taxa = 158 
-#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 44 
-#> 
-#>      ℹ 33 taxon-contrast effects are present in all tested methods
-```
-
-## Default results extraction
-
-At this point, we could extract the taxa shared across all methods using
-the function
-[`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
-to define a default consensus strategy and then
-[`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
-to extract the results.
-
-``` r
-
-## Default DA taxa results
-results <- 
-  bake(da_results) |> 
-  cool()
-
-results
-#> # A tibble: 33 × 9
-#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
-#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  8 Otu_130 Parab… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  9 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                2
-#> 10 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                2
-#> # ℹ 23 more rows
-#> # ℹ 1 more variable: methods <chr>
-```
-
-However, `dar` allows for complex consensus strategies based on the
-obtained results. To that end, the user has access to different
-functions to graphically represent different types of information. This
-feature allows for a more in-depth analysis of the results and a better
-understanding of the underlying patterns in the data.
-
-## Exploration for consensus strategie definition
-
-For example,
-[`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
-gives an overview of the overlaps between methods by creating an upSet
-plot. In our case, this function has shown that 210 taxa are shared
-across all the methods used.
-
-``` r
-
-## Intersection plot 
-intersection_plt(da_results, ordered_by = "degree", font_size = 1)
-#> Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
-#> ℹ Please use tidy evaluation idioms with `aes()`.
-#> ℹ See also `vignette("ggplot2-in-packages")` for more information.
-#> ℹ The deprecated feature was likely used in the UpSetR package.
-#>   Please report the issue at <https://github.com/hms-dbmi/UpSetR/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-#> ℹ Please use `linewidth` instead.
-#> ℹ The deprecated feature was likely used in the UpSetR package.
-#>   Please report the issue at <https://github.com/hms-dbmi/UpSetR/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-#> Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0.
-#> ℹ Please use the `linewidth` argument instead.
-#> ℹ The deprecated feature was likely used in the UpSetR package.
-#>   Please report the issue at <https://github.com/hms-dbmi/UpSetR/issues>.
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-```
-
-![](article_files/figure-html/intersection-plot-1.png)
-
-In addition to the
-[`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
-function, `dar` also has the function
-[`exclusion_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.md)
-which provides information about the number of OTUs shared between
-methods. This function allows to identify the OTUs that are specific to
-each method and also the ones that are not shared among any method.
-
-``` r
-
-## Exclusion plot 
-exclusion_plt(da_results)
-```
-
-![](article_files/figure-html/exclusion-plot-1.png)
-
-Besides to the previously mentioned functions, `dar` also includes the
-function
-[`corr_heatmap()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md),
-which allows for visualization of the overlap of significant OTUs
-between tested methods. This function can provide similar information to
-the previous plots, but in some cases it may be easier to interpret.
-comprehensive view of the results.
-
-``` r
-
-## Correlation heatmap
-corr_heat <- corr_heatmap(da_results, font_size = 10) 
-corr_heat
-```
-
-Finally, `dar` also includes the function
-[`mutual_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.md),
-which plots the number of differential abundant features mutually found
-by a defined number of methods, colored by the differential abundance
-direction and separated by comparison. The resulting graph allows us to
-see that the features detected correspond mainly to the comparisons
-between hts vs msm and msm vs pwid. Additionally, the graph also allows
-us to observe the direction of the effect; whether a specific OTU is
-enriched or depleted for each comparison.
-
-``` r
-
-## Mutual plot
-mutual_plt(
-  da_results, 
-  count_cutoff = length(steps_ids(da_results, type = "da"))
-)
-```
-
-![](article_files/figure-html/mutual-plot-1.png)
-
-## Define a consesus strategy using bake
-
-After visually inspecting the results from running all the differential
-analysis methods on our data, we have the necessary information to
-define a consensus strategy that fits our dataset. In our case, we will
-retain all the methods. However if one or more methods are not desired,
-the
-[`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
-function includes the `exclude` parameter, which allows to exclude
-specific methods.
-
-Additionally, the
-[`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
-function allows to further refine the consensus strategy through its
-parameters, such as `count_cutoff`, which indicates the minimum number
-of methods in which an OTU must be present, and `weights`, a named
-vector with the ponderation value for each method. However, for
-simplicity, these parameters are not used in this example.
-
-``` r
-
-## Define consensus strategy
-da_results <- bake(da_results)
-da_results
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 355 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Results:
-#> 
-#>      ✔ deseq__Spina_santa diff_taxa = 158 
-#>      ✔ maaslin__Dutch_Baby_Pancake diff_taxa = 44 
-#> 
-#>      ℹ 33 taxon-contrast effects are present in all tested methods 
-#> 
-#> Bakes:
-#> 
-#>      ◉ 1 -> count_cutoff: NULL, weights: NULL, exclude: NULL, id: bake__Cornish_pasty
-```
-
-## Extract results
-
-To conclude, we can extract the final results using the
-[`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
-function. This function takes a `PrepRecipe` object and the ID of the
-bake to be used as input (by default it is 1, but if you have multiple
-consensus strategies, you can change it to extract the desired results).
-
-``` r
-
-## Extract results for bake id 1
-f_results <- cool(da_results, bake = 1)
-
-f_results
-#> # A tibble: 33 × 9
-#>    taxa_id taxa   contrast_id comparison contrast_type var   effect method_count
-#>    <chr>   <chr>  <chr>       <chr>      <chr>         <chr> <chr>         <dbl>
-#>  1 Otu_102 Prevo… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  2 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  3 Otu_115 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  4 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  5 Otu_119 Alist… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  6 Otu_125 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  7 Otu_129 Parab… RiskGroup2… RiskGroup… main          Risk… down              2
-#>  8 Otu_130 Parab… RiskGroup2… RiskGroup… main          Risk… up                2
-#>  9 Otu_255 Rumin… RiskGroup2… RiskGroup… main          Risk… up                2
-#> 10 Otu_259 Copro… RiskGroup2… RiskGroup… main          Risk… up                2
-#> # ℹ 23 more rows
-#> # ℹ 1 more variable: methods <chr>
-```
-
-To further visualize the results, the
+Select taxon IDs from the results you intend to plot. Here the selection
+is the union of discoveries for one contrast, not a consensus.
 [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
-function can be utilized to visualize the differences in abundance of
-the differential abundant taxa.
+uses the same aggregated taxonomic analysis view as the modeled methods.
 
-``` r
+\
+`taxa_ids`` ``<-`` ``selected_results`` ``|>`\
+`  ``dplyr``::`[`filter`](https://dplyr.tidyverse.org/reference/filter.html)`(``significant``)`` ``|>`\
+`  ``dplyr``::`[`distinct`](https://dplyr.tidyverse.org/reference/distinct.html)`(``taxa_id``)`` ``|>`\
+`  ``dplyr``::`[`pull`](https://dplyr.tidyverse.org/reference/pull.html)`(``taxa_id``)`` ``|>`\
+`  `[`head`](https://rdrr.io/r/utils/head.html)`(``6``)`\
+\
+`if`` ``(`[`length`](https://rdrr.io/r/base/length.html)`(``taxa_ids``)``)`` ``{`\
+`  `[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
+`    ``fit``, taxa_ids ``=`` ``taxa_ids``,`\
+`    contrast_id ``=`` ``comparison_id``, type ``=`` ``"boxplot"`\
+`  ``)`\
+`}`` ``else`` ``{`\
+`  `[`message`](https://rdrr.io/r/base/message.html)`(``"No significant taxa for this comparison."``)`\
+`}`
 
-## Ids for Bacteroide and Provotella species 
-ids <- 
-  f_results |>
-  dplyr::filter(stringr::str_detect(taxa, "Bacteroi.*|Prevote.*")) |>
-  dplyr::pull(taxa_id) 
+![](article_files/figure-html/abundance-1.png)
 
-## Abundance plot as boxplot
-abundance_plt(da_results, taxa_ids = ids, type = "boxplot") 
-```
+[`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
+displays overlaps of discoveries, respecting contrast and effect
+direction. Overlap is descriptive evidence of agreement, not independent
+validation of a taxon or a measure of statistical accuracy.
 
-![](article_files/figure-html/abundance-plot-1.png)
+\
+[`intersection_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)`(``fit``, contrast_id ``=`` ``comparison_id``, font_size ``=`` ``1``)`\
+`` #> Warning: `aes_string()` was deprecated in ggplot2 3.0.0. ``\
+`#> ``ℹ```  Please use tidy evaluation idioms with `aes()`. ``\
+`#> ``ℹ```  See also `vignette("ggplot2-in-packages")` for more information. ``\
+`#> ``ℹ`` The deprecated feature was likely used in the ``UpSetR`` package.`\
+`#>   Please report the issue at ``<https://github.com/hms-dbmi/UpSetR/issues>``.`\
+`#> ``This warning is displayed once per session.`\
+`#> ``` Call `lifecycle::last_lifecycle_warnings()` to see where this warning was ``\
+`#> ``generated.`\
+`` #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0. ``\
+`#> ``ℹ```  Please use `linewidth` instead. ``\
+`#> ``ℹ`` The deprecated feature was likely used in the ``UpSetR`` package.`\
+`#>   Please report the issue at ``<https://github.com/hms-dbmi/UpSetR/issues>``.`\
+`#> ``This warning is displayed once per session.`\
+`#> ``` Call `lifecycle::last_lifecycle_warnings()` to see where this warning was ``\
+`#> ``generated.`\
+`` #> Warning: The `size` argument of `element_line()` is deprecated as of ggplot2 3.4.0. ``\
+`#> ``ℹ```  Please use the `linewidth` argument instead. ``\
+`#> ``ℹ`` The deprecated feature was likely used in the ``UpSetR`` package.`\
+`#>   Please report the issue at ``<https://github.com/hms-dbmi/UpSetR/issues>``.`\
+`#> ``This warning is displayed once per session.`\
+`#> ``` Call `lifecycle::last_lifecycle_warnings()` to see where this warning was ``\
+`#> ``generated.`
 
-## Session info
+![](article_files/figure-html/intersections-1.png)
 
-``` r
+Despite its name,
+[`corr_heatmap()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md)
+does not correlate taxon abundances. With `type = "all"`, it summarizes
+agreement in binary method decisions, including shared non-detections. A
+high value therefore need not mean many shared discoveries.
+`type = "da"` restricts the comparison to hypotheses detected by at
+least one method and requires a non-empty set.
 
-devtools::session_info()
-#> ─ Session info ───────────────────────────────────────────────────────────────
-#>  setting  value
-#>  version  R version 4.6.1 (2026-06-24)
-#>  os       Ubuntu 24.04.4 LTS
-#>  system   x86_64, linux-gnu
-#>  ui       X11
-#>  language en
-#>  collate  en_US.UTF-8
-#>  ctype    en_US.UTF-8
-#>  tz       UTC
-#>  date     2026-08-04
-#>  pandoc   3.10 @ /usr/bin/ (via rmarkdown)
-#>  quarto   1.9.38 @ /usr/local/bin/quarto
-#> 
-#> ─ Packages ───────────────────────────────────────────────────────────────────
-#>  package                  * version    date (UTC) lib source
-#>  abind                      1.4-8      2024-09-12 [1] RSPM (R 4.6.0)
-#>  ade4                       1.7-24     2026-03-21 [1] RSPM (R 4.6.0)
-#>  ape                        5.8-1      2024-12-16 [1] RSPM (R 4.6.0)
-#>  apeglm                     1.35.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  ashr                       2.2-63     2023-08-21 [1] RSPM (R 4.6.0)
-#>  assertthat                 0.2.1      2019-03-21 [1] RSPM (R 4.6.0)
-#>  backports                  1.5.1      2026-04-03 [1] RSPM (R 4.6.0)
-#>  bbmle                      1.0.25.1   2023-12-09 [1] RSPM (R 4.6.0)
-#>  bdsmatrix                  1.3-7      2024-03-02 [1] RSPM (R 4.6.0)
-#>  beachmat                   2.29.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  beeswarm                   0.4.0      2021-06-01 [1] RSPM (R 4.6.0)
-#>  Biobase                    2.73.2     2026-07-29 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocGenerics               0.59.10    2026-07-07 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocNeighbors              2.7.2      2026-05-10 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocParallel               1.47.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  BiocSingular               1.29.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  biomformat                 1.41.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  Biostrings                 2.81.6     2026-07-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  bluster                    1.23.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  bslib                      0.12.0     2026-08-04 [2] RSPM (R 4.6.0)
-#>  ca                         0.71.1     2020-01-24 [1] RSPM (R 4.6.0)
-#>  cachem                     1.1.0      2024-05-16 [2] RSPM (R 4.6.0)
-#>  checkmate                  2.3.4      2026-02-03 [1] RSPM (R 4.6.0)
-#>  cli                        3.6.6      2026-04-09 [2] RSPM (R 4.6.0)
-#>  cluster                    2.1.8.3    2026-07-30 [2] RSPM (R 4.6.0)
-#>  coda                       0.19-4.1   2024-01-31 [1] RSPM (R 4.6.0)
-#>  codetools                  0.2-20     2024-03-31 [3] CRAN (R 4.6.1)
-#>  crayon                     1.5.3      2024-06-20 [2] RSPM (R 4.6.0)
-#>  crosstalk                  1.2.2      2025-08-26 [1] RSPM (R 4.6.0)
-#>  dar                      * 1.9.12     2026-08-04 [1] Bioconductor
-#>  data.table                 1.18.4     2026-05-06 [1] RSPM (R 4.6.0)
-#>  DBI                        1.3.0      2026-02-25 [1] RSPM (R 4.6.0)
-#>  DECIPHER                   3.9.2      2026-07-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  decontam                   1.33.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  DelayedArray               0.39.3     2026-06-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  DelayedMatrixStats         1.35.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  dendextend                 1.19.1     2025-07-15 [1] RSPM (R 4.6.0)
-#>  desc                       1.4.3      2023-12-10 [2] RSPM (R 4.6.0)
-#>  DESeq2                     1.53.2     2026-07-20 [1] Bioconductor 3.24 (R 4.6.1)
-#>  devtools                   2.5.2      2026-04-30 [2] RSPM (R 4.6.0)
-#>  digest                     0.6.39     2025-11-19 [2] RSPM (R 4.6.0)
-#>  DirichletMultinomial       1.55.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  dplyr                      1.2.1      2026-04-03 [1] RSPM (R 4.6.0)
-#>  ellipsis                   0.3.3      2026-04-04 [2] RSPM (R 4.6.0)
-#>  emdbook                    1.3.14     2025-07-23 [1] RSPM (R 4.6.0)
-#>  evaluate                   1.0.5      2025-08-27 [2] RSPM (R 4.6.0)
-#>  farver                     2.1.2      2024-05-13 [1] RSPM (R 4.6.0)
-#>  fastmap                    1.2.0      2024-05-15 [2] RSPM (R 4.6.0)
-#>  foreach                    1.5.2      2022-02-02 [1] RSPM (R 4.6.0)
-#>  fs                         2.1.0      2026-04-18 [2] RSPM (R 4.6.0)
-#>  furrr                      0.4.0      2026-03-31 [1] RSPM (R 4.6.0)
-#>  future                     1.75.0     2026-07-20 [1] RSPM (R 4.6.0)
-#>  generics                   0.1.4      2025-05-09 [1] RSPM (R 4.6.0)
-#>  GenomicRanges              1.65.1     2026-07-08 [1] Bioconductor 3.24 (R 4.6.1)
-#>  ggbeeswarm                 0.7.3      2025-11-29 [1] RSPM (R 4.6.0)
-#>  ggplot2                    4.0.3      2026-04-22 [1] RSPM (R 4.6.0)
-#>  ggrepel                    0.9.8      2026-03-17 [1] RSPM (R 4.6.0)
-#>  globals                    0.19.1     2026-03-13 [1] RSPM (R 4.6.0)
-#>  glue                       1.8.1      2026-04-17 [2] RSPM (R 4.6.0)
-#>  gridExtra                  2.3.1      2026-06-25 [1] RSPM (R 4.6.0)
-#>  gtable                     0.3.6      2024-10-25 [1] RSPM (R 4.6.0)
-#>  heatmaply                  1.6.0      2025-07-12 [1] RSPM (R 4.6.0)
-#>  htmltools                  0.5.9      2025-12-04 [2] RSPM (R 4.6.0)
-#>  htmlwidgets                1.6.4      2023-12-06 [2] RSPM (R 4.6.0)
-#>  httr                       1.4.8      2026-02-13 [1] RSPM (R 4.6.0)
-#>  igraph                     2.3.3      2026-06-26 [1] RSPM (R 4.6.0)
-#>  invgamma                   1.2        2025-07-02 [1] RSPM (R 4.6.0)
-#>  IRanges                    2.47.2     2026-06-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  irlba                      2.3.7      2026-01-30 [1] RSPM (R 4.6.0)
-#>  iterators                  1.0.14     2022-02-05 [1] RSPM (R 4.6.0)
-#>  jquerylib                  0.1.4      2021-04-26 [2] RSPM (R 4.6.0)
-#>  jsonlite                   2.0.0      2025-03-27 [2] RSPM (R 4.6.0)
-#>  knitr                      1.51       2025-12-20 [2] RSPM (R 4.6.0)
-#>  labeling                   0.4.3      2023-08-29 [1] RSPM (R 4.6.0)
-#>  lattice                    0.22-9     2026-02-09 [3] CRAN (R 4.6.1)
-#>  lazyeval                   0.2.3      2026-04-04 [1] RSPM (R 4.6.0)
-#>  lifecycle                  1.0.5      2026-01-08 [2] RSPM (R 4.6.0)
-#>  listenv                    1.0.0      2026-06-22 [1] RSPM (R 4.6.0)
-#>  locfit                     1.5-9.12   2025-03-05 [1] RSPM (R 4.6.0)
-#>  maaslin3                   1.5.3      2026-06-23 [1] Bioconductor 3.24 (R 4.6.1)
-#>  magrittr                   2.0.5      2026-04-04 [2] RSPM (R 4.6.0)
-#>  MASS                       7.3-66     2026-07-15 [2] RSPM (R 4.6.0)
-#>  Matrix                     1.7-6      2026-07-25 [2] RSPM (R 4.6.0)
-#>  MatrixGenerics             1.25.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  matrixStats                1.5.0      2025-01-07 [1] RSPM (R 4.6.0)
-#>  memoise                    2.0.1      2021-11-26 [2] RSPM (R 4.6.0)
-#>  mgcv                       1.9-4      2025-11-07 [3] CRAN (R 4.6.1)
-#>  mia                        1.21.6     2026-07-31 [1] Bioconductor 3.24 (R 4.6.1)
-#>  microbiome                 1.35.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  mixsqp                     0.3-54     2023-12-20 [1] RSPM (R 4.6.0)
-#>  MultiAssayExperiment       1.39.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  multtest                   2.69.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  mvtnorm                    1.4-2      2026-07-12 [1] RSPM (R 4.6.0)
-#>  nlme                       3.1-170    2026-07-15 [2] RSPM (R 4.6.0)
-#>  numDeriv                   2016.8-1.1 2019-06-06 [1] RSPM (R 4.6.0)
-#>  optparse                   1.8.2      2026-04-17 [1] RSPM (R 4.6.0)
-#>  otel                       0.2.0      2025-08-29 [2] RSPM (R 4.6.0)
-#>  parallelly                 1.48.0     2026-06-29 [1] RSPM (R 4.6.0)
-#>  permute                    0.9-10     2026-02-06 [1] RSPM (R 4.6.0)
-#>  phyloseq                   1.57.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  pillar                     1.11.1     2025-09-17 [2] RSPM (R 4.6.0)
-#>  pkgbuild                   1.4.8      2025-05-26 [2] RSPM (R 4.6.0)
-#>  pkgconfig                  2.0.3      2019-09-22 [2] RSPM (R 4.6.0)
-#>  pkgdown                    2.2.1      2026-07-07 [2] RSPM (R 4.6.0)
-#>  pkgload                    1.5.3      2026-06-15 [2] RSPM (R 4.6.0)
-#>  plotly                     4.12.1     2026-07-22 [1] RSPM (R 4.6.0)
-#>  plyr                       1.8.9      2023-10-02 [1] RSPM (R 4.6.0)
-#>  purrr                      1.2.2      2026-04-10 [2] RSPM (R 4.6.0)
-#>  R6                         2.6.1      2025-02-15 [2] RSPM (R 4.6.0)
-#>  ragg                       1.5.2      2026-03-23 [2] RSPM (R 4.6.0)
-#>  rappdirs                   0.3.4      2026-01-17 [2] RSPM (R 4.6.0)
-#>  rbibutils                  2.4.1      2026-01-21 [1] RSPM (R 4.6.0)
-#>  RColorBrewer               1.1-3      2022-04-03 [1] RSPM (R 4.6.0)
-#>  Rcpp                       1.1.2      2026-07-05 [2] RSPM (R 4.6.0)
-#>  Rdpack                     2.6.6      2026-02-08 [1] RSPM (R 4.6.0)
-#>  reformulas                 0.4.4      2026-02-02 [1] RSPM (R 4.6.0)
-#>  registry                   0.5-1      2019-03-05 [1] RSPM (R 4.6.0)
-#>  reshape2                   1.4.5      2025-11-12 [1] RSPM (R 4.6.0)
-#>  rlang                      1.3.0      2026-07-05 [2] RSPM (R 4.6.0)
-#>  rmarkdown                  2.31       2026-03-26 [2] RSPM (R 4.6.0)
-#>  rsvd                       1.0.5      2021-04-16 [1] RSPM (R 4.6.0)
-#>  Rtsne                      0.17       2023-12-07 [1] RSPM (R 4.6.0)
-#>  S4Arrays                   1.13.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  S4Vectors                  0.51.6     2026-07-29 [1] Bioconductor 3.24 (R 4.6.1)
-#>  S7                         0.2.2      2026-04-22 [1] CRAN (R 4.6.1)
-#>  sass                       0.4.10     2025-04-11 [2] RSPM (R 4.6.0)
-#>  ScaledMatrix               1.21.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  scales                     1.4.0      2025-04-24 [1] RSPM (R 4.6.0)
-#>  scater                     1.41.2     2026-06-30 [1] Bioconductor 3.24 (R 4.6.1)
-#>  scuttle                    1.23.1     2026-05-18 [1] Bioconductor 3.24 (R 4.6.1)
-#>  Seqinfo                    1.3.0      2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  seriation                  1.5.8      2025-08-20 [1] RSPM (R 4.6.0)
-#>  sessioninfo                1.2.4      2026-06-04 [2] RSPM (R 4.6.0)
-#>  SingleCellExperiment       1.35.2     2026-07-16 [1] Bioconductor 3.24 (R 4.6.1)
-#>  SparseArray                1.13.2     2026-05-01 [1] Bioconductor 3.24 (R 4.6.1)
-#>  sparseMatrixStats          1.25.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  SQUAREM                    2026.1     2026-03-12 [1] RSPM (R 4.6.0)
-#>  stringi                    1.8.7      2025-03-27 [2] RSPM (R 4.6.0)
-#>  stringr                    1.6.0      2025-11-04 [1] RSPM (R 4.6.0)
-#>  SummarizedExperiment       1.43.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  survival                   3.8-9      2026-07-08 [2] RSPM (R 4.6.0)
-#>  systemfonts                1.3.2      2026-03-05 [2] RSPM (R 4.6.0)
-#>  textshaping                1.0.5      2026-03-06 [2] RSPM (R 4.6.0)
-#>  tibble                     3.3.1      2026-01-11 [2] RSPM (R 4.6.0)
-#>  tidyr                      1.3.2      2025-12-19 [1] RSPM (R 4.6.0)
-#>  tidyselect                 1.2.1      2024-03-11 [1] RSPM (R 4.6.0)
-#>  tidytree                   0.4.8      2026-07-02 [1] RSPM (R 4.6.0)
-#>  treeio                     1.37.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  TreeSummarizedExperiment   2.21.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  truncnorm                  1.0-9      2023-03-20 [1] RSPM (R 4.6.0)
-#>  TSP                        1.2.7      2026-03-23 [1] RSPM (R 4.6.0)
-#>  UpSetR                     1.4.1      2026-05-25 [1] RSPM (R 4.6.0)
-#>  usethis                    3.2.1      2025-09-06 [2] RSPM (R 4.6.0)
-#>  utf8                       1.2.6      2025-06-08 [2] RSPM (R 4.6.0)
-#>  vctrs                      0.7.3      2026-04-11 [2] RSPM (R 4.6.0)
-#>  vegan                      2.7-5      2026-05-25 [1] RSPM (R 4.6.0)
-#>  vipor                      0.4.7      2023-12-18 [1] RSPM (R 4.6.0)
-#>  viridis                    0.6.5      2024-01-29 [1] RSPM (R 4.6.0)
-#>  viridisLite                0.4.3      2026-02-04 [1] RSPM (R 4.6.0)
-#>  webshot                    0.5.5      2023-06-26 [1] RSPM (R 4.6.0)
-#>  withr                      3.0.3      2026-06-19 [2] RSPM (R 4.6.0)
-#>  xfun                       0.60       2026-07-09 [2] RSPM (R 4.6.0)
-#>  XVector                    0.53.0     2026-04-28 [1] Bioconductor 3.24 (R 4.6.1)
-#>  yaml                       2.3.12     2025-12-10 [2] RSPM (R 4.6.0)
-#>  yulab.utils                0.2.4      2026-02-02 [1] RSPM (R 4.6.0)
-#> 
-#>  [1] /__w/_temp/Library
-#>  [2] /usr/local/lib/R/site-library
-#>  [3] /usr/local/lib/R/library
-#>  * ── Packages attached to the search path.
-#> 
-#> ──────────────────────────────────────────────────────────────────────────────
-```
+\
+[`corr_heatmap`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md)`(``fit``, type ``=`` ``"all"``, contrast_id ``=`` ``comparison_id``, font_size ``=`` ``9``)`\
+`#> Registered S3 method overwritten by 'dendextend':`\
+`#>   method     from `\
+`#>   rev.hclust vegan`\
+`#> Registered S3 method overwritten by 'httr':`\
+`#>   method         from  `\
+`#>   print.response rmutil`\
+`#> Registered S3 method overwritten by 'seriation':`\
+`#>   method         from `\
+`#>   reorder.hclust vegan`
+
+[`exclusion_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/exclusion_plt.md)
+and
+[`mutual_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.md)
+provide alternative summaries of unique and shared detections. Automatic
+discovery plots report when no significant taxa are available. Some
+automatic selections fall back to the largest observed overlap when no
+taxon reaches the requested support. To plot exactly a specified
+selection, provide explicit `taxa_ids` as above rather than relying on
+that fallback.
+
+## Optional consensus rules
+
+For confirmatory work, specify the panel, cutoff and any weights before
+inspecting discoveries. More agreement does not guarantee greater
+accuracy or false-discovery-rate control. Strict rules can discard true
+signals when components have low sensitivity or make correlated errors.
+
+[`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
+records a rule;
+[`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
+applies it without fitting the methods again. Votes are counted
+separately for each contrast and effect direction.
+
+\
+`with_agreement`` ``<-`` `[`bake`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)`(`\
+`  ``fit``, count_cutoff ``=`` ``agreement_cutoff``, id ``=`` ``"two_of_three"`\
+`)`\
+`agreement`` ``<-`` `[`cool`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)`(``with_agreement``, bake ``=`` ``"two_of_three"``)`\
+`#> ``ℹ`` Baking with ``count_cutoff =`` ``2`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``agreement``)`\
+`#> ``# A tibble: 6 × 9`\
+`#>   taxa_id taxa    contrast_id comparison contrast_type var   effect method_count`\
+`#>   ``<chr>``   ``<chr>``   ``<chr>``       ``<chr>``      ``<chr>``         ``<chr>`` ``<chr>``         ``<dbl>`\
+`#> ``1`` Otu_1   Methan… RiskGroup2… RiskGroup… main          Risk… up                2`\
+`#> ``2`` Otu_101 Prevot… RiskGroup2… RiskGroup… main          Risk… up                2`\
+`#> ``3`` Otu_101 Prevot… RiskGroup2… RiskGroup… main          Risk… down              3`\
+`#> ``4`` Otu_102 Prevot… RiskGroup2… RiskGroup… main          Risk… up                3`\
+`#> ``5`` Otu_102 Prevot… RiskGroup2… RiskGroup… main          Risk… down              3`\
+`#> ``6`` Otu_104 Prevot… RiskGroup2… RiskGroup… main          Risk… up                3`\
+`#> ``# ℹ 1 more variable: methods <chr>`
+
+With unit weights, the cutoff is the number of supporting steps. A taxon
+that is selected with conflicting directions does not combine those
+votes. The result retains the contrast, direction, support and
+contributing step IDs.
+
+To plot only this rule’s selected taxa for the chosen contrast:
+
+\
+`agreement_ids`` ``<-`` ``agreement`` ``|>`\
+`  ``dplyr``::`[`filter`](https://dplyr.tidyverse.org/reference/filter.html)`(``contrast_id`` ``==`` ``comparison_id``)`` ``|>`\
+`  ``dplyr``::`[`distinct`](https://dplyr.tidyverse.org/reference/distinct.html)`(``taxa_id``)`` ``|>`\
+`  ``dplyr``::`[`pull`](https://dplyr.tidyverse.org/reference/pull.html)`(``taxa_id``)`` ``|>`\
+`  `[`head`](https://rdrr.io/r/utils/head.html)`(``6``)`\
+\
+`if`` ``(`[`length`](https://rdrr.io/r/base/length.html)`(``agreement_ids``)``)`` ``{`\
+`  `[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
+`    ``with_agreement``, taxa_ids ``=`` ``agreement_ids``,`\
+`    contrast_id ``=`` ``comparison_id``, type ``=`` ``"boxplot"`\
+`  ``)`\
+`}`` ``else`` ``{`\
+`  `[`message`](https://rdrr.io/r/base/message.html)`(``"No taxa satisfy the specified agreement rule for this comparison."``)`\
+`}`
+
+![](article_files/figure-html/consensus-abundance-1.png)
+
+An empty consensus is valid and is not a reason to change the rule
+retrospectively. Per-method results remain available in `fit`.
+
+### Exclusions and weights
+
+These are configuration examples, not alternative rules selected for
+their discoveries. `exclude` uses executed step IDs. Named weights must
+exactly match the non-excluded steps; when using weights, set the cutoff
+explicitly because the default is the number of retained steps, not the
+sum of weights.
+
+\
+[`bake`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)`(``fit``, exclude ``=`` ``"wilcox"``, count_cutoff ``=`` ``2``, id ``=`` ``"two_retained_steps"``)`\
+[`bake`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)`(`\
+`  ``fit``,`\
+`  weights ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``deseq ``=`` ``1``, linda ``=`` ``2``, wilcox ``=`` ``1``)``,`\
+`  count_cutoff ``=`` ``3``,`\
+`  id ``=`` ``"weighted_support"`\
+`)`
+
+Weights express a chosen rule, not estimated probabilities that the
+methods are correct. Repeated configurations of one engine are not
+independent sources of evidence.
+
+\
+[`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
+`#> R version 4.6.1 (2026-06-24)`\
+`#> Platform: x86_64-pc-linux-gnu`\
+`#> Running under: Ubuntu 24.04.4 LTS`\
+`#> `\
+`#> Matrix products: default`\
+`#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 `\
+`#> LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0`\
+`#> `\
+`#> locale:`\
+`#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              `\
+`#>  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    `\
+`#>  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   `\
+`#>  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 `\
+`#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            `\
+`#> [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       `\
+`#> `\
+`#> time zone: UTC`\
+`#> tzcode source: system (glibc)`\
+`#> `\
+`#> attached base packages:`\
+`#> [1] stats     graphics  grDevices utils     datasets  methods   base     `\
+`#> `\
+`#> other attached packages:`\
+`#> [1] dar_1.9.12`\
+`#> `\
+`#> loaded via a namespace (and not attached):`\
+`#>   [1] fs_2.1.0                        matrixStats_1.5.0              `\
+`#>   [3] DirichletMultinomial_1.55.1     httr_1.4.9                     `\
+`#>   [5] webshot_0.5.5                   RColorBrewer_1.1-3             `\
+`#>   [7] numDeriv_2016.8-1.1             tools_4.6.1                    `\
+`#>   [9] backports_1.5.1                 utf8_1.2.6                     `\
+`#>  [11] R6_2.6.1                        vegan_2.7-6                    `\
+`#>  [13] lazyeval_0.2.3                  mgcv_1.9-4                     `\
+`#>  [15] apeglm_1.35.0                   permute_0.9-10                 `\
+`#>  [17] withr_3.0.3                     gridExtra_2.3.1                `\
+`#>  [19] cli_3.6.6                       Biobase_2.73.2                 `\
+`#>  [21] textshaping_1.0.5               TSP_1.2.7                      `\
+`#>  [23] labeling_0.4.3                  sass_0.4.10                    `\
+`#>  [25] SQUAREM_2026.1                  mvtnorm_1.4-2                  `\
+`#>  [27] S7_0.2.2                        pkgdown_2.2.1                  `\
+`#>  [29] mixsqp_0.3-54                   mlr3tuning_1.7.0               `\
+`#>  [31] systemfonts_1.3.2               yulab.utils_0.2.5              `\
+`#>  [33] paradox_1.0.1                   scater_1.41.2                  `\
+`#>  [35] decontam_1.33.0                 parallelly_1.48.0              `\
+`#>  [37] invgamma_1.2                    bbmle_1.0.26                   `\
+`#>  [39] generics_0.1.4                  crosstalk_1.2.2                `\
+`#>  [41] car_3.1-5                       dplyr_1.2.1                    `\
+`#>  [43] dendextend_1.19.1               Matrix_1.7-6                   `\
+`#>  [45] biomformat_1.41.0               ggbeeswarm_0.7.3               `\
+`#>  [47] S4Vectors_0.51.10               DECIPHER_3.9.3                 `\
+`#>  [49] abind_1.4-8                     lifecycle_1.0.5                `\
+`#>  [51] yaml_2.3.12                     carData_3.0-6                  `\
+`#>  [53] SummarizedExperiment_1.43.0     SparseArray_1.13.4             `\
+`#>  [55] Rtsne_0.17                      grid_4.6.1                     `\
+`#>  [57] crayon_1.5.3                    bdsmatrix_1.3-7                `\
+`#>  [59] lattice_0.23-1                  beachmat_2.29.3                `\
+`#>  [61] pillar_1.11.1                   knitr_1.52                     `\
+`#>  [63] GenomicRanges_1.65.4            statip_0.2.3                   `\
+`#>  [65] boot_1.3-32                     codetools_0.2-20               `\
+`#>  [67] glue_1.8.1                      spacefillr_0.4.0               `\
+`#>  [69] data.table_1.18.6.1             MultiAssayExperiment_1.39.1    `\
+`#>  [71] vctrs_0.7.3                     treeio_1.37.1                  `\
+`#>  [73] Rdpack_2.6.6                    gtable_0.3.6                   `\
+`#>  [75] assertthat_0.2.1                emdbook_1.3.14                 `\
+`#>  [77] cachem_1.1.0                    xfun_0.61                      `\
+`#>  [79] rbibutils_2.4.1                 S4Arrays_1.13.2                `\
+`#>  [81] Seqinfo_1.3.2                   coda_0.19-4.1                  `\
+`#>  [83] reformulas_0.4.4                modeest_2.5.0                  `\
+`#>  [85] survival_3.8-12                 timeDate_4052.112              `\
+`#>  [87] SingleCellExperiment_1.35.2     seriation_1.6.0                `\
+`#>  [89] iterators_1.0.14                statmod_1.5.2                  `\
+`#>  [91] bluster_1.23.1                  nlme_3.1-171                   `\
+`#>  [93] phyloseq_1.57.0                 bbotk_1.13.1                   `\
+`#>  [95] UpSetR_1.4.1                    fBasics_4052.98                `\
+`#>  [97] bslib_0.12.0                    MicrobiomeStat_1.4             `\
+`#>  [99] mlr3_1.8.0                      irlba_2.4.1                    `\
+`#> [101] vipor_0.4.7                     otel_0.2.0                     `\
+`#> [103] rpart_4.1.27                    mlr3mbo_1.2.1                  `\
+`#> [105] moocore_0.3.2                   BiocGenerics_0.59.12           `\
+`#> [107] DBI_1.3.0                       ade4_1.7-24                    `\
+`#> [109] mlr3misc_0.23.0                 DESeq2_1.53.6                  `\
+`#> [111] tidyselect_1.2.1                timeSeries_4052.112            `\
+`#> [113] compiler_4.6.1                  microbiome_1.35.1              `\
+`#> [115] BiocNeighbors_2.7.3             lgr_0.5.2                      `\
+`#> [117] desc_1.4.3                      DelayedArray_0.39.8            `\
+`#> [119] plotly_4.12.1                   checkmate_2.3.4                `\
+`#> [121] scales_1.4.0                    spatial_7.3-19                 `\
+`#> [123] rappdirs_0.3.4                  palmerpenguins_0.1.1           `\
+`#> [125] stringr_1.6.0                   digest_0.6.39                  `\
+`#> [127] minqa_1.2.8                     rmarkdown_2.32                 `\
+`#> [129] ca_0.72                         XVector_0.53.0                 `\
+`#> [131] htmltools_0.5.9                 pkgconfig_2.0.3                `\
+`#> [133] lme4_2.0-6                      sparseMatrixStats_1.25.0       `\
+`#> [135] MatrixGenerics_1.25.0           stabledist_0.7-2               `\
+`#> [137] fastmap_1.2.0                   rlang_1.3.0                    `\
+`#> [139] htmlwidgets_1.6.4               DelayedMatrixStats_1.35.0      `\
+`#> [141] farver_2.1.2                    jquerylib_0.1.4                `\
+`#> [143] jsonlite_2.0.0                  BiocParallel_1.47.0            `\
+`#> [145] BiocSingular_1.29.2             magrittr_2.0.5                 `\
+`#> [147] Formula_1.2-6                   scuttle_1.23.2                 `\
+`#> [149] Rcpp_1.1.2                      ape_5.8-1                      `\
+`#> [151] viridis_0.6.5                   stringi_1.8.9                  `\
+`#> [153] stable_1.1.7                    MASS_7.3-66                    `\
+`#> [155] plyr_1.8.9                      parallel_4.6.1                 `\
+`#> [157] listenv_1.1.0                   ggrepel_0.9.8                  `\
+`#> [159] Biostrings_2.81.9               splines_4.6.1                  `\
+`#> [161] multtest_2.69.0                 locfit_1.5-9.12                `\
+`#> [163] igraph_2.3.4                    uuid_1.2-2                     `\
+`#> [165] reshape2_1.4.5                  stats4_4.6.1                   `\
+`#> [167] ScaledMatrix_1.21.0             rmutil_1.1.10                  `\
+`#> [169] evaluate_1.0.5                  nloptr_2.2.1                   `\
+`#> [171] foreach_1.5.2                   tidyr_1.3.2                    `\
+`#> [173] purrr_1.2.2                     future_1.76.0                  `\
+`#> [175] heatmaply_1.6.0                 clue_0.3-68                    `\
+`#> [177] ggplot2_4.0.3                   ashr_2.2-63                    `\
+`#> [179] rsvd_1.0.5                      broom_1.0.13                   `\
+`#> [181] tidytree_0.4.8                  rstatix_1.1.0                  `\
+`#> [183] viridisLite_0.4.3               ragg_1.5.2                     `\
+`#> [185] truncnorm_1.0-9                 tibble_3.3.1                   `\
+`#> [187] lmerTest_3.2-1                  beeswarm_0.4.0                 `\
+`#> [189] registry_0.5-1                  IRanges_2.47.5                 `\
+`#> [191] cluster_2.1.8.3                 TreeSummarizedExperiment_2.21.0`\
+`#> [193] globals_0.20.0                  mia_1.21.11`

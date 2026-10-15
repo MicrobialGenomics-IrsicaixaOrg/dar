@@ -19,12 +19,11 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -77,19 +76,14 @@ were declared but skipped as statistically incompatible.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## We can extract the step identifiers from a Recipe with `step_ids`</span></span></span>
-<span class="r-in"><span><span class="va">ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ids</span></span></span>
+<span class="r-in"><span><span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Viennoiserie" "filter_taxa__Karakudamono"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3] "maaslin__Welsh_cake"       "deseq__Coussin_de_Lyon"   </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## With the `type` parameter, extract the prepro and da steps separately.</span></span></span>
-<span class="r-in"><span><span class="va">da_ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"da"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">da_ids</span></span></span>
+<span class="r-in"><span><span class="co">## Select differential-abundance or preprocessing steps</span></span></span>
+<span class="r-in"><span><span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"da"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "maaslin__Welsh_cake"    "deseq__Coussin_de_Lyon"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">prepro_ids</span> <span class="op">&lt;-</span> <span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"prepro"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">prepro_ids</span></span></span>
+<span class="r-in"><span><span class="fu">steps_ids</span><span class="op">(</span><span class="va">test_rec</span>, type <span class="op">=</span> <span class="st">"prepro"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "subset_taxa__Viennoiserie" "filter_taxa__Karakudamono"</span>
 </code></pre></div>
     </div>

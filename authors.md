@@ -10,14 +10,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/DESCRIPTION)
 
-Catala-Moll F (2026). *dar: Differential Abundance Analysis by
-Consensus*. R package version 1.9.12,
+Catala-Moll F (2026). *dar: Differential Abundance Workflows for
+Microbiome Data*. R package version 1.9.12,
 <https://github.com/MicrobialGenomics-IrsicaixaOrg/dar>.
 
-    @Manual{,
-      title = {dar: Differential Abundance Analysis by Consensus},
-      author = {Francesc Catala-Moll},
-      year = {2026},
-      note = {R package version 1.9.12},
-      url = {https://github.com/MicrobialGenomics-IrsicaixaOrg/dar},
-    }
+@Manual{,\
+  title = {dar: Differential Abundance Workflows for Microbiome Data},\
+  author = {Francesc Catala-Moll},\
+  year = {2026},\
+  note = {R package version 1.9.12},\
+  url = {https://github.com/MicrobialGenomics-IrsicaixaOrg/dar},\
+}

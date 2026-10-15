@@ -24,19 +24,3 @@ add_var(rec, var_info)
 ## Value
 
 A `Recipe` object.
-
-## Examples
-
-``` r
-data(metaHIV_phy)
-rec <- recipe(metaHIV_phy)
-rec <- suppressWarnings(add_var(rec, var_info = "RiskGroup2"))
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> 
-```

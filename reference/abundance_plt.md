@@ -62,47 +62,27 @@ abundance_plt(
 
 ## Value
 
-ggplot2 or HeatmapList
+ggplot2 or HeatmapList, or invisible `NULL` with an informational
+message when automatic selection finds no significant taxa.
 
 ## Examples
 
 ``` r
 data(test_prep_rec)
 
-## Running the function returns a boxplot,
+## Boxplots of taxa detected by all methods
 abundance_plt(test_prep_rec)
+#> You have inserted a phyloseq object. The phyloseq-based methods will be deprecated. We recommend switching to the (Tree)SummarizedExperiment framework and mia R/Bioconductor package.
 
 
-## Giving the value "heatmap" to the type parameter, the resulting graph
-## a heatmap.
-# abundance_plt(test_prep_rec, type = "heatmap")
+## Display the same abundances as a heatmap
+if (requireNamespace("ComplexHeatmap", quietly = TRUE) &&
+    requireNamespace("gplots", quietly = TRUE)) {
+  abundance_plt(test_prep_rec, type = "heatmap")
+}
 
-## By default, those taxa significant in all methods are plotted. If you want
-## to graph some determined features, you can pass them as vector through the
-## taxa_ids parameter.
-# taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
-# abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
-# abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap")
 
-## abundance_plt function needs a PrepRecipe. If you pass a a non-prep
-## Recipe the output is an error.
-data(test_rec)
-err <- testthat::expect_error(abundance_plt(test_rec))
-err
-#> <error/dar_error_invalid_input>
-#> Error in `check_prep_recipe()`:
-#> ✖ The argument `rec` must be a prepared <PrepRecipe>.
-#> ! You supplied an unprepped <Recipe>.
-#> ℹ Please run `prep()` on your recipe before using this function.
-#> ---
-#> Backtrace:
-#>     ▆
-#>  1. ├─testthat::expect_error(abundance_plt(test_rec))
-#>  2. │ └─testthat:::expect_condition_matching_(...)
-#>  3. │   └─testthat:::quasi_capture(...)
-#>  4. │     ├─testthat (local) .capture(...)
-#>  5. │     │ └─base::withCallingHandlers(...)
-#>  6. │     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
-#>  7. └─dar::abundance_plt(test_rec)
-#>  8.   └─dar:::check_prep_recipe(rec)
+## Select taxa explicitly
+taxa_ids <- head(tax_table(test_prep_rec)$taxa_id, 3)
+abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
 ```

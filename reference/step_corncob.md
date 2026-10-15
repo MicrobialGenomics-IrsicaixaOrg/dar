@@ -11,8 +11,8 @@ below:
 step_corncob(
   rec,
   phi.formula = stats::formula(~1),
-  formula_null = stats::formula(~1),
-  phi.formula_null = stats::formula(~1),
+  formula_null = NULL,
+  phi.formula_null = NULL,
   link = "logit",
   phi.link = "logit",
   test = "Wald",
@@ -42,11 +42,15 @@ step_corncob(
 
 - formula_null:
 
-  Formula for mean under null, without response.
+  Formula for mean under null, without response. Defaults to `NULL`,
+  which uses `~ 1` during deprecated model-free execution. An explicit
+  formula is overridden with a warning by a centralized model.
 
 - phi.formula_null:
 
-  Formula for overdispersion under null, without response.
+  Formula for overdispersion under null, without response. Defaults to
+  `NULL`, which uses `~ 1` during deprecated model-free execution. An
+  explicit formula is overridden with a warning by a centralized model.
 
 - link:
 
@@ -102,7 +106,11 @@ step_corncob(
 
 - id:
 
-  A character string that is unique to this step to identify it.
+  Unique, non-empty identifier for this step. DA step IDs must not use
+  the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+  `contrast_type`, `var`, `effect`, `sum`, `.tax_order`,
+  `.contrast_order` or `.effect_order`. Other identifiers, including
+  names such as `.custom`, are retained unchanged.
 
 - engine_args:
 
@@ -125,6 +133,12 @@ An object of class `Recipe`
 
 - hypothesis testing with categorical and continuous covariates
 
+Centralized models use non-bootstrap Wald contrasts. With
+`engine_args = list(fit = list(robust = TRUE))`, inference uses
+corncob's native sandwich covariance rather than the inverse Hessian.
+This does not add support for random effects or repeated-measures
+dependence.
+
 ## See also
 
 Other Diff taxa steps:
@@ -141,53 +155,11 @@ Other Diff taxa steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- 
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Pogača 
-#>      ◉ step_filter_taxa() id = filter_taxa__Cronut 
-#> 
-#> DA steps:
-#> 
+rec_default <- step_corncob(rec)
 
-## Define step with default parameters and prep
-rec <- 
-  step_corncob(rec) |>
-  prep(parallel = FALSE)
-#> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ corncob__Börek: formula_null
-#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
-  
-rec
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 101 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Results:
-#> 
-#>      ✔ corncob__Börek diff_taxa = 4 
-#> 
-#>      ℹ 7 taxon-contrast effects are present in all tested methods 
-#> 
+# Use a stricter significance threshold.
+rec_strict <- step_corncob(rec, fdr_cutoff = 0.01)
 ```

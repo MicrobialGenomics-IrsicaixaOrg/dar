@@ -46,7 +46,11 @@ step_wilcox(
 
 - id:
 
-  A character string that is unique to this step to identify it.
+  Unique, non-empty identifier for this step. DA step IDs must not use
+  the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+  `contrast_type`, `var`, `effect`, `sum`, `.tax_order`,
+  `.contrast_order` or `.effect_order`. Other identifiers, including
+  names such as `.custom`, are retained unchanged.
 
 - engine_args:
 
@@ -73,34 +77,11 @@ Other Diff taxa steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea"))
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 
-## Define step with default parameters
-rec <- step_wilcox(rec)
-#> Registered S3 method overwritten by 'car':
-#>   method           from
-#>   na.action.merMod lme4
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Bizcocho 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_wilcox() id = wilcox__Apple_pie 
+rec_default <- step_wilcox(rec)
+
+# Use Holm's multiple-testing correction.
+rec_holm <- step_wilcox(rec, p_adj_method = "holm")
 ```

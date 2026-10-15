@@ -15,7 +15,7 @@ trend test.
 ``` r
 step_ancom(
   rec,
-  fix_formula = recipe_targets(rec),
+  fix_formula = NULL,
   rand_formula = NULL,
   p_adj_method = "holm",
   prv_cut = 0.1,
@@ -49,7 +49,10 @@ step_ancom(
   the character string expresses how the microbial absolute abundances
   for each taxon depend on the fixed effects in metadata. When
   specifying the fix_formula, make sure to include the group variable in
-  the formula if it is not NULL.
+  the formula if it is not NULL. Defaults to `NULL`: use the centralized
+  model, or the recipe targets during deprecated model-free execution.
+  An explicit formula is overridden with a warning when a centralized
+  model is defined.
 
 - rand_formula:
 
@@ -152,7 +155,11 @@ step_ancom(
 
 - id:
 
-  A character string that is unique to this step to identify it.
+  Unique, non-empty identifier for this step. DA step IDs must not use
+  the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+  `contrast_type`, `var`, `effect`, `sum`, `.tax_order`,
+  `.contrast_order` or `.effect_order`. Other identifiers, including
+  names such as `.custom`, are retained unchanged.
 
 - engine_args:
 
@@ -162,6 +169,16 @@ step_ancom(
 ## Value
 
 An object of class `Recipe`
+
+## Details
+
+Significance follows ANCOM-BC2's sensitivity-aware `diff_robust`
+decision when `pseudo_sens = TRUE` (the default), rather than the basic
+`diff` decision alone. With a centralized model,
+`engine_args = list(fit = list(pseudo_sens = FALSE))` explicitly
+disables sensitivity analysis and uses `diff`. Deprecated model-free
+execution uses the default sensitivity analysis. Adjusted p-values and
+effect estimates are not changed by this selection.
 
 ## See also
 
@@ -179,131 +196,25 @@ Other Diff taxa steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
 
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
-#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
-#> 
-#> DA steps:
-#> 
+rec_default <- step_ancom(rec)
+#> Registered S3 method overwritten by 'DescTools':
+#>   method         from  
+#>   reorder.factor gplots
+#> Registered S3 method overwritten by 'lme4':
+#>   method           from
+#>   na.action.merMod car 
 
-## Pass advanced arguments to ANCOM-BC2
-step_ancom(
+# Pass advanced convergence controls to ANCOM-BC2.
+rec_custom <- step_ancom(
   rec,
   engine_args = list(
     fit = list(iter_control = list(tol = 1e-3, max_iter = 50))
   )
 )
-#> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ ancom__Öçpoçmaq: fix_formula
-#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Strudel 
-#>      ◉ step_filter_taxa() id = filter_taxa__Cornish_pasty 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_ancom() id = ancom__Öçpoçmaq 
 
-## Define step with default parameters and prep
-rec <-
-  step_ancom(rec) |>
-  prep(parallel = FALSE)
-#> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ ancom__Pionono: fix_formula
-#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
-#> Warning: The number of taxa used for estimating sample-specific biases is: 41
-#> A large number of taxa (>50) is required for the consistent estimation of biases
-#> Loading required package: foreach
-#> Loading required package: rngtools
-#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
-#> For taxa that are significant but do not pass the sensitivity analysis,
-#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
-#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
-#> Warning: The number of taxa used for estimating sample-specific biases is: 41
-#> A large number of taxa (>50) is required for the consistent estimation of biases
-#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
-#> For taxa that are significant but do not pass the sensitivity analysis,
-#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
-#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
-#> Warning: The number of taxa used for estimating sample-specific biases is: 41
-#> A large number of taxa (>50) is required for the consistent estimation of biases
-#> Conducting sensitivity analysis for pseudo-count addition to 0s ...
-#> For taxa that are significant but do not pass the sensitivity analysis,
-#> they are marked in the 'passed_ss' column and will be treated as non-significant in the 'diff_robust' column.
-#> For detailed instructions on performing sensitivity analysis, please refer to the package vignette.
-
-rec
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Results:
-#> 
-#>      ✔ ancom__Pionono diff_taxa = 13 
-#> 
-#>      ℹ 0 taxon-contrast effects are present in all tested methods 
-#> 
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-  step_ancom(rarefy = TRUE)
-#> Warning: ! The centralized model overrides design arguments in 1 step.
-#> ℹ ancom__Tu: fix_formula
-#> ℹ Method-specific thresholds and preprocessing controls are unchanged.
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_ancom() id = ancom__Tu 
+# Rarefy counts only when this step runs.
+rec_rarefied <- step_ancom(rec, rarefy = TRUE)
 ```

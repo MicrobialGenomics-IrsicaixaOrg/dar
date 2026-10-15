@@ -40,9 +40,8 @@ tibble
 ``` r
 data(test_prep_rec)
 
-## From a PrepRecipe we can extract a tibble with all intersections
-intersections <- find_intersections(test_prep_rec)
-intersections
+## Extract all intersections
+find_intersections(test_prep_rec)
 #> # A tibble: 52 × 4
 #>    taxa_id taxa            step_ids                                  sum_methods
 #>    <chr>   <chr>           <chr>                                           <dbl>
@@ -58,13 +57,11 @@ intersections
 #> 10 Otu_259 Coprococcus     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
 #> # ℹ 42 more rows
 
-## Additionally, we can exclude some methods form the table
-intersections <- find_intersections(
+## Exclude the first method
+find_intersections(
   test_prep_rec,
   steps = steps_ids(test_prep_rec, "da")[-1]
 )
-
-intersections
 #> # A tibble: 27 × 4
 #>    taxa_id taxa            step_ids               sum_methods
 #>    <chr>   <chr>           <chr>                        <dbl>

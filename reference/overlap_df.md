@@ -46,7 +46,7 @@ df
 
 ``` r
 data(test_prep_rec)
-df <- overlap_df(test_prep_rec, steps_ids(test_prep_rec, "da"))
+df <- overlap_df(test_prep_rec)
 head(df)
 #>                        maaslin__Welsh_cake deseq__Coussin_de_Lyon
 #> maaslin__Welsh_cake              1.0000000              0.6435644

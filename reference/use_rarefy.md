@@ -31,15 +31,3 @@ use_rarefy(phy, rarefy)
 
 A phyloseq object after rarefaction if `rarefy` is TRUE or "no_seed",
 otherwise the original phyloseq object is returned.
-
-## Examples
-
-``` r
-data(metaHIV_phy)
-
-## With seed
-# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, TRUE)
-
-## Witout seed
-# phy_rarefied <- dar:::use_rarefy(metaHIV_phy, "no_seed")
-```

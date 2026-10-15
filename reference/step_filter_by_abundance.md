@@ -67,20 +67,8 @@ Other filter phy steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- recipe(metaHIV_phy)
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> 
-
-## Define filter_by_abundance step with default parameters
-rec <- step_filter_by_abundance(rec, threshold = 0.01)
-rec
+recipe(metaHIV_phy) |>
+  step_filter_by_abundance()
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
@@ -89,7 +77,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Pie 
+#>      ◉ step_filter_by_abundance() id = filter_by_abundance__Chin_Chin 
 #> 
 #> DA steps:
 #> 

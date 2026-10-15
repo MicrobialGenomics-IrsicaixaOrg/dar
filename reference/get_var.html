@@ -19,12 +19,11 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -64,18 +63,6 @@
     <p>Tibble containing <code>var_info</code>.</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">get_var</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   vars      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> RiskGroup2</span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

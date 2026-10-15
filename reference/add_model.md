@@ -73,6 +73,11 @@ The updated `Recipe`.
 
 ## Details
 
+DA results, consensus tables and abundance plots share the same
+aggregated taxonomic units. Taxa with identical lineage through
+`tax_level` are summed for analysis; public accessors retain the
+complete recipe data.
+
 For compatibility with recipes created before version 1.9.3, omitted
 `targets` or `tax_level` values are recovered from the deprecated
 selector slots when available. New recipes must supply both arguments
@@ -91,7 +96,7 @@ rec <- recipe(metaHIV_phy) |>
 get_model(rec)
 #> $formula
 #> ~RiskGroup2 + Cluster
-#> <environment: 0x55dc1433dc60>
+#> <environment: 0x56270e8b5208>
 #> 
 #> $targets
 #> [1] "RiskGroup2"

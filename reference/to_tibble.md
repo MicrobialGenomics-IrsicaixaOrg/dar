@@ -30,12 +30,8 @@ tibble
 ## Examples
 
 ``` r
-data(test_rec)
-otu_table <-
-  get_phy(test_rec) |>
-  phyloseq::otu_table()
-
-dar:::to_tibble(otu_table)
+data(metaHIV_phy)
+dar:::to_tibble(phyloseq::otu_table(metaHIV_phy))
 #> # A tibble: 451 × 157
 #>    otu_id Sample_186 Sample_185 Sample_184 Sample_182 Sample_181 Sample_170
 #>    <chr>       <dbl>      <dbl>      <dbl>      <dbl>      <dbl>      <dbl>

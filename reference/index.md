@@ -4,7 +4,7 @@
 
 - [`dar`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.md)
   [`dar-package`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-package.md)
-  : dar: Differential Abundance Analysis by Consensus
+  : dar: Differential Abundance Workflows for Microbiome Data
 - [`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)
   : Create a Recipe for preprocessing data
 - [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)

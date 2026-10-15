@@ -63,20 +63,8 @@ Other filter phy steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <- recipe(metaHIV_phy)
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> 
-
-## Define step_filter_by_rarity step with default parameters
-rec <- step_filter_by_rarity(rec, threshold = 0.01)
-rec
+recipe(metaHIV_phy) |>
+  step_filter_by_rarity()
 #> ── DAR Recipe ──────────────────────────────────────────────────────────────────
 #> Inputs:
 #> 
@@ -85,7 +73,7 @@ rec
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Empanada 
+#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Paris–Brest 
 #> 
 #> DA steps:
 #> 

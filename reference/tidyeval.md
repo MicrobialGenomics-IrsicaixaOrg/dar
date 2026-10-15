@@ -105,7 +105,7 @@ f <- function(arg) {
 f(1 + 1)
 #> <quosure>
 #> expr: ^1 + 1
-#> env:  0x55dc3188c578
+#> env:  0x562729a4df70
 
 # `enquos()` works with arguments and dots. It returns a list of
 # expressions
@@ -119,30 +119,18 @@ f(1 + 1, 2 * 10)
 #> [[1]]
 #> <quosure>
 #> expr: ^1 + 1
-#> env:  0x55dc3188c578
+#> env:  0x562729a4df70
 #> 
 #> [[2]]
 #> <quosure>
 #> expr: ^2 * 10
-#> env:  0x55dc3188c578
+#> env:  0x562729a4df70
 #> 
 
-# Let's create some symbols:
-foo <- quote(foo)
-bar <- rlang::sym("bar")
-
-# as_name() converts symbols to strings:
-foo
-#> foo
-
+# Convert a symbol to its name
+foo <- rlang::sym("foo")
 rlang::as_name(foo)
 #> [1] "foo"
-
-typeof(bar)
-#> [1] "symbol"
-
-typeof(rlang::as_name(bar))
-#> [1] "character"
 
 # as_name() unwraps quosured symbols automatically:
 rlang::as_name(rlang::quo(foo))

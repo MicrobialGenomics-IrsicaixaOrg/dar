@@ -33,18 +33,13 @@ character vector
 ``` r
 data(test_rec)
 
-## We can extract the step identifiers from a Recipe with `step_ids`
-ids <- steps_ids(test_rec)
-ids
+steps_ids(test_rec)
 #> [1] "subset_taxa__Viennoiserie" "filter_taxa__Karakudamono"
 #> [3] "maaslin__Welsh_cake"       "deseq__Coussin_de_Lyon"   
 
-## With the `type` parameter, extract the prepro and da steps separately.
-da_ids <- steps_ids(test_rec, type = "da")
-da_ids
+## Select differential-abundance or preprocessing steps
+steps_ids(test_rec, type = "da")
 #> [1] "maaslin__Welsh_cake"    "deseq__Coussin_de_Lyon"
-
-prepro_ids <- steps_ids(test_rec, type = "prepro")
-prepro_ids
+steps_ids(test_rec, type = "prepro")
 #> [1] "subset_taxa__Viennoiserie" "filter_taxa__Karakudamono"
 ```

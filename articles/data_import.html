@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment • dar</title>
+<title>Data inputs and inspection • dar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,12 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Data inputs and inspection">
+<meta name="description" content="Prepare and inspect phyloseq and TreeSummarizedExperiment inputs for dar.
+">
+<meta property="og:description" content="Prepare and inspect phyloseq and TreeSummarizedExperiment inputs for dar.
+">
+<meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -39,12 +44,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+<li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -66,7 +70,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Data inputs and inspection</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/vignettes/data_import.Rmd" class="external-link"><code>vignettes/data_import.Rmd</code></a></small>
@@ -75,107 +79,129 @@
 
     
     
-<style>
-body {text-align: justify}
-</style>
-<p>The “dar” package is a versatile and user-friendly tool designed to
-accept inputs in a variety of formats. It primarily utilizes the
-<code>phyloseq</code> format but also supports the
-<code>TreeSummarizedExperiment</code> format. This flexibility allows
-users to conduct differential abundance analysis smoothly, irrespective
-of their initial data format. To facilitate this, a detailed guide is
-available to aid users in converting other prevalent data formats, such
-as <code>biome</code>, <code>mothur</code>, <code>metaphlan</code>, and
-more, into the necessary <code>phyloseq</code> or
-<code>TreeSummarizedExperiment</code> formats.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://microbiome.github.io/mia/" class="external-link">mia</a></span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dx.plos.org/10.1371/journal.pone.0061217" class="external-link">phyloseq</a></span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/recipe.html">recipe()</a></code> accepts a <code>phyloseq</code> or
+<code>TreeSummarizedExperiment</code> object. These containers connect
+an abundance matrix to sample metadata and, when available, taxonomy.
+Import files with the tools supplied by <code>phyloseq</code> or
+<code>mia</code>, then inspect the resulting object before configuring
+an analysis.</p>
+<p>Importing data does not establish that their units, experimental
+design or taxonomic annotations are appropriate for a particular
+differential-abundance method.</p>
 <div class="section level2">
-<h2 id="importing-data-from-biome-format">Importing Data from <code>biome</code> Format<a class="anchor" aria-label="anchor" href="#importing-data-from-biome-format"></a>
+<h2 id="start-with-an-existing-phyloseq-object">Start with an existing phyloseq object<a class="anchor" aria-label="anchor" href="#start-with-an-existing-phyloseq-object"></a>
 </h2>
-<p>The <code>biome</code> format is a commonly used format in
-bioinformatics to represent microbiome sequencing data. Here’s how you
-can import data in <code>biome</code> format to both
-<code>phyloseq</code> and <code>TreeSummarizedExperiment.</code></p>
-<div class="section level3">
-<h3 id="to-phyloseq">To Phyloseq<a class="anchor" aria-label="anchor" href="#to-phyloseq"></a>
-</h3>
-<p>To convert data from the <code>biome</code> format to the
-<code>phyloseq</code> format, you can use the
-<code><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">phyloseq::import_biom()</a></code> function. Here’s a step-by-step
-example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Example of a rich dense biom file</span></span>
-<span><span class="va">rich_dense_biom</span>  <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>,  package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
+<p>The package includes <code>metaHIV_phy</code>, with its recorded
+sample metadata and taxonomy. No statistical model is needed to inspect
+the data or define preprocessing steps.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar" class="external-link">dar</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span>, package <span class="op">=</span> <span class="st">"dar"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Import biom as a phyloseq-class object</span></span>
-<span><span class="va">phy</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">import_biom</a></span><span class="op">(</span></span>
-<span>  <span class="va">rich_dense_biom</span>,  </span>
-<span>  parseFunction <span class="op">=</span> <span class="va">parse_taxonomy_greengenes</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">phy</span></span>
-<span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>
-<span><span class="co">#&gt; otu_table()   OTU Table:         [ 5 taxa and 6 samples ]</span></span>
-<span><span class="co">#&gt; sample_data() Sample Data:       [ 6 samples by 4 sample variables ]</span></span>
-<span><span class="co">#&gt; tax_table()   Taxonomy Table:    [ 5 taxa by 7 taxonomic ranks ]</span></span>
-<span></span>
-<span><span class="co"># Print sample_data</span></span>
-<span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/sample_data-methods.html" class="external-link">sample_data</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         BarcodeSequence  LinkerPrimerSequence BODY_SITE Description</span></span>
-<span><span class="co">#&gt; Sample1    CGCTTATCGAGA CATGCTGCCTCCCGTAGGAGT       gut   human gut</span></span>
-<span><span class="co">#&gt; Sample2    CATACCAGTAGC CATGCTGCCTCCCGTAGGAGT       gut   human gut</span></span>
-<span><span class="co">#&gt; Sample3    CTCTCTACCTGT CATGCTGCCTCCCGTAGGAGT       gut   human gut</span></span>
-<span><span class="co">#&gt; Sample4    CTCTCGGCCTGT CATGCTGCCTCCCGTAGGAGT      skin  human skin</span></span>
-<span><span class="co">#&gt; Sample5    CTCTCTACCAAT CATGCTGCCTCCCGTAGGAGT      skin  human skin</span></span>
-<span><span class="co">#&gt; Sample6    CTAACTACCAAT CATGCTGCCTCCCGTAGGAGT      skin  human skin</span></span>
-<span></span>
-<span><span class="co"># Print tax_table</span></span>
-<span><span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/tax_table-methods.html" class="external-link">tax_table</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Taxonomy Table:     [5 taxa by 7 taxonomic ranks]:</span></span>
-<span><span class="co">#&gt;          Kingdom    Phylum           Class                 Order              </span></span>
-<span><span class="co">#&gt; GG_OTU_1 "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Enterobacteriales"</span></span>
-<span><span class="co">#&gt; GG_OTU_2 "Bacteria" "Cyanobacteria"  "Nostocophycideae"    "Nostocales"       </span></span>
-<span><span class="co">#&gt; GG_OTU_3 "Archaea"  "Euryarchaeota"  "Methanomicrobia"     "Methanosarcinales"</span></span>
-<span><span class="co">#&gt; GG_OTU_4 "Bacteria" "Firmicutes"     "Clostridia"          "Halanaerobiales"  </span></span>
-<span><span class="co">#&gt; GG_OTU_5 "Bacteria" "Proteobacteria" "Gammaproteobacteria" "Enterobacteriales"</span></span>
-<span><span class="co">#&gt;          Family               Genus            Species                       </span></span>
-<span><span class="co">#&gt; GG_OTU_1 "Enterobacteriaceae" "Escherichia"    NA                            </span></span>
-<span><span class="co">#&gt; GG_OTU_2 "Nostocaceae"        "Dolichospermum" NA                            </span></span>
-<span><span class="co">#&gt; GG_OTU_3 "Methanosarcinaceae" "Methanosarcina" NA                            </span></span>
-<span><span class="co">#&gt; GG_OTU_4 "Halanaerobiaceae"   "Halanaerobium"  "Halanaerobiumsaccharolyticum"</span></span>
-<span><span class="co">#&gt; GG_OTU_5 "Enterobacteriaceae" "Escherichia"    NA</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">BODY_SITE</span>, targets <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span>
 <span><span class="va">rec</span></span>
 <span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Inputs:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">5</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">BODY_SITE</span> (class: character, levels: gut, skin) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~BODY_SITE</span></span></span></code></pre></div>
-</div>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">451</span> taxa and <span style="color: #0000BB;">156</span> samples </span></span>
+<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined analysis target. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis! </span></span>
+<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis!</span></span></code></pre></div>
+<p><code><a href="../reference/recipe.html">recipe()</a></code> also accepts a <code>phyloseq</code> object
+whose stored abundance matrix has samples in rows: the accessors below
+return one consistent orientation. When constructing your own
+<code>phyloseq</code> object, set <code>taxa_are_rows</code> to match
+the actual matrix, rather than changing this flag without transposing
+the data.</p>
 </div>
 <div class="section level2">
-<h2 id="inspecting-recipe-components">Inspecting Recipe Components<a class="anchor" aria-label="anchor" href="#inspecting-recipe-components"></a>
+<h2 id="inspect-samples-taxonomy-and-abundances">Inspect samples, taxonomy and abundances<a class="anchor" aria-label="anchor" href="#inspect-samples-taxonomy-and-abundances"></a>
 </h2>
-<p>Recipe accessors expose the complete underlying components and do not
-depend on the targets or taxonomic level selected by
-<code><a href="../reference/add_model.html">add_model()</a></code>. Their ordering is stable: samples follow
-<code><a href="https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html" class="external-link">phyloseq::sample_names()</a></code>, taxa follow
-<code><a href="https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html" class="external-link">phyloseq::taxa_names()</a></code>, and counts are always returned with
-taxa in rows.</p>
+<p>Use the dar accessors explicitly when other attached packages export
+functions with the same names.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/sample_data.html">sample_data</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="va">taxonomy</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/tax_table.html">tax_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="va">abundances</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/otu_table.html">otu_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">samples</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"RiskGroup2"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 2</span></span></span>
+<span><span class="co">#&gt;   sample_id  RiskGroup2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Sample_186 msm       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sample_185 msm       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Sample_184 hts       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample_182 pwid      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sample_181 msm       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Sample_170 msm</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">taxonomy</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt;   taxa_id Kingdom  Phylum         Class           Order     Family Genus Species</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Otu_1   Archaea  Euryarchaeota  Methanobacteria Methanob… Metha… Meth… Methan…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Otu_2   Archaea  Euryarchaeota  Methanobacteria Methanob… Metha… Meth… Methan…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Otu_3   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Otu_4   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Otu_5   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Otu_6   Bacteria Actinobacteria Actinobacteria  Actinomy… Actin… Acti… Actino…</span></span>
+<span><span class="va">abundances</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   taxa_id Sample_186 Sample_185 Sample_184 Sample_182</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Otu_1         <span style="text-decoration: underline;">2</span>538          0       <span style="text-decoration: underline;">9</span>026      <span style="text-decoration: underline;">12</span>049</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Otu_2            0          0          0        609</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Otu_3            0          0          0          0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Otu_4            0          0          0          0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Otu_5            0          0          0          0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Otu_6            0          0          0          0</span></span></code></pre></div>
+<p>The accessors expose the complete stored components, independently of
+the target or taxonomic rank later selected with
+<code><a href="../reference/add_model.html">add_model()</a></code>:</p>
+<ul>
+<li>
+<code><a href="../reference/sample_data.html">sample_data()</a></code> returns <code>sample_id</code> followed
+by all sample metadata columns, in <code><a href="https://rdrr.io/pkg/phyloseq/man/sample_names-methods.html" class="external-link">phyloseq::sample_names()</a></code>
+order.</li>
+<li>
+<code><a href="../reference/tax_table.html">tax_table()</a></code> returns <code>taxa_id</code> followed by
+all taxonomic ranks, in <code><a href="https://rdrr.io/pkg/phyloseq/man/taxa_names-methods.html" class="external-link">phyloseq::taxa_names()</a></code> order.</li>
+<li>
+<code><a href="../reference/otu_table.html">otu_table()</a></code> returns one row per taxon, with
+<code>taxa_id</code> first and one column per sample. Taxon and sample
+order match the other two accessors.</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/sample_data.html">sample_data</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">abundances</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>, <span class="va">samples</span><span class="op">$</span><span class="va">sample_id</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">abundances</span><span class="op">$</span><span class="va">taxa_id</span>, <span class="va">taxonomy</span><span class="op">$</span><span class="va">taxa_id</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Keep sample and taxon identifiers unique and consistent across input
+files. Taxonomic labels are annotations, not replacements for feature
+identifiers: several features can share a species name. Inspect missing
+annotations and use standard rank names such as <code>Kingdom</code>,
+<code>Genus</code> and <code>Species</code>.</p>
+<p>If metadata or taxonomy is absent, the corresponding accessor returns
+an ID-only tibble. That is sufficient for inspection, but it does not
+supply the real covariates or taxonomic rank needed by a model. Add
+genuine study metadata before calling <code><a href="../reference/add_model.html">add_model()</a></code>; do not
+manufacture groups just to make an example run.</p>
+</div>
+<div class="section level2">
+<h2 id="import-a-biom-table">Import a BIOM table<a class="anchor" aria-label="anchor" href="#import-a-biom-table"></a>
+</h2>
+<p>This example uses a file distributed with <code>phyloseq</code>,
+without downloading data. The importer reads the sample metadata already
+present in that file.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">biom_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>  <span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">phy</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">import_biom</a></span><span class="op">(</span></span>
+<span>  <span class="va">biom_file</span>,</span>
+<span>  parseFunction <span class="op">=</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/phyloseq/man/parseTaxonomy-functions.html" class="external-link">parse_taxonomy_greengenes</a></span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">biom_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/sample_data.html">sample_data</a></span><span class="op">(</span><span class="va">biom_rec</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   sample_id BarcodeSequence LinkerPrimerSequence  BODY_SITE Description</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
@@ -185,7 +211,7 @@ taxa in rows.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sample4   CTCTCGGCCTGT    CATGCTGCCTCCCGTAGGAGT skin      human skin </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sample5   CTCTCTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Sample6   CTAACTACCAAT    CATGCTGCCTCCCGTAGGAGT skin      human skin</span></span>
-<span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/tax_table.html">tax_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/tax_table.html">tax_table</a></span><span class="op">(</span><span class="va">biom_rec</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 8</span></span></span>
 <span><span class="co">#&gt;   taxa_id  Kingdom  Phylum         Class              Order Family Genus Species</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
@@ -193,523 +219,162 @@ taxa in rows.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> GG_OTU_2 Bacteria Cyanobacteria  Nostocophycideae   Nost… Nosto… Doli… <span style="color: #BB0000;">NA</span>     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GG_OTU_3 Archaea  Euryarchaeota  Methanomicrobia    Meth… Metha… Meth… <span style="color: #BB0000;">NA</span>     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> GG_OTU_4 Bacteria Firmicutes     Clostridia         Hala… Halan… Hala… Halana…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… <span style="color: #BB0000;">NA</span></span></span>
-<span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/otu_table.html">otu_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
-<span><span class="co">#&gt;   taxa_id  Sample1 Sample2 Sample3 Sample4 Sample5 Sample6</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> GG_OTU_1       0       0       1       0       0       0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> GG_OTU_2       5       1       0       2       3       1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GG_OTU_3       0       0       1       4       2       0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> GG_OTU_4       2       1       1       0       0       1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5       0       1       1       0       0       0</span></span></code></pre></div>
-<p>When sample metadata or taxonomy is absent, the corresponding
-accessor returns an ID-only tibble. Analysis engines use separate
-internal target and rank views, so additional metadata and taxonomy
-columns are not passed implicitly to a statistical method.</p>
-<div class="section level3">
-<h3 id="to-treesummarizedexperiment">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment"></a>
-</h3>
-<p>To convert data from the <code>biome</code> format to the
-<code>TreeSummarizedExperiment</code> format, you can use the
-<code><a href="https://microbiome.github.io/mia/reference/importBIOM.html" class="external-link">mia::importBIOM()</a></code> function. Here’s a step-by-step example
-of how to perform this conversion:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Example of a rich dense biom file</span></span>
-<span><span class="va">rich_dense_biom</span>  <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rich_dense_otu_table.biom"</span>,  package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Import biom as a phyloseq-class object</span></span>
-<span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importBIOM.html" class="external-link">importBIOM</a></span><span class="op">(</span><span class="va">rich_dense_biom</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">tse</span></span>
-<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 5 6 </span></span>
-<span><span class="co">#&gt; metadata(0):</span></span>
-<span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(5): GG_OTU_1 GG_OTU_2 GG_OTU_3 GG_OTU_4 GG_OTU_5</span></span>
-<span><span class="co">#&gt; rowData names(7): taxonomy1 taxonomy2 ... taxonomy6 taxonomy7</span></span>
-<span><span class="co">#&gt; colnames(6): Sample1 Sample2 ... Sample5 Sample6</span></span>
-<span><span class="co">#&gt; colData names(4): BarcodeSequence LinkerPrimerSequence BODY_SITE</span></span>
-<span><span class="co">#&gt;   Description</span></span>
-<span><span class="co">#&gt; reducedDimNames(0):</span></span>
-<span><span class="co">#&gt; mainExpName: NULL</span></span>
-<span><span class="co">#&gt; altExpNames(0):</span></span>
-<span><span class="co">#&gt; rowLinks: NULL</span></span>
-<span><span class="co">#&gt; rowTree: NULL</span></span>
-<span><span class="co">#&gt; colLinks: NULL</span></span>
-<span><span class="co">#&gt; colTree: NULL</span></span>
-<span></span>
-<span><span class="co"># Print sample_data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 6 rows and 4 columns</span></span>
-<span><span class="co">#&gt;         BarcodeSequence  LinkerPrimerSequence   BODY_SITE Description</span></span>
-<span><span class="co">#&gt;             &lt;character&gt;           &lt;character&gt; &lt;character&gt; &lt;character&gt;</span></span>
-<span><span class="co">#&gt; Sample1    CGCTTATCGAGA CATGCTGCCTCCCGTAGGAGT         gut   human gut</span></span>
-<span><span class="co">#&gt; Sample2    CATACCAGTAGC CATGCTGCCTCCCGTAGGAGT         gut   human gut</span></span>
-<span><span class="co">#&gt; Sample3    CTCTCTACCTGT CATGCTGCCTCCCGTAGGAGT         gut   human gut</span></span>
-<span><span class="co">#&gt; Sample4    CTCTCGGCCTGT CATGCTGCCTCCCGTAGGAGT        skin  human skin</span></span>
-<span><span class="co">#&gt; Sample5    CTCTCTACCAAT CATGCTGCCTCCCGTAGGAGT        skin  human skin</span></span>
-<span><span class="co">#&gt; Sample6    CTAACTACCAAT CATGCTGCCTCCCGTAGGAGT        skin  human skin</span></span>
-<span></span>
-<span><span class="co"># Print tax_table</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 5 rows and 7 columns</span></span>
-<span><span class="co">#&gt;            taxonomy1         taxonomy2              taxonomy3</span></span>
-<span><span class="co">#&gt;          &lt;character&gt;       &lt;character&gt;            &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammaproteobacteria</span></span>
-<span><span class="co">#&gt; GG_OTU_2 k__Bacteria  p__Cyanobacteria    c__Nostocophycideae</span></span>
-<span><span class="co">#&gt; GG_OTU_3  k__Archaea  p__Euryarchaeota     c__Methanomicrobia</span></span>
-<span><span class="co">#&gt; GG_OTU_4 k__Bacteria     p__Firmicutes          c__Clostridia</span></span>
-<span><span class="co">#&gt; GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammaproteobacteria</span></span>
-<span><span class="co">#&gt;                     taxonomy4             taxonomy5         taxonomy6</span></span>
-<span><span class="co">#&gt;                   &lt;character&gt;           &lt;character&gt;       &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia</span></span>
-<span><span class="co">#&gt; GG_OTU_2        o__Nostocales        f__Nostocaceae g__Dolichospermum</span></span>
-<span><span class="co">#&gt; GG_OTU_3 o__Methanosarcinales f__Methanosarcinaceae g__Methanosarcina</span></span>
-<span><span class="co">#&gt; GG_OTU_4   o__Halanaerobiales   f__Halanaerobiaceae  g__Halanaerobium</span></span>
-<span><span class="co">#&gt; GG_OTU_5 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia</span></span>
-<span><span class="co">#&gt;                       taxonomy7</span></span>
-<span><span class="co">#&gt;                     &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_2                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_3                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_4 s__Halanaerobiumsacc..</span></span>
-<span><span class="co">#&gt; GG_OTU_5                    s__</span></span>
-<span></span>
-<span><span class="co"># Change the column names of the tax_table</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 5 rows and 7 columns</span></span>
-<span><span class="co">#&gt;              Kingdom            Phylum                  Class</span></span>
-<span><span class="co">#&gt;          &lt;character&gt;       &lt;character&gt;            &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammaproteobacteria</span></span>
-<span><span class="co">#&gt; GG_OTU_2 k__Bacteria  p__Cyanobacteria    c__Nostocophycideae</span></span>
-<span><span class="co">#&gt; GG_OTU_3  k__Archaea  p__Euryarchaeota     c__Methanomicrobia</span></span>
-<span><span class="co">#&gt; GG_OTU_4 k__Bacteria     p__Firmicutes          c__Clostridia</span></span>
-<span><span class="co">#&gt; GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammaproteobacteria</span></span>
-<span><span class="co">#&gt;                         Order                Family             Genus</span></span>
-<span><span class="co">#&gt;                   &lt;character&gt;           &lt;character&gt;       &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia</span></span>
-<span><span class="co">#&gt; GG_OTU_2        o__Nostocales        f__Nostocaceae g__Dolichospermum</span></span>
-<span><span class="co">#&gt; GG_OTU_3 o__Methanosarcinales f__Methanosarcinaceae g__Methanosarcina</span></span>
-<span><span class="co">#&gt; GG_OTU_4   o__Halanaerobiales   f__Halanaerobiaceae  g__Halanaerobium</span></span>
-<span><span class="co">#&gt; GG_OTU_5 o__Enterobacteriales f__Enterobacteriaceae    g__Escherichia</span></span>
-<span><span class="co">#&gt;                         Species</span></span>
-<span><span class="co">#&gt;                     &lt;character&gt;</span></span>
-<span><span class="co">#&gt; GG_OTU_1                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_2                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_3                    s__</span></span>
-<span><span class="co">#&gt; GG_OTU_4 s__Halanaerobiumsacc..</span></span>
-<span><span class="co">#&gt; GG_OTU_5                    s__</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">BODY_SITE</span>, targets <span class="op">=</span> <span class="st">"BODY_SITE"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">5</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">BODY_SITE</span> (class: character, levels: gut, skin) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~BODY_SITE</span></span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="importing-data-from-qiime-format">Importing Data from <code>qiime</code> Format<a class="anchor" aria-label="anchor" href="#importing-data-from-qiime-format"></a>
-</h2>
-<p>The <code>qiime</code> format is another commonly used format in
-bioinformatics for microbiome sequencing data. Here’s how you can import
-data in <code>qiime</code> format to both <code>Phyloseq</code> and
-<code>TreeSummarizedExperiment.</code></p>
-<div class="section level3">
-<h3 id="to-phyloseq-1">To Phyloseq<a class="anchor" aria-label="anchor" href="#to-phyloseq-1"></a>
-</h3>
-<p>To convert data from the <code>qiime</code> format to the
-<code>Phyloseq</code> format, you can use the
-<code><a href="https://rdrr.io/pkg/phyloseq/man/import_qiime.html" class="external-link">phyloseq::import_qiime()</a></code> function. Here’s a step-by-step
-example of how to perform this conversion:</p>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5 Bacteria Proteobacteria Gammaproteobacter… Ente… Enter… Esch… <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
+<p>The same file can be imported as a
+<code>TreeSummarizedExperiment</code>. Rows of a TSE represent features,
+columns represent samples, <code>rowData()</code> holds feature
+annotations and <code>colData()</code> holds sample metadata.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Import QIIME data</span></span>
-<span><span class="va">phy_qiime</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_qiime.html" class="external-link">import_qiime</a></span><span class="op">(</span></span>
-<span>  otufilename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"GP_otu_table_rand_short.txt.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
-<span>  mapfilename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"master_map.txt"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
-<span>  treefilename <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"GP_tree_rand_short.newick.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Processing map file...</span></span>
-<span><span class="co">#&gt; Processing otu/tax file...</span></span>
-<span><span class="co">#&gt; Reading file into memory prior to parsing...</span></span>
-<span><span class="co">#&gt; Detecting first header line...</span></span>
-<span><span class="co">#&gt; Header is on line 2  </span></span>
-<span><span class="co">#&gt; Converting input file to a table...</span></span>
-<span><span class="co">#&gt; Defining OTU table... </span></span>
-<span><span class="co">#&gt; Parsing taxonomy table...</span></span>
-<span><span class="co">#&gt; Processing phylogenetic tree...</span></span>
-<span><span class="co">#&gt;  /__w/_temp/Library/phyloseq/extdata/GP_tree_rand_short.newick.gz ...</span></span>
+<code class="sourceCode R"><span><span class="va">tse</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importBIOM.html" class="external-link">importBIOM</a></span><span class="op">(</span><span class="va">biom_file</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">phy_qiime</span></span>
-<span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>
-<span><span class="co">#&gt; otu_table()   OTU Table:         [ 500 taxa and 26 samples ]</span></span>
-<span><span class="co">#&gt; sample_data() Sample Data:       [ 26 samples by 7 sample variables ]</span></span>
-<span><span class="co">#&gt; tax_table()   Taxonomy Table:    [ 500 taxa by 7 taxonomic ranks ]</span></span>
-<span><span class="co">#&gt; phy_tree()    Phylogenetic Tree: [ 500 tips and 499 internal nodes ]</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy_qiime</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">SampleType</span>, targets <span class="op">=</span> <span class="st">"SampleType"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">500</span> taxa and <span style="color: #0000BB;">26</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">SampleType</span> (class: character, levels: Feces, Freshwater, Freshwater (creek), Mock, Ocean, Sediment (estuary), Skin, Soil, Tongue) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~SampleType</span></span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="to-treesummarizedexperiment-1">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment-1"></a>
-</h3>
-<p>To convert data from the <code>qiime</code> format to the
-<code>TreeSummarizedExperiment</code> format, you can use the
-<code><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">mia::importQIIME2()</a></code> function. Here’s a step-by-step example
-of how to perform this conversion:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Import QIIME data to tse</span></span>
-<span><span class="va">tse_qiime</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">importQIIME2</a></span><span class="op">(</span></span>
-<span>  featureTableFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"table.qza"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  taxonomyTableFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"taxonomy.qza"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  sampleMetaFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"sample-metadata.tsv"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  refSeqFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"refseq.qza"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  phyTreeFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"tree.qza"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span></span>
+<span><span class="co"># This bundled example contains these seven ranks, in this order.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Kingdom"</span>, <span class="st">"Phylum"</span>, <span class="st">"Class"</span>, <span class="st">"Order"</span>, <span class="st">"Family"</span>, <span class="st">"Genus"</span>, <span class="st">"Species"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tse_qiime</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_qiime</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">body.site</span>, targets <span class="op">=</span> <span class="st">"body.site"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span></code></pre></div>
-</div>
+<span><span class="va">tse_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/tax_table.html">tax_table</a></span><span class="op">(</span><span class="va">tse_rec</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 8</span></span></span>
+<span><span class="co">#&gt;   taxa_id  Kingdom     Phylum            Class        Order Family Genus Species</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> GG_OTU_1 k__Bacteria p__Proteobacteria c__Gammapro… o__E… f__En… g__E… s__    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> GG_OTU_2 k__Bacteria p__Cyanobacteria  c__Nostocop… o__N… f__No… g__D… s__    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> GG_OTU_3 k__Archaea  p__Euryarchaeota  c__Methanom… o__M… f__Me… g__M… s__    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> GG_OTU_4 k__Bacteria p__Firmicutes     c__Clostrid… o__H… f__Ha… g__H… s__Hal…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> GG_OTU_5 k__Bacteria p__Proteobacteria c__Gammapro… o__E… f__En… g__E… s__</span></span></code></pre></div>
+<p>The rank relabeling above is specific to this file. Inspect the
+annotations in your own data instead of assigning rank names by position
+without checking their meaning. A TSE input is converted internally to
+<code>phyloseq</code>; if the intended abundance table is not the
+default assay, select it explicitly with
+<code>mia::convertToPhyloseq(..., assay.type = "your_assay")</code>
+before creating the recipe.</p>
+<p>For other formats, consult the importers’ documentation rather than
+treating all formats as equivalent:</p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/pkg/phyloseq/man/import_qiime.html" class="external-link">phyloseq::import_qiime()</a></code> reads legacy QIIME tables;
+<code><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">mia::importQIIME2()</a></code> reads QIIME 2 artifacts.</li>
+<li>
+<code><a href="https://rdrr.io/pkg/phyloseq/man/import_mothur.html" class="external-link">phyloseq::import_mothur()</a></code> and
+<code><a href="https://microbiome.github.io/mia/reference/importMothur.html" class="external-link">mia::importMothur()</a></code> read the supported mothur files.</li>
+<li>
+<code><a href="https://microbiome.github.io/mia/reference/importMetaPhlAn.html" class="external-link">mia::importMetaPhlAn()</a></code> reads MetaPhlAn abundance
+profiles.</li>
+</ul>
+<p>For example, open the installed help with
+<code><a href="https://microbiome.github.io/mia/reference/importQIIME2.html" class="external-link">help("importQIIME2", package = "mia")</a></code> or
+<code><a href="https://rdrr.io/pkg/phyloseq/man/import_biom.html" class="external-link">help("import_biom", package = "phyloseq")</a></code>.</p>
 </div>
 <div class="section level2">
-<h2 id="importing-data-from-mothur-format">Importing Data from <code>mothur</code> Format<a class="anchor" aria-label="anchor" href="#importing-data-from-mothur-format"></a>
+<h2 id="check-the-measurement-scale">Check the measurement scale<a class="anchor" aria-label="anchor" href="#check-the-measurement-scale"></a>
 </h2>
-<p>The <code>mothur</code> format is another commonly used format in
-bioinformatics for microbiome sequencing data. Here’s how you can import
-data in <code>mothur</code> format to both <code>Phyloseq</code> and
-<code>TreeSummarizedExperiment.</code></p>
-<div class="section level3">
-<h3 id="to-phyloseq-2">To Phyloseq<a class="anchor" aria-label="anchor" href="#to-phyloseq-2"></a>
-</h3>
-<p>To convert data from the <code>mothur</code> format to the
-<code>Phyloseq</code> format, you can use the
-<code><a href="https://rdrr.io/pkg/phyloseq/man/import_mothur.html" class="external-link">phyloseq::import_mothur()</a></code> function. Here’s a step-by-step
-example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Import Mothur data</span></span>
-<span><span class="va">phy_mothur</span> <span class="op">&lt;-</span> <span class="fu">phyloseq</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/phyloseq/man/import_mothur.html" class="external-link">import_mothur</a></span><span class="op">(</span></span>
-<span>  mothur_list_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"esophagus.fn.list.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
-<span>  mothur_group_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"esophagus.good.groups.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span>,</span>
-<span>  mothur_tree_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"esophagus.tree.gz"</span>, package <span class="op">=</span> <span class="st">"phyloseq"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">phy_mothur</span></span>
-<span><span class="co">#&gt; phyloseq-class experiment-level object</span></span>
-<span><span class="co">#&gt; otu_table()   OTU Table:         [ 591 taxa and 3 samples ]</span></span>
-<span><span class="co">#&gt; phy_tree()    Phylogenetic Tree: [ 591 tips and 590 internal nodes ]</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy_mothur</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">591</span> taxa and <span style="color: #0000BB;">3</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined analysis target. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis! </span></span>
-<span><span class="co">#&gt;      <span style="color: #BB0000;">✖</span> undefined taxonomic level. Use <span style="background-color: #BB00BB;">add_model()</span> to define the analysis!</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="to-treesummarizedexperiment-2">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment-2"></a>
-</h3>
-<p>To convert data from the <code>mothur</code> format to the
-<code>TreeSummarizedExperiment</code> format, you can use the
-<code><a href="https://microbiome.github.io/mia/reference/importMothur.html" class="external-link">mia::importMothur()</a></code> function. Here’s a step-by-step example
-of how to perform this conversion:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Import Mothur data to TreeSummarizedExperiment</span></span>
-<span><span class="va">tse_mothur</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importMothur.html" class="external-link">importMothur</a></span><span class="op">(</span></span>
-<span>  sharedFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mothur_example.shared"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  taxonomyFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mothur_example.cons.taxonomy"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span>,</span>
-<span>  designFile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"mothur_example.design"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">methods</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="st">"TreeSummarizedExperiment"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">tse_mothur</span></span>
-<span><span class="co">#&gt; class: TreeSummarizedExperiment </span></span>
-<span><span class="co">#&gt; dim: 100 100 </span></span>
-<span><span class="co">#&gt; metadata(0):</span></span>
-<span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(100): Otu001 Otu002 ... Otu099 Otu100</span></span>
-<span><span class="co">#&gt; rowData names(8): OTU Size ... Family Genus</span></span>
-<span><span class="co">#&gt; colnames(100): Sample1 Sample2 ... Sample99 Sample100</span></span>
-<span><span class="co">#&gt; colData names(7): group sex ... numOtus Group</span></span>
-<span><span class="co">#&gt; reducedDimNames(0):</span></span>
-<span><span class="co">#&gt; mainExpName: NULL</span></span>
-<span><span class="co">#&gt; altExpNames(0):</span></span>
-<span><span class="co">#&gt; rowLinks: NULL</span></span>
-<span><span class="co">#&gt; rowTree: NULL</span></span>
-<span><span class="co">#&gt; colLinks: NULL</span></span>
-<span><span class="co">#&gt; colTree: NULL</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_mothur</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">drug</span>, targets <span class="op">=</span> <span class="st">"drug"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">100</span> taxa and <span style="color: #0000BB;">100</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">drug</span> (class: character, levels: A, B) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~drug</span></span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="importing-data-from-metaphlan-format">Importing Data from <code>metaphlan</code> Format<a class="anchor" aria-label="anchor" href="#importing-data-from-metaphlan-format"></a>
-</h2>
-<p>The <code>metaphlan</code> format is another commonly used format in
-bioinformatics for microbiome sequencing data. Here’s how you can import
-data in <code>metaphlan</code> format to
-<code>TreeSummarizedExperiment.</code></p>
-<div class="section level3">
-<h3 id="to-treesummarizedexperiment-3">To TreeSummarizedExperiment<a class="anchor" aria-label="anchor" href="#to-treesummarizedexperiment-3"></a>
-</h3>
-<p>To convert data from the <code>metaphlan</code> format to the
-<code>TreeSummarizedExperiment</code> format, you can use the
-<code><a href="https://microbiome.github.io/mia/reference/importMetaPhlAn.html" class="external-link">mia::importMetaPhlAn()</a></code> function. Here’s a step-by-step
-example of how to perform this conversion:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Importing data from Metaphlan</span></span>
-<span><span class="va">tse_metaphlan</span> <span class="op">&lt;-</span> <span class="fu">mia</span><span class="fu">::</span><span class="fu"><a href="https://microbiome.github.io/mia/reference/importMetaPhlAn.html" class="external-link">importMetaPhlAn</a></span><span class="op">(</span></span>
-<span>  file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"merged_abundance_table.txt"</span>, package <span class="op">=</span> <span class="st">"mia"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Recipe init</span></span>
-<span><span class="va">tse_metaphlan</span> <span class="op">&lt;-</span> <span class="fu">TreeSummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/TreeSummarizedExperiment/man/TreeSummarizedExperiment-constructor.html" class="external-link">TreeSummarizedExperiment</a></span><span class="op">(</span></span>
-<span>  assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">tse_metaphlan</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  rowData <span class="op">=</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">tse_metaphlan</span><span class="op">)</span>,</span>
-<span>  colData <span class="op">=</span> <span class="fu">SummarizedExperiment</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">tse_metaphlan</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>condition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">tse_metaphlan</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">condition</span>, targets <span class="op">=</span> <span class="st">"condition"</span>, tax_level <span class="op">=</span> <span class="st">"Genus"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">16</span> taxa and <span style="color: #0000BB;">6</span> samples </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">condition</span> (class: character, levels: A, B) </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Genus</span> </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~condition</span></span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
-</h2>
-<p>In this guide, we have explored various methods for importing
-microbiome sequencing data from different formats into
-<code>Phyloseq</code> and <code>TreeSummarizedExperiment.</code> We’ve
-covered the <code>biome</code>, <code>qiime</code>, <code>mothur</code>,
-<code>metaphlan</code>, and <code>humann</code> formats, providing
-step-by-step examples for each.</p>
-<p>The flexibility of these tools allows for a smooth transition between
-different data formats, making it easier to conduct your analysis
-irrespective of the initial data format. By following the steps outlined
-in this guide, you should be able to successfully convert your data and
-carry out further differential abundance analysis.</p>
-<p>Remember, the specific details of your data may require you to adjust
-the parameters in the import functions. Always inspect your data after
-conversion to ensure it has been imported correctly.</p>
+<p>An abundance matrix can contain raw read counts, proportions,
+percentages or other transformed values. These are not interchangeable
+inputs. In particular, MetaPhlAn relative-abundance profiles are not raw
+read counts. Neither importing them nor converting their container makes
+them suitable for a count-based model; rounding percentages does not
+recover read counts.</p>
+<p>Check the provenance and assay units, not just whether values happen
+to be integers. Retain raw counts when they are available and choose a
+method whose input requirements match the measurements. Missing values
+are also distinct from observed zeros.</p>
+<p>For QC and filtering, continue with <a href="filtering_subsetting.html">Quality control and preprocessing</a>.
+For formulas, target variables and engine compatibility, see <a href="statistical_models.html">Statistical models and contrasts</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://sessioninfo.r-lib.org/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
-<span><span class="co">#&gt;  version  R version 4.6.1 (2026-06-24)</span></span>
-<span><span class="co">#&gt;  os       Ubuntu 24.04.4 LTS</span></span>
-<span><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
-<span><span class="co">#&gt;  ui       X11</span></span>
-<span><span class="co">#&gt;  language en</span></span>
-<span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
-<span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
-<span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2026-08-04</span></span>
-<span><span class="co">#&gt;  pandoc   3.10 @ /usr/bin/ (via rmarkdown)</span></span>
-<span><span class="co">#&gt;  quarto   1.9.38 @ /usr/local/bin/quarto</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package                 </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
-<span><span class="co">#&gt;  abind                      1.4-8   <span style="color: #555555;">2024-09-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ade4                       1.7-24  <span style="color: #555555;">2026-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ape                        5.8-1   <span style="color: #555555;">2024-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  backports                  1.5.1   <span style="color: #555555;">2026-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  beachmat                   2.29.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  beeswarm                   0.4.0   <span style="color: #555555;">2021-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Biobase                  * 2.73.2  <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocGenerics             * 0.59.10 <span style="color: #555555;">2026-07-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocNeighbors              2.7.2   <span style="color: #555555;">2026-05-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocParallel               1.47.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocSingular               1.29.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  biomformat                 1.41.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  Biostrings               * 2.81.6  <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  bluster                    1.23.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  bslib                      0.12.0  <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cachem                     1.1.0   <span style="color: #555555;">2024-05-16</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  checkmate                  2.3.4   <span style="color: #555555;">2026-02-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cli                        3.6.6   <span style="color: #555555;">2026-04-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cluster                    2.1.8.3 <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  codetools                  0.2-20  <span style="color: #555555;">2024-03-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  crayon                     1.5.3   <span style="color: #555555;">2024-06-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  dar                        1.9.12  <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  data.table                 1.18.4  <span style="color: #555555;">2026-05-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DBI                        1.3.0   <span style="color: #555555;">2026-02-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DECIPHER                   3.9.2   <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  decontam                   1.33.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  DelayedArray               0.39.3  <span style="color: #555555;">2026-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  DelayedMatrixStats         1.35.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  desc                       1.4.3   <span style="color: #555555;">2023-12-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  devtools                   2.5.2   <span style="color: #555555;">2026-04-30</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  digest                     0.6.39  <span style="color: #555555;">2025-11-19</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DirichletMultinomial       1.55.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  dplyr                      1.2.1   <span style="color: #555555;">2026-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ellipsis                   0.3.3   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  evaluate                   1.0.5   <span style="color: #555555;">2025-08-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  farver                     2.1.2   <span style="color: #555555;">2024-05-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  fastmap                    1.2.0   <span style="color: #555555;">2024-05-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  foreach                    1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  fs                         2.1.0   <span style="color: #555555;">2026-04-18</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  generics                 * 0.1.4   <span style="color: #555555;">2025-05-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  GenomicRanges            * 1.65.1  <span style="color: #555555;">2026-07-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  ggbeeswarm                 0.7.3   <span style="color: #555555;">2025-11-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ggplot2                    4.0.3   <span style="color: #555555;">2026-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ggrepel                    0.9.8   <span style="color: #555555;">2026-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  glue                       1.8.1   <span style="color: #555555;">2026-04-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  gridExtra                  2.3.1   <span style="color: #555555;">2026-06-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  gtable                     0.3.6   <span style="color: #555555;">2024-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  htmltools                  0.5.9   <span style="color: #555555;">2025-12-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets                1.6.4   <span style="color: #555555;">2023-12-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  igraph                     2.3.3   <span style="color: #555555;">2026-06-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  IRanges                  * 2.47.2  <span style="color: #555555;">2026-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  irlba                      2.3.7   <span style="color: #555555;">2026-01-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  iterators                  1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  jquerylib                  0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  jsonlite                   2.0.0   <span style="color: #555555;">2025-03-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  knitr                      1.51    <span style="color: #555555;">2025-12-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  lattice                    0.22-9  <span style="color: #555555;">2026-02-09</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  lazyeval                   0.2.3   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  lifecycle                  1.0.5   <span style="color: #555555;">2026-01-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  magrittr                   2.0.5   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  MASS                       7.3-66  <span style="color: #555555;">2026-07-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Matrix                     1.7-6   <span style="color: #555555;">2026-07-25</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  MatrixGenerics           * 1.25.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  matrixStats              * 1.5.0   <span style="color: #555555;">2025-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  memoise                    2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  mgcv                       1.9-4   <span style="color: #555555;">2025-11-07</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  mia                      * 1.21.6  <span style="color: #555555;">2026-07-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  MultiAssayExperiment     * 1.39.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  multtest                   2.69.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  nlme                       3.1-170 <span style="color: #555555;">2026-07-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  otel                       0.2.0   <span style="color: #555555;">2025-08-29</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  permute                    0.9-10  <span style="color: #555555;">2026-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  phyloseq                 * 1.57.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  pillar                     1.11.1  <span style="color: #555555;">2025-09-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgbuild                   1.4.8   <span style="color: #555555;">2025-05-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgconfig                  2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgdown                    2.2.1   <span style="color: #555555;">2026-07-07</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgload                    1.5.3   <span style="color: #555555;">2026-06-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  plyr                       1.8.9   <span style="color: #555555;">2023-10-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  purrr                      1.2.2   <span style="color: #555555;">2026-04-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  R6                         2.6.1   <span style="color: #555555;">2025-02-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ragg                       1.5.2   <span style="color: #555555;">2026-03-23</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rappdirs                   0.3.4   <span style="color: #555555;">2026-01-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rbibutils                  2.4.1   <span style="color: #555555;">2026-01-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  RColorBrewer               1.1-3   <span style="color: #555555;">2022-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Rcpp                       1.1.2   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Rdpack                     2.6.6   <span style="color: #555555;">2026-02-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  reformulas                 0.4.4   <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  reshape2                   1.4.5   <span style="color: #555555;">2025-11-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rlang                      1.3.0   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rmarkdown                  2.31    <span style="color: #555555;">2026-03-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rsvd                       1.0.5   <span style="color: #555555;">2021-04-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  S4Arrays                   1.13.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  S4Vectors                * 0.51.6  <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  S7                         0.2.2   <span style="color: #555555;">2026-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sass                       0.4.10  <span style="color: #555555;">2025-04-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ScaledMatrix               1.21.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  scales                     1.4.0   <span style="color: #555555;">2025-04-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  scater                     1.41.2  <span style="color: #555555;">2026-06-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  scuttle                    1.23.1  <span style="color: #555555;">2026-05-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  Seqinfo                  * 1.3.0   <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sessioninfo                1.2.4   <span style="color: #555555;">2026-06-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  SingleCellExperiment     * 1.35.2  <span style="color: #555555;">2026-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  SparseArray                1.13.2  <span style="color: #555555;">2026-05-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sparseMatrixStats          1.25.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  stringi                    1.8.7   <span style="color: #555555;">2025-03-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  stringr                    1.6.0   <span style="color: #555555;">2025-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  SummarizedExperiment     * 1.43.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  survival                   3.8-9   <span style="color: #555555;">2026-07-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  systemfonts                1.3.2   <span style="color: #555555;">2026-03-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  textshaping                1.0.5   <span style="color: #555555;">2026-03-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tibble                     3.3.1   <span style="color: #555555;">2026-01-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidyr                      1.3.2   <span style="color: #555555;">2025-12-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidyselect                 1.2.1   <span style="color: #555555;">2024-03-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidytree                   0.4.8   <span style="color: #555555;">2026-07-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  treeio                     1.37.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  TreeSummarizedExperiment * 2.21.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  usethis                    3.2.1   <span style="color: #555555;">2025-09-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  utf8                       1.2.6   <span style="color: #555555;">2025-06-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vctrs                      0.7.3   <span style="color: #555555;">2026-04-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vegan                      2.7-5   <span style="color: #555555;">2026-05-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vipor                      0.4.7   <span style="color: #555555;">2023-12-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  viridis                    0.6.5   <span style="color: #555555;">2024-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  viridisLite                0.4.3   <span style="color: #555555;">2026-02-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  withr                      3.0.3   <span style="color: #555555;">2026-06-19</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  xfun                       0.60    <span style="color: #555555;">2026-07-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  XVector                  * 0.53.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  yaml                       2.3.12  <span style="color: #555555;">2025-12-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  yulab.utils                0.2.4   <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [1] /__w/_temp/Library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [2] /usr/local/lib/R/site-library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [3] /usr/local/lib/R/library</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #BBBBBB; background-color: #BB0000;">*</span> ── Packages attached to the search path.</span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
+<span><span class="co">#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
+<span><span class="co">#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
+<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
+<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre></div>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] dar_1.9.12</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] DBI_1.3.0                       gridExtra_2.3.1                </span></span>
+<span><span class="co">#&gt;   [3] permute_0.9-10                  rlang_1.3.0                    </span></span>
+<span><span class="co">#&gt;   [5] magrittr_2.0.5                  ade4_1.7-24                    </span></span>
+<span><span class="co">#&gt;   [7] scater_1.41.2                   otel_0.2.0                     </span></span>
+<span><span class="co">#&gt;   [9] matrixStats_1.5.0               compiler_4.6.1                 </span></span>
+<span><span class="co">#&gt;  [11] DelayedMatrixStats_1.35.0       mgcv_1.9-4                     </span></span>
+<span><span class="co">#&gt;  [13] systemfonts_1.3.2               vctrs_0.7.3                    </span></span>
+<span><span class="co">#&gt;  [15] reshape2_1.4.5                  stringr_1.6.0                  </span></span>
+<span><span class="co">#&gt;  [17] pkgconfig_2.0.3                 crayon_1.5.3                   </span></span>
+<span><span class="co">#&gt;  [19] fastmap_1.2.0                   backports_1.5.1                </span></span>
+<span><span class="co">#&gt;  [21] XVector_0.53.0                  scuttle_1.23.2                 </span></span>
+<span><span class="co">#&gt;  [23] utf8_1.2.6                      rmarkdown_2.32                 </span></span>
+<span><span class="co">#&gt;  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    </span></span>
+<span><span class="co">#&gt;  [27] ragg_1.5.2                      purrr_1.2.2                    </span></span>
+<span><span class="co">#&gt;  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    </span></span>
+<span><span class="co">#&gt;  [31] xfun_0.61                       cachem_1.1.0                   </span></span>
+<span><span class="co">#&gt;  [33] beachmat_2.29.3                 jsonlite_2.0.0                 </span></span>
+<span><span class="co">#&gt;  [35] biomformat_1.41.0               DelayedArray_0.39.8            </span></span>
+<span><span class="co">#&gt;  [37] BiocParallel_1.47.0             irlba_2.4.1                    </span></span>
+<span><span class="co">#&gt;  [39] parallel_4.6.1                  cluster_2.1.8.3                </span></span>
+<span><span class="co">#&gt;  [41] R6_2.6.1                        bslib_0.12.0                   </span></span>
+<span><span class="co">#&gt;  [43] stringi_1.8.9                   RColorBrewer_1.1-3             </span></span>
+<span><span class="co">#&gt;  [45] GenomicRanges_1.65.4            jquerylib_0.1.4                </span></span>
+<span><span class="co">#&gt;  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  </span></span>
+<span><span class="co">#&gt;  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               </span></span>
+<span><span class="co">#&gt;  [51] knitr_1.52                      DECIPHER_3.9.3                 </span></span>
+<span><span class="co">#&gt;  [53] IRanges_2.47.5                  mia_1.21.11                    </span></span>
+<span><span class="co">#&gt;  [55] Matrix_1.7-6                    splines_4.6.1                  </span></span>
+<span><span class="co">#&gt;  [57] igraph_2.3.4                    tidyselect_1.2.1               </span></span>
+<span><span class="co">#&gt;  [59] viridis_0.6.5                   abind_1.4-8                    </span></span>
+<span><span class="co">#&gt;  [61] yaml_2.3.12                     vegan_2.7-6                    </span></span>
+<span><span class="co">#&gt;  [63] TreeSummarizedExperiment_2.21.0 codetools_0.2-20               </span></span>
+<span><span class="co">#&gt;  [65] lattice_0.23-1                  tibble_3.3.1                   </span></span>
+<span><span class="co">#&gt;  [67] plyr_1.8.9                      Biobase_2.73.2                 </span></span>
+<span><span class="co">#&gt;  [69] treeio_1.37.1                   S7_0.2.2                       </span></span>
+<span><span class="co">#&gt;  [71] evaluate_1.0.5                  desc_1.4.3                     </span></span>
+<span><span class="co">#&gt;  [73] survival_3.8-12                 Biostrings_2.81.9              </span></span>
+<span><span class="co">#&gt;  [75] pillar_1.11.1                   phyloseq_1.57.0                </span></span>
+<span><span class="co">#&gt;  [77] MatrixGenerics_1.25.0           checkmate_2.3.4                </span></span>
+<span><span class="co">#&gt;  [79] foreach_1.5.2                   stats4_4.6.1                   </span></span>
+<span><span class="co">#&gt;  [81] generics_0.1.4                  S4Vectors_0.51.10              </span></span>
+<span><span class="co">#&gt;  [83] ggplot2_4.0.3                   sparseMatrixStats_1.25.0       </span></span>
+<span><span class="co">#&gt;  [85] scales_1.4.0                    tidytree_0.4.8                 </span></span>
+<span><span class="co">#&gt;  [87] glue_1.8.1                      lazyeval_0.2.3                 </span></span>
+<span><span class="co">#&gt;  [89] tools_4.6.1                     BiocNeighbors_2.7.3            </span></span>
+<span><span class="co">#&gt;  [91] data.table_1.18.6.1             ScaledMatrix_1.21.0            </span></span>
+<span><span class="co">#&gt;  [93] fs_2.1.0                        grid_4.6.1                     </span></span>
+<span><span class="co">#&gt;  [95] tidyr_1.3.2                     ape_5.8-1                      </span></span>
+<span><span class="co">#&gt;  [97] SingleCellExperiment_1.35.2     nlme_3.1-171                   </span></span>
+<span><span class="co">#&gt;  [99] beeswarm_0.4.0                  BiocSingular_1.29.2            </span></span>
+<span><span class="co">#&gt; [101] vipor_0.4.7                     cli_3.6.6                      </span></span>
+<span><span class="co">#&gt; [103] rsvd_1.0.5                      rappdirs_0.3.4                 </span></span>
+<span><span class="co">#&gt; [105] textshaping_1.0.5               viridisLite_0.4.3              </span></span>
+<span><span class="co">#&gt; [107] S4Arrays_1.13.2                 dplyr_1.2.1                    </span></span>
+<span><span class="co">#&gt; [109] gtable_0.3.6                    yulab.utils_0.2.5              </span></span>
+<span><span class="co">#&gt; [111] sass_0.4.10                     digest_0.6.39                  </span></span>
+<span><span class="co">#&gt; [113] BiocGenerics_0.59.12            ggrepel_0.9.8                  </span></span>
+<span><span class="co">#&gt; [115] SparseArray_1.13.4              decontam_1.33.0                </span></span>
+<span><span class="co">#&gt; [117] htmlwidgets_1.6.4               farver_2.1.2                   </span></span>
+<span><span class="co">#&gt; [119] htmltools_0.5.9                 pkgdown_2.2.1                  </span></span>
+<span><span class="co">#&gt; [121] multtest_2.69.0                 lifecycle_1.0.5                </span></span>
+<span><span class="co">#&gt; [123] MASS_7.3-66</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

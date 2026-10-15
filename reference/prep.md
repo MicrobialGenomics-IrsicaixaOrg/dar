@@ -41,12 +41,10 @@ A `PrepRecipe` object.
 
 ``` r
 data(metaHIV_phy)
-rec <-
-  recipe(metaHIV_phy) |>
+rec <- recipe(metaHIV_phy) |>
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Class") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = function(x) sum(x > 0) >= (0.03 * length(x))) |>
-  step_maaslin()
+  step_filter_by_prevalence(threshold = 0.03) |>
+  step_wilcox()
 
-da_results <- prep(rec)
+da_results <- prep(rec, parallel = FALSE)
 ```

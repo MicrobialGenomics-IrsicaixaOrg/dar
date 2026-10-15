@@ -90,7 +90,11 @@ step_maaslin(
 
 - id:
 
-  A character string that is unique to this step to identify it.
+  Unique, non-empty identifier for this step. DA step IDs must not use
+  the reserved internal names `taxa_id`, `contrast_id`, `comparison`,
+  `contrast_type`, `var`, `effect`, `sum`, `.tax_order`,
+  `.contrast_order` or `.effect_order`. Other identifiers, including
+  names such as `.custom`, are retained unchanged.
 
 - engine_args:
 
@@ -117,75 +121,11 @@ Other Diff taxa steps:
 ``` r
 data(metaHIV_phy)
 
-## Init Recipe
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.4 * length(x))")
+rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum")
 
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#>      ◉ step_subset_taxa() id = subset_taxa__Crocetta_of_Caltanissetta 
-#>      ◉ step_filter_taxa() id = filter_taxa__Makroudh 
-#> 
-#> DA steps:
-#> 
+rec_default <- step_maaslin(rec)
 
-## Define step with default parameters and prep
-rec <-
-  step_maaslin(rec) |>
-  prep(parallel = FALSE)
-
-rec
-#> ── DAR Results ─────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 76 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Phylum 
-#> 
-#> Results:
-#> 
-#>      ✔ maaslin__Strudel diff_taxa = 1 
-#> 
-#>      ℹ 1 taxon-contrast effects are present in all tested methods 
-#> 
-
-## Wearing rarefaction only for this step
-rec <-
-  recipe(metaHIV_phy) |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
-  step_maaslin(rarefy = TRUE)
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Species 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> Preprocessing steps:
-#> 
-#> 
-#> DA steps:
-#> 
-#>      ◉ step_maaslin() id = maaslin__Punschkrapfen 
+# Increase the minimum feature prevalence.
+rec_filtered <- step_maaslin(rec, min_prevalence = 0.2)
 ```

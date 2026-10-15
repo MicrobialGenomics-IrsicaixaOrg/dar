@@ -22,52 +22,10 @@ boolean
 ## Examples
 
 ``` r
-data(GlobalPatterns, package = "phyloseq")
-rec <-
-  phyloseq::subset_samples(
-    GlobalPatterns, SampleType %in% c("Soil", "Skin")
-  ) |>
-  recipe() |>
-  step_rarefaction()
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-
+data(metaHIV_phy)
+rec <- recipe(metaHIV_phy)
 contains_rarefaction(rec)
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
-#> Found more than one class "phylo" in cache; using the first, from namespace 'phyloseq'
-#> Also defined by ‘tidytree’
+#> [1] FALSE
+contains_rarefaction(step_rarefaction(rec))
 #> [1] TRUE
 ```

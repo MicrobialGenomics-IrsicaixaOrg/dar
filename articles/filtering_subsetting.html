@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Filtering and Subsetting • dar</title>
+<title>Quality control and preprocessing • dar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,12 +15,10 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Filtering and Subsetting">
-<meta name="description" content="This vignette provides a comprehensive guide to using the `filter_taxa` and
-`subset_taxa` functions, as well as their convenience wrappers.
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Quality control and preprocessing">
+<meta name="description" content="Inspect recipe data and define ordered, explicit preprocessing steps.
 ">
-<meta property="og:description" content="This vignette provides a comprehensive guide to using the `filter_taxa` and
-`subset_taxa` functions, as well as their convenience wrappers.
+<meta property="og:description" content="Inspect recipe data and define ordered, explicit preprocessing steps.
 ">
 <meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png">
 </head>
@@ -46,12 +44,11 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+<li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -73,7 +70,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Filtering and Subsetting</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Quality control and preprocessing</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/vignettes/filtering_subsetting.Rmd" class="external-link"><code>vignettes/filtering_subsetting.Rmd</code></a></small>
@@ -82,285 +79,295 @@
 
     
     
-<style>
-body {
-text-align: justify}
-</style>
-<p>The <code>step_filter_taxa</code> function is a general function that
-allows for flexible filtering of OTUs based on across-sample abundance
-criteria. The other functions, <code>step_filter_by_prevalence</code>,
-<code>step_filter_by_variance</code>,
-<code>step_filter_by_abundance</code>, and
-<code>step_filter_by_rarity</code>, are convenience wrappers around
-<code>step_filter_taxa</code>, each designed to filter OTUs based on a
-specific criterion: prevalence, variance, abundance, and rarity,
-respectively.</p>
-<p>The <code>step_subset_taxa</code> function is used to subset taxa
-based on their taxonomic level.</p>
-<p>The phyloseq or TSE used as input can be pre-filtered using methods
-that are most convenient to the user. However, the <code>dar</code>
-package provides several functions to perform this filtering directly on
-the recipe object.</p>
+<p>Preprocessing steps describe changes to the data stored in a recipe.
+Adding a step does not execute it: <code><a href="../reference/prep.html">prep()</a></code> applies
+preprocessing in the configured order, before running
+differential-abundance methods. A recipe without a statistical model is
+valid for preprocessing alone.</p>
+<p>The examples below use the included data and run only preprocessing,
+not statistical models. The thresholds illustrate the API; they are not
+universal recommendations for microbiome studies.</p>
 <div class="section level2">
-<h2 id="step_filter_taxa">step_filter_taxa<a class="anchor" aria-label="anchor" href="#step_filter_taxa"></a>
+<h2 id="inspect-overall-and-grouped-qc">Inspect overall and grouped QC<a class="anchor" aria-label="anchor" href="#inspect-overall-and-grouped-qc"></a>
 </h2>
-<p>The <code>step_filter_taxa</code> function applies an arbitrary set
-of functions to OTUs as across-sample criteria. It takes a phyloseq
-object as input and returns a logical vector indicating whether each OTU
-passed the criteria. If the “prune” option is set to FALSE, it returns
-the already-trimmed version of the phyloseq object.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar" class="external-link">dar</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span>, package <span class="op">=</span> <span class="st">"dar"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span><span class="va">rec</span>, .f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/recipe_qc.html">recipe_qc</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 13</span></span></span>
+<span><span class="co">#&gt;   group_by group     n n_zero pct_zero pct_all_zero pct_singletons</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    <span style="text-decoration: underline;">70</span>356  <span style="text-decoration: underline;">57</span>632     81.9            0           20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: pct_doubletons &lt;dbl&gt;, n_samples &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   lib_size_min &lt;dbl&gt;, lib_size_max &lt;dbl&gt;, count_mean &lt;dbl&gt;, count_max &lt;dbl&gt;</span></span></span>
+<span><span class="fu"><a href="../reference/recipe_qc.html">recipe_qc</a></span><span class="op">(</span><span class="va">rec</span>, group_by <span class="op">=</span> <span class="st">"RiskGroup2"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 13</span></span></span>
+<span><span class="co">#&gt;   group_by   group     n n_zero pct_zero pct_all_zero pct_singletons</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>    <span style="text-decoration: underline;">70</span>356  <span style="text-decoration: underline;">57</span>632     81.9          0             20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> RiskGroup2 hts   <span style="text-decoration: underline;">18</span>491  <span style="text-decoration: underline;">15</span>108     81.7         24.2           22.8</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> RiskGroup2 msm   <span style="text-decoration: underline;">45</span>100  <span style="text-decoration: underline;">37</span>019     82.1         16.0           20.2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> RiskGroup2 pwid   <span style="text-decoration: underline;">6</span>765   <span style="text-decoration: underline;">5</span>505     81.4         41.2           16.6</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: pct_doubletons &lt;dbl&gt;, n_samples &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   lib_size_min &lt;dbl&gt;, lib_size_max &lt;dbl&gt;, count_mean &lt;dbl&gt;, count_max &lt;dbl&gt;</span></span></span></code></pre></div>
+<p><code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> summarizes the stored abundance matrix
+independently of any model. It reports sample counts, sparsity, taxa
+detected in zero, one or two samples, and library-size and count
+summaries. Singleton and doubleton metrics refer to the number of
+samples with a detection, not to a taxon’s total read count. The
+<code>n</code> column counts matrix entries, not biological
+replicates.</p>
+<p>With <code>group_by</code>, the overall row is followed by one row
+per observed metadata group. The overall row has missing
+<code>group_by</code> and <code>group</code> identifiers; it is not a
+group called <code>"all"</code>. Grouping is explicit and is not
+inferred from the statistical target.</p>
+<p>Use these summaries to inspect depth or sparsity differences between
+groups. They do not establish the absence of confounding or that a
+particular filter will improve statistical accuracy.</p>
 </div>
 <div class="section level2">
-<h2 id="convenience-wrappers">Convenience Wrappers<a class="anchor" aria-label="anchor" href="#convenience-wrappers"></a>
+<h2 id="define-and-apply-a-shared-preprocessing-sequence">Define and apply a shared preprocessing sequence<a class="anchor" aria-label="anchor" href="#define-and-apply-a-shared-preprocessing-sequence"></a>
 </h2>
-<div class="section level3">
-<h3 id="step_filter_by_abundance">step_filter_by_abundance<a class="anchor" aria-label="anchor" href="#step_filter_by_abundance"></a>
-</h3>
-<p>This function filters OTUs based on their abundance. The taxa
-retained in the dataset are those where the sum of their abundance is
-greater than the product of the total abundance and the provided
-threshold.</p>
+<p>Here we first retain Bacteria and Archaea, then keep taxa observed in
+more than 3% of samples. These operations act on the stored features;
+selecting a rank later with <code><a href="../reference/add_model.html">add_model()</a></code> determines the
+taxonomic analysis view used by the DA methods.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/step_filter_by_abundance.html">step_filter_by_abundance</a></span><span class="op">(</span><span class="va">rec</span>, threshold <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step_filter_by_prevalence">step_filter_by_prevalence<a class="anchor" aria-label="anchor" href="#step_filter_by_prevalence"></a>
-</h3>
-<p>This function filters OTUs based on their prevalence. The taxa
-retained in the dataset are those where the prevalence is greater than
-the provided threshold.</p>
+<code class="sourceCode R"><span><span class="va">filtered_rec</span> <span class="op">&lt;-</span> <span class="va">rec</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span></span>
+<span>    tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_filter_by_prevalence.html">step_filter_by_prevalence</a></span><span class="op">(</span>threshold <span class="op">=</span> <span class="fl">0.03</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">filtered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="va">filtered_rec</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/step_subset_taxa.html">step_subset_taxa()</a></code> matches annotations at the specified
+rank. The prevalence filter then uses all samples in the recipe, not one
+threshold calculated separately within each QC group. Preprocessing
+preserves the original input object; the prepared recipe contains the
+filtered data.</p>
+<p>Compare the stored data before and after preprocessing:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/step_filter_by_prevalence.html">step_filter_by_prevalence</a></span><span class="op">(</span><span class="va">rec</span>, threshold <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  stage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"before"</span>, <span class="st">"after"</span><span class="op">)</span>,</span>
+<span>  n_taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/otu_table.html">otu_table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="fu">dar</span><span class="fu">::</span><span class="fu"><a href="../reference/otu_table.html">otu_table</a></span><span class="op">(</span><span class="va">filtered</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    stage n_taxa</span></span>
+<span><span class="co">#&gt; 1 before    451</span></span>
+<span><span class="co">#&gt; 2  after    278</span></span>
+<span><span class="fu"><a href="../reference/recipe_qc.html">recipe_qc</a></span><span class="op">(</span><span class="va">filtered</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 13</span></span></span>
+<span><span class="co">#&gt;   group_by group     n n_zero pct_zero pct_all_zero pct_singletons</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    <span style="text-decoration: underline;">43</span>368  <span style="text-decoration: underline;">30</span>986     71.4            0              0</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: pct_doubletons &lt;dbl&gt;, n_samples &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   lib_size_min &lt;dbl&gt;, lib_size_max &lt;dbl&gt;, count_mean &lt;dbl&gt;, count_max &lt;dbl&gt;</span></span></span>
+<span><span class="fu"><a href="../reference/recipe_qc.html">recipe_qc</a></span><span class="op">(</span><span class="va">filtered</span>, group_by <span class="op">=</span> <span class="st">"RiskGroup2"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 13</span></span></span>
+<span><span class="co">#&gt;   group_by   group     n n_zero pct_zero pct_all_zero pct_singletons</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>    <span style="text-decoration: underline;">43</span>368  <span style="text-decoration: underline;">30</span>986     71.4         0              0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> RiskGroup2 hts   <span style="text-decoration: underline;">11</span>398   <span style="text-decoration: underline;">8</span>117     71.2         7.19          12.6 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> RiskGroup2 msm   <span style="text-decoration: underline;">27</span>800  <span style="text-decoration: underline;">19</span>912     71.6         2.52           6.12</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> RiskGroup2 pwid   <span style="text-decoration: underline;">4</span>170   <span style="text-decoration: underline;">2</span>957     70.9        18.7           15.8 </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: pct_doubletons &lt;dbl&gt;, n_samples &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   lib_size_min &lt;dbl&gt;, lib_size_max &lt;dbl&gt;, count_mean &lt;dbl&gt;, count_max &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>Order matters. An abundance threshold expressed relative to all reads
+uses the total remaining at that point in the sequence. Resampling
+before a prevalence filter can change which taxa pass it. Specify the
+intended order explicitly, and remember that engines may also apply
+their own internal filters. A shared input does not make every engine’s
+tested-feature set or assumptions identical.</p>
 </div>
-<div class="section level3">
-<h3 id="step_filter_by_rarity">step_filter_by_rarity<a class="anchor" aria-label="anchor" href="#step_filter_by_rarity"></a>
-</h3>
-<p>This function filters OTUs based on their rarity. The taxa retained
-in the dataset are those where the sum of their rarity is less than the
-provided threshold.</p>
+<div class="section level2">
+<h2 id="choose-a-filtering-predicate">Choose a filtering predicate<a class="anchor" aria-label="anchor" href="#choose-a-filtering-predicate"></a>
+</h2>
+<p>The convenience wrappers apply across-sample criteria to each stored
+taxon:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Step</th>
+<th align="left">Criterion for retaining a taxon</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>step_filter_by_prevalence(threshold)</code></td>
+<td align="left">Proportion of samples with nonzero abundance is
+strictly greater than the threshold.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>step_filter_by_abundance(threshold)</code></td>
+<td align="left">Its total abundance is strictly greater than the
+threshold times the total abundance of the current table.</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>step_filter_by_variance(threshold)</code></td>
+<td align="left">Its across-sample variance is strictly greater than the
+threshold, on the stored abundance scale.</td>
+</tr>
+<tr class="even">
+<td align="left"><code>step_filter_by_rarity(threshold)</code></td>
+<td align="left">Proportion of samples with nonzero abundance is
+strictly below the threshold.</td>
+</tr>
+</tbody>
+</table>
+<p><code><a href="../reference/step_filter_by_rarity.html">step_filter_by_rarity()</a></code> selects rare taxa; it does not
+remove rare taxa. Use <code><a href="../reference/step_filter_by_prevalence.html">step_filter_by_prevalence()</a></code> for that
+purpose. The variance threshold is not a proportion and depends on the
+abundance units.</p>
+<p>For a custom rule, <code><a href="../reference/step_filter_taxa.html">step_filter_taxa()</a></code> accepts a function
+with exactly one argument named <code>x</code> and no default. This
+example includes taxa exactly on the 3% boundary, unlike the strict
+prevalence wrapper above.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/step_filter_by_rarity.html">step_filter_by_rarity</a></span><span class="op">(</span><span class="va">rec</span>, threshold <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="step_filter_by_variance">step_filter_by_variance<a class="anchor" aria-label="anchor" href="#step_filter_by_variance"></a>
-</h3>
-<p>This function filters OTUs based on their variance. The taxa retained
-in the dataset are those where the variance of their abundance is
-greater than the provided threshold.</p>
+<code class="sourceCode R"><span><span class="va">custom_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">0.03</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The same predicate may be supplied as a character string:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/step_filter_by_variance.html">step_filter_by_variance</a></span><span class="op">(</span><span class="va">rec</span>, threshold <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
+<code class="sourceCode R"><span><span class="va">custom_string_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= 0.03 * length(x)"</span><span class="op">)</span></span></code></pre></div>
+<p>Both forms return a recipe, not filtered data or a logical vector.
+The predicate must return one logical value when applied to each
+abundance vector during <code><a href="../reference/prep.html">prep()</a></code>; the wrapper has no
+<code>prune</code> argument.</p>
+<p>To keep recipes safely serializable, the predicate body must be a
+single expression. Braces, assignments, external variables,
+namespace-qualified calls, user-defined helpers and lists of functions
+are not supported, even in local R use. Write thresholds as literal
+numbers. Accepted expressions include arithmetic, comparisons, logical
+operators and approved summaries such as <code>sum</code>,
+<code>mean</code>, <code>median</code>, <code>var</code> and
+<code>sd</code>; see <code><a href="../reference/step_filter_taxa.html">?step_filter_taxa</a></code> for the complete
+syntax and supported <code>na.rm</code> arguments. The restrictions are
+checked when the step is added, not only on export.</p>
 </div>
 <div class="section level2">
-<h2 id="subset_taxa">subset_taxa<a class="anchor" aria-label="anchor" href="#subset_taxa"></a>
+<h2 id="rarefaction-is-optional">Rarefaction is optional<a class="anchor" aria-label="anchor" href="#rarefaction-is-optional"></a>
 </h2>
-<p>The <code>subset_taxa</code> function subsets taxa based on their
-taxonomic level. The taxa retained in the dataset are those where the
-taxonomic level matches the provided taxa.</p>
+<p>The workflow above does not rarefy. <code><a href="../reference/step_rarefaction.html">step_rarefaction()</a></code>
+is available when an explicitly chosen analysis calls for shared
+equal-depth resampling:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span><span class="op">~</span> <span class="va">RiskGroup2</span>, targets <span class="op">=</span> <span class="st">"RiskGroup2"</span>, tax_level <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu"><a href="../reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span><span class="va">rec</span>, tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
-</h2>
-<p>These functions provide a powerful and flexible way to filter and
-subset OTUs in phyloseq objects contained within a recipe object, making
-it easier to work with complex experimental data. By understanding how
-to use these functions effectively, you can streamline your data
-analysis workflow and focus on the aspects of your data that are most
-relevant to your research questions. The <code>dar</code> package offers
-the added convenience of performing these operations directly on the
-recipe object.</p>
+<code class="sourceCode R"><span><span class="va">rarefied_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">metaHIV_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_rarefaction.html">step_rarefaction</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">rarefied</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rarefied_rec</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>This is not a general recommendation to normalize DA inputs by
+rarefaction. Subsampling discards observations and changes the data
+supplied to downstream methods. Select preprocessing in the context of
+the scientific question and the methods’ assumptions; equal library
+sizes do not guarantee valid inference. <code><a href="../reference/rarefaction_help.html">rarefaction_help()</a></code>
+describes the cautions in more detail.</p>
+<p>Some DA steps also accept <code>rarefy = TRUE</code> to resample only
+for that step, rather than altering the shared preprocessing data. For
+those configured DA steps, the informational note about rarefaction’s
+controversy appears during <code><a href="../reference/prep.html">prep()</a></code>, not when the step is
+added. A shared <code><a href="../reference/step_rarefaction.html">step_rarefaction()</a></code> and a method-specific
+<code>rarefy</code> option are different configurations; do not combine
+them unless repeat resampling is intentional.</p>
+<p>For selecting a central statistical model after defining
+preprocessing, see <a href="statistical_models.html">Statistical models
+and contrasts</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://sessioninfo.r-lib.org/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
-<span><span class="co">#&gt;  version  R version 4.6.1 (2026-06-24)</span></span>
-<span><span class="co">#&gt;  os       Ubuntu 24.04.4 LTS</span></span>
-<span><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
-<span><span class="co">#&gt;  ui       X11</span></span>
-<span><span class="co">#&gt;  language en</span></span>
-<span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
-<span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
-<span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2026-08-04</span></span>
-<span><span class="co">#&gt;  pandoc   3.10 @ /usr/bin/ (via rmarkdown)</span></span>
-<span><span class="co">#&gt;  quarto   1.9.38 @ /usr/local/bin/quarto</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package                 </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
-<span><span class="co">#&gt;  abind                      1.4-8   <span style="color: #555555;">2024-09-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ade4                       1.7-24  <span style="color: #555555;">2026-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ape                        5.8-1   <span style="color: #555555;">2024-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  backports                  1.5.1   <span style="color: #555555;">2026-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  beachmat                   2.29.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  beeswarm                   0.4.0   <span style="color: #555555;">2021-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Biobase                    2.73.2  <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocGenerics               0.59.10 <span style="color: #555555;">2026-07-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocNeighbors              2.7.2   <span style="color: #555555;">2026-05-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocParallel               1.47.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  BiocSingular               1.29.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  biomformat                 1.41.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  Biostrings                 2.81.6  <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  bluster                    1.23.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  bslib                      0.12.0  <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cachem                     1.1.0   <span style="color: #555555;">2024-05-16</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  checkmate                  2.3.4   <span style="color: #555555;">2026-02-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cli                        3.6.6   <span style="color: #555555;">2026-04-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  cluster                    2.1.8.3 <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  codetools                  0.2-20  <span style="color: #555555;">2024-03-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  crayon                     1.5.3   <span style="color: #555555;">2024-06-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  dar                      * 1.9.12  <span style="color: #555555;">2026-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  data.table                 1.18.4  <span style="color: #555555;">2026-05-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DBI                        1.3.0   <span style="color: #555555;">2026-02-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DECIPHER                   3.9.2   <span style="color: #555555;">2026-07-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  decontam                   1.33.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  DelayedArray               0.39.3  <span style="color: #555555;">2026-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  DelayedMatrixStats         1.35.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  desc                       1.4.3   <span style="color: #555555;">2023-12-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  devtools                   2.5.2   <span style="color: #555555;">2026-04-30</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  digest                     0.6.39  <span style="color: #555555;">2025-11-19</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  DirichletMultinomial       1.55.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  dplyr                      1.2.1   <span style="color: #555555;">2026-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ellipsis                   0.3.3   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  evaluate                   1.0.5   <span style="color: #555555;">2025-08-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  farver                     2.1.2   <span style="color: #555555;">2024-05-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  fastmap                    1.2.0   <span style="color: #555555;">2024-05-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  foreach                    1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  fs                         2.1.0   <span style="color: #555555;">2026-04-18</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  furrr                      0.4.0   <span style="color: #555555;">2026-03-31</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  future                     1.75.0  <span style="color: #555555;">2026-07-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  generics                   0.1.4   <span style="color: #555555;">2025-05-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  GenomicRanges              1.65.1  <span style="color: #555555;">2026-07-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  ggbeeswarm                 0.7.3   <span style="color: #555555;">2025-11-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ggplot2                    4.0.3   <span style="color: #555555;">2026-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ggrepel                    0.9.8   <span style="color: #555555;">2026-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  globals                    0.19.1  <span style="color: #555555;">2026-03-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  glue                       1.8.1   <span style="color: #555555;">2026-04-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  gridExtra                  2.3.1   <span style="color: #555555;">2026-06-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  gtable                     0.3.6   <span style="color: #555555;">2024-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  htmltools                  0.5.9   <span style="color: #555555;">2025-12-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets                1.6.4   <span style="color: #555555;">2023-12-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  igraph                     2.3.3   <span style="color: #555555;">2026-06-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  IRanges                    2.47.2  <span style="color: #555555;">2026-06-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  irlba                      2.3.7   <span style="color: #555555;">2026-01-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  iterators                  1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  jquerylib                  0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  jsonlite                   2.0.0   <span style="color: #555555;">2025-03-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  knitr                      1.51    <span style="color: #555555;">2025-12-20</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  lattice                    0.22-9  <span style="color: #555555;">2026-02-09</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  lazyeval                   0.2.3   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  lifecycle                  1.0.5   <span style="color: #555555;">2026-01-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  listenv                    1.0.0   <span style="color: #555555;">2026-06-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  magrittr                   2.0.5   <span style="color: #555555;">2026-04-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  MASS                       7.3-66  <span style="color: #555555;">2026-07-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Matrix                     1.7-6   <span style="color: #555555;">2026-07-25</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  MatrixGenerics             1.25.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  matrixStats                1.5.0   <span style="color: #555555;">2025-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  memoise                    2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  mgcv                       1.9-4   <span style="color: #555555;">2025-11-07</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  mia                        1.21.6  <span style="color: #555555;">2026-07-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  MultiAssayExperiment       1.39.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  multtest                   2.69.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  nlme                       3.1-170 <span style="color: #555555;">2026-07-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  otel                       0.2.0   <span style="color: #555555;">2025-08-29</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  parallelly                 1.48.0  <span style="color: #555555;">2026-06-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  permute                    0.9-10  <span style="color: #555555;">2026-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  phyloseq                   1.57.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  pillar                     1.11.1  <span style="color: #555555;">2025-09-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgbuild                   1.4.8   <span style="color: #555555;">2025-05-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgconfig                  2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgdown                    2.2.1   <span style="color: #555555;">2026-07-07</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  pkgload                    1.5.3   <span style="color: #555555;">2026-06-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  plyr                       1.8.9   <span style="color: #555555;">2023-10-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  purrr                      1.2.2   <span style="color: #555555;">2026-04-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  R6                         2.6.1   <span style="color: #555555;">2025-02-15</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ragg                       1.5.2   <span style="color: #555555;">2026-03-23</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rappdirs                   0.3.4   <span style="color: #555555;">2026-01-17</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rbibutils                  2.4.1   <span style="color: #555555;">2026-01-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  RColorBrewer               1.1-3   <span style="color: #555555;">2022-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Rcpp                       1.1.2   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  Rdpack                     2.6.6   <span style="color: #555555;">2026-02-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  reformulas                 0.4.4   <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  reshape2                   1.4.5   <span style="color: #555555;">2025-11-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rlang                      1.3.0   <span style="color: #555555;">2026-07-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rmarkdown                  2.31    <span style="color: #555555;">2026-03-26</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  rsvd                       1.0.5   <span style="color: #555555;">2021-04-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  S4Arrays                   1.13.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  S4Vectors                  0.51.6  <span style="color: #555555;">2026-07-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  S7                         0.2.2   <span style="color: #555555;">2026-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sass                       0.4.10  <span style="color: #555555;">2025-04-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  ScaledMatrix               1.21.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  scales                     1.4.0   <span style="color: #555555;">2025-04-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  scater                     1.41.2  <span style="color: #555555;">2026-06-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  scuttle                    1.23.1  <span style="color: #555555;">2026-05-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  Seqinfo                    1.3.0   <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sessioninfo                1.2.4   <span style="color: #555555;">2026-06-04</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  SingleCellExperiment       1.35.2  <span style="color: #555555;">2026-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  SparseArray                1.13.2  <span style="color: #555555;">2026-05-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  sparseMatrixStats          1.25.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  stringi                    1.8.7   <span style="color: #555555;">2025-03-27</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  stringr                    1.6.0   <span style="color: #555555;">2025-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  SummarizedExperiment       1.43.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  survival                   3.8-9   <span style="color: #555555;">2026-07-08</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  systemfonts                1.3.2   <span style="color: #555555;">2026-03-05</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  textshaping                1.0.5   <span style="color: #555555;">2026-03-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tibble                     3.3.1   <span style="color: #555555;">2026-01-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidyr                      1.3.2   <span style="color: #555555;">2025-12-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidyselect                 1.2.1   <span style="color: #555555;">2024-03-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  tidytree                   0.4.8   <span style="color: #555555;">2026-07-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  treeio                     1.37.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  TreeSummarizedExperiment   2.21.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  usethis                    3.2.1   <span style="color: #555555;">2025-09-06</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vctrs                      0.7.3   <span style="color: #555555;">2026-04-11</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vegan                      2.7-5   <span style="color: #555555;">2026-05-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  vipor                      0.4.7   <span style="color: #555555;">2023-12-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  viridis                    0.6.5   <span style="color: #555555;">2024-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  viridisLite                0.4.3   <span style="color: #555555;">2026-02-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  xfun                       0.60    <span style="color: #555555;">2026-07-09</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  XVector                    0.53.0  <span style="color: #555555;">2026-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor 3.24 (R 4.6.1)</span></span></span>
-<span><span class="co">#&gt;  yaml                       2.3.12  <span style="color: #555555;">2025-12-10</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
-<span><span class="co">#&gt;  yulab.utils                0.2.4   <span style="color: #555555;">2026-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.6.0)</span></span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [1] /__w/_temp/Library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [2] /usr/local/lib/R/site-library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [3] /usr/local/lib/R/library</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #BBBBBB; background-color: #BB0000;">*</span> ── Packages attached to the search path.</span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
+<span><span class="co">#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
+<span><span class="co">#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
+<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
+<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre></div>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] dar_1.9.12</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] DBI_1.3.0                       gridExtra_2.3.1                </span></span>
+<span><span class="co">#&gt;   [3] permute_0.9-10                  rlang_1.3.0                    </span></span>
+<span><span class="co">#&gt;   [5] magrittr_2.0.5                  ade4_1.7-24                    </span></span>
+<span><span class="co">#&gt;   [7] scater_1.41.2                   otel_0.2.0                     </span></span>
+<span><span class="co">#&gt;   [9] matrixStats_1.5.0               compiler_4.6.1                 </span></span>
+<span><span class="co">#&gt;  [11] DelayedMatrixStats_1.35.0       mgcv_1.9-4                     </span></span>
+<span><span class="co">#&gt;  [13] systemfonts_1.3.2               vctrs_0.7.3                    </span></span>
+<span><span class="co">#&gt;  [15] reshape2_1.4.5                  stringr_1.6.0                  </span></span>
+<span><span class="co">#&gt;  [17] pkgconfig_2.0.3                 crayon_1.5.3                   </span></span>
+<span><span class="co">#&gt;  [19] fastmap_1.2.0                   backports_1.5.1                </span></span>
+<span><span class="co">#&gt;  [21] XVector_0.53.0                  scuttle_1.23.2                 </span></span>
+<span><span class="co">#&gt;  [23] utf8_1.2.6                      rmarkdown_2.32                 </span></span>
+<span><span class="co">#&gt;  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    </span></span>
+<span><span class="co">#&gt;  [27] ragg_1.5.2                      purrr_1.2.2                    </span></span>
+<span><span class="co">#&gt;  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    </span></span>
+<span><span class="co">#&gt;  [31] xfun_0.61                       cachem_1.1.0                   </span></span>
+<span><span class="co">#&gt;  [33] beachmat_2.29.3                 jsonlite_2.0.0                 </span></span>
+<span><span class="co">#&gt;  [35] biomformat_1.41.0               DelayedArray_0.39.8            </span></span>
+<span><span class="co">#&gt;  [37] BiocParallel_1.47.0             irlba_2.4.1                    </span></span>
+<span><span class="co">#&gt;  [39] parallel_4.6.1                  cluster_2.1.8.3                </span></span>
+<span><span class="co">#&gt;  [41] R6_2.6.1                        bslib_0.12.0                   </span></span>
+<span><span class="co">#&gt;  [43] stringi_1.8.9                   RColorBrewer_1.1-3             </span></span>
+<span><span class="co">#&gt;  [45] GenomicRanges_1.65.4            jquerylib_0.1.4                </span></span>
+<span><span class="co">#&gt;  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  </span></span>
+<span><span class="co">#&gt;  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               </span></span>
+<span><span class="co">#&gt;  [51] knitr_1.52                      DECIPHER_3.9.3                 </span></span>
+<span><span class="co">#&gt;  [53] IRanges_2.47.5                  mia_1.21.11                    </span></span>
+<span><span class="co">#&gt;  [55] Matrix_1.7-6                    splines_4.6.1                  </span></span>
+<span><span class="co">#&gt;  [57] igraph_2.3.4                    tidyselect_1.2.1               </span></span>
+<span><span class="co">#&gt;  [59] viridis_0.6.5                   abind_1.4-8                    </span></span>
+<span><span class="co">#&gt;  [61] yaml_2.3.12                     vegan_2.7-6                    </span></span>
+<span><span class="co">#&gt;  [63] TreeSummarizedExperiment_2.21.0 codetools_0.2-20               </span></span>
+<span><span class="co">#&gt;  [65] lattice_0.23-1                  tibble_3.3.1                   </span></span>
+<span><span class="co">#&gt;  [67] plyr_1.8.9                      withr_3.0.3                    </span></span>
+<span><span class="co">#&gt;  [69] Biobase_2.73.2                  treeio_1.37.1                  </span></span>
+<span><span class="co">#&gt;  [71] S7_0.2.2                        evaluate_1.0.5                 </span></span>
+<span><span class="co">#&gt;  [73] desc_1.4.3                      survival_3.8-12                </span></span>
+<span><span class="co">#&gt;  [75] Biostrings_2.81.9               pillar_1.11.1                  </span></span>
+<span><span class="co">#&gt;  [77] phyloseq_1.57.0                 MatrixGenerics_1.25.0          </span></span>
+<span><span class="co">#&gt;  [79] checkmate_2.3.4                 foreach_1.5.2                  </span></span>
+<span><span class="co">#&gt;  [81] stats4_4.6.1                    generics_0.1.4                 </span></span>
+<span><span class="co">#&gt;  [83] S4Vectors_0.51.10               ggplot2_4.0.3                  </span></span>
+<span><span class="co">#&gt;  [85] sparseMatrixStats_1.25.0        scales_1.4.0                   </span></span>
+<span><span class="co">#&gt;  [87] tidytree_0.4.8                  glue_1.8.1                     </span></span>
+<span><span class="co">#&gt;  [89] lazyeval_0.2.3                  tools_4.6.1                    </span></span>
+<span><span class="co">#&gt;  [91] BiocNeighbors_2.7.3             data.table_1.18.6.1            </span></span>
+<span><span class="co">#&gt;  [93] ScaledMatrix_1.21.0             fs_2.1.0                       </span></span>
+<span><span class="co">#&gt;  [95] grid_4.6.1                      tidyr_1.3.2                    </span></span>
+<span><span class="co">#&gt;  [97] ape_5.8-1                       SingleCellExperiment_1.35.2    </span></span>
+<span><span class="co">#&gt;  [99] nlme_3.1-171                    beeswarm_0.4.0                 </span></span>
+<span><span class="co">#&gt; [101] BiocSingular_1.29.2             vipor_0.4.7                    </span></span>
+<span><span class="co">#&gt; [103] cli_3.6.6                       rsvd_1.0.5                     </span></span>
+<span><span class="co">#&gt; [105] rappdirs_0.3.4                  textshaping_1.0.5              </span></span>
+<span><span class="co">#&gt; [107] viridisLite_0.4.3               S4Arrays_1.13.2                </span></span>
+<span><span class="co">#&gt; [109] dplyr_1.2.1                     gtable_0.3.6                   </span></span>
+<span><span class="co">#&gt; [111] yulab.utils_0.2.5               sass_0.4.10                    </span></span>
+<span><span class="co">#&gt; [113] digest_0.6.39                   BiocGenerics_0.59.12           </span></span>
+<span><span class="co">#&gt; [115] ggrepel_0.9.8                   SparseArray_1.13.4             </span></span>
+<span><span class="co">#&gt; [117] decontam_1.33.0                 htmlwidgets_1.6.4              </span></span>
+<span><span class="co">#&gt; [119] farver_2.1.2                    htmltools_0.5.9                </span></span>
+<span><span class="co">#&gt; [121] pkgdown_2.2.1                   multtest_2.69.0                </span></span>
+<span><span class="co">#&gt; [123] lifecycle_1.0.5                 MASS_7.3-66</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

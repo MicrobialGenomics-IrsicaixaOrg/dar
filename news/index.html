@@ -19,12 +19,11 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="../articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="../articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="../articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -44,215 +43,270 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.12" id="dar-1912">dar 1.9.12<a class="anchor" aria-label="anchor" href="#dar-1912"></a></h2>
 <div class="section level3">
-<h3 id="scientific-validation-1-9-12">SCIENTIFIC VALIDATION<a class="anchor" aria-label="anchor" href="#scientific-validation-1-9-12"></a></h3>
-<ul><li>IMPROVED: Full Monte Carlo validation now enforces calibrated LinDA bias and coverage gates, compares results with a reviewed stochastic baseline, records dependency versions and publishes concise execution summaries (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155" class="external-link">#155</a>).</li>
-<li>IMPROVED: Full validation reports are retained as compact machine-readable history on the <code>validation-results</code> branch, while weak longitudinal contrasts remain descriptive rather than receiving inappropriate power gates (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/155" class="external-link">#155</a>).</li>
+<h3 id="breaking-changes-1-9-12">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-12"></a></h3>
+<ul><li>R 4.6 or later is required.</li>
+<li>
+<code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> is removed after its defunct release cycle. Replace it with a supported DA step when rebuilding legacy recipes (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<li>DA step IDs must not use reserved consensus column names such as <code>effect</code> or <code>sum</code>. Rename conflicting IDs, for example to <code>da_effect</code>, before constructing or importing a recipe. Other IDs, including those beginning with a dot, remain unchanged.</li>
+<li>ComplexHeatmap, gplots, heatmaply and UpSetR are optional dependencies. Install the relevant package explicitly to use its plotting functions; missing dependencies produce installation guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="lifecycle-1-9-12">LIFECYCLE<a class="anchor" aria-label="anchor" href="#lifecycle-1-9-12"></a></h3>
-<ul><li>REMOVED: <code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> after a complete defunct release cycle; <code><a href="../reference/dar-defunct.html">phy_qc()</a></code> remains defunct with migration guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
-<li>DEPRECATED: Legacy selectors and model-free differential-abundance execution remain available in Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in 3.26 (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
-<li>CHANGED: Require R 4.6 and make ComplexHeatmap, gplots, heatmaply and UpSetR optional plotting dependencies with classified installation guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
-<li>IMPROVED: Remove generated test artifacts and address actionable BiocCheck findings in documentation, vignettes and package metadata (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<h3 id="deprecations-1-9-12">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-1-9-12"></a></h3>
+<ul><li>Legacy selectors and model-free DA execution remain available in Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in 3.26. Use <code><a href="../reference/add_model.html">add_model()</a></code> to configure DA analyses and <code><a href="../reference/get_model.html">get_model()</a></code> to inspect their targets and taxonomic rank (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-9-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-9-12"></a></h3>
+<ul><li>Modeled engines, consensus tables and abundance plots share one aggregated taxonomic view with stable IDs. Abundance transformations use aggregated counts, and public accessors retain the complete underlying data.</li>
+<li>
+<code><a href="../reference/abundance_plt.html">abundance_plt()</a></code>, <code><a href="../reference/intersection_plt.html">intersection_plt()</a></code> and <code><a href="../reference/mutual_plt.html">mutual_plt()</a></code> check selectors against planned model hypotheses, including those with no significant taxa. For empty selections, discovery plots report a message and return invisible <code>NULL</code>. Abundance plots with explicit <code>taxa_ids</code> remain available regardless of significance.</li>
+<li>
+<code><a href="../reference/add_model.html">add_model()</a></code> override warnings are emitted only for explicitly supplied engine-specific designs; default ANCOM-BC2 and corncob steps remain quiet.</li>
+<li>
+<code><a href="../reference/prep.html">prep()</a></code> emits the DA rarefaction caution when rarefying steps execute, rather than when they are constructed.</li>
+<li>
+<code><a href="../reference/step_ancom.html">step_ancom()</a></code> preserves stable taxon IDs after ANCOM-BC2 aggregation.</li>
+<li>
+<code><a href="../reference/step_ancom.html">step_ancom()</a></code> uses ANCOM-BC2’s robust significance decision when pseudocount sensitivity analysis is enabled, in both centralized and deprecated model-free execution. Explicitly disabling sensitivity analysis retains the basic native decision.</li>
+<li>
+<code><a href="../reference/step_corncob.html">step_corncob()</a></code> honors the requested absolute effect threshold in deprecated model-free execution.</li>
+<li>
+<code><a href="../reference/step_corncob.html">step_corncob()</a></code> uses native sandwich covariance for centralized Wald contrasts when <code>robust = TRUE</code> and forwards the requested <code>B</code> during deprecated model-free bootstrap execution.</li>
+<li>
+<code><a href="../reference/step_linda.html">step_linda()</a></code> locally corrects MicrobiomeStat 1.4’s adaptive zero-handling capitalization error, restoring depth-dependent imputation without modifying the installed dependency or the remaining native algorithm.</li>
+<li>
+<code><a href="../reference/step_filter_taxa.html">step_filter_taxa()</a></code> executes allowed <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">median()</a></code>, <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">var()</a></code> and <code><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd()</a></code> predicates locally and after JSON import, using fixed trusted bindings without expanding the permitted syntax or capturing external functions.</li>
+<li>
+<code><a href="../reference/step_lefse.html">step_lefse()</a></code> joins modeled results by taxon ID, keeping identically named taxa from different lineages distinct.</li>
+<li>
+<code><a href="../reference/step_wilcox.html">step_wilcox()</a></code> and <code><a href="../reference/step_lefse.html">step_lefse()</a></code> skip unsupported additive time adjustment, including when the time column is explicitly declared.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-1-9-12">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-9-12"></a></h3>
+<ul><li>Function examples illustrate supported workflows without redundant setup, repeated defaults or intentional error demonstrations.</li>
+<li>
+<code><a href="../reference/step_filter_taxa.html">step_filter_taxa()</a></code> documents its single, restricted serializable predicate and filtering during <code><a href="../reference/prep.html">prep()</a></code>, rather than arbitrary function lists or a <code>prune</code> argument.</li>
+<li>Six focused vignettes cover getting started, data inputs, preprocessing, models and contrasts, results and optional consensus, and recipe sharing. The duplicate case study is merged into the results guide. Examples use the central model API, execute adjusted and longitudinal designs, and import a bundled BIOM file into both supported input classes.</li>
+<li>Results guides start with per-method findings and distinguish agreement from calibrated error control and comparable effect scales. Input guidance distinguishes relative abundances from raw counts; the advanced ANCOM-BC2 example supplies a complete native control list.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="development-infrastructure-1-9-12">Development infrastructure<a class="anchor" aria-label="anchor" href="#development-infrastructure-1-9-12"></a></h3>
+<ul><li>The development-only Monte Carlo validation suite and its dedicated workflow are archived in the frozen <code>codex/scientific-validation-frozen-20261015</code> branch and removed from <code>devel</code>. The historical baseline is preserved without recalibration or relabeling. Previously generated reports are retained separately.</li>
+<li>Statistical correctness and native-engine regression tests remain in <code>tests/testthat</code>, alongside the ordinary package checks and vignette builds.</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.11" id="dar-1911">dar 1.9.11<a class="anchor" aria-label="anchor" href="#dar-1911"></a></h2>
 <div class="section level3">
-<h3 id="fixed-1-9-11">FIXED<a class="anchor" aria-label="anchor" href="#fixed-1-9-11"></a></h3>
-<ul><li>Consensus tables, plots and bake results now keep modeled targets, contrasts and effect directions as separate hypotheses instead of mixing their support counts (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<h3 id="bug-fixes-1-9-11">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-9-11"></a></h3>
+<ul><li>Consensus tables, plots and bake results keep modeled targets, contrasts and effect directions as separate hypotheses (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
 <li>Modeled intersections use the complete taxon-by-contrast universe, including non-significant hypotheses, and classify zero effects as neutral (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
-<li>Method exclusions are applied before consensus support is counted, and invalid cutoffs, weights and exclusions now produce classified errors (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
-<li>Modeled exploration functions accept explicit <code>target</code> and <code>contrast_id</code> selectors; abundance plots require them whenever automatic selection would otherwise be ambiguous (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<li>Method exclusions are applied before consensus support is counted. Invalid cutoffs, weights and exclusions produce classified errors (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
+<li>Modeled exploration functions accept explicit <code>target</code> and <code>contrast_id</code> selectors; abundance plots require them when automatic selection is ambiguous (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154" class="external-link">#154</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.10" id="dar-1910">dar 1.9.10<a class="anchor" aria-label="anchor" href="#dar-1910"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-1-9-10">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-10"></a></h3>
-<ul><li>CHANGED: <code><a href="../reference/sample_data.html">sample_data()</a></code> and <code><a href="../reference/tax_table.html">tax_table()</a></code> now return the complete recipe metadata and taxonomy instead of model-restricted analysis views (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
-<li>CHANGED: <code><a href="../reference/otu_table.html">otu_table()</a></code> now always returns a wide taxa-by-sample tibble with deterministic taxon and sample ordering, regardless of the stored phyloseq orientation (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
-<li>IMPROVED: Differential-abundance engines and plots use explicit internal target-only and selected-rank views, preventing public accessor semantics from changing analysis inputs (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+<h3 id="breaking-changes-1-9-10">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-10"></a></h3>
+<ul><li>
+<code><a href="../reference/otu_table.html">otu_table()</a></code> always returns counts with taxa in rows and deterministic taxon and sample ordering. Adapt code that assumes the stored phyloseq orientation (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+<li>
+<code><a href="../reference/sample_data.html">sample_data()</a></code> and <code><a href="../reference/tax_table.html">tax_table()</a></code> expose complete recipe metadata and taxonomy instead of model-restricted views. Use <code><a href="../reference/get_model.html">get_model()</a></code> to inspect the analysis configuration, and select columns explicitly when needed (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-1-9-10">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-9-10"></a></h3>
+<ul><li>DA engines and plots use explicit internal target-only and selected-rank views, keeping analysis inputs independent of public accessor semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153" class="external-link">#153</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.9" id="dar-199">dar 1.9.9<a class="anchor" aria-label="anchor" href="#dar-199"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-1-9-9">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-9"></a></h3>
-<ul><li>CHANGED: <code><a href="../reference/export_steps.html">export_steps()</a></code> and <code><a href="../reference/import_steps.html">import_steps()</a></code> now use a real, versioned, non-executable JSON schema. Files produced by the legacy pseudo-JSON format are rejected with migration guidance instead of being evaluated (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
-<li>CHANGED: Imported bake configurations require an explicit <code>prepare = TRUE</code> before <code><a href="../reference/import_steps.html">import_steps()</a></code> may execute an analysis on an unprepared recipe (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
-<li>IMPROVED: Imported constructors, arguments, formulas, nested values and filter predicates are allowlisted and validated transactionally before a recipe is changed (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
+<h3 id="breaking-changes-1-9-9">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-9"></a></h3>
+<ul><li>
+<code><a href="../reference/export_steps.html">export_steps()</a></code> and <code><a href="../reference/import_steps.html">import_steps()</a></code> use a versioned, non-executable JSON schema. Legacy pseudo-JSON files are rejected. Recreate trusted legacy recipes with the current API and export them again (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
+<li>
+<code><a href="../reference/import_steps.html">import_steps()</a></code> requires explicit <code>prepare = TRUE</code> to execute an analysis when importing bake configurations into an unprepared recipe (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-1-9-9">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-9-9"></a></h3>
+<ul><li>Imported constructors, arguments, formulas, nested values and filter predicates are allowlisted and validated transactionally before the recipe is changed (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152" class="external-link">#152</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.8" id="dar-198">dar 1.9.8<a class="anchor" aria-label="anchor" href="#dar-198"></a></h2>
-<ul><li>FIXED: Recipe steps are classified by their concrete classes, so arbitrary user-defined IDs no longer change preprocessing, differential-abundance or bake semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
-<li>FIXED: Preprocessing operations execute in their configured order, including recipes that interleave filtering, subsetting and rarefaction (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
-<li>IMPROVED: Unsupported, misplaced and duplicate-ID recipe steps now fail with classified validation errors before execution (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
+<ul><li>Recipe steps are classified by their concrete classes, so custom IDs do not change preprocessing, DA or bake semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
+<li>Preprocessing operations execute in their configured order, including recipes that interleave filtering, subsetting and rarefaction (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
+<li>Unsupported, misplaced and duplicate-ID steps fail with classified validation errors before execution (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151" class="external-link">#151</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.7" id="dar-197">dar 1.9.7<a class="anchor" aria-label="anchor" href="#dar-197"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-1-9-7">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-7"></a></h3>
-<ul><li>DEFUNCT: <code><a href="../reference/dar-defunct.html">phy_qc()</a></code> now directs users to <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> instead of inferring an analysis target implicitly (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
-<li>NEW: <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> provides model-independent overall or explicitly grouped quality-control metrics for both <code>Recipe</code> and <code>PrepRecipe</code> objects (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
-<li>IMPROVED: QC summaries expose unambiguous <code>group_by</code> and <code>group</code> columns and reshape correctly oriented count data only once per call (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+<h3 id="breaking-changes-1-9-7">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-7"></a></h3>
+<ul><li>
+<code><a href="../reference/dar-defunct.html">phy_qc()</a></code> is defunct. Use <code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> with an explicit <code>group_by</code> when grouped quality-control metrics are required (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-1-9-7">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9-7"></a></h3>
+<ul><li>
+<code><a href="../reference/recipe_qc.html">recipe_qc()</a></code> provides model-independent overall or explicitly grouped quality-control metrics for <code>Recipe</code> and <code>PrepRecipe</code> objects. Summaries expose unambiguous <code>group_by</code> and <code>group</code> columns and handle either count-table orientation (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112" class="external-link">#112</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.6" id="dar-196">dar 1.9.6<a class="anchor" aria-label="anchor" href="#dar-196"></a></h2>
-<ul><li>NEW: <code><a href="../reference/step_linda.html">step_linda()</a></code> integrates bias-corrected LinDA linear and mixed-effects models with every compatible centralized contrast (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128" class="external-link">#128</a>).</li>
-<li>IMPROVED: LinDA participates in the canonical tidy result contract and the Monte Carlo scientific-validation workflow with explicit log2 fold-change semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128" class="external-link">#128</a>).</li>
+<ul><li>
+<code><a href="../reference/step_linda.html">step_linda()</a></code> integrates bias-corrected LinDA linear and mixed-effects models with every compatible centralized contrast. LinDA participates in the tidy result contract and Monte Carlo validation with explicit log2 fold-change semantics (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128" class="external-link">#128</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.5" id="dar-195">dar 1.9.5<a class="anchor" aria-label="anchor" href="#dar-195"></a></h2>
-<ul><li>NEW: The seven centralized DA engines accept structured <code>engine_args</code> for advanced arguments at explicit native-call stages (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
-<li>IMPROVED: Step export/import preserves nested advanced arguments and rejects values that cannot be reconstructed faithfully (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
+<ul><li>The seven centralized DA engines accept structured <code>engine_args</code> for advanced arguments at explicit native-call stages (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
+<li>Step export and import preserve nested advanced arguments and reject values that cannot be reconstructed faithfully (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126" class="external-link">#126</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.4" id="dar-194">dar 1.9.4<a class="anchor" aria-label="anchor" href="#dar-194"></a></h2>
-<ul><li>NEW: <code><a href="../reference/tidy_results.html">tidy_results()</a></code> exposes a stable, engine-labelled result contract while preserving the engine-specific tables stored in <code>PrepRecipe@results</code> (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
-<li>IMPROVED: Result consumers validate taxon-contrast-step keys and use explicit effect metrics and p-value mappings instead of method-specific aliases (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
+<ul><li>
+<code><a href="../reference/tidy_results.html">tidy_results()</a></code> provides a stable, engine-labelled result contract while preserving the native tables in <code>PrepRecipe@results</code> (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
+<li>Result consumers validate taxon-contrast-step keys and use explicit effect metrics and p-value mappings (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127" class="external-link">#127</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.3" id="dar-193">dar 1.9.3<a class="anchor" aria-label="anchor" href="#dar-193"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-1-9-3">BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-3"></a></h3>
-<ul><li>CHANGED: <code><a href="../reference/add_model.html">add_model()</a></code> is now the single source of truth for differential abundance analysis targets and taxonomic resolution through its new <code>targets</code> and <code>tax_level</code> arguments (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
-<li>DEPRECATED: <code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code>, <code><a href="../reference/get_var.html">get_var()</a></code>, <code><a href="../reference/get_tax.html">get_tax()</a></code>, the <code>var_info</code> and <code>tax_info</code> arguments to <code><a href="../reference/recipe.html">recipe()</a></code>, and model-free DA execution now emit classified migration warnings. They remain functional during this first Bioconductor deprecation cycle (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
-<li>IMPROVED: Legacy centralized models, serialized recipes and imported step files are normalized to the new model representation without changing the original microbiome metadata (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
-<li>FIXED: Modeled exclusion and mutual plots preserve contrast and effect-direction keys, normalize adjusted p-value aliases without duplicate columns, and LEfSe executes every planned pairwise contrast for multilevel targets (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<h3 id="breaking-changes-1-9-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-3"></a></h3>
+<ul><li>
+<code><a href="../reference/add_model.html">add_model()</a></code> becomes the single source of truth for DA targets and taxonomic resolution. Supply <code>targets</code> and <code>tax_level</code> there (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<li>
+<code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code>, <code><a href="../reference/get_var.html">get_var()</a></code>, <code><a href="../reference/get_tax.html">get_tax()</a></code>, the <code>var_info</code> and <code>tax_info</code> arguments to <code><a href="../reference/recipe.html">recipe()</a></code>, and model-free DA execution are deprecated. They remain functional during the first Bioconductor deprecation cycle; migrate to <code><a href="../reference/add_model.html">add_model()</a></code> and <code><a href="../reference/get_model.html">get_model()</a></code> (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-1-9-3">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-9-3"></a></h3>
+<ul><li>Legacy centralized models, serialized recipes and imported step files are normalized to the new model representation without changing original microbiome metadata (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-9-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-9-3"></a></h3>
+<ul><li>Modeled exclusion and mutual plots preserve contrast and effect-direction keys, and normalize adjusted p-value aliases without duplicate columns (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
+<li>LEfSe executes every planned pairwise contrast for multilevel targets (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142" class="external-link">#142</a>).</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.2" id="dar-192">dar 1.9.2<a class="anchor" aria-label="anchor" href="#dar-192"></a></h2>
-<ul><li>NEW: Add a centralized statistical model with <code><a href="../reference/add_model.html">add_model()</a></code> and <code><a href="../reference/get_model.html">get_model()</a></code>, including fixed confounders, target-time interactions, supported random effects, explicit references, and a shared missing-value policy (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
-<li>NEW: Generate deterministic condition-within-time, time-within-condition and optional difference-in-differences contrasts, with a common result contract across DESeq2, ALDEx2, ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
-<li>IMPROVED: Record executed and skipped methods in prepared recipes, validate engine capabilities before execution, and keep consensus results separated by contrast and effect direction (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
-<li>IMPROVED: Preserve centralized model specifications when exporting and importing recipe steps (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<div class="section level3">
+<h3 id="new-features-1-9-2">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9-2"></a></h3>
+<ul><li>
+<code><a href="../reference/add_model.html">add_model()</a></code> and <code><a href="../reference/get_model.html">get_model()</a></code> define and inspect a shared statistical design with fixed confounders, target-time interactions, supported random effects, explicit references and a common missing-value policy (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<li>Centralized models generate deterministic condition-within-time, time-within-condition and optional difference-in-differences contrasts, with a common result contract across DESeq2, ALDEx2, ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
 </ul></div>
+<div class="section level3">
+<h3 id="improvements-1-9-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-1-9-2"></a></h3>
+<ul><li>Prepared recipes record executed and skipped methods, validate engine capabilities before execution and separate consensus results by contrast and effect direction (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+<li>Step export and import preserve centralized model specifications (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130" class="external-link">#130</a>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.1" id="dar-191">dar 1.9.1<a class="anchor" aria-label="anchor" href="#dar-191"></a></h2>
-<ul><li>IMPROVED: Enforce structural invariants for <code>Recipe</code> and inherited <code>PrepRecipe</code> objects through S4 validity checks (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124" class="external-link">#124</a>).</li>
-<li>IMPROVED: Validate <code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code>, and preprocessing results early, with contextual errors that identify the failing step (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124" class="external-link">#124</a>).</li>
+<ul><li>
+<code>Recipe</code> and <code>PrepRecipe</code> enforce structural invariants through S4 validity checks (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124" class="external-link">#124</a>).</li>
+<li>
+<code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code> and preprocessing results are validated early, with contextual errors identifying the failing step (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124" class="external-link">#124</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.6" id="dar-156">dar 1.5.6<a class="anchor" aria-label="anchor" href="#dar-156"></a></h2>
-<ul><li>CHANGED: Mark step_metagenomeseq as defunct and remove its implementation and related references.</li>
+<div class="section level3">
+<h3 id="breaking-changes-1-5-6">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-5-6"></a></h3>
+<ul><li>
+<code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> is defunct; its model implementation and related references are removed.</li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.5" id="dar-155">dar 1.5.5<a class="anchor" aria-label="anchor" href="#dar-155"></a></h2>
-<ul><li>CHANGED: Migration from Maaslin2 to maaslin3</li>
+<div class="section level3">
+<h3 id="breaking-changes-1-5-5">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-5-5"></a></h3>
+<ul><li>
+<code><a href="../reference/step_maaslin.html">step_maaslin()</a></code> uses MaAsLin3 in place of MaAsLin2. Review method-specific arguments when migrating existing recipes.</li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.4" id="dar-154">dar 1.5.4<a class="anchor" aria-label="anchor" href="#dar-154"></a></h2>
-<ul><li>FIXED: Resolved a crash occurring on servers with &gt;128 cores by limiting connection setup based on available R connections.</li>
-<li>CHANGED: Refactored parallel execution to use <code>with(..., local = TRUE)</code>. This ensures the internal parallel plan is temporary and does not overwrite the user’s global future configuration.</li>
+<ul><li>Parallel execution limits connection setup to support servers with more than 128 cores.</li>
+<li>Parallel execution uses a temporary future plan, preserving the user’s global future configuration.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.3" id="dar-153">dar 1.5.3<a class="anchor" aria-label="anchor" href="#dar-153"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-1-5-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-5-3"></a></h3>
-<ul><li><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/117" class="external-link uri">https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/117</a></li>
+<ul><li>ANCOM result tables join taxonomy by <code>taxa_id</code>; corncob, LEfSe and Wilcoxon tables place <code>taxa_id</code> first, restoring consensus extraction through <code><a href="../reference/bake.html">bake()</a></code> and <code><a href="../reference/cool.html">cool()</a></code> (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/117" class="external-link">#117</a>).</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.3" id="dar-113">dar 1.1.3<a class="anchor" aria-label="anchor" href="#dar-113"></a></h2>
 <ul><li>
-<code>setp_ancom</code> temporally deactivation</li>
+<code><a href="../reference/step_ancom.html">step_ancom()</a></code> is temporarily disabled.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.2" id="dar-112">dar 1.1.2<a class="anchor" aria-label="anchor" href="#dar-112"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-1-1-2">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-1-2"></a></h3>
-<ul><li><code>data_import.Rmd</code></li>
+<ul><li>The data import vignette is corrected.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.13" id="dar-09913">dar 0.99.13<a class="anchor" aria-label="anchor" href="#dar-09913"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-0-99-13">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-13"></a></h3>
-<ul><li>Remove humann example form data import vignette</li>
+<ul><li>The HUMAnN example is removed from the data import vignette.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.10" id="dar-09910">dar 0.99.10<a class="anchor" aria-label="anchor" href="#dar-09910"></a></h2>
-<div class="section level3">
-<h3 id="new-features-0-99-10">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-99-10"></a></h3>
-<ul><li>Reimplementing <code>step_corncob</code> after the return of corncob package to cran</li>
+<ul><li>
+<code><a href="../reference/step_corncob.html">step_corncob()</a></code> is reintroduced after corncob returns to CRAN.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.9" id="dar-0999">dar 0.99.9<a class="anchor" aria-label="anchor" href="#dar-0999"></a></h2>
-<div class="section level3">
-<h3 id="bug-fixes-0-99-9">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-9"></a></h3>
-<ul><li>Set workers parameter to 4 in order to avoid issues with BBS builds</li>
+<ul><li>
+<code><a href="../reference/prep.html">prep()</a></code> uses four workers to avoid issues with Bioconductor build infrastructure.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.8" id="dar-0998">dar 0.99.8<a class="anchor" aria-label="anchor" href="#dar-0998"></a></h2>
-<div class="section level3">
-<h3 id="improvements-0-99-8">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-8"></a></h3>
-<ul><li>Reducing examples computation time</li>
+<ul><li>Examples take less time to execute.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.7" id="dar-0997">dar 0.99.7<a class="anchor" aria-label="anchor" href="#dar-0997"></a></h2>
-<div class="section level3">
-<h3 id="improvements-0-99-7">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-7"></a></h3>
-<ul><li>Reducing examples computation time</li>
+<ul><li>Examples take less time to execute.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.6" id="dar-0996">dar 0.99.6<a class="anchor" aria-label="anchor" href="#dar-0996"></a></h2>
-<div class="section level3">
-<h3 id="improvements-0-99-6">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-6"></a></h3>
-<ul><li>Suggest using <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> to install <code>dar</code> dependencies</li>
+<ul><li>Dependency installation guidance recommends <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code>.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.5" id="dar-0995">dar 0.99.5<a class="anchor" aria-label="anchor" href="#dar-0995"></a></h2>
-<div class="section level3">
-<h3 id="improvements-0-99-5">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-5"></a></h3>
-<ul><li>Reducing vignettes computation time</li>
+<ul><li>Vignettes take less time to execute.</li>
 </ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.4" id="dar-0994">dar 0.99.4<a class="anchor" aria-label="anchor" href="#dar-0994"></a></h2>
-<div class="section level3">
-<h3 id="improvements-0-99-4">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-4"></a></h3>
-<ul><li>Reducing tests and examples computation time</li>
+<ul><li>Tests and examples take less time to execute.</li>
+<li>The Linux GitHub Actions workflow correctly installs rlang.</li>
 </ul></div>
-<div class="section level3">
-<h3 id="bug-fixes-0-99-4">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-4"></a></h3>
-<ul><li>Fixing bug in Github Actions on Linux with <code>rlang</code> installation.</li>
-</ul></div>
-</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.3" id="dar-0993">dar 0.99.3<a class="anchor" aria-label="anchor" href="#dar-0993"></a></h2>
 <div class="section level3">
-<h3 id="new-features-0-99-3">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-99-3"></a></h3>
-<ul><li>The <code>dar</code> package now accepts both <code>phyloseq</code> class objects and <code>TreeSummarizedExperiment</code> as inputs.</li>
-<li>The tutorial has been refocused to become a tutorial on how to import biom, qiime, mothur, metaphlan, and humann into <code>TreeSummarizedExperiment</code> and <code>phyloseq</code> class objects.</li>
-<li>The <code>Recipe</code> and <code>PrepRecipe</code> classes have been introduced, replacing the previous <code>recipe</code> and <code>prep_recipe</code> classes.</li>
-<li>The <code>subset</code> and <code>filter</code> operations have been updated to allow all steps of the <code>recipe</code> to be defined in a chainable manner.</li>
-<li>The functions <code>step_filter_by_abundance</code>, <code>step_filter_by_prevalence</code>, <code>step_filter_by_rarity</code>, and <code>step_filter_by_variance</code> have been added to enhance filtering functionality.</li>
+<h3 id="breaking-changes-0-99-3">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-99-3"></a></h3>
+<ul><li>
+<code>Recipe</code> and <code>PrepRecipe</code> replace the former <code>recipe</code> and <code>prep_recipe</code> classes. Update code that inspects the old class names.</li>
+<li>
+<code><a href="../reference/required_deps.html">required_deps()</a></code> is internal and is no longer exported. Follow the installation guidance emitted by recipe steps for missing dependencies.</li>
+<li>R 4.4.0 or later is required.</li>
+<li>The package stops re-exporting <code>%&gt;%</code> and <code>:=</code>. Use <code>|&gt;</code> in recipes and qualify functions from their originating packages when needed.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="improvements-0-99-3">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-99-3"></a></h3>
-<ul><li>The R version dependency has been updated to 4.4.0.</li>
-<li>The dependency on <code>data.table</code> has been removed.</li>
-<li>The re-export of <code>%&gt;%</code> and <code>:=</code> has been removed. Now code examples and vignettes use <code>|&gt;</code>.</li>
-<li>The <code>required_deps</code> function is no longer exported.</li>
-<li>The package now recommends more commonly used installation methods, such as <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> or <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code>.</li>
-<li>A warning message is now displayed whenever the <code>rarefy = TRUE</code> option is used, informing users that a fixed seed is being used and how it could impact their results.</li>
-<li>The package coverage has increased to 82.33%.</li>
+<h3 id="new-features-0-99-3">New features<a class="anchor" aria-label="anchor" href="#new-features-0-99-3"></a></h3>
+<ul><li>
+<code><a href="../reference/recipe.html">recipe()</a></code> accepts both phyloseq and TreeSummarizedExperiment objects.</li>
+<li>Filtering and subsetting steps support chainable recipe construction.</li>
+<li>
+<code><a href="../reference/step_filter_by_abundance.html">step_filter_by_abundance()</a></code>, <code><a href="../reference/step_filter_by_prevalence.html">step_filter_by_prevalence()</a></code>, <code><a href="../reference/step_filter_by_rarity.html">step_filter_by_rarity()</a></code> and <code><a href="../reference/step_filter_by_variance.html">step_filter_by_variance()</a></code> provide dedicated filtering criteria.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-0-99-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-3"></a></h3>
-<ul><li>Unconventional package installation methods have been avoided, for example, <code><a href="https://pak.r-lib.org/reference/pkg_install.html" class="external-link">pak::pkg_install</a></code>.</li>
-<li>The setting of a seed within a function (<code>run_aldex</code>) has been addressed.</li>
-<li>The name of the data in the <code>R/data.R</code> documentation has been corrected from <code>NA</code>.</li>
+<h3 id="documentation-and-improvements-0-99-3">Documentation and improvements<a class="anchor" aria-label="anchor" href="#documentation-and-improvements-0-99-3"></a></h3>
+<ul><li>The import tutorial covers BIOM, QIIME, mothur, MetaPhlAn and HUMAnN conversions to phyloseq and TreeSummarizedExperiment.</li>
+<li>Installation guidance uses <code><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">BiocManager::install()</a></code> and <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> instead of unconventional installation methods.</li>
+<li>The data.table dependency is removed.</li>
+<li>Rarefaction warns about its fixed seed and the implications for results.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-99-3">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-99-3"></a></h3>
+<ul><li>
+<code>run_aldex()</code> corrects its internal seed handling.</li>
+<li>The data documentation uses the correct dataset name.</li>
 </ul></div>
 </div>
     <div class="section level2">

@@ -33,8 +33,8 @@ tibble or list
 ## Examples
 
 ``` r
-data(test_rec)
-dar:::get_comparisons("RiskGroup2", get_phy(test_rec))
+data(metaHIV_phy)
+dar:::get_comparisons("RiskGroup2", metaHIV_phy)
 #> [[1]]
 #> [1] "hts" "msm"
 #> 

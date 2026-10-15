@@ -50,26 +50,18 @@ deprecation cycle.
 ``` r
 data(metaHIV_phy)
 
-## Define recipe
-rec <-
-  recipe(metaHIV_phy) |>
+## Configure, prepare and obtain a consensus
+rec <- recipe(metaHIV_phy) |>
   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
-  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
-  step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.3 * length(x))") |>
+  step_filter_by_prevalence(threshold = 0.3) |>
   step_deseq() |>
   step_maaslin()
 
-## Prep recipe
-da_results <- prep(rec)
+da_results <- prep(rec, parallel = FALSE) |>
+  bake()
 #> Warning: Estimated rdf < 1.0; not estimating variance
 #> Warning: Estimated rdf < 1.0; not estimating variance
 #> Warning: Estimated rdf < 1.0; not estimating variance
-
-## Consensus strategy
-n_methods <- 2
-da_results <- bake(da_results, count_cutoff = n_methods)
-
-## Results
 cool(da_results)
 #> ℹ Baking with count_cutoff = 2
 #> # A tibble: 1 × 9
@@ -79,46 +71,6 @@ cool(da_results)
 #> # ℹ 1 more variable: methods <chr>
 
 ## A recipe without a model can be used for preprocessing
-rec <- recipe(metaHIV_phy)
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ✖ undefined analysis target. Use add_model() to define the analysis! 
-#>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
-#> 
-
-## Define the complete analysis configuration later
-rec <- rec |>
-  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
-
-rec
-#> ── DAR Recipe ──────────────────────────────────────────────────────────────────
-#> Inputs:
-#> 
-#>      ℹ phyloseq object with 451 taxa and 156 samples 
-#>      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) 
-#>      ℹ taxonomic level Genus 
-#> 
-#> Statistical model:
-#> 
-#>      ℹ ~RiskGroup2 
-#> 
-#> 
-
-## When trying to add an identical step to an existing one, the system
-## returns an information message.
-rec <- step_aldex(rec)
-rec <- step_aldex(rec)
-#> ! This step is already defined with the same parameters and will be skipped.
-#> ℹ `rec %>% step_aldex(max_significance = 0.05, mc.samples = 128, denom = "all",
-#>   rarefy = FALSE)`
-
-## The same with bake
-da_results <- bake(da_results)
-da_results <- bake(da_results)
-#> ! This step is already defined with the same parameters and will be skipped.
-#> ℹ `rec %>% step_bake(count_cutoff = NULL, weights = NULL, exclude = NULL)`
+rec <- recipe(metaHIV_phy) |>
+  step_filter_by_prevalence(threshold = 0.1)
 ```

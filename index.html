@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Differential Abundance Analysis by Consensus • dar</title>
+<title>Differential Abundance Workflows for Microbiome Data • dar</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -15,9 +15,9 @@
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Differential Abundance Analysis by Consensus">
-<meta name="description" content="Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results that range within the specificity versus sensitivity space in such a way that type I and type II errors are difficult to ascertain in real microbiome data when a single method is used. A consensus approach based on multiple differential abundance (DA) methods has been suggested to increase robustness. With dar, you can use dplyr-like pipeable sequences of DA methods and then apply different consensus strategies. In this way we can obtain more reliable results in a fast, consistent and reproducible way.">
-<meta property="og:description" content="Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results that range within the specificity versus sensitivity space in such a way that type I and type II errors are difficult to ascertain in real microbiome data when a single method is used. A consensus approach based on multiple differential abundance (DA) methods has been suggested to increase robustness. With dar, you can use dplyr-like pipeable sequences of DA methods and then apply different consensus strategies. In this way we can obtain more reliable results in a fast, consistent and reproducible way.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Differential Abundance Workflows for Microbiome Data">
+<meta name="description" content="Provides a recipe-based interface for differential abundance analysis of microbiome data. A shared model specification defines covariates, contrasts, reference levels and taxonomic aggregation, with compatibility checks for each method. Pipeable workflows combine preprocessing, quality control and multiple differential abundance methods. Results can be inspected in a common format that preserves method-specific effect scales, visualized and compared. Recipes can be exported and imported using a versioned, non-executable format. Optional consensus rules summarize agreement across methods for each contrast and effect direction.">
+<meta property="og:description" content="Provides a recipe-based interface for differential abundance analysis of microbiome data. A shared model specification defines covariates, contrasts, reference levels and taxonomic aggregation, with compatibility checks for each method. Pipeable workflows combine preprocessing, quality control and multiple differential abundance methods. Results can be inspected in a common format that preserves method-specific effect scales, visualized and compared. Recipes can be exported and imported using a versioned, non-executable format. Optional consensus rules summarize agreement across methods for each contrast and effect direction.">
 <meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png">
 </head>
 <body>
@@ -42,12 +42,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/article.html">Workflow with real data</a></li>
-    <li><a class="dropdown-item" href="articles/bioinformatics_vignette.html">dar: Case of Study</a></li>
-    <li><a class="dropdown-item" href="articles/data_import.html">Converting Common Data Formats to Phyloseq and TreeSummarizedExperiment</a></li>
-    <li><a class="dropdown-item" href="articles/filtering_subsetting.html">Filtering and Subsetting</a></li>
-    <li><a class="dropdown-item" href="articles/import_export_recipes.html">Reproducibility in Microbiome Data Analysis</a></li>
-    <li><a class="dropdown-item" href="articles/statistical_models.html">Central statistical models and longitudinal contrasts</a></li>
+<li><a class="dropdown-item" href="articles/data_import.html">Data inputs and inspection</a></li>
+    <li><a class="dropdown-item" href="articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
+    <li><a class="dropdown-item" href="articles/statistical_models.html">Statistical models and contrasts</a></li>
+    <li><a class="dropdown-item" href="articles/article.html">Exploring results and optional consensus</a></li>
+    <li><a class="dropdown-item" href="articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -75,8 +74,9 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Differential abundance testing in microbiome data challenges both parametric and non-parametric statistical methods, due to its sparsity, high variability and compositional nature. Microbiome-specific statistical methods often assume classical distribution models or take into account compositional specifics. These produce results across the specificity-versus-sensitivity space, while type I and type II errors are difficult to ascertain in real microbiome data when a single method is used. Consensus across multiple differential abundance (DA) methods can increase robustness.</p>
-<p>With dar, you can use dplyr-like pipeable sequences of DA methods and then apply different consensus strategies. In this way we can obtain more reliable results in a fast, consistent and reproducible way.</p>
+<p><code>dar</code> provides recipe-based differential abundance workflows for microbiome data. It accepts <code>phyloseq</code> and <code>TreeSummarizedExperiment</code> inputs and combines preprocessing, quality control and multiple statistical methods through a common, pipeable interface.</p>
+<p>A centralized model defines covariates, contrasts, reference levels and the taxonomic level of analysis. Compatibility checks identify which methods can execute that design. Results can be inspected, visualized and compared in a common format while retaining method-specific effect scales. Native options remain explicit, and recipes can be shared through a versioned, non-executable export format.</p>
+<p>Consensus is optional: it summarizes agreement across methods for the same contrast and effect direction. Agreement does not guarantee greater accuracy or false-discovery-rate control, and stricter rules can reduce sensitivity.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -91,10 +91,6 @@
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar" class="external-link">dar</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Registered S3 methods overwritten by 'vegan':</span></span>
-<span><span class="co">#&gt;   method         from      </span></span>
-<span><span class="co">#&gt;   reorder.hclust seriation </span></span>
-<span><span class="co">#&gt;   rev.hclust     dendextend</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Define recipe</span></span>
@@ -111,96 +107,30 @@
 <span>  <span class="fu"><a href="reference/step_aldex.html">step_aldex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
-<span><span class="co">#&gt; ── DAR Recipe ──────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ phyloseq object with 451 taxa and 156 samples </span></span>
-<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
-<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Statistical model:</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt;      ℹ ~RiskGroup2</span></span>
-<span><span class="co">#&gt;</span></span>
-<span><span class="co">#&gt; Preporcessing steps:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_subset_taxa() id = subset_taxa__Nunt </span></span>
-<span><span class="co">#&gt;      ◉ step_filter_taxa() id = filter_taxa__Schaumrolle </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; DA steps:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ step_maaslin() id = maaslin__Crêpes_Suzette </span></span>
-<span><span class="co">#&gt;      ◉ step_aldex() id = aldex__Pineapple_bun</span></span>
 <span></span>
 <span><span class="co">## Prep recipe</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep.html">prep</a></span><span class="op">(</span><span class="va">rec</span>, parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">da_results</span></span>
-<span><span class="co">#&gt; ── DAR Results ─────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ phyloseq object with 278 taxa and 156 samples </span></span>
-<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
-<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Results:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 </span></span>
-<span><span class="co">#&gt;      ✔ aldex__Pineapple_bun diff_taxa = 98 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods</span></span>
 <span></span>
-<span><span class="co">## Uniform, reproducible results across engines</span></span>
+<span><span class="co">## Inspect per-method results in a common format</span></span>
 <span><span class="fu"><a href="reference/tidy_results.html">tidy_results</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
 <span>    <span class="va">taxa_id</span>, <span class="va">comparison</span>, <span class="va">effect_size</span>, <span class="va">effect_metric</span>,</span>
 <span>    <span class="va">adj_p_value</span>, <span class="va">significant</span>, <span class="va">method</span>, <span class="va">step_id</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Advanced native options remain explicit and reproducible</span></span>
-<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/step_deseq.html">step_deseq</a></span><span class="op">(</span></span>
-<span>  <span class="va">rec</span>,</span>
-<span>  engine_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>minReplicatesForReplace <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co">## Consensus strategy</span></span>
-<span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>The <code>effect_metric</code> column identifies each method’s effect scale; effect sizes from different methods are not necessarily directly comparable. The per-method results can be used without applying a consensus rule.</p>
+<div class="section level3">
+<h3 id="optional-consensus-summary">Optional consensus summary<a class="anchor" aria-label="anchor" href="#optional-consensus-summary"></a>
+</h3>
+<p>To add an agreement-based summary, specify the number of supporting methods with <code><a href="reference/bake.html">bake()</a></code> and extract the selected taxa with <code><a href="reference/cool.html">cool()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">n_methods</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="va">da_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/bake.html">bake</a></span><span class="op">(</span><span class="va">da_results</span>, count_cutoff <span class="op">=</span> <span class="va">n_methods</span><span class="op">)</span></span>
 <span><span class="va">da_results</span></span>
-<span><span class="co">#&gt; ── DAR Results ─────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Inputs:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ phyloseq object with 278 taxa and 156 samples </span></span>
-<span><span class="co">#&gt;      ℹ variable of interes RiskGroup2 (class: character, levels: hts, msm, pwid) </span></span>
-<span><span class="co">#&gt;      ℹ taxonomic level Species </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Results:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ✔ maaslin__Crêpes_Suzette diff_taxa = 52 </span></span>
-<span><span class="co">#&gt;      ✔ aldex__Pineapple_bun diff_taxa = 98 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ℹ 35 taxa are present in all tested methods </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Bakes:</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;      ◉ 1 -&gt; count_cutoff: 2, weights: NULL, exclude: NULL, id: bake__Ladies_navels</span></span>
 <span></span>
 <span><span class="co">## Results</span></span>
-<span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ Bake for count_cutoff = 2</span></span>
-<span><span class="co">#&gt; # A tibble: 35 × 2</span></span>
-<span><span class="co">#&gt;    taxa_id taxa                        </span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;   &lt;chr&gt;                       </span></span>
-<span><span class="co">#&gt;  1 Otu_78  Bacteroides_uniformis       </span></span>
-<span><span class="co">#&gt;  2 Otu_88  Odoribacter_splanchnicus    </span></span>
-<span><span class="co">#&gt;  3 Otu_119 Alistipes_putredinis        </span></span>
-<span><span class="co">#&gt;  4 Otu_129 Parabacteroides_merdae      </span></span>
-<span><span class="co">#&gt;  5 Otu_125 Parabacteroides_distasonis  </span></span>
-<span><span class="co">#&gt;  6 Otu_82  Barnesiella_intestinihominis</span></span>
-<span><span class="co">#&gt;  7 Otu_96  Prevotella_copri            </span></span>
-<span><span class="co">#&gt;  8 Otu_51  Bacteroides_dorei           </span></span>
-<span><span class="co">#&gt;  9 Otu_332 Catenibacterium_mitsuokai   </span></span>
-<span><span class="co">#&gt; 10 Otu_62  Bacteroides_ovatus          </span></span>
-<span><span class="co">#&gt; # ℹ 25 more rows</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/cool.html">cool</a></span><span class="op">(</span><span class="va">da_results</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>

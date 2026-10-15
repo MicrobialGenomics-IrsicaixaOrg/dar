@@ -1,31 +1,31 @@
 # Articles
 
-### All vignettes
+### Guides
 
-- [Workflow with real
-  data](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
-
-- [dar: Case of
-  Study](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/bioinformatics_vignette.md):
-
-- [Introduction to
+- [Getting started with
   dar](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/dar.md):
 
-  Start here if this is your first time using dar! You will learn about
-  basic usage, steps, exploration and bakes.
+  Configure a recipe, run compatible methods and inspect their results.
 
-- [Converting Common Data Formats to Phyloseq and
-  TreeSummarizedExperiment](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.md):
+- [Data inputs and
+  inspection](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.md):
 
-- [Filtering and
-  Subsetting](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.md):
+  Prepare and inspect phyloseq and TreeSummarizedExperiment inputs for
+  dar.
 
-  This vignette provides a comprehensive guide to using the
-  `filter_taxa` and `subset_taxa` functions, as well as their
-  convenience wrappers.
+- [Quality control and
+  preprocessing](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/filtering_subsetting.md):
 
-- [Reproducibility in Microbiome Data
-  Analysis](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
+  Inspect recipe data and define ordered, explicit preprocessing steps.
 
-- [Central statistical models and longitudinal
+- [Statistical models and
   contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):
+
+- [Exploring results and optional
+  consensus](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
+
+  Inspect per-method results, visualize selected contrasts and summarize
+  agreement.
+
+- [Saving and sharing analysis
+  recipes](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
