@@ -214,7 +214,7 @@ run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy,
   }
   compiled <- compile_model(rec, "aldex")
   phy <- model_phyloseq(rec, rarefy)
-  check_unused_engine_args("aldex", engine_args, c("clr", "fit", "effect"))
+  check_unused_engine_args("aldex", engine_args, c("clr", "fit"))
   reads <- as(phyloseq::otu_table(phy), "matrix")
   if (!phyloseq::taxa_are_rows(phy)) {
     reads <- t(reads)
@@ -236,22 +236,18 @@ run_aldex_model <- function(rec, max_significance, mc.samples, denom, rarefy,
       "aldex", "fit", engine_args, fixed = list(clr = clr),
       defaults = list(verbose = FALSE, fdr.method = "BH")
     )
-    effects <- exec_engine_stage(
-      "aldex", "effect", engine_args, fixed = list(clr = clr),
-      defaults = list(verbose = FALSE, CI = TRUE)
-    )
     coefficient <- parameterized$coefficient
     estimate_col <- paste0(coefficient, ":Est")
     padj_col <- paste0(coefficient, ":pval.padj")
-    if (!all(c(estimate_col, padj_col) %in% names(glm)) ||
-        !coefficient %in% names(effects)) {
+    if (!all(c(estimate_col, padj_col) %in% names(glm))) {
       cli::cli_abort(
         "ALDEx2 did not return coefficient {.val {coefficient}}.",
         class = "dar_error_invalid_result_contract"
       )
     }
-    effect <- effects[[coefficient]]$effect * parameterized$sign
+    effect <- glm[[estimate_col]] * parameterized$sign
     padj <- glm[[padj_col]]
+    glm$effect_metric <- "aldex_glm_coefficient"
     bind_model_result(
       glm,
       contrast,

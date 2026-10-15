@@ -202,7 +202,7 @@ test_that("DESeq2 selects results for interaction contrasts and rejects shrink",
   )
 })
 
-test_that("ALDEx2 routes advanced arguments through all three stages", {
+test_that("ALDEx2 routes advanced arguments through CLR and GLM only", {
   skip_if_not_installed("ALDEx2")
   stages <- record_engine_stages()
   withr::local_seed(130)
@@ -210,13 +210,12 @@ test_that("ALDEx2 routes advanced arguments through all three stages", {
   result <- suppressWarnings(dar:::run_aldex_model(
     rec, 0.05, 8, "all", FALSE,
     engine_args = dar:::normalize_engine_args("aldex", list(
-      clr = list(useMC = FALSE), fit = list(verbose = FALSE),
-      effect = list(include.sample.summary = TRUE)
+      clr = list(useMC = FALSE), fit = list(verbose = FALSE)
     ))
   ))
   expect_complete_model_result(result, rec)
   expect_setequal(
-    unique(stages()), c("aldex:clr", "aldex:fit", "aldex:effect")
+    unique(stages()), c("aldex:clr", "aldex:fit")
   )
 })
 

@@ -57,7 +57,7 @@ test_that("the stage registry covers all eight engines", {
     lapply(registry, function(engine) names(engine$stages)),
     list(
       deseq = c("size_factors", "fit", "results", "shrink"),
-      aldex = c("clr", "fit", "effect"), ancom = "fit",
+      aldex = c("clr", "fit"), ancom = "fit",
       corncob = "fit", linda = "fit", maaslin = c("fit", "contrast"),
       wilcox = "test", lefse = c("transform", "fit")
     )

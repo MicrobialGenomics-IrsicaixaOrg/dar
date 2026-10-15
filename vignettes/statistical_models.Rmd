@@ -148,6 +148,14 @@ represented by each result. See
 [Exploring results and optional consensus](article.html) for the result columns,
 effect scales, selectors and plotting examples.
 
+For centralized ALDEx2 analyses, `effect` is the contrast-oriented coefficient
+from the same GLM as the adjusted P value, averaged over Monte Carlo instances
+and labeled `aldex_glm_coefficient`. With default settings it is on the base-2
+CLR response scale, not an absolute-abundance fold change or ALDEx2's
+standardized two-group effect. Advanced native settings can change its scale.
+Recompute previously prepared centralized ALDEx2 results to obtain the GLM
+coefficients; deprecated model-free analyses retain their standardized effects.
+
 ## Advanced native-engine arguments
 
 The eight DA steps accept `engine_args`, a named list grouped by native-call
@@ -179,12 +187,14 @@ are not merged with its defaults. For ANCOM-BC2, supply the complete
 `iter_control` list, including `verbose`, rather than only the values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr`, `fit`, and `effect` for ALDEx2; `fit` for ANCOM-BC2,
+DESeq2; `clr` and `fit` for ALDEx2; `fit` for ANCOM-BC2,
 corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon;
 and `transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths
 and arguments already exposed by each dar wrapper are protected. Non-empty
 `engine_args` require a centralized model. A configured stage that is not
 used by the selected execution route is reported as an error.
+ALDEx2's former `effect` stage is rejected because centralized effects now
+come directly from the GLM fit.
 
 See [Saving and sharing analysis recipes](import_export_recipes.html) for
 exporting model settings and native options without executing an analysis.

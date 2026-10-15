@@ -45,9 +45,6 @@ engine_args_registry <- function() {
         ),
         fit = list(
           package = "ALDEx2", fun = "aldex.glm", protected = "clr"
-        ),
-        effect = list(
-          package = "ALDEx2", fun = "aldex.glm.effect", protected = "clr"
         )
       )
     ),

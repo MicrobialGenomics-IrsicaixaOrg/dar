@@ -159,7 +159,41 @@ test_that("modeled ALDEx2 p-values are read without changing native columns", {
 
   expect_equal(result$p_value, 0.017)
   expect_equal(result$adj_p_value, 0.027)
+  expect_identical(result$effect_metric, "standardized_clr_effect")
   expect_identical(prepared@results$aldex__contract, before)
+})
+
+test_that("ALDEx2 metric labels come from saved results, not the model alone", {
+  prepared <- contract_prepared()
+  native <- prepared@results$aldex__contract$model
+  native$effect_metric <- "aldex_glm_coefficient"
+  prepared@results$aldex__contract$model <- native
+
+  expect_identical(
+    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    "aldex_glm_coefficient"
+  )
+  prepared@results$aldex__contract$model$effect_metric <- "standardized_clr_effect"
+  expect_identical(
+    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    "standardized_clr_effect"
+  )
+  prepared@results$aldex__contract$model$effect_metric <- NULL
+  expect_identical(
+    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    "standardized_clr_effect"
+  )
+})
+
+test_that("ALDEx2 rejects malformed or unknown effect metric labels", {
+  for (metric in list(1, NA_character_, "log2_fold_change")) {
+    prepared <- contract_prepared()
+    prepared@results$aldex__contract$model$effect_metric <- metric
+    expect_error(
+      tidy_results(prepared, steps = "aldex__contract"),
+      class = "dar_error_invalid_result_contract"
+    )
+  }
 })
 
 test_that("tidy_results distinguishes multiple configurations of one engine", {

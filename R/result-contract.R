@@ -152,7 +152,7 @@ result_method <- function(step) {
 }
 
 #' @noRd
-result_effect_metric <- function(method, step) {
+result_effect_metric <- function(method, step, result = NULL) {
   registry <- da_result_registry()
   if (!method %in% names(registry)) {
     cli::cli_abort(
@@ -164,6 +164,19 @@ result_effect_metric <- function(method, step) {
     norm_method <- step$norm_method %||% "compositional"
     return(paste0("median_", norm_method, "_difference"))
   }
+  if (identical(method, "aldex") && "effect_metric" %in% names(result)) {
+    metric <- result$effect_metric
+    allowed <- c("standardized_clr_effect", "aldex_glm_coefficient")
+    if (!is.character(metric) || anyNA(metric) || any(!metric %in% allowed)) {
+      cli::cli_abort(
+        "ALDEx2 results must identify a supported {.field effect_metric}.",
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    return(metric)
+  }
+  # Unmarked ALDEx2 tables, including saved recipes from before the GLM
+  # coefficient correction, still contain the standardized binary-group effect.
   registry[[method]]$effect_metric
 }
 
@@ -336,7 +349,9 @@ standardize_da_result <- function(result, rec, step_id) {
     at_var = result_character_column(result, "at_var"),
     at_level = result_character_column(result, "at_level"),
     effect_size = as.numeric(result$effect),
-    effect_metric = rep(result_effect_metric(method, step), nrow(result)),
+    effect_metric = rep(
+      result_effect_metric(method, step, result), length.out = nrow(result)
+    ),
     p_value = result_p_value(
       result, method, rec, config$p_value,
       paste0(method, " step ", step_id)

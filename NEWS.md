@@ -12,6 +12,11 @@
 * ComplexHeatmap, gplots, heatmaply and UpSetR are optional dependencies.
   Install the relevant package explicitly to use its plotting functions;
   missing dependencies produce installation guidance (#157).
+* Centralized ALDEx2 results report `aldex_glm_coefficient` rather than a
+  standardized two-group effect. Recompute previously prepared results to
+  obtain the corrected effects; their former effect values are not relabeled.
+  The obsolete `engine_args$effect` stage is rejected. Deprecated model-free
+  ALDEx2 execution retains its standardized effect.
 
 ## Deprecations
 
@@ -22,6 +27,9 @@
 
 ## Bug fixes
 
+* `step_aldex()` extracts centralized effects from the same native GLM and
+  contrast as its adjusted P values, preserving adjustment and interaction
+  semantics instead of combining them with a post-hoc binary-group effect.
 * Modeled engines, consensus tables and abundance plots share one aggregated
   taxonomic view with stable IDs. Abundance transformations use aggregated
   counts, and public accessors retain the complete underlying data.
