@@ -2,7 +2,7 @@
 
 # File R/plot_methods.R: @tests
 
-test_that("Function corr_heatmap() @ L36", {
+test_that("Function corr_heatmap() @ L32", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(corr_heatmap(test_rec))
@@ -15,7 +15,7 @@ test_that("Function corr_heatmap() @ L36", {
 })
 
 
-test_that("Function intersection_plt() @ L111", {
+test_that("Function intersection_plt() @ L104", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(intersection_plt(test_rec))
@@ -28,7 +28,7 @@ test_that("Function intersection_plt() @ L111", {
 })
 
 
-test_that("Function exclusion_plt() @ L171", {
+test_that("Function exclusion_plt() @ L159", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -41,45 +41,51 @@ test_that("Function exclusion_plt() @ L171", {
 })
 
 
-test_that("Function abundance_plt() @ L299", {
+test_that("Function abundance_plt() @ L308", {
   data(test_rec)
   data(test_prep_rec)
-  taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
+  results <- tidy_results(test_prep_rec)
+  contrast_id <- results$contrast_id[[1]]
+  taxa_ids <- head(unique(results$taxa_id), 6)
   
   pdf(file = tempfile())
   withr::defer(dev.off())
   
   expect_error(abundance_plt(test_rec))
   expect_s3_class(suppressMessages(
-    abundance_plt(test_prep_rec)), "ggplot"
+    abundance_plt(test_prep_rec, contrast_id = contrast_id)), "ggplot"
   )
   expect_s4_class(suppressMessages(
-    abundance_plt(test_prep_rec, type = "heatmap")), "HeatmapList"
+    abundance_plt(test_prep_rec, type = "heatmap",
+                  contrast_id = contrast_id)), "HeatmapList"
   )
   expect_s3_class(suppressMessages(
     abundance_plt(test_prep_rec, taxa_ids = taxa_ids)), "ggplot"
   )
   expect_s3_class(suppressMessages(
-    abundance_plt(test_prep_rec, top_n = 10)), "ggplot"
+    abundance_plt(test_prep_rec, top_n = 10, contrast_id = contrast_id)), "ggplot"
   )
   expect_s3_class(suppressMessages(
-    abundance_plt(test_prep_rec, transform = "clr")), "ggplot"
+    abundance_plt(test_prep_rec, transform = "clr",
+                  contrast_id = contrast_id)), "ggplot"
   )
   expect_s4_class(
     abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap"), 
     "HeatmapList"
   )
   expect_s3_class(suppressMessages(
-    abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
+    abundance_plt(test_prep_rec, transform = "scale", scale = 10,
+                  contrast_id = contrast_id)), "ggplot"
   )
   
   withr::defer(dev.off())
 })
 
 
-test_that("Function mutual_plt() @ L412", {
+test_that("Function mutual_plt() @ L456", {
   data(test_rec)
   data(test_prep_rec)
+  comparison <- tidy_results(test_prep_rec)$comparison[[1]]
   
   expect_error(mutual_plt(test_rec))
   expect_s3_class(suppressMessages(mutual_plt(test_prep_rec)), "ggplot")
@@ -89,7 +95,7 @@ test_that("Function mutual_plt() @ L412", {
   expect_error(suppressMessages(mutual_plt(test_prep_rec, count_cutoff = 0)))
   expect_error(suppressMessages(mutual_plt(test_prep_rec, count_cutoff = 10)))
   expect_s3_class(suppressMessages(
-    mutual_plt(test_prep_rec, comparisons = "hts_msm")), "ggplot"
+    mutual_plt(test_prep_rec, comparisons = comparison)), "ggplot"
   )
   expect_error(suppressMessages(
     mutual_plt(test_prep_rec, comparisons = "hts_sm"))

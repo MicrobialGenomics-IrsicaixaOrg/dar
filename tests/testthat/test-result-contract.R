@@ -295,14 +295,38 @@ test_that("unavailable and malformed engine results fail contextually", {
 })
 
 test_that("legacy results receive deterministic contrast identifiers", {
-  data(test_prep_rec)
-  result <- tidy_results(test_prep_rec)
+  rec <- recipe(make_longitudinal_phy())
+  rec@var_info <- tibble::tibble(vars = "condition")
+  rec@tax_info <- tibble::tibble(tax_lev = "Species")
+  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__legacy"))
+  legacy <- tibble::tibble(
+    taxa_id = rep(c("taxon_1", "taxon_2"), 2),
+    taxa = rep(c("Species_1", "Species_2"), 2),
+    comparison = rep(c("control_treated", "treated_control"), each = 2),
+    var = "condition",
+    effect = c(1, -1, -1, 1),
+    signif = c(TRUE, FALSE, TRUE, FALSE),
+    pvalue = c(0.01, 0.5, 0.01, 0.5),
+    padj = c(0.02, 0.5, 0.02, 0.5)
+  )
+  prepared <- dar:::prep_recipe(
+    rec, list(deseq__legacy = list(condition = legacy)), list()
+  )
+  result <- tidy_results(prepared)
 
-  expect_true(all(startsWith(result$contrast_id, paste0(result$var, "["))))
+  expect_identical(
+    result$contrast_id,
+    rep(c("condition[control_treated]", "condition[treated_control]"), each = 2)
+  )
   expect_true(all(result$contrast_type == "legacy_pairwise"))
   expect_true(all(is.na(result$numerator)))
   expect_true(all(is.na(result$denominator)))
   expect_identical(
     anyDuplicated(result[c("taxa_id", "contrast_id", "step_id")]), 0L
+  )
+  prepared@results$deseq__legacy$condition <- dplyr::slice(legacy, 4:1)
+  expect_identical(
+    dplyr::arrange(tidy_results(prepared), taxa_id, contrast_id),
+    dplyr::arrange(result, taxa_id, contrast_id)
   )
 })

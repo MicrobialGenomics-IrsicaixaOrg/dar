@@ -152,6 +152,9 @@ run_maaslin <- function(rec,
   tax_level <- recipe_tax_level(rec)
   phy <- get_phy(rec) %>% use_rarefy(rarefy) 
   phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
+  counts <- recipe_count_matrix(rec, phy = phy)
+  taxonomy <- recipe_taxonomy_data(rec, phy = phy) %>%
+    dplyr::select(taxa_id, taxa = dplyr::all_of(tax_level))
   vars %>%
     purrr::set_names() %>%
     purrr::map(function(var) {
@@ -162,11 +165,7 @@ run_maaslin <- function(rec,
           dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
           data.frame(row.names = 1)
 
-        input_data <-
-          otu_table(rec) %>%
-          dplyr::select(taxa_id, dplyr::all_of(rownames(input_metadata))) %>%
-          data.frame(row.names = 1) %>%
-          as.matrix()
+        input_data <- counts[, rownames(input_metadata), drop = FALSE]
 
         m3_res <- maaslin3_quietly(
           input_data,
@@ -204,7 +203,7 @@ run_maaslin <- function(rec,
             comparison = stringr::str_c(comparison, collapse = "_"),
             var = !!var
           ) %>%
-          dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
+          dplyr::left_join(taxonomy, by = "taxa_id") %>%
           dplyr::mutate(
             effect = coef,
             signif = ifelse(qval < max_significance, TRUE, FALSE)

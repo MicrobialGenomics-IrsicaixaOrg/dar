@@ -533,6 +533,37 @@ run_linda_model <- function(rec, prev_filter, mean_abund_filter,
 # MAASLIN3 --------------------------------------------------------------------
 
 #' @noRd
+maaslin_model_contrasts <- function(fit, contrast_matrix, max_significance,
+                                    correction, median_comparison_abundance,
+                                    engine_args = list()) {
+  # Test each planned contrast across all fitted taxa. MaAsLin3 otherwise marks
+  # every contrast missing for a taxon if just one uses an absent coefficient.
+  # Its native helper still handles estimability and median comparisons.
+  out <- purrr::map_dfr(seq_len(nrow(contrast_matrix)), function(index) {
+    tested <- exec_engine_stage(
+      "maaslin", "contrast", engine_args,
+      fixed = list(
+        maaslin3_fit = fit,
+        contrast_mat = contrast_matrix[index, , drop = FALSE],
+        max_significance = max_significance,
+        correction = correction,
+        median_comparison_abundance = median_comparison_abundance,
+        evaluate_only = "abundance"
+      )
+    )
+    tested$fit_data_abundance$results
+  })
+
+  # Native abundance-only tests use one multiplicity family over every taxon
+  # and contrast, excluding p-values flagged by the native error column.
+  pvalues <- out$pval_individual
+  pvalues[!is.na(out$error)] <- NA_real_
+  out$qval_individual <- stats::p.adjust(pvalues, method = correction)
+  out$qval_joint <- out$qval_individual
+  out
+}
+
+#' @noRd
 run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
                               normalization, transform, max_significance,
                               correction, standardize,
@@ -579,18 +610,10 @@ run_maaslin_model <- function(rec, min_abundance, min_prevalence, min_variance,
   contrast_matrix <- do.call(rbind, compiled$contrasts$weights)
   colnames(contrast_matrix) <- colnames(compiled$matrix)
   rownames(contrast_matrix) <- compiled$contrasts$contrast_id
-  tested <- exec_engine_stage(
-    "maaslin", "contrast", engine_args,
-    fixed = list(
-      maaslin3_fit = fit,
-      contrast_mat = contrast_matrix,
-      max_significance = max_significance,
-      correction = correction,
-      median_comparison_abundance = median_comparison_abundance,
-      evaluate_only = "abundance"
-    )
-  )
-  out <- tested$fit_data_abundance$results |>
+  out <- maaslin_model_contrasts(
+    fit, contrast_matrix, max_significance, correction,
+    median_comparison_abundance, engine_args
+  ) |>
     tibble::as_tibble() |>
     dplyr::transmute(
       taxa_id = .data$feature,

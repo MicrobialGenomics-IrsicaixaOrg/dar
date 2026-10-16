@@ -145,8 +145,39 @@ missing planned contrasts remain errors.
 
 Use `contrast_id`, `comparison` and `contrast_type` to identify the hypothesis
 represented by each result. See
-[Exploring results and optional consensus](article.html) for the result columns,
-effect scales, selectors and plotting examples.
+[Getting started with dar](dar.html) for extracting results, inspecting
+execution records and plotting selected contrasts.
+
+## Interpret returned results
+
+`tidy_results()` returns one row per returned taxon, contrast and configured
+step, not a complete grid of all possible tests. `method` identifies the engine
+and `step_id` identifies its configuration. Custom IDs must not collide with
+internal columns such as `effect`, `taxa_id` or `sum`; choose distinct IDs such
+as `linda_sensitivity`.
+
+The numerator and denominator define each contrast's orientation. Positive
+effects point toward the numerator on the reported metric, but the metrics
+are not numerically interchangeable:
+
+| Engine | Effect reported by the centralized API |
+|:--|:--|
+| DESeq2 | Log2 fold change, with the configured shrinkage. |
+| ALDEx2 | Contrast-oriented GLM coefficient. |
+| ANCOM-BC2 | Bias-corrected log fold change. |
+| corncob | Logit mean-abundance coefficient. |
+| LinDA | Bias-corrected log2 fold change. |
+| MaAsLin3 | Coefficient on the configured transformed abundance scale. |
+| Wilcoxon | Difference in medians on the configured abundance scale. |
+| LEfSe | Direction-oriented LDA score. |
+
+Inspect `effect_metric` and the configured engine options before interpreting
+an estimate. `significant` preserves the originating method's decision,
+including any additional criteria such as ANCOM-BC2's pseudocount-sensitivity
+filter. Missing statistics remain missing: a nonsignificant result does not
+prove that every estimate was available or that there is no effect. Absent
+rows are not automatically nonsignificant results. Agreement plots do not
+establish calibrated false-discovery rates.
 
 For centralized ALDEx2 analyses, `effect` is the contrast-oriented coefficient
 from the same GLM as the adjusted P value, averaged over Monte Carlo instances

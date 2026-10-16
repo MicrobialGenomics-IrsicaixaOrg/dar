@@ -19,7 +19,7 @@
     "tax_level": {
       "type": "character",
       "values": [
-        "Species"
+        "Genus"
       ],
       "missing": [
         false
@@ -30,7 +30,16 @@
       "type": "null"
     },
     "reference": {
-      "type": "null"
+      "type": "character",
+      "values": [
+        "hts"
+      ],
+      "missing": [
+        false
+      ],
+      "names": [
+        "RiskGroup2"
+      ]
     },
     "contrasts": {
       "type": "character",
@@ -381,7 +390,7 @@
   "bakes": [
     {
       "constructor": "bake",
-      "id": "bake__Carac",
+      "id": "bake__bundled",
       "arguments": {
         "count_cutoff": {
           "type": "null"

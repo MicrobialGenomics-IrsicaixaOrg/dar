@@ -2,7 +2,7 @@
 
 # File R/bake.R: @tests
 
-test_that("Function bake() @ L85", {
+test_that("Function bake() @ L86", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -19,9 +19,17 @@ test_that("Function bake() @ L85", {
     testthat::expect_s3_class("tbl_df") |>
     testthat::expect_snapshot()
   
-  nrow(cool(test)) |>
-    testthat::expect_equal(27) |>
-    testthat::expect_snapshot()
+  keys <- c("taxa_id", "contrast_id", "effect")
+  significant <- tidy_results(test_prep_rec, significant_only = TRUE) |>
+    dplyr::mutate(effect = effect_direction(effect_size))
+  expected <- significant |>
+    dplyr::filter(step_id == steps_ids(test_prep_rec, "da")[2]) |>
+    dplyr::distinct(dplyr::across(dplyr::all_of(keys))) |>
+    dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+  observed <- suppressMessages(cool(test)) |>
+    dplyr::select(dplyr::all_of(keys)) |>
+    dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+  testthat::expect_equal(observed, expected)
   
   test <- bake(test_prep_rec, exclude = "force_error")
   testthat::expect_error(cool(test))
@@ -34,8 +42,13 @@ test_that("Function bake() @ L85", {
     testthat::expect_s3_class("tbl_df") |>
     testthat::expect_snapshot()
   
-  nrow(cool(test)) |>
-    testthat::expect_equal(41) |>
-    testthat::expect_snapshot()
+  expected <- significant |>
+    dplyr::filter(step_id == steps_ids(test_prep_rec, "da")[1]) |>
+    dplyr::distinct(dplyr::across(dplyr::all_of(keys))) |>
+    dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+  observed <- suppressMessages(cool(test)) |>
+    dplyr::select(dplyr::all_of(keys)) |>
+    dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+  testthat::expect_equal(observed, expected)
 })
 

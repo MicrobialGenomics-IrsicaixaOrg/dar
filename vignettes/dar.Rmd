@@ -26,7 +26,9 @@ The included `metaHIV_phy` object is a `phyloseq` dataset from
 [Noguera-Julian et al. (2016)](https://doi.org/10.1016/j.ebiom.2016.01.032).
 Here we compare its recorded `RiskGroup2` categories. This unadjusted example
 illustrates the software; it does not establish causal effects or validated
-microbial biomarkers.
+microbial biomarkers. The profiling pipeline and measurement units of this
+derived table have not been independently verified, so its use here is not a
+recommendation of count-based methods for abundance profiles of unknown origin.
 
 ```{r data}
 data("metaHIV_phy", package = "dar")
@@ -92,6 +94,8 @@ results |>
 results |>
   dplyr::group_by(step_id, contrast_id) |>
   dplyr::summarise(
+    n_returned = dplyr::n(),
+    n_finite_effects = sum(is.finite(effect_size)),
     n_significant = sum(significant, na.rm = TRUE),
     .groups = "drop"
   )
@@ -99,29 +103,71 @@ results |>
 
 These results can be used directly, without `bake()` or `cool()`.
 
+`get_execution()` exposes the recorded contrast plan, samples removed by the
+model's missing-value policy, and executed or skipped steps. It does not record
+every engine's internal filtering. Older prepared objects can contain `NULL`
+fields because that information was not recorded.
+
+```{r execution}
+execution <- get_execution(fit)
+execution$contrasts
+execution$dropped_samples
+execution$executed_steps
+execution$skipped_steps
+```
+
 ## Plot a selected comparison
 
 Plots accept explicit contrast selectors so distinct hypotheses are not mixed.
-Here we show up to six taxa detected by at least one method for the comparison
-of `msm` with `hts`. An empty selection is a valid result, not a plotting failure.
+`effect_plt()` displays each step and effect metric in a separate panel. Its
+automatic `top_n` selects the largest absolute finite effects within each
+panel, not the taxa most supported by other methods. Colours preserve the
+method's configured decision; no universal confidence intervals are inferred.
+
+```{r effects, fig.width=8, fig.height=5}
+comparison_id <- "RiskGroup2[msm-hts]"
+effect_plt(
+  fit, steps = c("deseq", "maaslin"),
+  contrast_id = comparison_id, top_n = 6
+)
+```
+
+For observed abundances, select discoveries from one configured step rather
+than requiring agreement. `steps` uses the IDs assigned when the methods were
+configured. These abundances use the shared taxonomic analysis view before
+engine-specific operations; they are not adjusted model predictions.
 
 ```{r abundance, fig.width=7, fig.height=5}
-comparison_id <- "RiskGroup2[msm-hts]"
-taxa_ids <- results |>
-  dplyr::filter(contrast_id == comparison_id, significant) |>
-  dplyr::distinct(taxa_id) |>
-  dplyr::pull(taxa_id) |>
-  head(6)
-
-if (length(taxa_ids)) {
-  abundance_plt(
-    fit, taxa_ids = taxa_ids,
-    contrast_id = comparison_id, type = "boxplot"
-  )
-} else {
-  message("No significant taxa for this comparison.")
-}
+abundance_plt(
+  fit, steps = "deseq", contrast_id = comparison_id,
+  top_n = 6, type = "boxplot"
+)
 ```
+
+For several steps, choose `selection = "union"` for discoveries from any
+selected step, or `selection = "shared"` for those supported by every selected
+step in the same contrast and effect direction. An empty selection is valid
+and does not trigger a different selection rule. Explicit `taxa_ids` can also
+select taxa independently of significance or agreement.
+
+```{r abundance-selectors, eval=FALSE}
+abundance_plt(
+  fit, steps = c("deseq", "maaslin"), selection = "union",
+  contrast_id = comparison_id
+)
+abundance_plt(
+  fit, steps = c("deseq", "maaslin"), selection = "shared",
+  contrast_id = comparison_id
+)
+```
+
+For custom tables and graphics, see `tidy_abundance()` in
+[Data inputs and inspection](data_import.html). Optional agreement plots such
+as `intersection_plt()` are described in their function help. They describe
+agreement, not statistical accuracy. `bake()` defines an optional consensus
+rule and `cool()` extracts its results; their help includes exclusions and
+weights. More agreement does not guarantee greater accuracy or false-discovery
+rate control, and weights are not probabilities that methods are correct.
 
 ## Next steps
 
@@ -129,8 +175,6 @@ if (length(taxa_ids)) {
 - [Quality control and preprocessing](filtering_subsetting.html): QC and filters.
 - [Statistical models and contrasts](statistical_models.html): adjustment,
   repeated measurements and method compatibility.
-- [Exploring results and optional consensus](article.html): effect interpretation,
-  agreement plots and explicit consensus rules.
 - [Saving and sharing analysis recipes](import_export_recipes.html): reusable
   configurations and the limits of recipe export.
 

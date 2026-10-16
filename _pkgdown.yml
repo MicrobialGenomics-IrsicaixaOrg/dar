@@ -10,7 +10,6 @@ articles:
   - data_import
   - filtering_subsetting
   - statistical_models
-  - article
   - import_export_recipes
 reference:
 - title: "Basic Functions"
@@ -49,6 +48,8 @@ reference:
 - title: "Exploration"
   contents:
   - tidy_results
+  - tidy_abundance
+  - effect_plt
   - abundance_plt
   - corr_heatmap
   - exclusion_plt
@@ -59,6 +60,7 @@ reference:
   - overlap_df
 - title: "Recipe Data Access"
   contents:
+  - get_execution
   - get_phy
   - otu_table
   - sample_data

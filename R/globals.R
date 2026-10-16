@@ -8,7 +8,6 @@ utils::globalVariables(c(
   # <.legacy_import_steps>
   # <recipes_pkg_check>
   # <corr_heatmap>
-  # <.abundance_boxplot>
   # <.abundance_heatmap>
   # <run_wilcox>
   ".",
@@ -44,16 +43,12 @@ utils::globalVariables(c(
   # <exclusion_plt>
   # <mutual_plt>
   "method",
-  # <.abundance_boxplot>
-  # <.abundance_heatmap>
-  "method_count",
   # <find_intersections>
   "name",
   # <run_lefse>
   "otu",
   # <rm_zero_variance>
   "otu_id",
-  # <corncob_stats_tbl>
   # <run_deseq>
   # <run_wilcox>
   "padj",

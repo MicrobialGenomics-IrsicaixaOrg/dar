@@ -205,12 +205,11 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
 
 ## Abundance plot----
 
-#' Abundance boxplot
+#' Plot observed abundances of selected analysis taxa
 #'
 #' @param rec A prepped `Recipe` object.
-#' @param taxa_ids Character vector with taxa_ids to plot. If taxa_ids is NULL
-#'   the significant characteristics present in all of the executed methods will
-#'   be plotted.
+#' @param taxa_ids Character vector of analysis taxon IDs to plot. Explicit
+#'   IDs bypass significance-based selection and are not truncated by `top_n`.
 #' @param type Character vector indicating the type of the result. Options:
 #'   c("boxplot", "heatmap").
 #' @param transform Transformation to apply. The options include:
@@ -220,11 +219,25 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
 #'   applied and works with the raw counts.
 #' @param scale Scaling constant for the abundance values when transform =
 #'   "scale".
-#' @param top_n Maximum number of taxa to represent. Default: 20.
+#' @param top_n Maximum number of automatically selected taxa. Default: 20.
 #' @param target Modeled target used for annotations. Required when a modeled
 #'   recipe contains more than one target.
 #' @param contrast_id Modeled contrast used for automatic taxon selection.
 #'   Required when `taxa_ids = NULL` and more than one contrast is available.
+#' @param steps Character vector of executed DA step IDs used for automatic
+#'   selection. Use a single ID to plot that configured method's discoveries.
+#'   Defaults to all executed DA steps.
+#' @param selection Automatic selection rule: `"shared"` requires a significant
+#'   result with the same contrast and effect direction in every selected step;
+#'   `"union"` includes discoveries from any selected step. No fallback to a
+#'   different rule is performed when the requested selection is empty.
+#'
+#' @details Abundances use the shared taxonomic analysis view, before any
+#'   method-specific filtering or transformation. The plotted values are
+#'   observed abundances, not covariate-adjusted predictions. Transformations
+#'   use all analysis taxa before the display is restricted to selected IDs.
+#'   Automatic selections are ordered by decreasing support across selected
+#'   steps, with ties resolved by analysis taxon order, not by pooled effects.
 #'
 #' @return ggplot2 or HeatmapList, or invisible `NULL` with an informational
 #'   message when automatic selection finds no significant taxa.
@@ -233,51 +246,65 @@ exclusion_plt <- function(rec, steps = steps_ids(rec, "da"), target = NULL,
 #' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
-#' taxa_ids <- c("Otu_96", "Otu_78", "Otu_88", "Otu_35", "Otu_94", "Otu_34")
+#' results <- tidy_results(test_prep_rec)
+#' contrast_id <- results$contrast_id[[1]]
+#' taxa_ids <- head(unique(results$taxa_id), 6)
 #' 
 #' pdf(file = tempfile())
 #' withr::defer(dev.off())
 #' 
 #' expect_error(abundance_plt(test_rec))
 #' expect_s3_class(suppressMessages(
-#'   abundance_plt(test_prep_rec)), "ggplot"
+#'   abundance_plt(test_prep_rec, contrast_id = contrast_id)), "ggplot"
 #' )
 #' expect_s4_class(suppressMessages(
-#'   abundance_plt(test_prep_rec, type = "heatmap")), "HeatmapList"
+#'   abundance_plt(test_prep_rec, type = "heatmap",
+#'                 contrast_id = contrast_id)), "HeatmapList"
 #' )
 #' expect_s3_class(suppressMessages(
 #'   abundance_plt(test_prep_rec, taxa_ids = taxa_ids)), "ggplot"
 #' )
 #' expect_s3_class(suppressMessages(
-#'   abundance_plt(test_prep_rec, top_n = 10)), "ggplot"
+#'   abundance_plt(test_prep_rec, top_n = 10, contrast_id = contrast_id)), "ggplot"
 #' )
 #' expect_s3_class(suppressMessages(
-#'   abundance_plt(test_prep_rec, transform = "clr")), "ggplot"
+#'   abundance_plt(test_prep_rec, transform = "clr",
+#'                 contrast_id = contrast_id)), "ggplot"
 #' )
 #' expect_s4_class(
 #'   abundance_plt(test_prep_rec, taxa_ids = taxa_ids, type = "heatmap"), 
 #'   "HeatmapList"
 #' )
 #' expect_s3_class(suppressMessages(
-#'   abundance_plt(test_prep_rec, transform = "scale", scale = 10)), "ggplot"
+#'   abundance_plt(test_prep_rec, transform = "scale", scale = 10,
+#'                 contrast_id = contrast_id)), "ggplot"
 #' )
 #' 
 #' withr::defer(dev.off())
 #' @examples
 #' data(test_prep_rec)
+#' results <- tidy_results(test_prep_rec)
+#' contrast_id <- results$contrast_id[[1]]
 #'
 #' ## Boxplots of taxa detected by all methods
-#' abundance_plt(test_prep_rec)
+#' abundance_plt(test_prep_rec, contrast_id = contrast_id)
 #'
 #' ## Display the same abundances as a heatmap
 #' if (requireNamespace("ComplexHeatmap", quietly = TRUE) &&
 #'     requireNamespace("gplots", quietly = TRUE)) {
-#'   abundance_plt(test_prep_rec, type = "heatmap")
+#'   abundance_plt(test_prep_rec, type = "heatmap", contrast_id = contrast_id)
 #' }
 #'
 #' ## Select taxa explicitly
-#' taxa_ids <- head(tax_table(test_prep_rec)$taxa_id, 3)
+#' taxa_ids <- head(unique(results$taxa_id), 3)
 #' abundance_plt(test_prep_rec, taxa_ids = taxa_ids)
+#'
+#' ## Discoveries from one configured method, without requiring agreement
+#' method_id <- steps_ids(test_prep_rec, "da")[[1]]
+#' abundance_plt(test_prep_rec, steps = method_id, contrast_id = contrast_id)
+#'
+#' ## Union of discoveries from the executed methods
+#' abundance_plt(test_prep_rec, selection = "union", contrast_id = contrast_id)
 abundance_plt <- function(rec,
                           taxa_ids = NULL,
                           type = "boxplot",
@@ -285,34 +312,72 @@ abundance_plt <- function(rec,
                           scale = 1, 
                           top_n = 20,
                           target = NULL,
-                          contrast_id = NULL)  {
+                          contrast_id = NULL,
+                          steps = steps_ids(rec, "da"),
+                          selection = c("shared", "union")) {
   
   check_prep_recipe(rec)
   
-  if (!type %in% c("boxplot", "heatmap")) {
+  if (!is.character(type) || length(type) != 1L || is.na(type) ||
+      !type %in% c("boxplot", "heatmap")) {
     cli::cli_abort(
       c("x" = "{.arg type} must be one of: {.val {c('boxplot', 'heatmap')}}."),
       class = "dar_error_invalid_plot_type"
     )
   }
+  selection <- match.arg(selection)
+  if (!is.numeric(top_n) || length(top_n) != 1L || !is.finite(top_n) ||
+      top_n < 1 || top_n != floor(top_n)) {
+    cli::cli_abort(
+      "{.arg top_n} must be a positive whole number.",
+      class = "dar_error_invalid_top_n"
+    )
+  }
+  if (is.null(taxa_ids) || !missing(steps)) {
+    validate_consensus_steps(rec, steps)
+  }
 
   target <- resolve_plot_target(rec, target)
   contrast_id <- resolve_abundance_contrast(rec, taxa_ids, target, contrast_id)
 
-  if (is.null(taxa_ids) &&
-      nrow(selected_significant(rec, target, contrast_id)) == 0L) {
-    return(inform_empty_discovery_plot())
+  if (is.null(taxa_ids)) {
+    taxa_ids <- select_abundance_taxa(
+      rec, steps, selection, target, contrast_id, top_n
+    )
+    if (length(taxa_ids) == 0L) {
+      if (selection == "shared" && length(steps) > 1L) {
+        cli::cli_inform(
+          "No significant taxa are shared by all selected steps for the selected hypotheses."
+        )
+        return(invisible(NULL))
+      }
+      return(inform_empty_discovery_plot())
+    }
+  } else {
+    available <- analysis_tax_table(rec)$taxa_id
+    if (!is.character(taxa_ids) || anyNA(taxa_ids) ||
+        any(!nzchar(taxa_ids)) || anyDuplicated(taxa_ids) ||
+        !all(taxa_ids %in% available)) {
+      cli::cli_abort(
+        "{.arg taxa_ids} must contain unique taxon IDs from the analysis view.",
+        class = "dar_error_invalid_taxa_ids"
+      )
+    }
+    if (length(taxa_ids) == 0L) {
+      cli::cli_inform("No taxa were selected for the abundance plot.")
+      return(invisible(NULL))
+    }
   }
 
   if (type == "boxplot") { 
     plt <- .abundance_boxplot(
-      rec, taxa_ids, transform, scale, top_n, target, contrast_id
+      rec, taxa_ids, transform, scale, target
     )
   } else if (type == "heatmap") { 
     require_optional_package("ComplexHeatmap", "abundance_plt")
     require_optional_package("gplots", "abundance_plt")
     plt <- .abundance_heatmap(
-      rec, taxa_ids, transform, scale, top_n, target, contrast_id
+      rec, taxa_ids, transform, scale, target
     )
   }
   
@@ -347,6 +412,7 @@ abundance_plt <- function(rec,
 #' @tests
 #' data(test_rec)
 #' data(test_prep_rec)
+#' comparison <- tidy_results(test_prep_rec)$comparison[[1]]
 #' 
 #' expect_error(mutual_plt(test_rec))
 #' expect_s3_class(suppressMessages(mutual_plt(test_prep_rec)), "ggplot")
@@ -356,7 +422,7 @@ abundance_plt <- function(rec,
 #' expect_error(suppressMessages(mutual_plt(test_prep_rec, count_cutoff = 0)))
 #' expect_error(suppressMessages(mutual_plt(test_prep_rec, count_cutoff = 10)))
 #' expect_s3_class(suppressMessages(
-#'   mutual_plt(test_prep_rec, comparisons = "hts_msm")), "ggplot"
+#'   mutual_plt(test_prep_rec, comparisons = comparison)), "ggplot"
 #' )
 #' expect_error(suppressMessages(
 #'   mutual_plt(test_prep_rec, comparisons = "hts_sm"))
@@ -382,7 +448,8 @@ abundance_plt <- function(rec,
 #' )
 #'
 #' ## Show a single comparison
-#' mutual_plt(test_prep_rec, comparisons = "hts_msm")
+#' comparison <- tidy_results(test_prep_rec)$comparison[[1]]
+#' mutual_plt(test_prep_rec, comparisons = comparison)
 #'
 #' ## Exclude the first method from the plot
 #' mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])
@@ -609,47 +676,47 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
 }
 
 #' @noRd
-#' @keywords internal
-#' @autoglobal
-.abundance_boxplot <- function(rec, taxa_ids, transform, scale, top_n = 20,
-                               target, contrast_id) {
-  if (is.null(taxa_ids)) {
-    taxa_ids <- 
-      selected_significant(rec, target, contrast_id) %>%
-      dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
-      dplyr::pull(taxa_id) %>% 
-      unique()
-    
-    if (length(taxa_ids) > top_n) {
-      cli::cli_inform(c(
-        "!" = "Taxa present in all methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
-        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
-      ))
-     
-      taxa_ids <- 
-        selected_significant(rec, target, contrast_id) %>%
-        dplyr::group_by(taxa_id) %>% 
-        dplyr::summarise(method_count = max(method_count)) %>% 
-        dplyr::arrange(-method_count) %>% 
-        dplyr::pull(taxa_id) %>% 
-        .[seq_len(top_n)]
-    }
-    
-    if (length(taxa_ids) == 0) {
-      cli::cli_inform(c(
-        "!" = "0 taxa are present in all tested methods.",
-        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
-      ))
-      
-      taxa_ids <- 
-        selected_significant(rec, target, contrast_id) %>%
-        dplyr::group_by(taxa_id) %>% 
-        dplyr::summarise(method_count = max(method_count)) %>% 
-        dplyr::arrange(-method_count) %>% 
-        dplyr::pull(taxa_id) %>% 
-        .[seq_len(top_n)]
+select_abundance_taxa <- function(rec, steps, selection, target, contrast_id,
+                                  top_n) {
+  discoveries <- tidy_results(rec, steps = steps, significant_only = TRUE)
+  if (!is.null(get_model(rec))) {
+    discoveries <- filter_model_hypotheses(
+      discoveries, rec, target = target, contrast_id = contrast_id
+    )
+  } else if (!is.null(target)) {
+    discoveries <- dplyr::filter(discoveries, .data$var == .env$target)
+  }
+  support <- discoveries |>
+    dplyr::mutate(direction = dplyr::if_else(
+      is.finite(.data$effect_size), effect_direction(.data$effect_size),
+      NA_character_
+    )) |>
+    dplyr::group_by(.data$taxa_id, .data$contrast_id, .data$direction) |>
+    dplyr::summarise(
+      support = dplyr::n_distinct(.data$step_id), .groups = "drop"
+    )
+  if (selection == "shared") {
+    support <- dplyr::filter(support, .data$support == length(steps))
+    if (length(steps) > 1L) {
+      support <- dplyr::filter(support, !is.na(.data$direction))
     }
   }
+  if (nrow(support) == 0L) return(character())
+  support |>
+    dplyr::group_by(.data$taxa_id) |>
+    dplyr::summarise(support = max(.data$support), .groups = "drop") |>
+    dplyr::arrange(
+      dplyr::desc(.data$support),
+      match(.data$taxa_id, analysis_tax_table(rec)$taxa_id)
+    ) |>
+    dplyr::slice_head(n = top_n) |>
+    dplyr::pull(.data$taxa_id)
+}
+
+#' @noRd
+#' @keywords internal
+#' @autoglobal
+.abundance_boxplot <- function(rec, taxa_ids, transform, scale, target) {
   
   t_rec <- rec
   t_rec@phyloseq <- analysis_phyloseq(rec)
@@ -665,7 +732,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   
   .annotated_counts(t_rec, counts = recipe_count_matrix(t_rec)) %>%
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
-    tidyr::unite("taxa", c(taxa_id, taxa), sep = "|") %>% 
+    dplyr::mutate(taxa = paste(.data$taxa_id, .data$taxa, sep = "|")) %>%
     ggplot(aes(taxa, value, fill = !!dplyr::sym(target))) +
     geom_boxplot(alpha = 0.7) +
     theme_minimal(base_size = 10) +
@@ -676,50 +743,11 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
 #' @noRd
 #' @keywords internal
 #' @autoglobal
-.abundance_heatmap <- function(rec, taxa_ids, transform, scale, top_n, target,
-                               contrast_id) {
+.abundance_heatmap <- function(rec, taxa_ids, transform, scale, target) {
   ComplexHeatmap::ht_opt(
     message = FALSE, 
     COLUMN_ANNO_PADDING = unit(0.5, "cm")
   )
-  
-  if (is.null(taxa_ids)) {
-    taxa_ids <- 
-      selected_significant(rec, target, contrast_id) %>%
-      dplyr::filter(method_count == length(steps_ids(rec, "da"))) %>% 
-      dplyr::pull(taxa_id) %>% 
-      unique()
-    
-    if (length(taxa_ids) > top_n) {
-      cli::cli_inform(c(
-        "!" = "Taxa present in all methods are greater than the cutoff {.arg top_n} = {.val {top_n}}.",
-        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
-      ))
-      
-      taxa_ids <- 
-        selected_significant(rec, target, contrast_id) %>%
-        dplyr::group_by(taxa_id) %>% 
-        dplyr::summarise(method_count = max(method_count)) %>% 
-        dplyr::arrange(-method_count) %>% 
-        dplyr::pull(taxa_id) %>% 
-        .[seq_len(top_n)]
-    }
-    
-    if (length(taxa_ids) == 0) {
-      cli::cli_inform(c(
-        "!" = "{.val 0} taxa are present in all tested methods.",
-        "i" = "The top {.val {top_n}} significant taxa with the greatest overlap between methods will be used."
-      ))
-      
-      taxa_ids <- 
-        selected_significant(rec, target, contrast_id) %>%
-        dplyr::group_by(taxa_id) %>% 
-        dplyr::summarise(method_count = max(method_count)) %>% 
-        dplyr::arrange(-method_count) %>% 
-        dplyr::pull(taxa_id) %>% 
-        .[seq_len(top_n)]
-    }
-  }
   
   t_rec <- rec
   t_rec@phyloseq <- analysis_phyloseq(rec)
@@ -733,7 +761,7 @@ selected_significant <- function(rec, target = NULL, contrast_id = NULL,
   df <- 
     .annotated_counts(t_rec, counts = recipe_count_matrix(t_rec)) %>%
     dplyr::filter(taxa_id %in% taxa_ids) %>% 
-    tidyr::unite("taxa", c(taxa_id, taxa), sep = "|")
+    dplyr::mutate(taxa = paste(.data$taxa_id, .data$taxa, sep = "|"))
   
   mtx <- 
     dplyr::select(df, taxa, value, sample_id) %>% 

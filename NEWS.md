@@ -17,6 +17,24 @@
   obtain the corrected effects; their former effect values are not relabeled.
   The obsolete `engine_args$effect` stage is rejected. Deprecated model-free
   ALDEx2 execution retains its standardized effect.
+* `abundance_plt()` no longer substitutes a largest-overlap selection when
+  no taxa satisfy the requested shared-discovery rule. Use
+  `selection = "union"`, one `steps` ID or explicit `taxa_ids` for those views.
+
+## New features
+
+* `tidy_abundance()` extracts the shared taxonomic analysis view in long form,
+  with lineage and selected sample metadata under collision-safe prefixes.
+  Compositional fractions use all analysis taxa before taxon selection; this
+  view does not reproduce each engine's private filtering or transformation.
+* `get_execution()` exposes recorded contrasts, model-excluded samples and
+  executed/skipped steps without recomputing historical provenance.
+* `effect_plt()` displays individual method estimates for a selected contrast,
+  preserving native significance decisions and separating effect metrics into
+  distinct panels. It does not infer common confidence intervals.
+* `abundance_plt()` accepts selected DA `steps`, including a single configured
+  method, and explicit `"shared"` or `"union"` discovery selection. Explicit
+  taxon IDs remain available regardless of significance.
 
 ## Deprecations
 
@@ -27,6 +45,19 @@
 
 ## Bug fixes
 
+* Centralized MaAsLin3 tests evaluate each planned contrast independently
+  after one fit. An unestimable contrast no longer hides estimable contrasts
+  for the same taxon; native missing values and the joint correction family
+  across taxa and planned contrasts are retained.
+* `metaHIV_phy` documentation reports the full 156-sample example and removes
+  unverified profiling and count-construction details. Five focused guides
+  replace the overlapping article vignette.
+* Deprecated model-free `step_maaslin()` execution supplies the actually
+  aggregated and, when requested, rarefied counts to MaAsLin3 rather than
+  the stored feature table. Results retain the matching taxon identities.
+* Bundled `test_rec` and `test_prep_rec` examples now use the centralized genus-
+  level model. The prepared MaAsLin3 and DESeq2 results are regenerated from
+  the shared aggregated counts, with explicit contrast selection in examples.
 * `step_aldex()` extracts centralized effects from the same native GLM and
   contrast as its adjusted P values, preserving adjustment and interaction
   semantics instead of combining them with a post-hoc binary-group effect.

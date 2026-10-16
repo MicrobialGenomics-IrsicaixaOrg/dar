@@ -11,7 +11,8 @@ A Recipe object.
 data("test_rec")
 }
 \description{
-A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
-and "Genus" as a \code{tax_info}.
+An unprepared recipe for \code{metaHIV_phy}, with a centralized \code{~ RiskGroup2}
+model at genus level and \code{hts} as its reference. It includes microbial
+subsetting, feature-prevalence filtering, MaAsLin3 and DESeq2 steps.
 }
 \keyword{datasets}
