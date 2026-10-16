@@ -62,6 +62,8 @@
   : LinDA differential-abundance analysis
 - [`step_maaslin()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)
   : MaAsLin3 analysis
+- [`step_rademu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rademu.md)
+  : radEmu differential-abundance analysis
 - [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
   : Wilcox analysis
 

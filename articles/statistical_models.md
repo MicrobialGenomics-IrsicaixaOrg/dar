@@ -155,17 +155,18 @@ structure required by the study design and choose a compatible method.
 
 ## Engine capabilities
 
-| Engine    | Fixed adjustment | Time interaction |  Random effects  |
-|:----------|:----------------:|:----------------:|:----------------:|
-| DESeq2    |       yes        |       yes        |        no        |
-| ALDEx2    |       yes        |       yes        |        no        |
-| ALDEx3    |       yes        |       yes        | yes (exact lme4) |
-| ANCOM-BC2 |       yes        |       yes        |       yes        |
-| corncob   |       yes        |       yes        |        no        |
-| LinDA     |       yes        |       yes        |       yes        |
-| MaAsLin3  |       yes        |       yes        |       yes        |
-| Wilcoxon  |        no        |        no        |        no        |
-| LEfSe     |        no        |        no        |        no        |
+| Engine    | Fixed adjustment | Time interaction |       Random effects        |
+|:----------|:----------------:|:----------------:|:---------------------------:|
+| DESeq2    |       yes        |       yes        |             no              |
+| ALDEx2    |       yes        |       yes        |             no              |
+| ALDEx3    |       yes        |       yes        |      yes (exact lme4)       |
+| ANCOM-BC2 |       yes        |       yes        |             yes             |
+| corncob   |       yes        |       yes        |             no              |
+| LinDA     |       yes        |       yes        |             yes             |
+| MaAsLin3  |       yes        |       yes        |             yes             |
+| radEmu    |       yes        |       yes        | no; explicit GEE clustering |
+| Wilcoxon  |        no        |        no        |             no              |
+| LEfSe     |        no        |        no        |             no              |
 
 Fixed adjustment includes an additive time term, even when that column
 is declared with `time`. Wilcoxon and LEfSe support one categorical
@@ -207,6 +208,7 @@ the metrics are not numerically interchangeable:
 | corncob   | Logit mean-abundance coefficient.                          |
 | LinDA     | Bias-corrected log2 fold change.                           |
 | MaAsLin3  | Coefficient on the configured transformed abundance scale. |
+| radEmu    | Centred natural-log fold difference across analysis taxa.  |
 | Wilcoxon  | Difference in medians on the configured abundance scale.   |
 | LEfSe     | Direction-oriented LDA score.                              |
 
@@ -228,9 +230,9 @@ effect. Advanced native settings can change its scale.
 
 ## Advanced native-engine arguments
 
-The nine DA steps accept `engine_args`, a named list grouped by
-native-call stage. This keeps advanced settings attached to the
-configured step and avoids an ambiguous `...`. For example:
+All DA steps accept `engine_args`, a named list grouped by native-call
+stage. This keeps advanced settings attached to the configured step and
+avoids an ambiguous `...`. For example:
 
 \
 `advanced`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``phy``)`` ``|>`\
@@ -278,8 +280,8 @@ complete `iter_control` list, including `verbose`, rather than only the
 values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3 and ANCOM-BC2,
-corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for
+DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3, ANCOM-BC2,
+corncob, LinDA and radEmu; `fit` and `contrast` for MaAsLin3; `test` for
 Wilcoxon; and `transform` and `fit` for LEfSe. Data, formulas,
 contrasts, output paths and arguments already exposed by each dar
 wrapper are protected. A configured stage that is not used by the
@@ -355,6 +357,63 @@ contrasts. Missing estimates stay missing.
 [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
 records the ALDEx3 version, seed, Monte Carlo settings, scale
 specification, native engine and elapsed time.
+
+## radEmu: fixed models and clustered inference
+
+[`step_rademu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rademu.md)
+reports native robust score tests by default. Use `test = "wald"`
+explicitly for native Wald tests. Effects are natural-log fold
+differences relative to radEmu’s pseudo-Huber centre across analysis
+taxa, not unqualified absolute changes. Each contrast is reparameterized
+and fitted with its native centring constraint; a nonlinear centre is
+not replaced by a linear combination of previously centred coefficients.
+dar adjusts the selected native P values across returned taxa within
+each contrast, using BH by default. This correction is not joint across
+planned contrasts. Native missing values and zero-comparison exclusions
+stay missing.
+
+For dependent observations, name a metadata column in `cluster`. This
+uses radEmu’s GEE-based covariance, not a random-intercept model. A
+formula with random effects is incompatible even if `cluster` is
+supplied; dar does not silently translate `(1 | subject)` into another
+dependence model.
+
+\
+`rademu_rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``longitudinal_phy``)`` ``|>`\
+`  `[`add_model`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)`(`\
+`    ``~`` ``condition`` ``*`` ``visit``, targets ``=`` ``"condition"``, time ``=`` ``"visit"``,`\
+`    tax_level ``=`` ``"Species"``, contrasts ``=`` ``"all"`\
+`  ``)`` ``|>`\
+`  `[`step_rademu`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rademu.md)`(``cluster ``=`` ``"subject"``)`\
+`rademu_rec`\
+`#> ── ``DAR Recipe`` ──────────────────────────────────────────────────────────────────`\
+`#> Inputs:`\
+`#> `\
+`#>      ``ℹ`` phyloseq object with ``12`` taxa and ``36`` samples `\
+`#>      ``ℹ`` variable of interes ``condition`` (class: character, levels: control, treated) `\
+`#>      ``ℹ`` taxonomic level ``Species`` `\
+`#> `\
+`#> Statistical model:`\
+`#> `\
+`#>      ``ℹ`` ``~condition * visit`` `\
+`#> `\
+`#> Preprocessing steps:`\
+`#> `\
+`#> `\
+`#> DA steps:`\
+`#> `\
+`#>      ``◉`` step_rademu() ``id = rademu__Sfogliatelle`
+
+Cluster labels follow the common model cohort. Missing cluster IDs are
+errors, not grounds for a private sample exclusion. Native options can
+be passed in `engine_args$fit`, for example `tolerance`, `maxit` or
+`remove_zero_comparison_pvals`; data, tested coordinates and test
+selection are managed by dar. Native numerical validation stays in
+radEmu.
+[`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
+records the effective package version, test, centre, requested and
+effective cluster labels, seed and native convergence diagnostics. Score
+testing may be expensive because each taxon requires a restricted fit.
 
 \
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
@@ -433,61 +492,61 @@ specification, native engine and elapsed time.
 `#>  [93] iterators_1.0.14                statmod_1.5.2                  `\
 `#>  [95] bluster_1.23.1                  TH.data_1.1-5                  `\
 `#>  [97] nlme_3.1-171                    ANCOMBC_2.15.1                 `\
-`#>  [99] phyloseq_1.57.0                 bbotk_1.13.1                   `\
-`#> [101] fBasics_4052.98                 TMB_1.9.25                     `\
-`#> [103] bslib_0.12.0                    MicrobiomeStat_1.4             `\
-`#> [105] mlr3_1.8.0                      irlba_2.4.1                    `\
-`#> [107] vipor_0.4.7                     otel_0.2.0                     `\
-`#> [109] rpart_4.1.27                    colorspace_2.1-4               `\
-`#> [111] Hmisc_5.3-0                     mlr3mbo_1.2.1                  `\
-`#> [113] moocore_0.3.2                   BiocGenerics_0.59.12           `\
-`#> [115] DBI_1.3.0                       nnet_7.3-21                    `\
-`#> [117] ade4_1.7-24                     mlr3misc_0.23.0                `\
-`#> [119] Exact_3.3                       DESeq2_1.53.6                  `\
-`#> [121] tidyselect_1.2.1                timeSeries_4052.112            `\
-`#> [123] compiler_4.6.1                  htmlTable_2.5.0                `\
-`#> [125] BiocNeighbors_2.7.3             lgr_0.5.2                      `\
-`#> [127] expm_1.0-1                      desc_1.4.3                     `\
-`#> [129] DelayedArray_0.39.8             checkmate_2.3.4                `\
-`#> [131] scales_1.4.0                    quadprog_1.5-8                 `\
-`#> [133] spatial_7.3-19                  rappdirs_0.3.4                 `\
-`#> [135] palmerpenguins_0.1.1            stringr_1.6.0                  `\
-`#> [137] digest_0.6.39                   minqa_1.2.8                    `\
-`#> [139] rmarkdown_2.32                  XVector_0.53.0                 `\
-`#> [141] base64enc_0.1-6                 htmltools_0.5.9                `\
-`#> [143] pkgconfig_2.0.3                 lme4_2.0-6                     `\
-`#> [145] sparseMatrixStats_1.25.0        MatrixGenerics_1.25.0          `\
-`#> [147] stabledist_0.7-2                fastmap_1.2.0                  `\
-`#> [149] rlang_1.3.0                     htmlwidgets_1.6.4              `\
-`#> [151] DelayedMatrixStats_1.35.0       farver_2.1.2                   `\
-`#> [153] jquerylib_0.1.4                 zoo_1.9-1                      `\
-`#> [155] energy_1.7-12                   jsonlite_2.0.0                 `\
-`#> [157] BiocParallel_1.47.0             BiocSingular_1.29.2            `\
-`#> [159] magrittr_2.0.5                  Formula_1.2-6                  `\
-`#> [161] scuttle_1.23.2                  Rcpp_1.1.2                     `\
-`#> [163] ape_5.8-1                       viridis_0.6.5                  `\
-`#> [165] stringi_1.8.9                   rootSolve_1.8.2.4              `\
-`#> [167] stable_1.1.7                    MASS_7.3-66                    `\
-`#> [169] plyr_1.8.9                      parallel_4.6.1                 `\
-`#> [171] listenv_1.1.0                   ggrepel_0.9.8                  `\
-`#> [173] forcats_1.0.1                   lmom_3.3                       `\
-`#> [175] Biostrings_2.81.9               splines_4.6.1                  `\
-`#> [177] multtest_2.69.0                 hms_1.1.4                      `\
-`#> [179] locfit_1.5-9.12                 ALDEx3_1.3.1                   `\
-`#> [181] igraph_2.3.4                    uuid_1.2-2                     `\
-`#> [183] rngtools_1.5.2                  reshape2_1.4.5                 `\
-`#> [185] stats4_4.6.1                    ScaledMatrix_1.21.0            `\
-`#> [187] rmutil_1.1.10                   evaluate_1.0.5                 `\
-`#> [189] nloptr_2.2.1                    tzdb_0.5.0                     `\
-`#> [191] foreach_1.5.2                   tidyr_1.3.2                    `\
-`#> [193] purrr_1.2.2                     future_1.80.0                  `\
-`#> [195] clue_0.3-68                     ggplot2_4.0.3                  `\
-`#> [197] ashr_2.2-63                     rsvd_1.0.5                     `\
-`#> [199] e1071_1.7-17                    tidytree_0.4.8                 `\
-`#> [201] viridisLite_0.4.3               class_7.3-24                   `\
-`#> [203] ragg_1.5.2                      gsl_2.1-9                      `\
-`#> [205] truncnorm_1.0-9                 tibble_3.3.1                   `\
-`#> [207] lmerTest_3.2-1                  beeswarm_0.4.0                 `\
-`#> [209] IRanges_2.47.5                  cluster_2.1.8.3                `\
-`#> [211] TreeSummarizedExperiment_2.21.0 globals_0.20.0                 `\
-`#> [213] mia_1.21.11`
+`#>  [99] radEmu_2.3.2.0                  phyloseq_1.57.0                `\
+`#> [101] bbotk_1.13.1                    fBasics_4052.98                `\
+`#> [103] TMB_1.9.25                      bslib_0.12.0                   `\
+`#> [105] MicrobiomeStat_1.4              mlr3_1.8.0                     `\
+`#> [107] irlba_2.4.1                     vipor_0.4.7                    `\
+`#> [109] otel_0.2.0                      rpart_4.1.27                   `\
+`#> [111] colorspace_2.1-4                Hmisc_5.3-0                    `\
+`#> [113] mlr3mbo_1.2.1                   moocore_0.3.2                  `\
+`#> [115] BiocGenerics_0.59.12            DBI_1.3.0                      `\
+`#> [117] nnet_7.3-21                     ade4_1.7-24                    `\
+`#> [119] mlr3misc_0.23.0                 Exact_3.3                      `\
+`#> [121] DESeq2_1.53.6                   tidyselect_1.2.1               `\
+`#> [123] timeSeries_4052.112             compiler_4.6.1                 `\
+`#> [125] htmlTable_2.5.0                 BiocNeighbors_2.7.3            `\
+`#> [127] lgr_0.5.2                       expm_1.0-1                     `\
+`#> [129] desc_1.4.3                      DelayedArray_0.39.8            `\
+`#> [131] checkmate_2.3.4                 scales_1.4.0                   `\
+`#> [133] quadprog_1.5-8                  spatial_7.3-19                 `\
+`#> [135] rappdirs_0.3.4                  palmerpenguins_0.1.1           `\
+`#> [137] stringr_1.6.0                   digest_0.6.39                  `\
+`#> [139] minqa_1.2.8                     rmarkdown_2.32                 `\
+`#> [141] XVector_0.53.0                  base64enc_0.1-6                `\
+`#> [143] htmltools_0.5.9                 pkgconfig_2.0.3                `\
+`#> [145] lme4_2.0-6                      sparseMatrixStats_1.25.0       `\
+`#> [147] MatrixGenerics_1.25.0           stabledist_0.7-2               `\
+`#> [149] fastmap_1.2.0                   rlang_1.3.0                    `\
+`#> [151] htmlwidgets_1.6.4               DelayedMatrixStats_1.35.0      `\
+`#> [153] farver_2.1.2                    jquerylib_0.1.4                `\
+`#> [155] zoo_1.9-1                       energy_1.7-12                  `\
+`#> [157] jsonlite_2.0.0                  BiocParallel_1.47.0            `\
+`#> [159] BiocSingular_1.29.2             magrittr_2.0.5                 `\
+`#> [161] Formula_1.2-6                   scuttle_1.23.2                 `\
+`#> [163] Rcpp_1.1.2                      ape_5.8-1                      `\
+`#> [165] viridis_0.6.5                   stringi_1.8.9                  `\
+`#> [167] rootSolve_1.8.2.4               stable_1.1.7                   `\
+`#> [169] MASS_7.3-66                     plyr_1.8.9                     `\
+`#> [171] parallel_4.6.1                  listenv_1.1.0                  `\
+`#> [173] ggrepel_0.9.8                   forcats_1.0.1                  `\
+`#> [175] lmom_3.3                        Biostrings_2.81.9              `\
+`#> [177] splines_4.6.1                   multtest_2.69.0                `\
+`#> [179] hms_1.1.4                       locfit_1.5-9.12                `\
+`#> [181] ALDEx3_1.3.1                    igraph_2.3.4                   `\
+`#> [183] uuid_1.2-2                      rngtools_1.5.2                 `\
+`#> [185] reshape2_1.4.5                  stats4_4.6.1                   `\
+`#> [187] ScaledMatrix_1.21.0             rmutil_1.1.10                  `\
+`#> [189] evaluate_1.0.5                  nloptr_2.2.1                   `\
+`#> [191] tzdb_0.5.0                      foreach_1.5.2                  `\
+`#> [193] tidyr_1.3.2                     purrr_1.2.2                    `\
+`#> [195] future_1.80.0                   clue_0.3-68                    `\
+`#> [197] ggplot2_4.0.3                   ashr_2.2-63                    `\
+`#> [199] rsvd_1.0.5                      e1071_1.7-17                   `\
+`#> [201] tidytree_0.4.8                  viridisLite_0.4.3              `\
+`#> [203] class_7.3-24                    ragg_1.5.2                     `\
+`#> [205] gsl_2.1-9                       truncnorm_1.0-9                `\
+`#> [207] tibble_3.3.1                    lmerTest_3.2-1                 `\
+`#> [209] beeswarm_0.4.0                  IRanges_2.47.5                 `\
+`#> [211] cluster_2.1.8.3                 TreeSummarizedExperiment_2.21.0`\
+`#> [213] globals_0.20.0                  mia_1.21.11`
