@@ -10,7 +10,7 @@ test_that("every DA engine requires add_model before any execution", {
   phy <- make_longitudinal_phy()
   engines <- c(
     "aldex2", "aldex3", "ancom", "corncob", "deseq", "lefse",
-    "linda", "maaslin", "wilcox"
+    "linda", "maaslin", "rademu", "wilcox"
   )
   for (selectors in c(FALSE, TRUE)) {
     base <- if (selectors) {

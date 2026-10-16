@@ -70,6 +70,7 @@ Suggests:
     maaslin3,
     microbiome,
     MicrobiomeStat,
+    radEmu (>= 2.3.2.0),
     rmarkdown,
     roxygen2,
     roxyglobals,
@@ -110,6 +111,7 @@ Collate:
     'model.R'
     'pkg_check.R'
     'plot_methods.R'
+    'rademu.R'
     'rarefaction.R'
     'recipe-utils.R'
     'recipe_qc.R'

@@ -109,6 +109,10 @@ da_result_registry <- function() {
       effect_metric = "aldex3_log2_abundance_coefficient",
       p_value = "pval", adj_p_value = "padj"
     ),
+    rademu = list(
+      effect_metric = "rademu_centered_log_fold_difference",
+      p_value = "pvalue", adj_p_value = "padj"
+    ),
     ancom = list(
       effect_metric = "bias_corrected_log_fold_change",
       p_value = c("pval", "p"), adj_p_value = c("padj", "q")

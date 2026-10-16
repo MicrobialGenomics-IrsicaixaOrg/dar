@@ -29,7 +29,10 @@ recipe_step_registry <- c(
     "preprocessing"
   ),
   register_step_methods(
-    c("aldex2", "aldex3", "ancom", "corncob", "deseq", "lefse", "linda", "maaslin", "wilcox"),
+    c(
+      "aldex2", "aldex3", "ancom", "corncob", "deseq", "lefse", "linda",
+      "maaslin", "rademu", "wilcox"
+    ),
     "da"
   ),
   register_step_methods("bake", "bake")

@@ -37,19 +37,19 @@ test_that("engine_args validates its nested stage contract", {
 test_that("engine_args is the final public argument of every DA step", {
   constructors <- list(
     step_deseq, step_aldex2, step_aldex3, step_ancom, step_corncob, step_linda, step_maaslin,
-    step_wilcox, step_lefse
+    step_rademu, step_wilcox, step_lefse
   )
   purrr::walk(constructors, function(constructor) {
     expect_identical(tail(names(formals(constructor)), 1L), "engine_args")
   })
 })
 
-test_that("the stage registry covers all nine engines", {
+test_that("the stage registry covers all ten engines", {
   registry <- dar:::engine_args_registry()
   expect_identical(
     names(registry),
     c(
-      "deseq", "aldex2", "aldex3", "ancom", "corncob", "linda", "maaslin",
+      "deseq", "aldex2", "aldex3", "rademu", "ancom", "corncob", "linda", "maaslin",
       "wilcox", "lefse"
     )
   )
@@ -57,7 +57,7 @@ test_that("the stage registry covers all nine engines", {
     lapply(registry, function(engine) names(engine$stages)),
     list(
       deseq = c("size_factors", "fit", "results", "shrink"),
-      aldex2 = c("clr", "fit"), aldex3 = "fit", ancom = "fit",
+      aldex2 = c("clr", "fit"), aldex3 = "fit", rademu = "fit", ancom = "fit",
       corncob = "fit", linda = "fit", maaslin = c("fit", "contrast"),
       wilcox = "test", lefse = c("transform", "fit")
     )

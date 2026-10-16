@@ -68,6 +68,7 @@ Other Diff taxa steps:
 \code{\link[=step_deseq]{step_deseq()}},
 \code{\link[=step_lefse]{step_lefse()}},
 \code{\link[=step_linda]{step_linda()}},
-\code{\link[=step_maaslin]{step_maaslin()}}
+\code{\link[=step_maaslin]{step_maaslin()}},
+\code{\link[=step_rademu]{step_rademu()}}
 }
 \concept{Diff taxa steps}

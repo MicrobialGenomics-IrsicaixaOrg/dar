@@ -777,6 +777,7 @@ model_engine_capabilities <- list(
   lefse = list(confounders = FALSE, time_interaction = FALSE, random = FALSE),
   linda = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
   maaslin = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
+  rademu = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
   wilcox = list(confounders = FALSE, time_interaction = FALSE, random = FALSE)
 )
 

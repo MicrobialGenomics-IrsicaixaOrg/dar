@@ -29,6 +29,12 @@
 
 ## New features
 
+* `step_rademu()` supports adjusted fixed designs and planned interactions
+  with native robust score or explicit Wald tests. Clustered observations
+  are declared with a metadata column and use native GEE inference, not an
+  implicit translation of random effects. Results retain radEmu's centred
+  natural-log effect scale, missing statistics and native diagnostics;
+  dar adjusts the selected P values within each contrast (#177).
 * `step_aldex3()` supports centralized fixed and exact `lme4` mixed models,
   including planned interactions. Named CLR, TSS, external sample-scale and
   coefficient-scale models expose independent scale uncertainty explicitly.

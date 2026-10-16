@@ -61,6 +61,23 @@ engine_args_registry <- function() {
         )
       )
     ),
+    rademu = list(
+      public = c(
+        "test", "cluster", "max_significance", "p_adj_method",
+        "constraint_param", "seed", "rarefy", "id", "engine_args"
+      ),
+      stages = list(
+        fit = list(
+          package = "radEmu", fun = "emuFit",
+          protected = c(
+            "Y", "X", "formula", "data", "assay_name", "constraint_fn",
+            "constraint_grad_fn", "B", "fitted_model", "refit", "test_kj",
+            "B_null_list", "run_score_tests", "return_wald_p", "compute_cis",
+            "match_row_names", "control", "return_both_score_pvals"
+          )
+        )
+      )
+    ),
     ancom = list(
       public = c(
         "fix_formula", "rand_formula", "p_adj_method", "prv_cut",

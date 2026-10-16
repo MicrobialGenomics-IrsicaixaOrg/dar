@@ -45,6 +45,7 @@ reference:
   - step_lefse
   - step_linda
   - step_maaslin
+  - step_rademu
   - step_wilcox
 - title: "Exploration"
   contents:

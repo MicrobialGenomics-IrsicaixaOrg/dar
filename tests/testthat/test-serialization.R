@@ -88,6 +88,7 @@ test_that("every registered constructor round trips through the allowlist", {
     function(x) suppressWarnings(step_lefse(x, id = "lefse__x")),
     function(x) step_linda(x, id = "linda__x"),
     function(x) step_maaslin(x, id = "maaslin__x"),
+    function(x) step_rademu(x, id = "rademu__x"),
     function(x) step_wilcox(x, id = "wilcox__x")
   )
   rec <- suppressWarnings(Reduce(function(x, constructor) constructor(x), constructors, rec))
