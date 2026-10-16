@@ -25,32 +25,30 @@ step_corncob(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{phi.formula}{An object of class formula without the response: a
 symbolic description of the model to be fitted to the dispersion.}
 
-\item{formula_null}{Formula for mean under null, without response. Defaults
-to \code{NULL}, which uses \code{~ 1} during deprecated model-free execution.
-An explicit formula is overridden with a warning by a centralized model.}
+\item{formula_null}{Retained design argument, default \code{NULL}. Explicit
+values are overridden with a warning by the \code{\link[=add_model]{add_model()}} contrasts.}
 
 \item{phi.formula_null}{Formula for overdispersion under null, without
-response. Defaults to \code{NULL}, which uses \code{~ 1} during deprecated model-free
-execution. An explicit formula is overridden with a warning by a
-centralized model.}
+response. Default \code{NULL}. Explicit values are overridden with a warning
+by the \code{\link[=add_model]{add_model()}} contrasts.}
 
 \item{link}{Link function for abundance covariates, defaults to "logit".}
 
 \item{phi.link}{Link function for dispersion covariates, defaults to "logit".}
 
-\item{test}{Character. Hypothesis testing procedure to use. One of "Wald" or
-"LRT" (likelihood ratio test).}
+\item{test}{Hypothesis test, default \code{"Wald"}. Only Wald contrasts are
+supported; other tests make the step incompatible with the shared model.}
 
-\item{boot}{Boolean. Defaults to FALSE. Indicator of whether or not to use
-parametric bootstrap algorithm. (See pbWald and pbLRT).}
+\item{boot}{Whether to request bootstrap inference, default \code{FALSE}.
+Bootstrap is unsupported and makes the step incompatible.}
 
-\item{B}{Optional integer. Number of bootstrap iterations. Ignored if boot is
-FALSE. Otherwise, defaults to 1000.}
+\item{B}{Retained bootstrap iteration setting. Not used for Wald contrasts.}
 
 \item{filter_discriminant}{Boolean. Defaults to TRUE. If FALSE, discriminant
 taxa will not be filtered out.}
@@ -60,7 +58,9 @@ taxa will not be filtered out.}
 \item{fdr}{Character. Defaults to "fdr". False discovery rate control method,
 see p.adjust for more options.}
 
-\item{log2FC}{log2FC cutoff.}
+\item{log2FC}{Minimum absolute effect on the reported coefficient scale.
+Despite the argument name, a logit-link coefficient is not a log2 fold
+change. Default zero.}
 
 \item{rarefy}{Boolean indicating if OTU counts must be rarefyed. This
 rarefaction uses the standard R sample function to resample from the
@@ -114,7 +114,8 @@ rec_strict <- step_corncob(rec, fdr_cutoff = 0.01)
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_deseq]{step_deseq()}},
 \code{\link[=step_lefse]{step_lefse()}},

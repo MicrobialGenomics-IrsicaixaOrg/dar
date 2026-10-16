@@ -55,7 +55,8 @@ mutual_plt(
 )
 
 ## Show a single comparison
-mutual_plt(test_prep_rec, comparisons = "hts_msm")
+comparison <- tidy_results(test_prep_rec)$comparison[[1]]
+mutual_plt(test_prep_rec, comparisons = comparison)
 
 ## Exclude the first method from the plot
 mutual_plt(test_prep_rec, steps = steps_ids(test_prep_rec, "da")[-1])

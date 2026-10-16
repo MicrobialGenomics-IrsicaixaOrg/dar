@@ -46,9 +46,11 @@ Imports:
     scales,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    withr
 Suggests: 
     ALDEx2,
+    ALDEx3 (>= 1.3.1),
     ANCOMBC,
     apeglm,
     ashr,
@@ -72,13 +74,11 @@ Suggests:
     roxygen2,
     roxyglobals,
     roxytest,
-    rstatix,
     SummarizedExperiment,
     TreeSummarizedExperiment,
     UpSetR,
     testthat (>= 3.0.0),
-    GenomeInfoDb,
-    withr
+    GenomeInfoDb
 Config/testthat/edition: 3
 Depends: 
     R (>= 4.6.0)
@@ -86,12 +86,15 @@ LazyData: false
 Collate: 
     'recipe-class.R'
     'aldex2.R'
+    'aldex3.R'
+    'analysis-data.R'
     'ancom.R'
     'bake.R'
     'corncob.R'
     'dar-package.R'
     'data.R'
     'deseq2.R'
+    'effect-plot.R'
     'engine-args.R'
     'filter_by_abundance.R'
     'filter_by_prevalence.R'

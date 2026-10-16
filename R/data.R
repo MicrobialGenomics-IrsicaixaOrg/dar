@@ -1,12 +1,17 @@
 #' Phyloseq object from metaHIV project
 #'
-#' A Phyloseq object containing abundance counts and sample_data for metaHIV
-#' project. Count reads were annotated with Metaphlan3.
+#' A phyloseq object containing the abundance table, sample metadata and
+#' taxonomic annotations supplied for the metaHIV project associated with
+#' Noguera-Julian et al. (2016). It is provided as a software example. The
+#' profiling pipeline and the measurement units of this derived table have
+#' not been independently verified; integer values alone do not establish
+#' that a table contains raw read counts.
 #'
 #' @autoglobal
 #' @usage data("metaHIV_phy")
-#' @source s3://fcatala-09142020-eu-west-1/cloud_test/SpeciesQuantification/Kraken2
-#' @format A phyloseq object with 451 taxas, 30 samples, 3 sample variables and
+#' @source Noguera-Julian et al. (2016),
+#'   \doi{10.1016/j.ebiom.2016.01.032}.
+#' @format A phyloseq object with 451 taxa, 156 samples, 3 sample variables and
 #'   7 taxonomic ranks.
 "metaHIV_phy"
 
@@ -24,8 +29,9 @@ NULL
 
 #' Recipe for metaHIV_phy data
 #'
-#' A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
-#' and "Genus" as a `tax_info`.
+#' An unprepared recipe for `metaHIV_phy`, with a centralized `~ RiskGroup2`
+#' model at genus level and `hts` as its reference. It includes microbial
+#' subsetting, feature-prevalence filtering, MaAsLin3 and DESeq2 steps.
 #'
 #' @format A Recipe object.
 #' @autoglobal
@@ -34,8 +40,13 @@ NULL
 
 #' PrepRecipe for metaHIV_phy data
 #'
-#' A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a `var_info`
-#' and "Genus" as a `tax_info`. Also includes `step_deseq` and `step_maaslin`.
+#' A prepared version of [test_rec], fitted through the centralized model API
+#' at genus level. Results retain planned pairwise `RiskGroup2` contrasts and
+#' method-specific effects. Original stored features remain available through
+#' [otu_table()]; [tidy_abundance()] returns their shared genus-level view.
+#' Unavailable native estimates remain missing; [effect_plt()] omits them
+#' rather than treating them as zero effects.
+#' Generated reproducibly by `data-raw/metaHIV_recipes.R`.
 #'
 #' @format A PrepRecipe object.
 #' @autoglobal

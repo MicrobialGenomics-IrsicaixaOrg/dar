@@ -35,14 +35,8 @@
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   prep()
 step_subset_taxa <- function(rec, tax_level, taxa, id = rand_id("subset_taxa")) {
-
   check_recipe(rec)
-
-  recipes_pkg_check(
-    required_pkgs_subset_taxa(),
-    "step_subset_taxa()"
-  )
-  
+  recipes_pkg_check(required_pkgs_subset_taxa(), "step_subset_taxa()")
   add_step(
     rec,
     step_subset_taxa_new(
@@ -57,12 +51,7 @@ step_subset_taxa <- function(rec, tax_level, taxa, id = rand_id("subset_taxa")) 
 #' @keywords internal
 #' @autoglobal
 step_subset_taxa_new <- function(tax_level, taxa, id) {
-  step(
-    subclass = "subset_taxa", 
-    tax_level = tax_level, 
-    taxa = taxa, 
-    id = id
-  )
+  step(subclass = "subset_taxa", tax_level = tax_level, taxa = taxa, id = id)
 }
 
 #' @noRd
@@ -75,9 +64,7 @@ required_pkgs_subset_taxa <- function(x, ...) {  c("bioc::phyloseq") }
 #' @autoglobal
 run_subset_taxa <- function(rec, tax_level, taxa) {
   sym_tax_level <- rlang::sym(tax_level)
-  rec@phyloseq <- rlang::inject(
-    phyloseq::subset_taxa(get_phy(rec), !!sym_tax_level %in% !!taxa)
-  )
+  rec@phyloseq <- rlang::inject(phyloseq::subset_taxa(get_phy(rec), !!sym_tax_level %in% !!taxa))
   
   rec
 }

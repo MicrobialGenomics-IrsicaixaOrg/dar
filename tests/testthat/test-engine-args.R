@@ -36,7 +36,7 @@ test_that("engine_args validates its nested stage contract", {
 
 test_that("engine_args is the final public argument of every DA step", {
   constructors <- list(
-    step_deseq, step_aldex, step_ancom, step_corncob, step_linda, step_maaslin,
+    step_deseq, step_aldex2, step_aldex3, step_ancom, step_corncob, step_linda, step_maaslin,
     step_wilcox, step_lefse
   )
   purrr::walk(constructors, function(constructor) {
@@ -44,12 +44,12 @@ test_that("engine_args is the final public argument of every DA step", {
   })
 })
 
-test_that("the stage registry covers all eight engines", {
+test_that("the stage registry covers all nine engines", {
   registry <- dar:::engine_args_registry()
   expect_identical(
     names(registry),
     c(
-      "deseq", "aldex", "ancom", "corncob", "linda", "maaslin",
+      "deseq", "aldex2", "aldex3", "ancom", "corncob", "linda", "maaslin",
       "wilcox", "lefse"
     )
   )
@@ -57,7 +57,7 @@ test_that("the stage registry covers all eight engines", {
     lapply(registry, function(engine) names(engine$stages)),
     list(
       deseq = c("size_factors", "fit", "results", "shrink"),
-      aldex = c("clr", "fit"), ancom = "fit",
+      aldex2 = c("clr", "fit"), aldex3 = "fit", ancom = "fit",
       corncob = "fit", linda = "fit", maaslin = c("fit", "contrast"),
       wilcox = "test", lefse = c("transform", "fit")
     )
@@ -116,7 +116,7 @@ test_that("engine_args distinguishes repeated instances of one engine", {
   expect_false(identical(rec@steps[[1]]$engine_args, rec@steps[[2]]$engine_args))
 })
 
-test_that("legacy recipes reject non-empty engine_args during prep", {
+test_that("DA requires a model with or without advanced arguments", {
   rec <- suppressWarnings(
     recipe(make_longitudinal_phy(), "condition", "Species")
   )
@@ -128,10 +128,10 @@ test_that("legacy recipes reject non-empty engine_args during prep", {
 
   expect_error(
     prep(rec, parallel = FALSE),
-    class = "dar_error_engine_args_requires_model"
+    class = "dar_error_model_required"
   )
   rec@steps[[1]]$engine_args <- list()
-  expect_silent(dar:::validate_engine_args_model(rec))
+  expect_error(prep(rec, parallel = FALSE), class = "dar_error_model_required")
 })
 
 test_that("nested engine_args survive export and import", {

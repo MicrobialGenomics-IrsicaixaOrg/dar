@@ -16,7 +16,8 @@ step_wilcox(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{norm_method}{Transformation to apply. The options include:
 'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
@@ -60,7 +61,8 @@ rec_holm <- step_wilcox(rec, p_adj_method = "holm")
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_deseq]{step_deseq()}},

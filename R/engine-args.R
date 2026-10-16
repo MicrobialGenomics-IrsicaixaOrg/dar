@@ -33,7 +33,7 @@ engine_args_registry <- function() {
         )
       )
     ),
-    aldex = list(
+    aldex2 = list(
       public = c(
         "max_significance", "mc.samples", "denom", "rarefy", "id",
         "engine_args"
@@ -43,8 +43,21 @@ engine_args_registry <- function() {
           package = "ALDEx2", fun = "aldex.clr",
           protected = c("reads", "conds")
         ),
+        fit = list(package = "ALDEx2", fun = "aldex.glm", protected = "clr")
+      )
+    ),
+    aldex3 = list(
+      public = c(
+        "max_significance", "nsample", "scale_model", "scale_args",
+        "p_adj_method", "n_cores", "seed", "rarefy", "id", "engine_args"
+      ),
+      stages = list(
         fit = list(
-          package = "ALDEx2", fun = "aldex.glm", protected = "clr"
+          package = "ALDEx3", fun = "aldex",
+          protected = c(
+            "Y", "X", "data", "method", "scale", "n.cores",
+            "p.adjust.method", "onesided", "return.pars"
+          )
         )
       )
     ),
@@ -115,9 +128,7 @@ engine_args_registry <- function() {
         ),
         contrast = list(
           package = "maaslin3", fun = "maaslin_contrast_test",
-          protected = c(
-            "maaslin3_fit", "contrast_mat", "rhs", "evaluate_only"
-          )
+          protected = c("maaslin3_fit", "contrast_mat", "rhs", "evaluate_only")
         )
       )
     ),
@@ -127,9 +138,7 @@ engine_args_registry <- function() {
         "engine_args"
       ),
       stages = list(
-        test = list(
-          package = "stats", fun = "wilcox.test", protected = c("x", "y")
-        )
+        test = list(package = "stats", fun = "wilcox.test", protected = c("x", "y"))
       )
     ),
     lefse = list(
@@ -139,13 +148,8 @@ engine_args_registry <- function() {
         "engine_args"
       ),
       stages = list(
-        transform = list(
-          package = "lefser", fun = "relativeAb", protected = "se"
-        ),
-        fit = list(
-          package = "lefser", fun = "lefser",
-          protected = c("relab", "classCol")
-        )
+        transform = list(package = "lefser", fun = "relativeAb", protected = "se"),
+        fit = list(package = "lefser", fun = "lefser", protected = c("relab", "classCol"))
       )
     )
   )
@@ -154,8 +158,7 @@ engine_args_registry <- function() {
 #' @noRd
 engine_stage_spec <- function(engine, stage) {
   registry <- engine_args_registry()
-  if (!engine %in% names(registry) ||
-      !stage %in% names(registry[[engine]]$stages)) {
+  if (!engine %in% names(registry) || !stage %in% names(registry[[engine]]$stages)) {
     cli::cli_abort(
       "Unknown advanced argument stage {.val {stage}} for engine {.val {engine}}.",
       class = "dar_error_invalid_engine_args"
@@ -189,9 +192,7 @@ normalize_engine_args <- function(engine, engine_args = list()) {
       class = "dar_error_invalid_engine_args"
     )
   }
-  if (length(engine_args) == 0L) {
-    return(list())
-  }
+  if (length(engine_args) == 0L) { return(list()) }
   stage_names <- names(engine_args)
   if (is.null(stage_names) || anyNA(stage_names) || any(!nzchar(stage_names)) ||
       anyDuplicated(stage_names)) {
@@ -218,9 +219,7 @@ normalize_engine_args <- function(engine, engine_args = list()) {
         class = "dar_error_invalid_engine_args"
       )
     }
-    if (length(arguments) == 0L) {
-      return(NULL)
-    }
+    if (length(arguments) == 0L) { return(NULL) }
     argument_names <- names(arguments)
     if (is.null(argument_names) || anyNA(argument_names) ||
         any(!nzchar(argument_names)) || anyDuplicated(argument_names)) {
@@ -239,6 +238,14 @@ normalize_engine_args <- function(engine, engine_args = list()) {
       )
     }
 
+    if (identical(engine, "aldex3")) {
+      if (length(setdiff(argument_names, c("test", "streamsize"))) > 0L) {
+        cli::cli_abort(
+          "ALDEx3 advanced arguments support only {.arg test} and {.arg streamsize}.",
+          class = "dar_error_invalid_engine_args"
+        )
+      }
+    }
     native <- engine_stage_function(engine, stage)
     native_formals <- names(formals(native))
     if (!"..." %in% native_formals) {
@@ -256,50 +263,14 @@ normalize_engine_args <- function(engine, engine_args = list()) {
 }
 
 #' @noRd
-engine_args_present <- function(step) {
-  length(step$engine_args %||% list()) > 0L
-}
-
-#' @noRd
-validate_engine_args_model <- function(rec) {
-  if (!is.null(get_model(rec))) {
-    return(invisible(TRUE))
-  }
-  advanced <- purrr::keep(rec@steps, function(item) {
-    is_da_step(item) && engine_args_present(item)
-  })
-  if (length(advanced) > 0L) {
-    ids <- purrr::map_chr(advanced, ~ .x$id)
-    cli::cli_abort(
-      c(
-        "x" = "Advanced native-engine arguments require a centralized model.",
-        "i" = "Legacy steps with {.arg engine_args}: {.val {ids}}."
-      ),
-      class = "dar_error_engine_args_requires_model"
-    )
-  }
-  invisible(TRUE)
-}
-
-#' @noRd
-check_engine_args_execution <- function(rec, engine, engine_args, step_id) {
-  engine_args <- normalize_engine_args(engine, engine_args)
-  if (is.null(get_model(rec)) && length(engine_args) > 0L) {
-    cli::cli_abort(
-      c(
-        "x" = "Advanced native-engine arguments require a centralized model.",
-        "i" = "Legacy step {.val {step_id}} configured {.arg engine_args}."
-      ),
-      class = "dar_error_engine_args_requires_model"
-    )
-  }
-  engine_args
+check_engine_args_execution <- function(rec, engine, engine_args) {
+  require_da_model(rec)
+  normalize_engine_args(engine, engine_args)
 }
 
 #' Execute one registered native-engine stage
 #' @noRd
-exec_engine_stage <- function(engine, stage, engine_args, fixed,
-                              defaults = list()) {
+exec_engine_stage <- function(engine, stage, engine_args, fixed, defaults = list()) {
   extra <- engine_args[[stage]] %||% list()
   collisions <- intersect(names(extra), names(fixed))
   if (length(collisions) > 0L) {

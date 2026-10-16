@@ -29,6 +29,12 @@ A \code{PrepRecipe} object.
 For a Recipe with at least one preprocessing or DA operation run the steps in
 a convenient order.
 }
+\details{
+Recipes containing differential-abundance steps require an
+explicit \code{\link[=add_model]{add_model()}} before execution. Preprocessing-only recipes
+remain supported without a model. A missing model is reported before
+preprocessing or dependency checks, so the input data are not modified.
+}
 \examples{
 data(metaHIV_phy)
 rec <- recipe(metaHIV_phy) |>

@@ -10,21 +10,21 @@
 #' @keywords internal
 #' @autoglobal
 #' @tests
-#' dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()") |> 
+#' dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex2()") |>
 #'   expect_snapshot()
 #'   
-#' dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()") |> 
+#' dar:::recipes_pkg_check(dar:::required_pkgs_aldex2(), "step_aldex2()") |>
 #'   expect_snapshot()
 recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
   if (is.null(pkg) || length(pkg) == 0) return(invisible())
   pkg_names <- stringr::str_remove_all(pkg, ".*[/]|.*[:]")
   is_inst <- vapply(pkg_names, rlang::is_installed, logical(1))
-  
+
   if (any(!is_inst)) {
     missing_pkgs <- pkg[!is_inst]
     missing_names <- pkg_names[!is_inst]
 
-    to_inst <- 
+    to_inst <-
       missing_pkgs %>%
       stringr::str_remove_all("bioc::") %>%
       paste0('"', ., '"', collapse = ", ")
@@ -45,7 +45,6 @@ recipes_pkg_check <- function(pkg = NULL, step_name, ...) {
 #' @keywords internal
 #' @autoglobal
 required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom") }
-
 #' Returns required pakcages for Recipe object
 #'
 #' @param rec A `Recipe` object
@@ -67,9 +66,7 @@ required_pkgs_error <- function(x, ...) { c("bioc::randompackage", "packrandom")
 #' dar:::required_deps(test_prep_rec)
 required_deps <- function(rec, steps = NULL) {
   check_any_recipe(rec)
-  if (is.null(steps)) {
-    steps <- rec@steps
-  }
+  if (is.null(steps)) { steps <- rec@steps }
   purrr::walk(steps, function(step_obj) {
     id <- step_method(step_obj)
     req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
@@ -77,16 +74,14 @@ required_deps <- function(rec, steps = NULL) {
       recipes_pkg_check(pkg = req_fun(), step_name = paste0("step_", id, "()"))
     }
   })
-    
+
   invisible()
 }
 
 #' Require an optional package for a plotting path
 #' @noRd
 require_optional_package <- function(pkg, caller) {
-  if (rlang::is_installed(pkg)) {
-    return(invisible(TRUE))
-  }
+  if (rlang::is_installed(pkg)) { return(invisible(TRUE)) }
   cli::cli_abort(
     c(
       "x" = "Package {.pkg {pkg}} is required by {.fun {caller}}.",

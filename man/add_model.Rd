@@ -55,10 +55,6 @@ time points while compiling the model.
 DA results, consensus tables and abundance plots share the same aggregated
 taxonomic units. Taxa with identical lineage through \code{tax_level} are summed
 for analysis; public accessors retain the complete recipe data.
-
-For compatibility with recipes created before version 1.9.3, omitted
-\code{targets} or \code{tax_level} values are recovered from the deprecated selector
-slots when available. New recipes must supply both arguments explicitly.
 }
 \examples{
 data(metaHIV_phy)

@@ -2,6 +2,13 @@
 
 ## Breaking changes
 
+* All DA methods require `add_model()` before `prep()`. The model-free
+  execution paths and their extraction helpers are removed. Preprocessing-only
+  recipes remain supported without a model, and steps can be configured before
+  adding the model. Previously prepared results are not silently recomputed.
+* `step_aldex()` is replaced by the explicit `step_aldex2()`; the old
+  constructor and step class are removed, without an alias. Rebuild old
+  ALDEx2 recipes with `step_aldex2()`. Its engine identifier is now `aldex2`.
 * R 4.6 or later is required.
 * `step_metagenomeseq()` is removed after its defunct release cycle. Replace
   it with a supported DA step when rebuilding legacy recipes (#157).
@@ -15,19 +22,54 @@
 * Centralized ALDEx2 results report `aldex_glm_coefficient` rather than a
   standardized two-group effect. Recompute previously prepared results to
   obtain the corrected effects; their former effect values are not relabeled.
-  The obsolete `engine_args$effect` stage is rejected. Deprecated model-free
-  ALDEx2 execution retains its standardized effect.
+  The obsolete `engine_args$effect` stage is rejected.
+* `abundance_plt()` no longer substitutes a largest-overlap selection when
+  no taxa satisfy the requested shared-discovery rule. Use
+  `selection = "union"`, one `steps` ID or explicit `taxa_ids` for those views.
+
+## New features
+
+* `step_aldex3()` supports centralized fixed and exact `lme4` mixed models,
+  including planned interactions. Named CLR, TSS, external sample-scale and
+  coefficient-scale models expose independent scale uncertainty explicitly.
+  Scale assumptions remain tied to the original design across contrast
+  releveling. Results preserve native Monte Carlo significance, and
+  `get_execution()` exposes the effective engine settings and version.
+  Numerical parameter and input validation is delegated to ALDEx3; dar checks
+  its configuration and the identities used to align data and results.
+* `tidy_abundance()` extracts the shared taxonomic analysis view in long form,
+  with lineage and selected sample metadata under collision-safe prefixes.
+  Compositional fractions use all analysis taxa before taxon selection; this
+  view does not reproduce each engine's private filtering or transformation.
+* `get_execution()` exposes recorded contrasts, model-excluded samples and
+  executed/skipped steps without recomputing historical provenance.
+* `effect_plt()` displays individual method estimates for a selected contrast,
+  preserving native significance decisions and separating effect metrics into
+  distinct panels. It does not infer common confidence intervals.
+* `abundance_plt()` accepts selected DA `steps`, including a single configured
+  method, and explicit `"shared"` or `"union"` discovery selection. Explicit
+  taxon IDs remain available regardless of significance.
 
 ## Deprecations
 
-* Legacy selectors and model-free DA execution remain available in
+* Legacy selectors remain available in
   Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in
   3.26. Use `add_model()` to configure DA analyses and `get_model()` to
   inspect their targets and taxonomic rank (#157).
 
 ## Bug fixes
 
-* `step_aldex()` extracts centralized effects from the same native GLM and
+* Centralized MaAsLin3 tests evaluate each planned contrast independently
+  after one fit. An unestimable contrast no longer hides estimable contrasts
+  for the same taxon; native missing values and the joint correction family
+  across taxa and planned contrasts are retained.
+* `metaHIV_phy` documentation reports the full 156-sample example and removes
+  unverified profiling and count-construction details. Five focused guides
+  replace the overlapping article vignette.
+* Bundled `test_rec` and `test_prep_rec` examples now use the centralized genus-
+  level model. The prepared MaAsLin3 and DESeq2 results are regenerated from
+  the shared aggregated counts, with explicit contrast selection in examples.
+* `step_aldex2()` extracts centralized effects from the same native GLM and
   contrast as its adjusted P values, preserving adjustment and interaction
   semantics instead of combining them with a post-hoc binary-group effect.
 * Modeled engines, consensus tables and abundance plots share one aggregated
@@ -44,14 +86,10 @@
   rather than when they are constructed.
 * `step_ancom()` preserves stable taxon IDs after ANCOM-BC2 aggregation.
 * `step_ancom()` uses ANCOM-BC2's robust significance decision when
-  pseudocount sensitivity analysis is enabled, in both centralized and
-  deprecated model-free execution. Explicitly disabling sensitivity analysis
+  pseudocount sensitivity analysis is enabled. Disabling sensitivity analysis
   retains the basic native decision.
-* `step_corncob()` honors the requested absolute effect threshold in
-  deprecated model-free execution.
 * `step_corncob()` uses native sandwich covariance for centralized Wald
-  contrasts when `robust = TRUE` and forwards the requested `B` during
-  deprecated model-free bootstrap execution.
+  contrasts when `robust = TRUE`.
 * `step_linda()` locally corrects MicrobiomeStat 1.4's adaptive zero-handling
   capitalization error, restoring depth-dependent imputation without
   modifying the installed dependency or the remaining native algorithm.

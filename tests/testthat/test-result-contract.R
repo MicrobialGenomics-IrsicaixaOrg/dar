@@ -2,8 +2,8 @@ contract_recipe <- function() {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")
   engines <- c(
-    "deseq", "aldex", "ancom", "corncob", "linda", "maaslin",
-    "wilcox", "lefse"
+    "deseq", "aldex2", "ancom", "corncob", "linda", "maaslin",
+    "wilcox", "lefse", "aldex3"
   )
   for (engine in engines) {
     arguments <- list(subclass = engine, id = paste0(engine, "__contract"))
@@ -35,7 +35,7 @@ contract_results <- function(rec = contract_recipe()) {
     deseq__contract = list(model = dplyr::mutate(
       common, pvalue = 0.01, padj = 0.02
     )),
-    aldex__contract = list(model = dplyr::mutate(
+    aldex2__contract = list(model = dplyr::mutate(
       common, we.ep = 0.011, we.eBH = 0.021
     )),
     ancom__contract = list(model = dplyr::mutate(
@@ -55,6 +55,9 @@ contract_results <- function(rec = contract_recipe()) {
     )),
     lefse__contract = list(model = dplyr::mutate(
       common, pvalue = 0.017, adjp = 0.027
+    )),
+    aldex3__contract = list(model = dplyr::mutate(
+      common, pval = 0.018, padj = 0.028
     ))
   )
 }
@@ -99,17 +102,17 @@ test_that("tidy_results exposes the canonical contract for every engine", {
     logical(1)
   )))
   expect_identical(prepared@results, raw)
-  expect_equal(nrow(result), 8L)
+  expect_equal(nrow(result), 9L)
   expect_equal(
     result$method,
     c(
-      "deseq", "aldex", "ancom", "corncob", "linda", "maaslin",
-      "wilcox", "lefse"
+      "deseq", "aldex2", "ancom", "corncob", "linda", "maaslin",
+      "wilcox", "lefse", "aldex3"
     )
   )
   expect_equal(result$step_id, names(raw))
-  expect_equal(result$p_value, seq(0.01, 0.017, by = 0.001))
-  expect_equal(result$adj_p_value, seq(0.02, 0.027, by = 0.001))
+  expect_equal(result$p_value, seq(0.01, 0.018, by = 0.001))
+  expect_equal(result$adj_p_value, seq(0.02, 0.028, by = 0.001))
   expect_equal(result$effect_metric, c(
     "log2_fold_change",
     "standardized_clr_effect",
@@ -118,18 +121,19 @@ test_that("tidy_results exposes the canonical contract for every engine", {
     "bias_corrected_log2_fold_change",
     "transformed_abundance_coefficient",
     "median_clr_difference",
-    "lda_score"
+    "lda_score",
+    "aldex3_log2_abundance_coefficient"
   ))
 })
 
 test_that("tidy_results supports filtering, step selection and empty recipes", {
   prepared <- contract_prepared()
-  prepared@results$aldex__contract$model$signif <- FALSE
+  prepared@results$aldex2__contract$model$signif <- FALSE
 
-  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 7L)
+  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 8L)
   expect_equal(
-    tidy_results(prepared, steps = "aldex__contract")$method,
-    "aldex"
+    tidy_results(prepared, steps = "aldex2__contract")$method,
+    "aldex2"
   )
 
   rec <- recipe(make_longitudinal_phy()) |>
@@ -141,46 +145,46 @@ test_that("tidy_results supports filtering, step selection and empty recipes", {
 test_that("modeled ALDEx2 p-values are read without changing native columns", {
   rec <- contract_recipe()
   results <- contract_results(rec)
-  compiled <- dar:::compile_model(rec, "aldex")
+  compiled <- dar:::compile_model(rec, "aldex2")
   contrast <- compiled$contrasts[1, , drop = FALSE]
   coefficient <- dar:::reparameterize_model_contrast(
     compiled, contrast
   )$coefficient
-  native <- results$aldex__contract$model |>
+  native <- results$aldex2__contract$model |>
     dplyr::select(-"we.ep", -"we.eBH")
   native[[paste0(coefficient, ":pval")]] <- 0.017
   native[[paste0(coefficient, ":pval.padj")]] <- 0.027
   native$padj <- 0.027
-  results$aldex__contract$model <- native
+  results$aldex2__contract$model <- native
   prepared <- dar:::prep_recipe(rec, results, list())
-  before <- prepared@results$aldex__contract
+  before <- prepared@results$aldex2__contract
 
-  result <- tidy_results(prepared, steps = "aldex__contract")
+  result <- tidy_results(prepared, steps = "aldex2__contract")
 
   expect_equal(result$p_value, 0.017)
   expect_equal(result$adj_p_value, 0.027)
   expect_identical(result$effect_metric, "standardized_clr_effect")
-  expect_identical(prepared@results$aldex__contract, before)
+  expect_identical(prepared@results$aldex2__contract, before)
 })
 
 test_that("ALDEx2 metric labels come from saved results, not the model alone", {
   prepared <- contract_prepared()
-  native <- prepared@results$aldex__contract$model
+  native <- prepared@results$aldex2__contract$model
   native$effect_metric <- "aldex_glm_coefficient"
-  prepared@results$aldex__contract$model <- native
+  prepared@results$aldex2__contract$model <- native
 
   expect_identical(
-    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
     "aldex_glm_coefficient"
   )
-  prepared@results$aldex__contract$model$effect_metric <- "standardized_clr_effect"
+  prepared@results$aldex2__contract$model$effect_metric <- "standardized_clr_effect"
   expect_identical(
-    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
     "standardized_clr_effect"
   )
-  prepared@results$aldex__contract$model$effect_metric <- NULL
+  prepared@results$aldex2__contract$model$effect_metric <- NULL
   expect_identical(
-    tidy_results(prepared, steps = "aldex__contract")$effect_metric,
+    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
     "standardized_clr_effect"
   )
 })
@@ -188,9 +192,9 @@ test_that("ALDEx2 metric labels come from saved results, not the model alone", {
 test_that("ALDEx2 rejects malformed or unknown effect metric labels", {
   for (metric in list(1, NA_character_, "log2_fold_change")) {
     prepared <- contract_prepared()
-    prepared@results$aldex__contract$model$effect_metric <- metric
+    prepared@results$aldex2__contract$model$effect_metric <- metric
     expect_error(
-      tidy_results(prepared, steps = "aldex__contract"),
+      tidy_results(prepared, steps = "aldex2__contract"),
       class = "dar_error_invalid_result_contract"
     )
   }
@@ -295,14 +299,38 @@ test_that("unavailable and malformed engine results fail contextually", {
 })
 
 test_that("legacy results receive deterministic contrast identifiers", {
-  data(test_prep_rec)
-  result <- tidy_results(test_prep_rec)
+  rec <- recipe(make_longitudinal_phy())
+  rec@var_info <- tibble::tibble(vars = "condition")
+  rec@tax_info <- tibble::tibble(tax_lev = "Species")
+  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__legacy"))
+  legacy <- tibble::tibble(
+    taxa_id = rep(c("taxon_1", "taxon_2"), 2),
+    taxa = rep(c("Species_1", "Species_2"), 2),
+    comparison = rep(c("control_treated", "treated_control"), each = 2),
+    var = "condition",
+    effect = c(1, -1, -1, 1),
+    signif = c(TRUE, FALSE, TRUE, FALSE),
+    pvalue = c(0.01, 0.5, 0.01, 0.5),
+    padj = c(0.02, 0.5, 0.02, 0.5)
+  )
+  prepared <- dar:::prep_recipe(
+    rec, list(deseq__legacy = list(condition = legacy)), list()
+  )
+  result <- tidy_results(prepared)
 
-  expect_true(all(startsWith(result$contrast_id, paste0(result$var, "["))))
+  expect_identical(
+    result$contrast_id,
+    rep(c("condition[control_treated]", "condition[treated_control]"), each = 2)
+  )
   expect_true(all(result$contrast_type == "legacy_pairwise"))
   expect_true(all(is.na(result$numerator)))
   expect_true(all(is.na(result$denominator)))
   expect_identical(
     anyDuplicated(result[c("taxa_id", "contrast_id", "step_id")]), 0L
+  )
+  prepared@results$deseq__legacy$condition <- dplyr::slice(legacy, 4:1)
+  expect_identical(
+    dplyr::arrange(tidy_results(prepared), taxa_id, contrast_id),
+    dplyr::arrange(result, taxa_id, contrast_id)
   )
 })

@@ -4,7 +4,8 @@
 #' [MicrobiomeStat::linda()]. It requires a centralized model defined by
 #' [add_model()] and executes every contrast in that model's contrast plan.
 #'
-#' @param rec A [Recipe-class] object with a centralized model.
+#' @param rec An unprepared [Recipe-class] object. Execution requires
+#'   [add_model()] before [prep()]; the step can be configured first.
 #' @param prev_filter Minimum feature prevalence retained for analysis.
 #' @param mean_abund_filter Minimum mean relative abundance retained.
 #' @param max_abund_filter Minimum maximum relative abundance retained.
@@ -68,15 +69,6 @@ step_linda <- function(rec,
                        id = rand_id("linda"),
                        engine_args = list()) {
   check_recipe(rec)
-  if (is.null(get_model(rec))) {
-    cli::cli_abort(
-      c(
-        "x" = "{.fun step_linda} requires a centralized statistical model.",
-        "i" = "Define the design, targets and taxonomic level with {.fun add_model}."
-      ),
-      class = "dar_error_model_required"
-    )
-  }
   recipes_pkg_check(required_pkgs_linda(), "step_linda()")
 
   checkmate::assert_number(prev_filter, lower = 0, upper = 1, finite = TRUE)
@@ -87,9 +79,7 @@ step_linda <- function(rec,
   checkmate::assert_flag(adaptive)
   zero_handling <- match.arg(zero_handling)
   checkmate::assert_number(pseudo_count, lower = 0, finite = TRUE)
-  if (pseudo_count == 0) {
-    cli::cli_abort("{.arg pseudo_count} must be positive.")
-  }
+  if (pseudo_count == 0) { cli::cli_abort("{.arg pseudo_count} must be positive.") }
   checkmate::assert_number(corr_cut, lower = 0, upper = 1, finite = TRUE)
   checkmate::assert_choice(p_adj_method, stats::p.adjust.methods)
   checkmate::assert_number(alpha, lower = 0, upper = 1, finite = TRUE)
@@ -136,13 +126,8 @@ run_linda <- function(rec,
                       rarefy,
                       id,
                       engine_args = list()) {
-  engine_args <- check_engine_args_execution(rec, "linda", engine_args, id)
-  if (is.null(get_model(rec))) {
-    cli::cli_abort(
-      "{.fun step_linda} cannot execute without {.fun add_model}.",
-      class = "dar_error_model_required"
-    )
-  }
+  engine_args <- check_engine_args_execution(rec, "linda", engine_args)
+
   run_linda_model(
     rec = rec,
     prev_filter = prev_filter,
@@ -163,10 +148,7 @@ run_linda <- function(rec,
 }
 
 #' @noRd
-required_pkgs_linda <- function(x, ...) {
-  "MicrobiomeStat"
-}
-
+required_pkgs_linda <- function(x, ...) { "MicrobiomeStat" }
 #' Resolve the LinDA engine with the verified adaptive-zero correction
 #' @noRd
 linda_engine_function <- function(
@@ -197,9 +179,7 @@ linda_engine_function <- function(
     node
   }
   corrected <- repair(body(native))
-  if (assignments == 0L) {
-    return(native)
-  }
+  if (assignments == 0L) { return(native) }
   if (!identical(as.character(version), "1.4") ||
       assignments != 1L || comparisons != 1L) {
     cli::cli_abort(

@@ -11,7 +11,12 @@ A PrepRecipe object.
 data("test_prep_rec")
 }
 \description{
-A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a \code{var_info}
-and "Genus" as a \code{tax_info}. Also includes \code{step_deseq} and \code{step_maaslin}.
+A prepared version of \link{test_rec}, fitted through the centralized model API
+at genus level. Results retain planned pairwise \code{RiskGroup2} contrasts and
+method-specific effects. Original stored features remain available through
+\code{\link[=otu_table]{otu_table()}}; \code{\link[=tidy_abundance]{tidy_abundance()}} returns their shared genus-level view.
+Unavailable native estimates remain missing; \code{\link[=effect_plt]{effect_plt()}} omits them
+rather than treating them as zero effects.
+Generated reproducibly by \code{data-raw/metaHIV_recipes.R}.
 }
 \keyword{datasets}

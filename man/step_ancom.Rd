@@ -29,14 +29,14 @@ step_ancom(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{fix_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the fixed effects in metadata. When
 specifying the fix_formula, make sure to include the group variable in the
-formula if it is not NULL. Defaults to \code{NULL}: use the centralized model,
-or the recipe targets during deprecated model-free execution. An explicit
-formula is overridden with a warning when a centralized model is defined.}
+formula if it is not NULL. Defaults to \code{NULL}: use \code{\link[=add_model]{add_model()}}.
+An explicit formula is overridden with a warning by the shared model.}
 
 \item{rand_formula}{the character string expresses how the microbial absolute
 abundances for each taxon depend on the random effects in metadata.
@@ -122,16 +122,15 @@ interest (e.g., group). The current version of ancombc2 function implements
 Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC2) in
 cross-sectional and repeated measurements data. In addition to the two-group
 comparison, ANCOM-BC2 also supports testing for continuous covariates and
-multi-group comparisons, including the global test, pairwise directional
-test, Dunnett's type of test, and trend test.
+multi-group comparisons. This adapter executes the planned contrasts from
+\code{\link[=add_model]{add_model()}}, not the native global, Dunnett or trend tests.
 }
 \details{
 Significance follows ANCOM-BC2's sensitivity-aware \code{diff_robust}
 decision when \code{pseudo_sens = TRUE} (the default), rather than the basic
-\code{diff} decision alone. With a centralized model,
+\code{diff} decision alone.
 \code{engine_args = list(fit = list(pseudo_sens = FALSE))} explicitly disables
-sensitivity analysis and uses \code{diff}. Deprecated model-free execution
-uses the default sensitivity analysis. Adjusted p-values and effect
+sensitivity analysis and uses \code{diff}. Adjusted p-values and effect
 estimates are not changed by this selection.
 }
 \examples{
@@ -155,7 +154,8 @@ rec_rarefied <- step_ancom(rec, rarefy = TRUE)
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_deseq]{step_deseq()}},
 \code{\link[=step_lefse]{step_lefse()}},

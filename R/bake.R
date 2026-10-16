@@ -34,9 +34,17 @@
 #'   testthat::expect_s3_class("tbl_df") |>
 #'   testthat::expect_snapshot()
 #'
-#' nrow(cool(test)) |>
-#'   testthat::expect_equal(27) |>
-#'   testthat::expect_snapshot()
+#' keys <- c("taxa_id", "contrast_id", "effect")
+#' significant <- tidy_results(test_prep_rec, significant_only = TRUE) |>
+#'   dplyr::mutate(effect = effect_direction(effect_size))
+#' expected <- significant |>
+#'   dplyr::filter(step_id == steps_ids(test_prep_rec, "da")[2]) |>
+#'   dplyr::distinct(dplyr::across(dplyr::all_of(keys))) |>
+#'   dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+#' observed <- suppressMessages(cool(test)) |>
+#'   dplyr::select(dplyr::all_of(keys)) |>
+#'   dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+#' testthat::expect_equal(observed, expected)
 #'
 #' test <- bake(test_prep_rec, exclude = "force_error")
 #' testthat::expect_error(cool(test))
@@ -49,9 +57,14 @@
 #'   testthat::expect_s3_class("tbl_df") |>
 #'   testthat::expect_snapshot()
 #'
-#' nrow(cool(test)) |>
-#'   testthat::expect_equal(41) |>
-#'   testthat::expect_snapshot()
+#' expected <- significant |>
+#'   dplyr::filter(step_id == steps_ids(test_prep_rec, "da")[1]) |>
+#'   dplyr::distinct(dplyr::across(dplyr::all_of(keys))) |>
+#'   dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+#' observed <- suppressMessages(cool(test)) |>
+#'   dplyr::select(dplyr::all_of(keys)) |>
+#'   dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+#' testthat::expect_equal(observed, expected)
 #'
 #' @examples
 #' data(test_prep_rec)
@@ -75,18 +88,12 @@ bake <- function(rec,
                  weights = NULL,
                  exclude = NULL,
                  id = rand_id("bake")) {
-
   check_prep_recipe(rec)
   recipes_pkg_check(required_pkgs_bake(), "bake()")
 
   add_step(
     rec,
-    bake_new(
-      count_cutoff = count_cutoff,
-      weights = weights,
-      exclude = exclude,
-      id = id
-    )
+    bake_new(count_cutoff = count_cutoff, weights = weights, exclude = exclude, id = id)
   )
 }
 
@@ -107,12 +114,10 @@ bake_new <- function(count_cutoff, weights, exclude, id) {
 #' @keywords internal
 #' @autoglobal
 required_pkgs_bake <- function(x, ...) { c() }
-
 #' @noRd
 #' @keywords internal
 #' @autoglobal
 run_bake <- function(rec, count_cutoff, weights, exclude, id) {
-
   da_ids <- steps_ids(rec, "da")
   specification <- validate_bake_spec(da_ids, count_cutoff, weights, exclude)
   ids <- specification$ids
@@ -128,22 +133,30 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
     res <- significant %>%
       dplyr::distinct(.data$taxa_id, .data$taxa, .data$method, .keep_all = TRUE) %>%
       dplyr::group_by(.data$taxa_id, .data$taxa) %>%
-      dplyr::summarise(
-        method_count = sum(.data$ponderation),
-        .groups = "drop"
-      ) %>%
+      dplyr::summarise(method_count = sum(.data$ponderation), .groups = "drop") %>%
       dplyr::filter(.data$method_count >= count_cutoff) %>%
       dplyr::distinct(.data$taxa_id, .data$taxa)
   } else {
     res <- significant %>%
       dplyr::distinct(
-        .data$taxa_id, .data$taxa, .data$contrast_id, .data$comparison,
-        .data$contrast_type, .data$var, .data$effect, .data$method,
+        .data$taxa_id,
+        .data$taxa,
+        .data$contrast_id,
+        .data$comparison,
+        .data$contrast_type,
+        .data$var,
+        .data$effect,
+        .data$method,
         .keep_all = TRUE
       ) %>%
       dplyr::group_by(
-        .data$taxa_id, .data$taxa, .data$contrast_id, .data$comparison,
-        .data$contrast_type, .data$var, .data$effect
+        .data$taxa_id,
+        .data$taxa,
+        .data$contrast_id,
+        .data$comparison,
+        .data$contrast_type,
+        .data$var,
+        .data$effect
       ) %>%
       dplyr::summarise(
         method_count = sum(.data$ponderation),
@@ -153,12 +166,12 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
       dplyr::filter(.data$method_count >= count_cutoff)
   }
 
-  cli::cli_inform(c(
-    "i" = "Baking with {.field count_cutoff =} {.val {count_cutoff}}",
-    if (length(exclude) > 0) {
-      "Excluding {.val {exclude}}."
-    }
-  ))
+  cli::cli_inform(
+    c(
+      "i" = "Baking with {.field count_cutoff =} {.val {count_cutoff}}",
+      if (length(exclude) > 0) { "Excluding {.val {exclude}}." }
+    )
+  )
 
   res
 }
@@ -205,8 +218,5 @@ validate_bake_spec <- function(da_ids, count_cutoff, weights, exclude) {
       class = "dar_error_invalid_count_cutoff"
     )
   }
-  list(
-    ids = ids, exclude = exclude, weights = weights,
-    count_cutoff = count_cutoff
-  )
+  list(ids = ids, exclude = exclude, weights = weights, count_cutoff = count_cutoff)
 }

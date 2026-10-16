@@ -85,6 +85,54 @@ real covariates or taxonomic rank needed by a model. Add genuine study metadata
 before calling `add_model()`; do not manufacture groups just to make an example
 run.
 
+## Extract the shared taxonomic analysis view
+
+Selecting `tax_level = "Genus"` with `add_model()` does not replace the stored
+features returned by `otu_table()`. `tidy_abundance()` instead exposes the
+shared analysis view: counts are summed through the selected rank, using the
+same taxon identities as differential-abundance results. Features with the
+same label but different lineages remain distinct analysis units.
+
+```{r data-import-analysis-view}
+genus_rec <- recipe(metaHIV_phy) |>
+  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Genus")
+
+genus_abundances <- tidy_abundance(genus_rec, metadata = "RiskGroup2")
+head(genus_abundances)
+data.frame(
+  stored_features = nrow(dar::otu_table(genus_rec)),
+  analysis_taxa = dplyr::n_distinct(genus_abundances$taxa_id)
+)
+```
+
+The long table has one row per taxon and sample, with `taxa_id`, `taxa`,
+`sample_id` and `abundance`. Taxonomy has a `taxonomy_` prefix and selected
+sample metadata a `metadata_` prefix, so annotations cannot overwrite these
+columns. Supply original metadata names to `metadata`; `NULL` includes all
+metadata and `character(0)` excludes them. Lineage is retained through the
+selected rank; lower ranks removed by aggregation remain missing.
+
+For within-sample fractions, select `transform = "compositional"`. The
+denominator includes **all shared analysis taxa**, before selecting taxon IDs;
+fractions of a displayed subset need not sum to one.
+
+```{r data-import-analysis-fractions}
+selected_ids <- head(unique(genus_abundances$taxa_id), 2)
+fractions <- tidy_abundance(
+  genus_rec, taxa_ids = selected_ids,
+  transform = "compositional", metadata = "RiskGroup2"
+)
+head(fractions)
+```
+
+The default `transform = "identity"` preserves the stored abundance scale
+while summing aggregated features. Extraction from an unprepared recipe does
+not execute pending steps. A prepared recipe includes common preprocessing
+and the shared model cohort, but this view does not reproduce method-specific
+filtering, rarefaction or transformations. It is not a table of adjusted
+predictions. For paired graphics, include the actual visit and participant
+columns in `metadata` and use them to group descriptive trajectories.
+
 ## Import a BIOM table
 
 This example uses a file distributed with `phyloseq`, without downloading data.

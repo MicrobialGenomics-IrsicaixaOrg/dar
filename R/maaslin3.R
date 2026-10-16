@@ -5,7 +5,8 @@
 #' (using linear models) and prevalence (using logistic regression).
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
-#'   operations for this Recipe.
+#'   operations for this Recipe. Execution requires [add_model()] before
+#'   [prep()]; the step can be configured before adding the model.
 #' @param min_abundance The minimum abundance for each feature.
 #' @param min_prevalence The minimum percent of samples for which a feature is
 #'   detected at minimum abundance.
@@ -41,7 +42,8 @@
 #' data(metaHIV_phy)
 #'
 #' test <-
-#'   suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+#'   recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   step_filter_by_abundance() |>
 #'   step_maaslin() |>
@@ -78,10 +80,9 @@ step_maaslin <- function(rec,
                          rarefy = FALSE,
                          id = rand_id("maaslin"),
                          engine_args = list()) {
-  
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")
-  
+
   add_step(
     rec,
     step(
@@ -122,147 +123,24 @@ run_maaslin <- function(rec,
                         rarefy,
                         id,
                         engine_args = list()) {
+  engine_args <- check_engine_args_execution(rec, "maaslin", engine_args)
 
-  engine_args <- check_engine_args_execution(
-    rec, "maaslin", engine_args, id
+  run_maaslin_model(
+    rec = rec,
+    min_abundance = min_abundance,
+    min_prevalence = min_prevalence,
+    min_variance = min_variance,
+    normalization = normalization,
+    transform = transform,
+    max_significance = max_significance,
+    correction = correction,
+    standardize = standardize,
+    median_comparison_abundance = median_comparison_abundance,
+    rarefy = rarefy,
+    engine_args = engine_args
   )
-
-  if (!is.null(get_model(rec))) {
-    return(run_maaslin_model(
-      rec = rec,
-      min_abundance = min_abundance,
-      min_prevalence = min_prevalence,
-      min_variance = min_variance,
-      normalization = normalization,
-      transform = transform,
-      max_significance = max_significance,
-      correction = correction,
-      standardize = standardize,
-      median_comparison_abundance = median_comparison_abundance,
-      rarefy = rarefy,
-      engine_args = engine_args
-    ))
-  }
-
-  # MaAsLin3 writes output to disk, so we use a temp dir
-  output_dir <- glue::glue("{tempdir()}/maaslin3_output")
-  if (!dir.exists(output_dir)) dir.create(output_dir)
-
-  vars <- recipe_targets(rec)
-  tax_level <- recipe_tax_level(rec)
-  phy <- get_phy(rec) %>% use_rarefy(rarefy) 
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      comparisons_list <- get_comparisons(var, phy, as_list = TRUE, n_cut = 1)
-      purrr::map_dfr(comparisons_list, function(comparison) {
-        input_metadata <-
-          analysis_sample_data(rec) %>%
-          dplyr::filter(!!dplyr::sym(var) %in% comparison) %>%
-          data.frame(row.names = 1)
-
-        input_data <-
-          otu_table(rec) %>%
-          dplyr::select(taxa_id, dplyr::all_of(rownames(input_metadata))) %>%
-          data.frame(row.names = 1) %>%
-          as.matrix()
-
-        m3_res <- maaslin3_quietly(
-          input_data,
-          input_metadata,
-          output_dir,
-          var,
-          min_abundance,
-          min_prevalence,
-          min_variance,
-          normalization,
-          transform,
-          max_significance,
-          random_effects,
-          fixed_effects = var,
-          correction,
-          standardize,
-          reference,
-          median_comparison_abundance
-        ) 
-        
-        # MaAsLin3 returns results for both abundance and prevalence.
-        # Typically we care about the combined or abundance results.
-        # Here we extract 'fit_data_abundance' as per original code.
-        m3_res %>%
-          purrr::pluck("result", "fit_data_abundance", "results") %>%
-          tibble::as_tibble() %>%
-          dplyr::select(
-            taxa_id = feature,
-            coef,
-            stderr,
-            pval = pval_individual,
-            qval = qval_individual
-          ) %>%
-          dplyr::mutate(
-            comparison = stringr::str_c(comparison, collapse = "_"),
-            var = !!var
-          ) %>%
-          dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
-          dplyr::mutate(
-            effect = coef,
-            signif = ifelse(qval < max_significance, TRUE, FALSE)
-          ) %>%
-          dplyr::relocate(taxa_id, .before = 1)
-      })
-    })
 }
 
 #' @noRd
 #' @keywords internal
 required_pkgs_maaslin <- function(x, ...) { c("bioc::maaslin3") }
-
-
-#' Maaslin3 without console noise
-#'
-#' @noRd
-#' @autoglobal
-#' @keywords internal
-maaslin3_quietly <- function(input_data,
-                             input_metadata,
-                             output,
-                             var,
-                             min_abundance,
-                             min_prevalence,
-                             min_variance,
-                             normalization,
-                             transform,
-                             max_significance,
-                             random_effects,
-                             fixed_effects,
-                             correction,
-                             standardize,
-                             reference,
-                             median_comparison_abundance){
-  
-  # We wrap the call in a function to pass to purrr::quietly
-  f_quietly <- function() {
-    maaslin3::maaslin3(
-      input_data = input_data,
-      input_metadata = input_metadata,
-      output = output,
-      fixed_effects = fixed_effects,
-      min_abundance = min_abundance,
-      min_prevalence = min_prevalence,
-      min_variance = min_variance,
-      normalization = normalization,
-      transform = transform,
-      max_significance = max_significance,
-      random_effects = random_effects,
-      correction = correction,
-      standardize = standardize,
-      reference = reference,
-      median_comparison_abundance = median_comparison_abundance,
-      verbosity = 'ERROR' 
-    )
-  }
-
-  # Capture output to prevent console spam
-  purrr::quietly(f_quietly)()
-}

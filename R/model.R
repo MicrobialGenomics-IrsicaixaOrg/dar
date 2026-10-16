@@ -31,10 +31,6 @@ get_model <- function(rec) {
 #' taxonomic units. Taxa with identical lineage through `tax_level` are summed
 #' for analysis; public accessors retain the complete recipe data.
 #'
-#' For compatibility with recipes created before version 1.9.3, omitted
-#' `targets` or `tax_level` values are recovered from the deprecated selector
-#' slots when available. New recipes must supply both arguments explicitly.
-#'
 #' @param rec An unprepared [Recipe()] object.
 #' @param formula A one-sided formula or `NULL` to remove the model.
 #' @param targets One or more categorical metadata columns that define the
@@ -91,10 +87,7 @@ add_model <- function(rec,
       "tax_lev" %in% names(rec@tax_info)) {
     tax_level <- rec@tax_info$tax_lev
   }
-  if (!is.null(tax_level)) {
-    tax_level <- stringr::str_to_sentence(tax_level)
-  }
-
+  if (!is.null(tax_level)) { tax_level <- stringr::str_to_sentence(tax_level) }
   candidate <- list(
     formula = formula,
     targets = targets,
@@ -119,9 +112,7 @@ add_model <- function(rec,
 #' by add_model()
 #' @noRd
 normalize_model_spec <- function(rec, model) {
-  if (is.null(model)) {
-    return(NULL)
-  }
+  if (is.null(model)) { return(NULL) }
   if (!"targets" %in% names(model)) {
     model$targets <- if (!is.null(rec@var_info) && "vars" %in% names(rec@var_info)) {
       rec@var_info$vars
@@ -143,9 +134,7 @@ normalize_model_spec <- function(rec, model) {
     "formula", "targets", "tax_level", "time", "reference", "contrasts",
     "na_action", "max_time_levels"
   )
-  if (setequal(names(model), canonical)) {
-    model <- model[canonical]
-  }
+  if (setequal(names(model), canonical)) { model <- model[canonical] }
   model
 }
 
@@ -153,9 +142,7 @@ normalize_model_spec <- function(rec, model) {
 coerce_model_formula <- function(formula) {
   if (is.character(formula) && length(formula) == 1L && !is.na(formula)) {
     formula <- trimws(formula)
-    if (!startsWith(formula, "~")) {
-      formula <- paste("~", formula)
-    }
+    if (!startsWith(formula, "~")) { formula <- paste("~", formula) }
     formula <- stats::as.formula(formula, env = parent.frame())
   }
 
@@ -172,22 +159,13 @@ coerce_model_formula <- function(formula) {
 }
 
 #' @noRd
-model_metadata <- function(rec) {
-  recipe_metadata_data(rec)
-}
-
+model_metadata <- function(rec) { recipe_metadata_data(rec) }
 #' Return model validity problems without throwing
 #' @noRd
 model_validity_problems <- function(object) {
   stored_model <- object@model
-  if (is.null(stored_model)) {
-    return(character())
-  }
-
-  legacy <- c(
-    "formula", "time", "reference", "contrasts", "na_action",
-    "max_time_levels"
-  )
+  if (is.null(stored_model)) { return(character()) }
+  legacy <- c("formula", "time", "reference", "contrasts", "na_action", "max_time_levels")
   required <- c(
     "formula", "targets", "tax_level", "time", "reference", "contrasts",
     "na_action", "max_time_levels"
@@ -233,9 +211,7 @@ model_validity_problems <- function(object) {
       },
       error = conditionMessage
     )
-    if (!is.null(semantic_problem)) {
-      problems <- c(problems, semantic_problem)
-    }
+    if (!is.null(semantic_problem)) { problems <- c(problems, semantic_problem) }
   }
   problems
 }
@@ -387,9 +363,7 @@ validate_model_spec <- function(rec, model) {
         class = "dar_error_invalid_model"
       )
     }
-    unknown_reference_vars <- setdiff(
-      names(model$reference), all.vars(fixed_formula)
-    )
+    unknown_reference_vars <- setdiff(names(model$reference), all.vars(fixed_formula))
     if (length(unknown_reference_vars) > 0L) {
       cli::cli_abort(
         "Reference variable{?s} {.val {unknown_reference_vars}} {?is/are} not in the model.",
@@ -432,9 +406,7 @@ validate_model_spec <- function(rec, model) {
 #' @noRd
 ordered_model_levels <- function(x, numeric_order = FALSE) {
   x <- x[!is.na(x)]
-  if (is.factor(x)) {
-    return(levels(droplevels(x)))
-  }
+  if (is.factor(x)) { return(levels(droplevels(x))) }
   if (numeric_order || is.numeric(x) || is.integer(x)) {
     return(as.character(sort(unique(x))))
   }
@@ -445,9 +417,7 @@ ordered_model_levels <- function(x, numeric_order = FALSE) {
 #' @noRd
 resolve_model <- function(rec, check_design = TRUE) {
   model <- get_model(rec)
-  if (is.null(model)) {
-    return(NULL)
-  }
+  if (is.null(model)) { return(NULL) }
   validate_model_spec(rec, model)
 
   metadata <- model_metadata(rec)
@@ -501,7 +471,9 @@ resolve_model <- function(rec, check_design = TRUE) {
       )
     }
     metadata[[model$time]] <- factor(
-      as.character(metadata[[model$time]]), levels = time_levels, ordered = FALSE
+      as.character(metadata[[model$time]]),
+      levels = time_levels,
+      ordered = FALSE
     )
   }
 
@@ -517,7 +489,8 @@ resolve_model <- function(rec, check_design = TRUE) {
   if (!is.null(model$reference)) {
     for (var in names(model$reference)) {
       metadata[[var]] <- stats::relevel(
-        factor(metadata[[var]]), ref = model$reference[[var]]
+        factor(metadata[[var]]),
+        ref = model$reference[[var]]
       )
     }
   }
@@ -617,9 +590,7 @@ resolve_model <- function(rec, check_design = TRUE) {
 
 #' @noRd
 model_interaction_targets <- function(formula, targets, time) {
-  if (is.null(time)) {
-    return(character())
-  }
+  if (is.null(time)) { return(character()) }
   labels <- attr(stats::terms(reformulas::nobars(formula)), "term.labels")
   labels <- labels[grepl(":", labels, fixed = TRUE)]
   unique(unlist(lapply(labels, function(label) {
@@ -661,9 +632,7 @@ model_design_row <- function(resolved, values = list()) {
 
 #' @noRd
 model_pairs <- function(levels) {
-  if (length(levels) < 2L) {
-    return(list())
-  }
+  if (length(levels) < 2L) { return(list()) }
   utils::combn(levels, 2L, simplify = FALSE)
 }
 
@@ -698,7 +667,11 @@ build_contrast_plan <- function(resolved) {
           model_design_row(resolved, stats::setNames(list(denominator), target))
         add_row(
           glue::glue("{target}[{numerator}-{denominator}]"),
-          "main", target, numerator, denominator, weights = weights
+          "main",
+          target,
+          numerator,
+          denominator,
+          weights = weights
         )
       }
       next
@@ -715,8 +688,13 @@ build_contrast_plan <- function(resolved) {
         weights <- model_design_row(resolved, num_values) - model_design_row(resolved, den_values)
         add_row(
           glue::glue("{target}[{numerator}-{denominator}]@{resolved$time}[{time_level}]"),
-          "condition_within_time", target, numerator, denominator,
-          resolved$time, time_level, weights
+          "condition_within_time",
+          target,
+          numerator,
+          denominator,
+          resolved$time,
+          time_level,
+          weights
         )
       }
     }
@@ -730,8 +708,13 @@ build_contrast_plan <- function(resolved) {
         weights <- model_design_row(resolved, num_values) - model_design_row(resolved, den_values)
         add_row(
           glue::glue("{resolved$time}[{numerator}-{denominator}]@{target}[{target_level}]"),
-          "time_within_condition", resolved$time, numerator, denominator,
-          target, target_level, weights
+          "time_within_condition",
+          resolved$time,
+          numerator,
+          denominator,
+          target,
+          target_level,
+          weights
         )
       }
     }
@@ -753,7 +736,8 @@ build_contrast_plan <- function(resolved) {
             model_design_row(resolved, values(target_den, time_den))
           add_row(
             glue::glue("{target}[{target_num}-{target_den}]:{resolved$time}[{time_num}-{time_den}]"),
-            "difference_in_differences", target,
+            "difference_in_differences",
+            target,
             paste(target_num, time_num, sep = ":"),
             paste(target_den, time_den, sep = ":"),
             weights = weights
@@ -764,12 +748,19 @@ build_contrast_plan <- function(resolved) {
   }
 
   if (length(rows) == 0L) {
-    return(tibble::tibble(
-      contrast_id = character(), comparison = character(),
-      contrast_type = character(), var = character(), numerator = character(),
-      denominator = character(), at_var = character(), at_level = character(),
-      weights = list()
-    ))
+    return(
+      tibble::tibble(
+        contrast_id = character(),
+        comparison = character(),
+        contrast_type = character(),
+        var = character(),
+        numerator = character(),
+        denominator = character(),
+        at_var = character(),
+        at_level = character(),
+        weights = list()
+      )
+    )
   }
   dplyr::bind_rows(rows)
 }
@@ -778,7 +769,8 @@ build_contrast_plan <- function(resolved) {
 
 #' @noRd
 model_engine_capabilities <- list(
-  aldex = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
+  aldex2 = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
+  aldex3 = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
   ancom = list(confounders = TRUE, time_interaction = TRUE, random = TRUE),
   corncob = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
   deseq = list(confounders = TRUE, time_interaction = TRUE, random = FALSE),
@@ -800,19 +792,22 @@ step_engine <- function(step) {
   descriptor$engine
 }
 
-#' Warn when differential abundance still uses the legacy selector path
+#' Require an explicit statistical model before DA execution
 #' @noRd
-warn_model_free_da <- function(rec) {
-  if (is.null(rec@model) && any(vapply(rec@steps, is_da_step, logical(1)))) {
-    cli::cli_warn(
+require_da_model <- function(rec) {
+  if (is.null(get_model(rec))) {
+    cli::cli_abort(
       c(
-        "!" = "Model-free differential-abundance execution is deprecated in Bioconductor 3.24 and will become defunct in 3.25.",
-        "i" = "Define the statistical design, targets and taxonomic resolution with {.fun add_model}."
+        "x" = "Differential-abundance execution requires {.fun add_model}.",
+        "i" = paste(
+          "Define the design, targets and taxonomic resolution",
+          "with {.fun add_model} before calling {.fun prep}."
+        )
       ),
-      class = "dar_warning_deprecated_legacy_da"
+      class = "dar_error_model_required"
     )
   }
-  invisible(NULL)
+  invisible(TRUE)
 }
 
 #' @noRd
@@ -820,14 +815,10 @@ model_step_status <- function(rec, step, resolved = NULL) {
   if (is.null(get_model(rec)) || !is_da_step(step)) {
     return(list(compatible = TRUE, reason = NA_character_))
   }
-  if (is.null(resolved)) {
-    resolved <- resolve_model(rec, check_design = FALSE)
-  }
+  if (is.null(resolved)) { resolved <- resolve_model(rec, check_design = FALSE) }
   engine <- step_engine(step)
   caps <- model_engine_capabilities[[engine]]
-  if (is.null(caps)) {
-    return(list(compatible = TRUE, reason = NA_character_))
-  }
+  if (is.null(caps)) { return(list(compatible = TRUE, reason = NA_character_)) }
   reasons <- character()
   if (length(resolved$confounders) > 0L && !caps$confounders) {
     reasons <- c(reasons, "does not support adjusted confounders")
@@ -858,16 +849,22 @@ model_step_status <- function(rec, step, resolved = NULL) {
 model_steps_status <- function(rec, resolved = NULL) {
   steps <- purrr::keep(rec@steps, is_da_step)
   if (length(steps) == 0L) {
-    return(tibble::tibble(
-      step_id = character(), engine = character(), compatible = logical(),
-      reason = character()
-    ))
+    return(
+      tibble::tibble(
+        step_id = character(),
+        engine = character(),
+        compatible = logical(),
+        reason = character()
+      )
+    )
   }
   purrr::map_dfr(steps, function(step) {
     status <- model_step_status(rec, step, resolved)
     tibble::tibble(
-      step_id = step[["id"]], engine = step_engine(step),
-      compatible = status$compatible, reason = status$reason
+      step_id = step[["id"]],
+      engine = step_engine(step),
+      compatible = status$compatible,
+      reason = status$reason
     )
   })
 }
@@ -902,19 +899,16 @@ model_override_arguments <- function(step) {
 
 #' @noRd
 report_model_step_warnings <- function(rec, step = NULL) {
-  if (is.null(get_model(rec))) {
-    return(invisible(NULL))
-  }
+  if (is.null(get_model(rec))) { return(invisible(NULL)) }
   steps <- if (is.null(step)) purrr::keep(rec@steps, is_da_step) else list(step)
-  if (length(steps) == 0L) {
-    return(invisible(NULL))
-  }
+  if (length(steps) == 0L) { return(invisible(NULL)) }
   resolved <- resolve_model(rec, check_design = FALSE)
   overrides <- purrr::map(steps, model_override_arguments)
   has_overrides <- lengths(overrides) > 0L
   if (any(has_overrides)) {
     details <- purrr::map2_chr(
-      steps[has_overrides], overrides[has_overrides],
+      steps[has_overrides],
+      overrides[has_overrides],
       ~ paste0(.x[["id"]], ": ", paste(.y, collapse = ", "))
     )
     cli::cli_warn(
@@ -946,12 +940,8 @@ report_model_step_warnings <- function(rec, step = NULL) {
 #' Compile the centralized model for a DA engine
 #' @noRd
 compile_model <- function(rec, engine, resolved = NULL) {
-  if (is.null(resolved)) {
-    resolved <- resolve_model(rec)
-  }
-  if (is.null(resolved)) {
-    return(NULL)
-  }
+  require_da_model(rec)
+  if (is.null(resolved)) { resolved <- resolve_model(rec) }
   random_text <- if (length(resolved$random_terms) == 0L) {
     NULL
   } else {
@@ -978,9 +968,7 @@ compile_model <- function(rec, engine, resolved = NULL) {
 #' @noRd
 apply_model_to_recipe <- function(rec) {
   resolved <- resolve_model(rec)
-  if (is.null(resolved)) {
-    return(list(rec = rec, resolved = NULL))
-  }
+  if (is.null(resolved)) { return(list(rec = rec, resolved = NULL)) }
   keep <- resolved$data$sample_id
   rec@phyloseq <- phyloseq::prune_samples(keep, rec@phyloseq)
   list(rec = rec, resolved = resolved)
@@ -989,9 +977,7 @@ apply_model_to_recipe <- function(rec) {
 #' Add common model columns to a method result
 #' @noRd
 harmonize_model_result <- function(result, rec) {
-  if (is.null(get_model(rec)) || !inherits(result, "data.frame")) {
-    return(result)
-  }
+  if (is.null(get_model(rec)) || !inherits(result, "data.frame")) { return(result) }
   result <- tibble::as_tibble(result)
   if (!"contrast_id" %in% names(result) && "comparison" %in% names(result)) {
     result$contrast_id <- result$comparison
@@ -1001,16 +987,19 @@ harmonize_model_result <- function(result, rec) {
   }
   plan <- resolve_model(rec)$contrast_plan |>
     dplyr::select(
-      "contrast_id", "contrast_type", "var", "numerator",
-      "denominator", "at_var", "at_level"
+      "contrast_id",
+      "contrast_type",
+      "var",
+      "numerator",
+      "denominator",
+      "at_var",
+      "at_level"
     )
   missing_plan_columns <- setdiff(names(plan), names(result))
   if (length(missing_plan_columns) > 0L) {
     result <- dplyr::left_join(
       result,
-      dplyr::select(
-        plan, "contrast_id", dplyr::all_of(missing_plan_columns)
-      ),
+      dplyr::select(plan, "contrast_id", dplyr::all_of(missing_plan_columns)),
       by = "contrast_id"
     )
   }
@@ -1020,9 +1009,7 @@ harmonize_model_result <- function(result, rec) {
 #' Validate that an engine returned every planned contrast
 #' @noRd
 validate_model_result_contract <- function(result, rec, step_id) {
-  if (is.null(get_model(rec))) {
-    return(invisible(TRUE))
-  }
+  if (is.null(get_model(rec))) { return(invisible(TRUE)) }
   result <- harmonize_model_result(result, rec)
   expected <- resolve_model(rec)$contrast_plan$contrast_id
   observed <- unique(result$contrast_id)
@@ -1041,26 +1028,18 @@ validate_model_result_contract <- function(result, rec, step_id) {
 
 #' @noRd
 flatten_model_output <- function(result) {
-  if (inherits(result, "data.frame")) {
-    return(tibble::as_tibble(result))
-  }
+  if (inherits(result, "data.frame")) { return(tibble::as_tibble(result)) }
   if (is.list(result)) {
     tables <- purrr::map(result, flatten_model_output)
     tables <- purrr::keep(tables, ~ inherits(.x, "data.frame"))
-    if (length(tables) > 0L) {
-      return(dplyr::bind_rows(tables))
-    }
+    if (length(tables) > 0L) { return(dplyr::bind_rows(tables)) }
   }
   tibble::tibble()
 }
 
 #' @noRd
 harmonize_model_output <- function(result, rec) {
-  if (inherits(result, "data.frame")) {
-    return(harmonize_model_result(result, rec))
-  }
-  if (is.list(result)) {
-    return(purrr::map(result, harmonize_model_output, rec = rec))
-  }
+  if (inherits(result, "data.frame")) { return(harmonize_model_result(result, rec)) }
+  if (is.list(result)) { return(purrr::map(result, harmonize_model_output, rec = rec)) }
   result
 }

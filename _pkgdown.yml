@@ -10,7 +10,6 @@ articles:
   - data_import
   - filtering_subsetting
   - statistical_models
-  - article
   - import_export_recipes
 reference:
 - title: "Basic Functions"
@@ -38,7 +37,8 @@ reference:
   - step_rarefaction
 - title: "Step Functions - Differential Abundance Methods"
   contents:
-  - step_aldex
+  - step_aldex2
+  - step_aldex3
   - step_ancom
   - step_corncob
   - step_deseq
@@ -49,6 +49,8 @@ reference:
 - title: "Exploration"
   contents:
   - tidy_results
+  - tidy_abundance
+  - effect_plt
   - abundance_plt
   - corr_heatmap
   - exclusion_plt
@@ -59,6 +61,7 @@ reference:
   - overlap_df
 - title: "Recipe Data Access"
   contents:
+  - get_execution
   - get_phy
   - otu_table
   - sample_data

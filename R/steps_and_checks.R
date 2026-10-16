@@ -29,10 +29,7 @@ recipe_step_registry <- c(
     "preprocessing"
   ),
   register_step_methods(
-    c(
-      "aldex", "ancom", "corncob", "deseq", "lefse", "linda", "maaslin",
-      "wilcox"
-    ),
+    c("aldex2", "aldex3", "ancom", "corncob", "deseq", "lefse", "linda", "maaslin", "wilcox"),
     "da"
   ),
   register_step_methods("bake", "bake")
@@ -41,8 +38,8 @@ recipe_step_registry <- c(
 #' Column names that cannot also identify differential-abundance steps
 #' @noRd
 reserved_da_step_ids <- c(
-  "taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect",
-  "sum", ".tax_order", ".contrast_order", ".effect_order"
+  "taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect", "sum",
+  ".tax_order", ".contrast_order", ".effect_order"
 )
 
 #' @noRd
@@ -62,10 +59,7 @@ step_id_validation_problems <- function(id, role) {
 #' @noRd
 step_validation_problems <- function(object) {
   problems <- character()
-  if (!inherits(object, "step")) {
-    return("must inherit from the `step` class")
-  }
-
+  if (!inherits(object, "step")) { return("must inherit from the `step` class") }
   matched_classes <- intersect(class(object), names(recipe_step_registry))
   if (length(matched_classes) == 0L) {
     problems <- c(problems, "must have one supported concrete `step_*` class")
@@ -115,9 +109,7 @@ step_slot_validation_problems <- function(configured_steps, slot_name, roles) {
 valid_step_ids <- function(configured_steps) {
   unlist(
     lapply(configured_steps, function(configured_step) {
-      if (!is.list(configured_step)) {
-        return(NULL)
-      }
+      if (!is.list(configured_step)) { return(NULL) }
       id <- configured_step[["id"]]
       if (is.character(id) && length(id) == 1L && !is.na(id) && nzchar(id)) {
         id
@@ -171,9 +163,7 @@ step_runner <- function(object) {
 }
 
 #' @noRd
-is_preprocessing_step <- function(object) {
-  identical(step_role(object), "preprocessing")
-}
+is_preprocessing_step <- function(object) { identical(step_role(object), "preprocessing") }
 
 #' @noRd
 is_da_step <- function(object) identical(step_role(object), "da")
@@ -281,7 +271,6 @@ check <- function(subclass, ..., .prefix = "check_") {
 #' })
 #' expect_equal(length(prepped_dup@bakes), initial_bakes + 1)
 add_step <- function(rec, object) {
-  
   check_any_recipe(rec)
   is_prep <- methods::is(rec, "PrepRecipe")
   expected_roles <- if (is_prep) "bake" else c("preprocessing", "da")
@@ -308,9 +297,7 @@ add_step <- function(rec, object) {
   }
 
   configured_operations <- rec@steps
-  if (is_prep) {
-    configured_operations <- c(configured_operations, rec@bakes)
-  }
+  if (is_prep) { configured_operations <- c(configured_operations, rec@bakes) }
   configured_ids <- purrr::map_chr(configured_operations, ~ .x[["id"]])
   if (object[["id"]] %in% configured_ids) {
     cli::cli_abort(

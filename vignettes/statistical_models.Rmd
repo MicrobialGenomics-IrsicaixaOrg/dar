@@ -19,8 +19,10 @@ set.seed(130)
 differential-abundance step. Its `targets` and `tax_level` arguments are the
 single source of truth for the analysis configuration; other fixed terms provide
 covariate adjustment. Method-specific thresholds, normalization and rarefaction
-settings remain active. A model-free recipe remains valid for preprocessing,
-but differential-abundance execution without a model is deprecated.
+settings remain active. Preprocessing can run without a model, but
+differential-abundance execution requires `add_model()` before `prep()`.
+Steps can be configured before or after adding the model. Inspect the current
+specification with `get_model(rec)`.
 
 ## Small example data
 
@@ -127,6 +129,7 @@ the study design and choose a compatible method.
 |:--|:--:|:--:|:--:|
 | DESeq2 | yes | yes | no |
 | ALDEx2 | yes | yes | no |
+| ALDEx3 | yes | yes | yes (exact lme4) |
 | ANCOM-BC2 | yes | yes | yes |
 | corncob | yes | yes | no |
 | LinDA | yes | yes | yes |
@@ -145,20 +148,50 @@ missing planned contrasts remain errors.
 
 Use `contrast_id`, `comparison` and `contrast_type` to identify the hypothesis
 represented by each result. See
-[Exploring results and optional consensus](article.html) for the result columns,
-effect scales, selectors and plotting examples.
+[Getting started with dar](dar.html) for extracting results, inspecting
+execution records and plotting selected contrasts.
+
+## Interpret returned results
+
+`tidy_results()` returns one row per returned taxon, contrast and configured
+step, not a complete grid of all possible tests. `method` identifies the engine
+and `step_id` identifies its configuration. Custom IDs must not collide with
+internal columns such as `effect`, `taxa_id` or `sum`; choose distinct IDs such
+as `linda_sensitivity`.
+
+The numerator and denominator define each contrast's orientation. Positive
+effects point toward the numerator on the reported metric, but the metrics
+are not numerically interchangeable:
+
+| Engine | Effect reported by the centralized API |
+|:--|:--|
+| DESeq2 | Log2 fold change, with the configured shrinkage. |
+| ALDEx2 | Contrast-oriented GLM coefficient. |
+| ALDEx3 | Log2 abundance coefficient conditional on the scale model. |
+| ANCOM-BC2 | Bias-corrected log fold change. |
+| corncob | Logit mean-abundance coefficient. |
+| LinDA | Bias-corrected log2 fold change. |
+| MaAsLin3 | Coefficient on the configured transformed abundance scale. |
+| Wilcoxon | Difference in medians on the configured abundance scale. |
+| LEfSe | Direction-oriented LDA score. |
+
+Inspect `effect_metric` and the configured engine options before interpreting
+an estimate. `significant` preserves the originating method's decision,
+including any additional criteria such as ANCOM-BC2's pseudocount-sensitivity
+filter. Missing statistics remain missing: a nonsignificant result does not
+prove that every estimate was available or that there is no effect. Absent
+rows are not automatically nonsignificant results. Agreement plots do not
+establish calibrated false-discovery rates.
 
 For centralized ALDEx2 analyses, `effect` is the contrast-oriented coefficient
 from the same GLM as the adjusted P value, averaged over Monte Carlo instances
 and labeled `aldex_glm_coefficient`. With default settings it is on the base-2
 CLR response scale, not an absolute-abundance fold change or ALDEx2's
 standardized two-group effect. Advanced native settings can change its scale.
-Recompute previously prepared centralized ALDEx2 results to obtain the GLM
-coefficients; deprecated model-free analyses retain their standardized effects.
 
 ## Advanced native-engine arguments
 
-The eight DA steps accept `engine_args`, a named list grouped by native-call
+The nine DA steps accept `engine_args`, a named list grouped by native-call
 stage. This keeps advanced settings attached to the configured step and avoids
 an ambiguous `...`. For example:
 
@@ -187,43 +220,57 @@ are not merged with its defaults. For ANCOM-BC2, supply the complete
 `iter_control` list, including `verbose`, rather than only the values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr` and `fit` for ALDEx2; `fit` for ANCOM-BC2,
+DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3 and ANCOM-BC2,
 corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon;
 and `transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths
-and arguments already exposed by each dar wrapper are protected. Non-empty
-`engine_args` require a centralized model. A configured stage that is not
-used by the selected execution route is reported as an error.
-ALDEx2's former `effect` stage is rejected because centralized effects now
-come directly from the GLM fit.
+and arguments already exposed by each dar wrapper are protected. A configured
+stage that is not used by the selected execution route is reported as an error.
+Engine-specific validation and errors are left to the engine. dar checks its
+own configuration, design compatibility and the identities used to align data
+and results. ALDEx2 effects come directly from the GLM fit.
 
 See [Saving and sharing analysis recipes](import_export_recipes.html) for
 exporting model settings and native options without executing an analysis.
 
-## Migrating legacy selectors
+## ALDEx2 and ALDEx3
 
-The former `recipe(..., var_info=, tax_info=)`, `add_var()`, `add_tax()`,
-`get_var()` and `get_tax()` interfaces, and model-free DA execution, are
-deprecated in Bioconductor 3.24, become defunct in 3.25 and are scheduled for
-removal in 3.26. Preprocessing without a model remains supported. Move the
-selectors into `add_model()` and inspect them with `get_model(rec)`:
+Use `step_aldex2()` for ALDEx2 and `step_aldex3()` for ALDEx3.
 
-```{r migration, eval=FALSE}
-# Deprecated
-old <- recipe(phy, var_info = "condition", tax_info = "Species")
+Supply sequence counts for ALDEx3 inference. Fixed models use native `lm`;
+mixed models use exact `lme4`, with one native fit per planned contrast.
+The approximate `blmm` engine is not
+enabled. Expect substantial cost for many taxa, Monte Carlo draws and
+longitudinal contrasts; `nsample = 2000` follows the native default.
 
-# Current API
-current <- recipe(phy) |>
+```{r aldex3-config}
+aldex3_rec <- recipe(longitudinal_phy) |>
   add_model(
-    ~ condition,
-    targets = "condition",
-    tax_level = "Species"
-  )
+    ~ condition * visit + (1 | subject), targets = "condition",
+    tax_level = "Species", time = "visit", contrasts = "all"
+  ) |>
+  step_aldex3(scale_model = "clr", scale_args = list(gamma = 0.5))
+aldex3_rec
 ```
 
-`phy_qc()` is defunct in 3.24; use `recipe_qc()`. The retired
-`step_metagenomeseq()` is no longer exported. Legacy executable recipe files
-must be recreated in the current API before export; they are not accepted by
-the current importer.
+This is a scale assumption, not a measurement of microbial load. `clr` and
+`tss` accept a non-negative log2 coefficient SD `gamma`; zero fixes their
+scale assumption. `sample` accepts external log2 means and SDs named by
+sample ID (`s.mu`, `s.sd`); `coefficient` accepts means and SDs named by the
+columns of the resolved fixed design (`c.mu`, `c.sd`). Only independent SDs
+are supported, not covariance matrices or arbitrary functions. Complete-case
+selection subsets external information by sample ID. The scale model always
+uses the original resolved design, so contrast releveling does not change
+its prior. Shared preprocessing defines the analyzed composition: excluded
+features are not silently restored as an "other" feature.
+The default uncertainty is a modeling choice, not a data-derived quantity;
+coefficient coding and numeric covariate units affect these scale priors.
+
+Effects retain their scale-model-dependent interpretation and are labeled
+`aldex3_log2_abundance_coefficient`. Native P values and adjusted P values
+include directional Monte Carlo averaging, with adjustment across taxa per
+coefficient, not across all planned contrasts. Missing estimates stay
+missing. `get_execution()` records the ALDEx3 version, seed, Monte Carlo
+settings, scale specification, native engine and elapsed time.
 
 ```{r session-info}
 sessionInfo()

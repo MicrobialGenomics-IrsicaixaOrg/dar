@@ -92,7 +92,7 @@ test_that("boxplots aggregate counts before abundance transformations", {
       plot <- dar:::.abundance_boxplot(
         prepared, taxa_ids = c("asv_a", "asv_c"),
         transform = if (transformation == "raw") NULL else transformation,
-        scale = 1, target = "condition", contrast_id = NULL
+        scale = 1, target = "condition"
       )
       expect_equal(
         analysis_plot_data_matrix(plot$data),
@@ -125,7 +125,7 @@ test_that("heatmaps use the same aggregated transformed abundance matrix", {
     heatmap <- dar:::.abundance_heatmap(
       prepared, taxa_ids = c("asv_a", "asv_c"),
       transform = if (transformation == "raw") NULL else transformation,
-      scale = 1, top_n = 20, target = "condition", contrast_id = NULL
+      scale = 1, target = "condition"
     )
     expect_equal(
       heatmap@matrix, expected[[transformation]],

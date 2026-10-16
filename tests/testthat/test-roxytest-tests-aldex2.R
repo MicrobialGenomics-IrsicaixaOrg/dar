@@ -2,19 +2,20 @@
 
 # File R/aldex2.R: @tests
 
-test_that("Function step_aldex() @ L104", {
+test_that("Function step_aldex2() @ L70", {
   data(metaHIV_phy)
   
   test <-
-   suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+   recipe(metaHIV_phy) |>
+   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
    step_filter_by_abundance() |> 
-   step_aldex()
+   step_aldex2()
   test <- suppressWarnings(prep(test, parallel = FALSE))
    
   expect_s4_class(test, "PrepRecipe")
   
   data(test_prep_rec)
-  expect_error(step_aldex(test_prep_rec))
+  expect_error(step_aldex2(test_prep_rec))
 })
 

@@ -11,24 +11,11 @@
 #' @keywords internal
 validate_recipe_object <- function(rec, arg_name = "rec", context = NULL) {
   problems <- methods::validObject(rec, test = TRUE, complete = TRUE)
-
-  if (isTRUE(problems)) {
-    return(invisible(NULL))
-  }
-
+  if (isTRUE(problems)) { return(invisible(NULL)) }
   bullets <- stats::setNames(as.character(problems), rep("!", length(problems)))
-  messages <- c(
-    "x" = "The argument {.arg {arg_name}} is an invalid {.cls Recipe} object.",
-    bullets
-  )
-  if (!is.null(context)) {
-    messages <- c(messages, "i" = context)
-  }
-
-  cli::cli_abort(
-    messages,
-    class = "dar_error_invalid_recipe"
-  )
+  messages <- c("x" = "The argument {.arg {arg_name}} is an invalid {.cls Recipe} object.", bullets)
+  if (!is.null(context)) { messages <- c(messages, "i" = context) }
+  cli::cli_abort(messages, class = "dar_error_invalid_recipe")
 }
 
 #' Check if object is a valid Recipe (and NOT Prepped)
@@ -40,7 +27,6 @@ validate_recipe_object <- function(rec, arg_name = "rec", context = NULL) {
 #' @noRd
 #' @keywords internal
 check_recipe <- function(rec, arg_name = "rec") {
-  
   if (!checkmate::test_class(rec, "Recipe")) {
     cli::cli_abort(
       c(
@@ -64,7 +50,6 @@ check_recipe <- function(rec, arg_name = "rec") {
   }
 
   validate_recipe_object(rec, arg_name = arg_name)
-  
   invisible(NULL)
 }
 
@@ -75,7 +60,6 @@ check_recipe <- function(rec, arg_name = "rec") {
 #' @noRd
 #' @keywords internal
 check_prep_recipe <- function(rec, arg_name = "rec") {
-  
   if (!checkmate::test_class(rec, "PrepRecipe")) {
     if (checkmate::test_class(rec, "Recipe")) {
       cli::cli_abort(
@@ -99,7 +83,6 @@ check_prep_recipe <- function(rec, arg_name = "rec") {
   }
 
   validate_recipe_object(rec, arg_name = arg_name)
-  
   invisible(NULL)
 }
 
@@ -112,8 +95,6 @@ check_prep_recipe <- function(rec, arg_name = "rec") {
 #' @noRd
 #' @keywords internal
 check_any_recipe <- function(rec, arg_name = "rec") {
-  
-  # Since PrepRecipe inherits from Recipe, we only need to check the base class.
   if (!checkmate::test_class(rec, "Recipe")) {
     cli::cli_abort(
       c(
@@ -126,6 +107,5 @@ check_any_recipe <- function(rec, arg_name = "rec") {
   }
 
   validate_recipe_object(rec, arg_name = arg_name)
-  
   invisible(NULL)
 }

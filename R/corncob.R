@@ -11,30 +11,30 @@
 #' * hypothesis testing with categorical and continuous covariates
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
-#'   operations for this Recipe.
+#'   operations for this Recipe. Execution requires [add_model()] before
+#'   [prep()]; the step can be configured before adding the model.
 #' @param phi.formula An object of class formula without the response: a
 #'   symbolic description of the model to be fitted to the dispersion.
-#' @param formula_null Formula for mean under null, without response. Defaults
-#'   to `NULL`, which uses `~ 1` during deprecated model-free execution.
-#'   An explicit formula is overridden with a warning by a centralized model.
+#' @param formula_null Retained design argument, default `NULL`. Explicit
+#'   values are overridden with a warning by the [add_model()] contrasts.
 #' @param phi.formula_null Formula for overdispersion under null, without
-#'   response. Defaults to `NULL`, which uses `~ 1` during deprecated model-free
-#'   execution. An explicit formula is overridden with a warning by a
-#'   centralized model.
+#'   response. Default `NULL`. Explicit values are overridden with a warning
+#'   by the [add_model()] contrasts.
 #' @param link Link function for abundance covariates, defaults to "logit".
 #' @param phi.link Link function for dispersion covariates, defaults to "logit".
-#' @param test Character. Hypothesis testing procedure to use. One of "Wald" or
-#'   "LRT" (likelihood ratio test).
-#' @param boot Boolean. Defaults to FALSE. Indicator of whether or not to use
-#'   parametric bootstrap algorithm. (See pbWald and pbLRT).
-#' @param B Optional integer. Number of bootstrap iterations. Ignored if boot is
-#'   FALSE. Otherwise, defaults to 1000.
+#' @param test Hypothesis test, default `"Wald"`. Only Wald contrasts are
+#'   supported; other tests make the step incompatible with the shared model.
+#' @param boot Whether to request bootstrap inference, default `FALSE`.
+#'   Bootstrap is unsupported and makes the step incompatible.
+#' @param B Retained bootstrap iteration setting. Not used for Wald contrasts.
 #' @param filter_discriminant Boolean. Defaults to TRUE. If FALSE, discriminant
 #'   taxa will not be filtered out.
 #' @param fdr_cutoff Integer. Defaults to 0.05. Desired type 1 error rate.
 #' @param fdr Character. Defaults to "fdr". False discovery rate control method,
 #'   see p.adjust for more options.
-#' @param log2FC log2FC cutoff.
+#' @param log2FC Minimum absolute effect on the reported coefficient scale.
+#'   Despite the argument name, a logit-link coefficient is not a log2 fold
+#'   change. Default zero.
 #' @param rarefy Boolean indicating if OTU counts must be rarefyed. This
 #'   rarefaction uses the standard R sample function to resample from the
 #'   abundance values in the otu_table component of the first argument, physeq.
@@ -61,7 +61,8 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+#'  recipe(metaHIV_phy) |>
+#'  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_abundance() |> 
 #'  step_corncob()
@@ -97,10 +98,9 @@ step_corncob <- function(rec,
                          rarefy = FALSE,
                          id = rand_id("corncob"),
                          engine_args = list()) {
-  
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_corncob(), "step_corncob()")
-  
+
   add_step(
     rec,
     step(
@@ -143,78 +143,20 @@ run_corncob <- function(rec,
                         rarefy,
                         id,
                         engine_args = list()) {
+  engine_args <- check_engine_args_execution(rec, "corncob", engine_args)
 
-  engine_args <- check_engine_args_execution(
-    rec, "corncob", engine_args, id
+  run_corncob_model(
+    rec = rec,
+    phi.formula = phi.formula,
+    link = link,
+    phi.link = phi.link,
+    filter_discriminant = filter_discriminant,
+    fdr_cutoff = fdr_cutoff,
+    fdr = fdr,
+    log2FC = log2FC,
+    rarefy = rarefy,
+    engine_args = engine_args
   )
-
-  if (!is.null(get_model(rec))) {
-    return(run_corncob_model(
-      rec = rec,
-      phi.formula = phi.formula,
-      link = link,
-      phi.link = phi.link,
-      filter_discriminant = filter_discriminant,
-      fdr_cutoff = fdr_cutoff,
-      fdr = fdr,
-      log2FC = log2FC,
-      rarefy = rarefy,
-      engine_args = engine_args
-    ))
-  }
-  
-  formula_null <- formula_null %||% stats::formula(~ 1)
-  phi.formula_null <- phi.formula_null %||% stats::formula(~ 1)
-  vars <- recipe_targets(rec)
-  tax_level <- recipe_tax_level(rec)
-  phy <- get_phy(rec) %>% use_rarefy(rarefy)
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-  
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      get_comparisons(var, phy, as_list = TRUE, n_cut = 1) %>%
-        purrr::map_dfr(function(comparison) {
-          
-          meta_vals <- phyloseq::get_variable(phy, var)
-          f_phy <- phyloseq::prune_samples(meta_vals %in% comparison, phy)
-          
-          corncob_res <- tryCatch({
-              corncob::differentialTest(
-                formula = glue::glue("~ { var }") %>% stats::formula(),
-                data = f_phy,
-                phi.formula = phi.formula,
-                formula_null = formula_null,
-                phi.formula_null = phi.formula_null,
-                link = link,
-                phi.link = phi.link,
-                test = test,
-                boot = boot,
-                B = B,
-                filter_discriminant = filter_discriminant,
-                fdr_cutoff = Inf,
-                fdr = fdr
-              )
-            }, error = function(e) { conditionMessage(e) })
-          
-          check_non_convergence(corncob_res)
-          
-          signif_taxa <- corncob::otu_to_taxonomy(
-            OTU = corncob_res$significant_taxa,
-            data = corncob_res$data,
-            level = tax_level
-          ) %>% stringr::str_c(" (", corncob_res$significant_taxa, ")")
-          
-          corncob_stats_tbl(
-            corncob_res,
-            signif_taxa,
-            comparison,
-            var,
-            log2FC,
-            fdr_cutoff
-          )
-        })
-    })
 }
 
 #' Extract mean-model covariance using the requested native inference
@@ -233,74 +175,3 @@ corncob_model_covariance <- function(fit) {
 #' @keywords internal
 #' @autoglobal
 required_pkgs_corncob <- function(x, ...) { c("corncob") }
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-corncob_stats_tbl <- function(corncob_res,
-                              signif_taxa,
-                              comparison,
-                              var,
-                              log2FC,
-                              fdr_cutoff) {
-  
-  qval <- stats::qnorm(0.975)
-  corncob_res$significant_models %>%
-    purrr::map2_dfr(stats::na.omit(corncob_res$p_fdr), function(m, p) {
-      coefs_mu <- m$coefficients[seq_len(m$np.mu), , drop = FALSE]
-      coefs_mu <- coefs_mu[2, , drop = FALSE]
-      tibble::tibble(
-        log2FC = coefs_mu[1, 1],
-        log2FC_min = coefs_mu[1, 1] - qval * coefs_mu[1, 2],
-        log2FC_xmax = coefs_mu[1, 1] + qval * coefs_mu[1, 2],
-        padj = p
-      )
-    }) %>%
-    dplyr::mutate(
-      taxa = signif_taxa,
-      comparison = stringr::str_c(comparison, collapse = "_"),
-      var = var
-    ) %>%
-    tidyr::separate(taxa, c("taxa", "taxa_id"), sep = " ", remove = TRUE) %>%
-    dplyr::mutate(taxa_id = stringr::str_remove_all(taxa_id, "[(]|[)]")) %>%
-    dplyr::mutate(
-      effect = .data$log2FC,
-      signif = ifelse(
-        .data$padj < .env$fdr_cutoff & abs(.data$log2FC) >= .env$log2FC,
-        TRUE, FALSE
-      )
-    ) %>% 
-    dplyr::relocate(taxa_id, .before = 1)
-}
-
-#' @noRd
-#' @keywords internal
-check_non_convergence <- function(corncob_res) {
-  if (methods::is(corncob_res, "differentialTest")) {
-    return(invisible(corncob_res))
-  }
-  
-  is_convergence_error <- 
-    is.character(corncob_res) && any(stringr::str_detect(corncob_res, "failed to converge"))
-  
-  if (is_convergence_error) {
-    cli::cli_abort(
-      c(
-        "x" = "{.pkg corncob}: All models failed to converge!",
-        "i" = "If you are seeing this, it is likely that your model is overspecified.",
-        "i" = "This occurs when your sample size is not large enough to estimate all the parameters of your model (commonly due to categorical variables with many categories).",
-        "*" = "Please remove or edit {.fn step_corncob} and rerun."
-      ),
-      class = "dar_error_corncob_convergence"
-    )
-  } 
-  
-  cli::cli_abort(
-    c(
-      "x" = "{.pkg corncob}: Internal error!",
-      "i" = "Please remove or edit {.fun step_corncob} and rerun.",
-      "*" = "Please report this bug on GitHub: {.url https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues}"
-    ),
-    class = "dar_error_corncob_internal"
-  )
-}

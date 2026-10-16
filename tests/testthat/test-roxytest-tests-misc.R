@@ -9,24 +9,7 @@ test_that("Function rand_id() @ L15", {
 })
 
 
-test_that("Function get_comparisons() @ L49", {
-  data("metaHIV_phy")
-  phy <- metaHIV_phy
-  var <- "RiskGroup2"
-  
-  is_list <- get_comparisons(var, phy)
-  is_tibb <- get_comparisons(var, phy, as_list = FALSE)
-  filtered <- get_comparisons(var, phy, n_cut = 30)
-  
-  expect_equal(class(is_list), "list")
-  expect_s3_class(is_tibb, "tbl_df")
-  expect_length(is_list, 3)
-  expect_equal(nrow(is_tibb), 3)
-  expect_length(filtered, 1)
-})
-
-
-test_that("Function to_tibble() @ L100", {
+test_that("Function to_tibble() @ L47", {
   data("metaHIV_phy")
   phy <- metaHIV_phy
   df <- phyloseq::otu_table(phy)
@@ -42,7 +25,7 @@ test_that("Function to_tibble() @ L100", {
 })
 
 
-test_that("Function step_to_call() @ L162", {
+test_that("Function step_to_call() @ L109", {
   # 1. Test standard string and numeric parameters
   step_standard <- step("maaslin",
     id = "maaslin__123",
@@ -84,7 +67,7 @@ test_that("Function step_to_call() @ L162", {
 })
 
 
-test_that("Function find_intersections() @ L225", {
+test_that("Function find_intersections() @ L183", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -96,16 +79,35 @@ test_that("Function find_intersections() @ L225", {
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")[-2]
   )
   
-  expect_equal(nrow(res_1), 52)
-  expect_equal(nrow(res_2), 27)
-  expect_equal(nrow(res_3), 41)
+  significant <- tidy_results(test_prep_rec, significant_only = TRUE) |>
+    dplyr::mutate(effect = effect_direction(effect_size))
+  keys <- c("taxa_id", "contrast_id", "effect")
+  selected_steps <- list(
+    steps_ids(test_prep_rec, "da"),
+    steps_ids(test_prep_rec, "da")[-1],
+    steps_ids(test_prep_rec, "da")[-2]
+  )
+  for (i in seq_along(selected_steps)) {
+    expected <- significant |>
+      dplyr::filter(step_id %in% selected_steps[[i]]) |>
+      dplyr::group_by(dplyr::across(dplyr::all_of(keys))) |>
+      dplyr::summarise(sum_methods = dplyr::n_distinct(step_id), .groups = "drop") |>
+      dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+    observed <- list(res_1, res_2, res_3)[[i]] |>
+      dplyr::select(dplyr::all_of(keys), sum_methods) |>
+      dplyr::arrange(dplyr::across(dplyr::all_of(keys)))
+    expect_equal(observed, expected)
+  }
   expect_s3_class(res_1, "tbl_df")
 })
 
 
-test_that("Function steps_ids() @ L310", {
+test_that("Function steps_ids() @ L276", {
   data(test_prep_rec)
-  print(test_prep_rec) |> expect_snapshot()
+  expect_snapshot(
+    print(test_prep_rec),
+    transform = function(lines) trimws(lines, which = "right")
+  )
   rec <- test_prep_rec
   expect_equal(
     steps_ids(rec),

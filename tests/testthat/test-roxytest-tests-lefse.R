@@ -2,12 +2,13 @@
 
 # File R/lefse.R: @tests
 
-test_that("Function step_lefse() @ L86", {
+test_that("Function step_lefse() @ L74", {
   data(metaHIV_phy)
   
   expect_condition(
    test <-
-     suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+     recipe(metaHIV_phy) |>
+     add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
      step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
      step_filter_by_prevalence() |>
      step_lefse() |>

@@ -51,22 +51,11 @@
 #' recipe(metaHIV_phy) |>
 #'   step_filter_taxa(.f = "function(x) sum(x > 0) >= 0.03 * length(x)")
 step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
-  
   check_recipe(rec)
-  recipes_pkg_check(
-    required_pkgs_filter_taxa(), 
-    "step_filter_taxa()"
-  )
+  recipes_pkg_check(required_pkgs_filter_taxa(), "step_filter_taxa()")
   .f <- normalize_filter_predicate(.f)
-  
-  add_step(
-    rec,
-    step(
-      subclass = "filter_taxa", 
-      .f = .f, 
-      id = id
-    )
-  )
+
+  add_step(rec, step(subclass = "filter_taxa", .f = .f, id = id))
 }
 
 #' @noRd
@@ -74,7 +63,7 @@ step_filter_taxa <- function(rec, .f, id = rand_id("filter_taxa")) {
 #' @keywords internal
 run_filter_taxa <- function(rec, .f, id) {
   rec@phyloseq <- phyloseq::filter_taxa(get_phy(rec), .f, prune = TRUE)
- 
+
   rec
 }
 
