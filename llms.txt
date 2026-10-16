@@ -7,12 +7,13 @@ microbiome data. It accepts `phyloseq` and `TreeSummarizedExperiment`
 inputs and combines preprocessing, quality control and multiple
 statistical methods through a common, pipeable interface.
 
-A centralized model defines covariates, contrasts, reference levels and
-the taxonomic level of analysis. Compatibility checks identify which
-methods can execute that design. Results can be inspected, visualized
-and compared in a common format while retaining method-specific effect
-scales. Native options remain explicit, and recipes can be shared
-through a versioned, non-executable export format.
+A centralized model is required for DA execution. It defines covariates,
+contrasts, reference levels and the taxonomic level of analysis.
+Compatibility checks identify which methods can execute that design.
+Results can be inspected, visualized and compared in a common format
+while retaining method-specific effect scales. Native options remain
+explicit, and recipes can be shared through a versioned, non-executable
+export format.
 
 Consensus is optional: it summarizes agreement across methods for the
 same contrast and effect direction. Agreement does not guarantee greater
@@ -45,7 +46,7 @@ You can install the development version of dar from
 `  `[`step_subset_taxa`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_subset_taxa.md)`(``tax_level ``=`` ``"Kingdom"``, taxa ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"Bacteria"``, ``"Archaea"``)``)`` ``|>`\
 `  `[`step_filter_taxa`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)`(``.f ``=`` ``"function(x) sum(x > 0) >= (0.03 * length(x))"``)`` ``|>`\
 `  `[`step_maaslin`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_maaslin.md)`(``)`` ``|>`\
-`  `[`step_aldex`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)`(``)`\
+`  `[`step_aldex2`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)`(``)`\
 \
 `rec`\
 \
@@ -148,8 +149,10 @@ By contributing to this project, you agree to abide by its terms.
 
 ## Step Functions - Differential Abundance Methods
 
-- [`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)
+- [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)
   : ALDEx2 analysis
+- [`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md)
+  : ALDEx3 fixed- and mixed-effects analysis
 - [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
   : ANCOM analysis
 - [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
@@ -170,8 +173,14 @@ By contributing to this project, you agree to abide by its terms.
 - [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
   : Collect differential-abundance results in a tidy contract
 
+- [`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)
+  : Extract abundances in the shared taxonomic analysis view
+
+- [`effect_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)
+  : Plot method-specific differential-abundance effects
+
 - [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
-  : Abundance boxplot
+  : Plot observed abundances of selected analysis taxa
 
 - [`corr_heatmap()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md)
   :
@@ -198,6 +207,8 @@ By contributing to this project, you agree to abide by its terms.
 
 ## Recipe Data Access
 
+- [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
+  : Inspect the recorded execution of a prepared recipe
 - [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
   : Returns phyloseq from Recipe-class object
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
@@ -279,12 +290,6 @@ Compatibility interfaces; use the centralized model API in new code.
 
 - [Statistical models and
   contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):
-
-- [Exploring results and optional
-  consensus](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
-
-  Inspect per-method results, visualize selected contrasts and summarize
-  agreement.
 
 - [Saving and sharing analysis
   recipes](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):

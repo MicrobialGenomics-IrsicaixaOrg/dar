@@ -26,7 +26,6 @@ variability, and addresses each of the challenges presented below:"><meta proper
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -79,7 +78,8 @@ variability, and addresses each of the challenges presented below:</p>
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
 <dd><p>A Recipe object. The step will be added to the sequence of
-operations for this Recipe.</p></dd>
+operations for this Recipe. Execution requires <code><a href="add_model.html">add_model()</a></code> before
+<code><a href="prep.html">prep()</a></code>; the step can be configured before adding the model.</p></dd>
 
 
 <dt id="arg-phi-formula">phi.formula<a class="anchor" aria-label="anchor" href="#arg-phi-formula"></a></dt>
@@ -88,16 +88,14 @@ symbolic description of the model to be fitted to the dispersion.</p></dd>
 
 
 <dt id="arg-formula-null">formula_null<a class="anchor" aria-label="anchor" href="#arg-formula-null"></a></dt>
-<dd><p>Formula for mean under null, without response. Defaults
-to <code>NULL</code>, which uses <code>~ 1</code> during deprecated model-free execution.
-An explicit formula is overridden with a warning by a centralized model.</p></dd>
+<dd><p>Retained design argument, default <code>NULL</code>. Explicit
+values are overridden with a warning by the <code><a href="add_model.html">add_model()</a></code> contrasts.</p></dd>
 
 
 <dt id="arg-phi-formula-null">phi.formula_null<a class="anchor" aria-label="anchor" href="#arg-phi-formula-null"></a></dt>
 <dd><p>Formula for overdispersion under null, without
-response. Defaults to <code>NULL</code>, which uses <code>~ 1</code> during deprecated model-free
-execution. An explicit formula is overridden with a warning by a
-centralized model.</p></dd>
+response. Default <code>NULL</code>. Explicit values are overridden with a warning
+by the <code><a href="add_model.html">add_model()</a></code> contrasts.</p></dd>
 
 
 <dt id="arg-link">link<a class="anchor" aria-label="anchor" href="#arg-link"></a></dt>
@@ -109,18 +107,17 @@ centralized model.</p></dd>
 
 
 <dt id="arg-test">test<a class="anchor" aria-label="anchor" href="#arg-test"></a></dt>
-<dd><p>Character. Hypothesis testing procedure to use. One of "Wald" or
-"LRT" (likelihood ratio test).</p></dd>
+<dd><p>Hypothesis test, default <code>"Wald"</code>. Only Wald contrasts are
+supported; other tests make the step incompatible with the shared model.</p></dd>
 
 
 <dt id="arg-boot">boot<a class="anchor" aria-label="anchor" href="#arg-boot"></a></dt>
-<dd><p>Boolean. Defaults to FALSE. Indicator of whether or not to use
-parametric bootstrap algorithm. (See pbWald and pbLRT).</p></dd>
+<dd><p>Whether to request bootstrap inference, default <code>FALSE</code>.
+Bootstrap is unsupported and makes the step incompatible.</p></dd>
 
 
 <dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
-<dd><p>Optional integer. Number of bootstrap iterations. Ignored if boot is
-FALSE. Otherwise, defaults to 1000.</p></dd>
+<dd><p>Retained bootstrap iteration setting. Not used for Wald contrasts.</p></dd>
 
 
 <dt id="arg-filter-discriminant">filter_discriminant<a class="anchor" aria-label="anchor" href="#arg-filter-discriminant"></a></dt>
@@ -138,7 +135,9 @@ see p.adjust for more options.</p></dd>
 
 
 <dt id="arg-log-fc">log2FC<a class="anchor" aria-label="anchor" href="#arg-log-fc"></a></dt>
-<dd><p>log2FC cutoff.</p></dd>
+<dd><p>Minimum absolute effect on the reported coefficient scale.
+Despite the argument name, a logit-link coefficient is not a log2 fold
+change. Default zero.</p></dd>
 
 
 <dt id="arg-rarefy">rarefy<a class="anchor" aria-label="anchor" href="#arg-rarefy"></a></dt>
@@ -184,7 +183,8 @@ add support for random effects or repeated-measures dependence.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Diff taxa steps:
-<code><a href="step_aldex.html">step_aldex()</a></code>,
+<code><a href="step_aldex2.html">step_aldex2()</a></code>,
+<code><a href="step_aldex3.html">step_aldex3()</a></code>,
 <code><a href="step_ancom.html">step_ancom()</a></code>,
 <code><a href="step_deseq.html">step_deseq()</a></code>,
 <code><a href="step_lefse.html">step_lefse()</a></code>,

@@ -33,7 +33,11 @@ step_corncob(
 - rec:
 
   A Recipe object. The step will be added to the sequence of operations
-  for this Recipe.
+  for this Recipe. Execution requires
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  before
+  [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md);
+  the step can be configured before adding the model.
 
 - phi.formula:
 
@@ -42,15 +46,17 @@ step_corncob(
 
 - formula_null:
 
-  Formula for mean under null, without response. Defaults to `NULL`,
-  which uses `~ 1` during deprecated model-free execution. An explicit
-  formula is overridden with a warning by a centralized model.
+  Retained design argument, default `NULL`. Explicit values are
+  overridden with a warning by the
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  contrasts.
 
 - phi.formula_null:
 
-  Formula for overdispersion under null, without response. Defaults to
-  `NULL`, which uses `~ 1` during deprecated model-free execution. An
-  explicit formula is overridden with a warning by a centralized model.
+  Formula for overdispersion under null, without response. Default
+  `NULL`. Explicit values are overridden with a warning by the
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  contrasts.
 
 - link:
 
@@ -62,18 +68,17 @@ step_corncob(
 
 - test:
 
-  Character. Hypothesis testing procedure to use. One of "Wald" or "LRT"
-  (likelihood ratio test).
+  Hypothesis test, default `"Wald"`. Only Wald contrasts are supported;
+  other tests make the step incompatible with the shared model.
 
 - boot:
 
-  Boolean. Defaults to FALSE. Indicator of whether or not to use
-  parametric bootstrap algorithm. (See pbWald and pbLRT).
+  Whether to request bootstrap inference, default `FALSE`. Bootstrap is
+  unsupported and makes the step incompatible.
 
 - B:
 
-  Optional integer. Number of bootstrap iterations. Ignored if boot is
-  FALSE. Otherwise, defaults to 1000.
+  Retained bootstrap iteration setting. Not used for Wald contrasts.
 
 - filter_discriminant:
 
@@ -91,7 +96,9 @@ step_corncob(
 
 - log2FC:
 
-  log2FC cutoff.
+  Minimum absolute effect on the reported coefficient scale. Despite the
+  argument name, a logit-link coefficient is not a log2 fold change.
+  Default zero.
 
 - rarefy:
 
@@ -142,7 +149,8 @@ dependence.
 ## See also
 
 Other Diff taxa steps:
-[`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md),
+[`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md),
+[`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md),
 [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),

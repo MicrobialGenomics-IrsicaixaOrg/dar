@@ -73,7 +73,7 @@ recipe(metaHIV_phy) |>
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Paris–Brest 
+#>      ◉ step_filter_by_rarity() id = filter_by_rarity__Coca 
 #> 
 #> DA steps:
 #> 

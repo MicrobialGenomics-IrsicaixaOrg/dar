@@ -13,7 +13,10 @@ The included `metaHIV_phy` object is a `phyloseq` dataset from
 al. (2016)](https://doi.org/10.1016/j.ebiom.2016.01.032). Here we
 compare its recorded `RiskGroup2` categories. This unadjusted example
 illustrates the software; it does not establish causal effects or
-validated microbial biomarkers.
+validated microbial biomarkers. The profiling pipeline and measurement
+units of this derived table have not been independently verified, so its
+use here is not a recommendation of count-based methods for abundance
+profiles of unknown origin.
 
 \
 [`data`](https://rdrr.io/r/utils/data.html)`(``"metaHIV_phy"``, package ``=`` ``"dar"``)`\
@@ -129,50 +132,116 @@ sizes or p-values.
 `results`` ``|>`\
 `  ``dplyr``::`[`group_by`](https://dplyr.tidyverse.org/reference/group_by.html)`(``step_id``, ``contrast_id``)`` ``|>`\
 `  ``dplyr``::`[`summarise`](https://dplyr.tidyverse.org/reference/summarise.html)`(`\
+`    n_returned ``=`` ``dplyr``::`[`n`](https://dplyr.tidyverse.org/reference/context.html)`(``)``,`\
+`    n_finite_effects ``=`` `[`sum`](https://rdrr.io/r/base/sum.html)`(`[`is.finite`](https://rdrr.io/r/base/is.finite.html)`(``effect_size``)``)``,`\
 `    n_significant ``=`` `[`sum`](https://rdrr.io/r/base/sum.html)`(``significant``, na.rm ``=`` ``TRUE``)``,`\
 `    .groups ``=`` ``"drop"`\
 `  ``)`\
-`#> ``# A tibble: 6 × 3`\
-`#>   step_id contrast_id          n_significant`\
-`#>   ``<chr>``   ``<chr>``                        ``<int>`\
-`#> ``1`` deseq   RiskGroup2[msm-hts]            121`\
-`#> ``2`` deseq   RiskGroup2[pwid-hts]            63`\
-`#> ``3`` deseq   RiskGroup2[pwid-msm]           108`\
-`#> ``4`` maaslin RiskGroup2[msm-hts]             39`\
-`#> ``5`` maaslin RiskGroup2[pwid-hts]             5`\
-`#> ``6`` maaslin RiskGroup2[pwid-msm]            21`
+`#> ``# A tibble: 6 × 5`\
+`#>   step_id contrast_id          n_returned n_finite_effects n_significant`\
+`#>   ``<chr>``   ``<chr>``                     ``<int>``            ``<int>``         ``<int>`\
+`#> ``1`` deseq   RiskGroup2[msm-hts]         278              278           121`\
+`#> ``2`` deseq   RiskGroup2[pwid-hts]        278              278            63`\
+`#> ``3`` deseq   RiskGroup2[pwid-msm]        278              278           108`\
+`#> ``4`` maaslin RiskGroup2[msm-hts]         278              251            39`\
+`#> ``5`` maaslin RiskGroup2[pwid-hts]        278              218             5`\
+`#> ``6`` maaslin RiskGroup2[pwid-msm]        278              211            21`
 
 These results can be used directly, without
 [`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
 or
 [`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md).
 
+[`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
+exposes the recorded contrast plan, samples removed by the model’s
+missing-value policy, and executed or skipped steps. It does not record
+every engine’s internal filtering. Older prepared objects can contain
+`NULL` fields because that information was not recorded.
+
+\
+`execution`` ``<-`` `[`get_execution`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)`(``fit``)`\
+`execution``$``contrasts`\
+`#> ``# A tibble: 3 × 9`\
+`#>   contrast_id        comparison contrast_type var   numerator denominator at_var`\
+`#>   ``<glue>``             ``<glue>``     ``<chr>``         ``<chr>`` ``<chr>``     ``<chr>``       ``<chr>`` `\
+`#> ``1`` RiskGroup2[msm-ht… RiskGroup… main          Risk… msm       hts         ``NA``    `\
+`#> ``2`` RiskGroup2[pwid-h… RiskGroup… main          Risk… pwid      hts         ``NA``    `\
+`#> ``3`` RiskGroup2[pwid-m… RiskGroup… main          Risk… pwid      msm         ``NA``    `\
+`#> ``# ℹ 2 more variables: at_level <chr>, weights <list>`\
+`execution``$``dropped_samples`\
+`#> character(0)`\
+`execution``$``executed_steps`\
+`#> [1] "deseq"   "maaslin"`\
+`execution``$``skipped_steps`\
+`#> ``# A tibble: 0 × 4`\
+`#> ``# ℹ 4 variables: step_id <chr>, engine <chr>, compatible <lgl>, reason <chr>`
+
 ## Plot a selected comparison
 
 Plots accept explicit contrast selectors so distinct hypotheses are not
-mixed. Here we show up to six taxa detected by at least one method for
-the comparison of `msm` with `hts`. An empty selection is a valid
-result, not a plotting failure.
+mixed.
+[`effect_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)
+displays each step and effect metric in a separate panel. Its automatic
+`top_n` selects the largest absolute finite effects within each panel,
+not the taxa most supported by other methods. Colours preserve the
+method’s configured decision; no universal confidence intervals are
+inferred.
 
 \
 `comparison_id`` ``<-`` ``"RiskGroup2[msm-hts]"`\
-`taxa_ids`` ``<-`` ``results`` ``|>`\
-`  ``dplyr``::`[`filter`](https://dplyr.tidyverse.org/reference/filter.html)`(``contrast_id`` ``==`` ``comparison_id``, ``significant``)`` ``|>`\
-`  ``dplyr``::`[`distinct`](https://dplyr.tidyverse.org/reference/distinct.html)`(``taxa_id``)`` ``|>`\
-`  ``dplyr``::`[`pull`](https://dplyr.tidyverse.org/reference/pull.html)`(``taxa_id``)`` ``|>`\
-`  `[`head`](https://rdrr.io/r/utils/head.html)`(``6``)`\
+[`effect_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)`(`\
+`  ``fit``, steps ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"deseq"``, ``"maaslin"``)``,`\
+`  contrast_id ``=`` ``comparison_id``, top_n ``=`` ``6`\
+`)`
+
+![](dar_files/figure-html/effects-1.png)
+
+For observed abundances, select discoveries from one configured step
+rather than requiring agreement. `steps` uses the IDs assigned when the
+methods were configured. These abundances use the shared taxonomic
+analysis view before engine-specific operations; they are not adjusted
+model predictions.
+
 \
-`if`` ``(`[`length`](https://rdrr.io/r/base/length.html)`(``taxa_ids``)``)`` ``{`\
-`  `[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
-`    ``fit``, taxa_ids ``=`` ``taxa_ids``,`\
-`    contrast_id ``=`` ``comparison_id``, type ``=`` ``"boxplot"`\
-`  ``)`\
-`}`` ``else`` ``{`\
-`  `[`message`](https://rdrr.io/r/base/message.html)`(``"No significant taxa for this comparison."``)`\
-`}`\
+[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
+`  ``fit``, steps ``=`` ``"deseq"``, contrast_id ``=`` ``comparison_id``,`\
+`  top_n ``=`` ``6``, type ``=`` ``"boxplot"`\
+`)`\
 `#> You have inserted a phyloseq object. The phyloseq-based methods will be deprecated. We recommend switching to the (Tree)SummarizedExperiment framework and mia R/Bioconductor package.`
 
 ![](dar_files/figure-html/abundance-1.png)
+
+For several steps, choose `selection = "union"` for discoveries from any
+selected step, or `selection = "shared"` for those supported by every
+selected step in the same contrast and effect direction. An empty
+selection is valid and does not trigger a different selection rule.
+Explicit `taxa_ids` can also select taxa independently of significance
+or agreement.
+
+\
+[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
+`  ``fit``, steps ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"deseq"``, ``"maaslin"``)``, selection ``=`` ``"union"``,`\
+`  contrast_id ``=`` ``comparison_id`\
+`)`\
+[`abundance_plt`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)`(`\
+`  ``fit``, steps ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"deseq"``, ``"maaslin"``)``, selection ``=`` ``"shared"``,`\
+`  contrast_id ``=`` ``comparison_id`\
+`)`
+
+For custom tables and graphics, see
+[`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)
+in [Data inputs and
+inspection](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/data_import.md).
+Optional agreement plots such as
+[`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
+are described in their function help. They describe agreement, not
+statistical accuracy.
+[`bake()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/bake.md)
+defines an optional consensus rule and
+[`cool()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/cool.md)
+extracts its results; their help includes exclusions and weights. More
+agreement does not guarantee greater accuracy or false-discovery rate
+control, and weights are not probabilities that methods are correct.
 
 ## Next steps
 
@@ -185,9 +254,6 @@ result, not a plotting failure.
 - [Statistical models and
   contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):
   adjustment, repeated measurements and method compatibility.
-- [Exploring results and optional
-  consensus](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
-  effect interpretation, agreement plots and explicit consensus rules.
 - [Saving and sharing analysis
   recipes](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):
   reusable configurations and the limits of recipe export.

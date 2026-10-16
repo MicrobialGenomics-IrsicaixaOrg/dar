@@ -78,7 +78,8 @@ mutual_plt(
 
 
 ## Show a single comparison
-mutual_plt(test_prep_rec, comparisons = "hts_msm")
+comparison <- tidy_results(test_prep_rec)$comparison[[1]]
+mutual_plt(test_prep_rec, comparisons = comparison)
 #> ℹ `count_cutoff` set to 1.
 #> ! Taxa present in selected methods are greater than the cutoff `top_n` = 20.
 #> ℹ The top 20 significant taxa with the greatest overlap between methods will be

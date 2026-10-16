@@ -6,9 +6,10 @@ covariate of interest (e.g., group). The current version of ancombc2
 function implements Analysis of Compositions of Microbiomes with Bias
 Correction (ANCOM-BC2) in cross-sectional and repeated measurements
 data. In addition to the two-group comparison, ANCOM-BC2 also supports
-testing for continuous covariates and multi-group comparisons, including
-the global test, pairwise directional test, Dunnett's type of test, and
-trend test.
+testing for continuous covariates and multi-group comparisons. This
+adapter executes the planned contrasts from
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md),
+not the native global, Dunnett or trend tests.
 
 ## Usage
 
@@ -42,17 +43,20 @@ step_ancom(
 - rec:
 
   A Recipe object. The step will be added to the sequence of operations
-  for this Recipe.
+  for this Recipe. Execution requires
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  before
+  [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md);
+  the step can be configured before adding the model.
 
 - fix_formula:
 
   the character string expresses how the microbial absolute abundances
   for each taxon depend on the fixed effects in metadata. When
   specifying the fix_formula, make sure to include the group variable in
-  the formula if it is not NULL. Defaults to `NULL`: use the centralized
-  model, or the recipe targets during deprecated model-free execution.
-  An explicit formula is overridden with a warning when a centralized
-  model is defined.
+  the formula if it is not NULL. Defaults to `NULL`: use
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md).
+  An explicit formula is overridden with a warning by the shared model.
 
 - rand_formula:
 
@@ -174,16 +178,16 @@ An object of class `Recipe`
 
 Significance follows ANCOM-BC2's sensitivity-aware `diff_robust`
 decision when `pseudo_sens = TRUE` (the default), rather than the basic
-`diff` decision alone. With a centralized model,
+`diff` decision alone.
 `engine_args = list(fit = list(pseudo_sens = FALSE))` explicitly
-disables sensitivity analysis and uses `diff`. Deprecated model-free
-execution uses the default sensitivity analysis. Adjusted p-values and
+disables sensitivity analysis and uses `diff`. Adjusted p-values and
 effect estimates are not changed by this selection.
 
 ## See also
 
 Other Diff taxa steps:
-[`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md),
+[`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md),
+[`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md),
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_deseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_deseq.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),
@@ -203,9 +207,6 @@ rec_default <- step_ancom(rec)
 #> Registered S3 method overwritten by 'DescTools':
 #>   method         from  
 #>   reorder.factor gplots
-#> Registered S3 method overwritten by 'lme4':
-#>   method           from
-#>   na.action.merMod car 
 
 # Pass advanced convergence controls to ANCOM-BC2.
 rec_custom <- step_ancom(

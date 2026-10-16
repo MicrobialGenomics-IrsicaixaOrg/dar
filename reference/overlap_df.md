@@ -49,6 +49,6 @@ data(test_prep_rec)
 df <- overlap_df(test_prep_rec)
 head(df)
 #>                        maaslin__Welsh_cake deseq__Coussin_de_Lyon
-#> maaslin__Welsh_cake              1.0000000              0.6435644
-#> deseq__Coussin_de_Lyon           0.6435644              1.0000000
+#> maaslin__Welsh_cake              1.0000000              0.8484848
+#> deseq__Coussin_de_Lyon           0.8484848              1.0000000
 ```

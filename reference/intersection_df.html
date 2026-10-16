@@ -22,7 +22,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -90,13 +89,20 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">intersection_df</span><span class="op">(</span><span class="va">test_prep_rec</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id maaslin__Welsh_cake deseq__Coussin_de_Lyon</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Otu_1                   0                      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  Otu_10                   0                      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Otu_18                   0                      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Otu_34                   0                      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  Otu_35                   1                      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Otu_37                   1                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   taxa_id          contrast_id           comparison contrast_type        var</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   Otu_1  RiskGroup2[msm-hts]  RiskGroup2[msm-hts]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   Otu_1 RiskGroup2[pwid-hts] RiskGroup2[pwid-hts]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   Otu_1 RiskGroup2[pwid-msm] RiskGroup2[pwid-msm]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  Otu_10  RiskGroup2[msm-hts]  RiskGroup2[msm-hts]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  Otu_10 RiskGroup2[pwid-hts] RiskGroup2[pwid-hts]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Otu_10 RiskGroup2[pwid-msm] RiskGroup2[pwid-msm]          main RiskGroup2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   effect maaslin__Welsh_cake deseq__Coussin_de_Lyon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     up                   0                      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     up                   0                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   down                   0                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     up                   0                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     up                   0                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     up                   0                      0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

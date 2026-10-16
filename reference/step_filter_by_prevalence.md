@@ -76,7 +76,7 @@ recipe(metaHIV_phy) |>
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Leipziger_Lerche 
+#>      ◉ step_filter_by_prevalence() id = filter_by_prevalence__Xuixo 
 #> 
 #> DA steps:
 #> 

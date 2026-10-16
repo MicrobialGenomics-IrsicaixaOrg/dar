@@ -1,7 +1,9 @@
 # Recipe for metaHIV_phy data
 
-A Recipe created for a metaHIV_phy object uning "Riskgroup2" as a
-`var_info` and "Genus" as a `tax_info`.
+An unprepared recipe for `metaHIV_phy`, with a centralized
+`~ RiskGroup2` model at genus level and `hts` as its reference. It
+includes microbial subsetting, feature-prevalence filtering, MaAsLin3
+and DESeq2 steps.
 
 ## Usage
 

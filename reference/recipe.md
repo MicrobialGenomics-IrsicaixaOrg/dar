@@ -42,8 +42,6 @@ recipe(
 
 An object of class `Recipe` containing the microbiome object, an
 optional centralized model and the configured processing or DA steps.
-Legacy selector slots are retained for compatibility during the
-deprecation cycle.
 
 ## Examples
 

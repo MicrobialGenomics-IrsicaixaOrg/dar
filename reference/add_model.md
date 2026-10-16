@@ -78,11 +78,6 @@ aggregated taxonomic units. Taxa with identical lineage through
 `tax_level` are summed for analysis; public accessors retain the
 complete recipe data.
 
-For compatibility with recipes created before version 1.9.3, omitted
-`targets` or `tax_level` values are recovered from the deprecated
-selector slots when available. New recipes must supply both arguments
-explicitly.
-
 ## Examples
 
 ``` r
@@ -96,7 +91,7 @@ rec <- recipe(metaHIV_phy) |>
 get_model(rec)
 #> $formula
 #> ~RiskGroup2 + Cluster
-#> <environment: 0x5601366b5df0>
+#> <environment: 0x557c000bbf88>
 #> 
 #> $targets
 #> [1] "RiskGroup2"

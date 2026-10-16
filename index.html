@@ -45,7 +45,6 @@
 <li><a class="dropdown-item" href="articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
@@ -75,7 +74,7 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p><code>dar</code> provides recipe-based differential abundance workflows for microbiome data. It accepts <code>phyloseq</code> and <code>TreeSummarizedExperiment</code> inputs and combines preprocessing, quality control and multiple statistical methods through a common, pipeable interface.</p>
-<p>A centralized model defines covariates, contrasts, reference levels and the taxonomic level of analysis. Compatibility checks identify which methods can execute that design. Results can be inspected, visualized and compared in a common format while retaining method-specific effect scales. Native options remain explicit, and recipes can be shared through a versioned, non-executable export format.</p>
+<p>A centralized model is required for DA execution. It defines covariates, contrasts, reference levels and the taxonomic level of analysis. Compatibility checks identify which methods can execute that design. Results can be inspected, visualized and compared in a common format while retaining method-specific effect scales. Native options remain explicit, and recipes can be shared through a versioned, non-executable export format.</p>
 <p>Consensus is optional: it summarizes agreement across methods for the same contrast and effect direction. Agreement does not guarantee greater accuracy or false-discovery-rate control, and stricter rules can reduce sensitivity.</p>
 </div>
 <div class="section level2">
@@ -104,7 +103,7 @@
 <span>  <span class="fu"><a href="reference/step_subset_taxa.html">step_subset_taxa</a></span><span class="op">(</span>tax_level <span class="op">=</span> <span class="st">"Kingdom"</span>, taxa <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bacteria"</span>, <span class="st">"Archaea"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/step_filter_taxa.html">step_filter_taxa</a></span><span class="op">(</span>.f <span class="op">=</span> <span class="st">"function(x) sum(x &gt; 0) &gt;= (0.03 * length(x))"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/step_maaslin.html">step_maaslin</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/step_aldex.html">step_aldex</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="reference/step_aldex2.html">step_aldex2</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rec</span></span>
 <span></span>

@@ -58,7 +58,7 @@ recipe(metaHIV_phy) |>
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_rarefaction() id = rarefaction__Hot_water_crust_pastry 
+#>      ◉ step_rarefaction() id = rarefaction__Curry_puff 
 #> 
 #> DA steps:
 #> 

@@ -42,38 +42,40 @@ data(test_prep_rec)
 
 ## Extract all intersections
 find_intersections(test_prep_rec)
-#> # A tibble: 52 × 4
-#>    taxa_id taxa            step_ids                                  sum_methods
-#>    <chr>   <chr>           <chr>                                           <dbl>
-#>  1 Otu_35  Collinsella     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  2 Otu_78  Bacteroides     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  3 Otu_82  Barnesiella     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  4 Otu_88  Odoribacter     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  5 Otu_94  Paraprevotella  maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  6 Otu_96  Prevotella      maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  7 Otu_119 Alistipes       maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  8 Otu_125 Parabacteroides maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#>  9 Otu_255 Blautia         maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#> 10 Otu_259 Coprococcus     maaslin__Welsh_cake, deseq__Coussin_de_L…           2
-#> # ℹ 42 more rows
+#> # A tibble: 46 × 9
+#>    taxa_id contrast_id          comparison   contrast_type var   effect step_ids
+#>    <chr>   <glue>               <glue>       <chr>         <chr> <chr>  <chr>   
+#>  1 Otu_119 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… down   deseq__…
+#>  2 Otu_119 RiskGroup2[pwid-msm] RiskGroup2[… main          Risk… up     deseq__…
+#>  3 Otu_125 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… down   deseq__…
+#>  4 Otu_259 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  5 Otu_262 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  6 Otu_262 RiskGroup2[pwid-msm] RiskGroup2[… main          Risk… down   deseq__…
+#>  7 Otu_332 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  8 Otu_332 RiskGroup2[pwid-msm] RiskGroup2[… main          Risk… down   deseq__…
+#>  9 Otu_35  RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#> 10 Otu_354 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#> # ℹ 36 more rows
+#> # ℹ 2 more variables: sum_methods <int>, taxa <chr>
 
 ## Exclude the first method
 find_intersections(
   test_prep_rec,
   steps = steps_ids(test_prep_rec, "da")[-1]
 )
-#> # A tibble: 27 × 4
-#>    taxa_id taxa            step_ids               sum_methods
-#>    <chr>   <chr>           <chr>                        <dbl>
-#>  1 Otu_34  Olsenella       deseq__Coussin_de_Lyon           1
-#>  2 Otu_35  Collinsella     deseq__Coussin_de_Lyon           1
-#>  3 Otu_45  Slackia         deseq__Coussin_de_Lyon           1
-#>  4 Otu_78  Bacteroides     deseq__Coussin_de_Lyon           1
-#>  5 Otu_82  Barnesiella     deseq__Coussin_de_Lyon           1
-#>  6 Otu_88  Odoribacter     deseq__Coussin_de_Lyon           1
-#>  7 Otu_94  Paraprevotella  deseq__Coussin_de_Lyon           1
-#>  8 Otu_96  Prevotella      deseq__Coussin_de_Lyon           1
-#>  9 Otu_119 Alistipes       deseq__Coussin_de_Lyon           1
-#> 10 Otu_125 Parabacteroides deseq__Coussin_de_Lyon           1
-#> # ℹ 17 more rows
+#> # A tibble: 36 × 9
+#>    taxa_id contrast_id          comparison   contrast_type var   effect step_ids
+#>    <chr>   <glue>               <glue>       <chr>         <chr> <chr>  <chr>   
+#>  1 Otu_1   RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  2 Otu_119 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… down   deseq__…
+#>  3 Otu_119 RiskGroup2[pwid-msm] RiskGroup2[… main          Risk… up     deseq__…
+#>  4 Otu_125 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… down   deseq__…
+#>  5 Otu_231 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  6 Otu_255 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  7 Otu_259 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  8 Otu_262 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#>  9 Otu_262 RiskGroup2[pwid-msm] RiskGroup2[… main          Risk… down   deseq__…
+#> 10 Otu_332 RiskGroup2[msm-hts]  RiskGroup2[… main          Risk… up     deseq__…
+#> # ℹ 26 more rows
+#> # ℹ 2 more variables: sum_methods <int>, taxa <chr>
 ```

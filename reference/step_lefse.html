@@ -36,7 +36,6 @@ assigned and used within the analysis."><meta property="og:image" content="https
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -88,7 +87,8 @@ assigned and used within the analysis.</p>
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
 <dd><p>A Recipe object. The step will be added to the sequence of
-operations for this Recipe.</p></dd>
+operations for this Recipe. Execution requires <code><a href="add_model.html">add_model()</a></code> before
+<code><a href="prep.html">prep()</a></code>; the step can be configured before adding the model.</p></dd>
 
 
 <dt id="arg-kruskal-threshold">kruskal.threshold<a class="anchor" aria-label="anchor" href="#arg-kruskal-threshold"></a></dt>
@@ -152,7 +152,8 @@ cannot be overridden.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Diff taxa steps:
-<code><a href="step_aldex.html">step_aldex()</a></code>,
+<code><a href="step_aldex2.html">step_aldex2()</a></code>,
+<code><a href="step_aldex3.html">step_aldex3()</a></code>,
 <code><a href="step_ancom.html">step_ancom()</a></code>,
 <code><a href="step_corncob.html">step_corncob()</a></code>,
 <code><a href="step_deseq.html">step_deseq()</a></code>,

@@ -46,11 +46,18 @@ data.frame class object
 data(test_prep_rec)
 df <- intersection_df(test_prep_rec)
 head(df)
-#>   taxa_id maaslin__Welsh_cake deseq__Coussin_de_Lyon
-#> 1   Otu_1                   0                      0
-#> 2  Otu_10                   0                      0
-#> 3  Otu_18                   0                      0
-#> 4  Otu_34                   0                      1
-#> 5  Otu_35                   1                      1
-#> 6  Otu_37                   1                      0
+#>   taxa_id          contrast_id           comparison contrast_type        var
+#> 1   Otu_1  RiskGroup2[msm-hts]  RiskGroup2[msm-hts]          main RiskGroup2
+#> 2   Otu_1 RiskGroup2[pwid-hts] RiskGroup2[pwid-hts]          main RiskGroup2
+#> 3   Otu_1 RiskGroup2[pwid-msm] RiskGroup2[pwid-msm]          main RiskGroup2
+#> 4  Otu_10  RiskGroup2[msm-hts]  RiskGroup2[msm-hts]          main RiskGroup2
+#> 5  Otu_10 RiskGroup2[pwid-hts] RiskGroup2[pwid-hts]          main RiskGroup2
+#> 6  Otu_10 RiskGroup2[pwid-msm] RiskGroup2[pwid-msm]          main RiskGroup2
+#>   effect maaslin__Welsh_cake deseq__Coussin_de_Lyon
+#> 1     up                   0                      1
+#> 2     up                   0                      0
+#> 3   down                   0                      0
+#> 4     up                   0                      0
+#> 5     up                   0                      0
+#> 6     up                   0                      0
 ```

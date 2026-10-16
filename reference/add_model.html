@@ -30,7 +30,6 @@ time points while compiling the model."><meta property="og:image" content="https
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -127,9 +126,6 @@ automatic factorization.</p></dd>
     <p>DA results, consensus tables and abundance plots share the same aggregated
 taxonomic units. Taxa with identical lineage through <code>tax_level</code> are summed
 for analysis; public accessors retain the complete recipe data.</p>
-<p>For compatibility with recipes created before version 1.9.3, omitted
-<code>targets</code> or <code>tax_level</code> values are recovered from the deprecated selector
-slots when available. New recipes must supply both arguments explicitly.</p>
     </div>
 
     <div class="section level2">
@@ -144,7 +140,7 @@ slots when available. New recipes must supply both arguments explicitly.</p>
 <span class="r-in"><span><span class="fu"><a href="get_model.html">get_model</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~RiskGroup2 + Cluster</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5601366b5df0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557c000bbf88&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $targets</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "RiskGroup2"</span>

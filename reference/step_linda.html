@@ -26,7 +26,6 @@ add_model() and executes every contrast in that model's contrast plan."><meta pr
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -78,7 +77,8 @@ add_model() and executes every contrast in that model's contrast plan."><meta pr
 
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
-<dd><p>A <a href="Recipe-class.html">Recipe</a> object with a centralized model.</p></dd>
+<dd><p>An unprepared <a href="Recipe-class.html">Recipe</a> object. Execution requires
+<code><a href="add_model.html">add_model()</a></code> before <code><a href="prep.html">prep()</a></code>; the step can be configured first.</p></dd>
 
 
 <dt id="arg-prev-filter">prev_filter<a class="anchor" aria-label="anchor" href="#arg-prev-filter"></a></dt>
@@ -163,7 +163,8 @@ winsorization and multiple-testing correction are unchanged.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Diff taxa steps:
-<code><a href="step_aldex.html">step_aldex()</a></code>,
+<code><a href="step_aldex2.html">step_aldex2()</a></code>,
+<code><a href="step_aldex3.html">step_aldex3()</a></code>,
 <code><a href="step_ancom.html">step_ancom()</a></code>,
 <code><a href="step_corncob.html">step_corncob()</a></code>,
 <code><a href="step_deseq.html">step_deseq()</a></code>,

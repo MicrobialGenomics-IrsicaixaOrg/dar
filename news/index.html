@@ -22,7 +22,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -44,21 +43,43 @@
 <h2 class="pkg-version" data-toc-text="1.9.12" id="dar-1912">dar 1.9.12<a class="anchor" aria-label="anchor" href="#dar-1912"></a></h2>
 <div class="section level3">
 <h3 id="breaking-changes-1-9-12">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-9-12"></a></h3>
-<ul><li>R 4.6 or later is required.</li>
+<ul><li>All DA methods require <code><a href="../reference/add_model.html">add_model()</a></code> before <code><a href="../reference/prep.html">prep()</a></code>. The model-free execution paths and their extraction helpers are removed. Preprocessing-only recipes remain supported without a model, and steps can be configured before adding the model. Previously prepared results are not silently recomputed.</li>
+<li>
+<code>step_aldex()</code> is replaced by the explicit <code><a href="../reference/step_aldex2.html">step_aldex2()</a></code>; the old constructor and step class are removed, without an alias. Rebuild old ALDEx2 recipes with <code><a href="../reference/step_aldex2.html">step_aldex2()</a></code>. Its engine identifier is now <code>aldex2</code>.</li>
+<li>R 4.6 or later is required.</li>
 <li>
 <code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code> is removed after its defunct release cycle. Replace it with a supported DA step when rebuilding legacy recipes (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
 <li>DA step IDs must not use reserved consensus column names such as <code>effect</code> or <code>sum</code>. Rename conflicting IDs, for example to <code>da_effect</code>, before constructing or importing a recipe. Other IDs, including those beginning with a dot, remain unchanged.</li>
 <li>ComplexHeatmap, gplots, heatmaply and UpSetR are optional dependencies. Install the relevant package explicitly to use its plotting functions; missing dependencies produce installation guidance (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
-<li>Centralized ALDEx2 results report <code>aldex_glm_coefficient</code> rather than a standardized two-group effect. Recompute previously prepared results to obtain the corrected effects; their former effect values are not relabeled. The obsolete <code>engine_args$effect</code> stage is rejected. Deprecated model-free ALDEx2 execution retains its standardized effect.</li>
+<li>Centralized ALDEx2 results report <code>aldex_glm_coefficient</code> rather than a standardized two-group effect. Recompute previously prepared results to obtain the corrected effects; their former effect values are not relabeled. The obsolete <code>engine_args$effect</code> stage is rejected.</li>
+<li>
+<code><a href="../reference/abundance_plt.html">abundance_plt()</a></code> no longer substitutes a largest-overlap selection when no taxa satisfy the requested shared-discovery rule. Use <code>selection = "union"</code>, one <code>steps</code> ID or explicit <code>taxa_ids</code> for those views.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-1-9-12">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9-12"></a></h3>
+<ul><li>
+<code><a href="../reference/step_aldex3.html">step_aldex3()</a></code> supports centralized fixed and exact <code>lme4</code> mixed models, including planned interactions. Named CLR, TSS, external sample-scale and coefficient-scale models expose independent scale uncertainty explicitly. Scale assumptions remain tied to the original design across contrast releveling. Results preserve native Monte Carlo significance, and <code><a href="../reference/get_execution.html">get_execution()</a></code> exposes the effective engine settings and version. Numerical parameter and input validation is delegated to ALDEx3; dar checks its configuration and the identities used to align data and results.</li>
+<li>
+<code><a href="../reference/tidy_abundance.html">tidy_abundance()</a></code> extracts the shared taxonomic analysis view in long form, with lineage and selected sample metadata under collision-safe prefixes. Compositional fractions use all analysis taxa before taxon selection; this view does not reproduce each engine’s private filtering or transformation.</li>
+<li>
+<code><a href="../reference/get_execution.html">get_execution()</a></code> exposes recorded contrasts, model-excluded samples and executed/skipped steps without recomputing historical provenance.</li>
+<li>
+<code><a href="../reference/effect_plt.html">effect_plt()</a></code> displays individual method estimates for a selected contrast, preserving native significance decisions and separating effect metrics into distinct panels. It does not infer common confidence intervals.</li>
+<li>
+<code><a href="../reference/abundance_plt.html">abundance_plt()</a></code> accepts selected DA <code>steps</code>, including a single configured method, and explicit <code>"shared"</code> or <code>"union"</code> discovery selection. Explicit taxon IDs remain available regardless of significance.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="deprecations-1-9-12">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-1-9-12"></a></h3>
-<ul><li>Legacy selectors and model-free DA execution remain available in Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in 3.26. Use <code><a href="../reference/add_model.html">add_model()</a></code> to configure DA analyses and <code><a href="../reference/get_model.html">get_model()</a></code> to inspect their targets and taxonomic rank (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
+<ul><li>Legacy selectors remain available in Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in 3.26. Use <code><a href="../reference/add_model.html">add_model()</a></code> to configure DA analyses and <code><a href="../reference/get_model.html">get_model()</a></code> to inspect their targets and taxonomic rank (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157" class="external-link">#157</a>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-1-9-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-9-12"></a></h3>
-<ul><li>
-<code><a href="../reference/step_aldex.html">step_aldex()</a></code> extracts centralized effects from the same native GLM and contrast as its adjusted P values, preserving adjustment and interaction semantics instead of combining them with a post-hoc binary-group effect.</li>
+<ul><li>Centralized MaAsLin3 tests evaluate each planned contrast independently after one fit. An unestimable contrast no longer hides estimable contrasts for the same taxon; native missing values and the joint correction family across taxa and planned contrasts are retained.</li>
+<li>
+<code>metaHIV_phy</code> documentation reports the full 156-sample example and removes unverified profiling and count-construction details. Five focused guides replace the overlapping article vignette.</li>
+<li>Bundled <code>test_rec</code> and <code>test_prep_rec</code> examples now use the centralized genus- level model. The prepared MaAsLin3 and DESeq2 results are regenerated from the shared aggregated counts, with explicit contrast selection in examples.</li>
+<li>
+<code><a href="../reference/step_aldex2.html">step_aldex2()</a></code> extracts centralized effects from the same native GLM and contrast as its adjusted P values, preserving adjustment and interaction semantics instead of combining them with a post-hoc binary-group effect.</li>
 <li>Modeled engines, consensus tables and abundance plots share one aggregated taxonomic view with stable IDs. Abundance transformations use aggregated counts, and public accessors retain the complete underlying data.</li>
 <li>
 <code><a href="../reference/abundance_plt.html">abundance_plt()</a></code>, <code><a href="../reference/intersection_plt.html">intersection_plt()</a></code> and <code><a href="../reference/mutual_plt.html">mutual_plt()</a></code> check selectors against planned model hypotheses, including those with no significant taxa. For empty selections, discovery plots report a message and return invisible <code>NULL</code>. Abundance plots with explicit <code>taxa_ids</code> remain available regardless of significance.</li>
@@ -69,11 +90,9 @@
 <li>
 <code><a href="../reference/step_ancom.html">step_ancom()</a></code> preserves stable taxon IDs after ANCOM-BC2 aggregation.</li>
 <li>
-<code><a href="../reference/step_ancom.html">step_ancom()</a></code> uses ANCOM-BC2’s robust significance decision when pseudocount sensitivity analysis is enabled, in both centralized and deprecated model-free execution. Explicitly disabling sensitivity analysis retains the basic native decision.</li>
+<code><a href="../reference/step_ancom.html">step_ancom()</a></code> uses ANCOM-BC2’s robust significance decision when pseudocount sensitivity analysis is enabled. Disabling sensitivity analysis retains the basic native decision.</li>
 <li>
-<code><a href="../reference/step_corncob.html">step_corncob()</a></code> honors the requested absolute effect threshold in deprecated model-free execution.</li>
-<li>
-<code><a href="../reference/step_corncob.html">step_corncob()</a></code> uses native sandwich covariance for centralized Wald contrasts when <code>robust = TRUE</code> and forwards the requested <code>B</code> during deprecated model-free bootstrap execution.</li>
+<code><a href="../reference/step_corncob.html">step_corncob()</a></code> uses native sandwich covariance for centralized Wald contrasts when <code>robust = TRUE</code>.</li>
 <li>
 <code><a href="../reference/step_linda.html">step_linda()</a></code> locally corrects MicrobiomeStat 1.4’s adaptive zero-handling capitalization error, restoring depth-dependent imputation without modifying the installed dependency or the remaining native algorithm.</li>
 <li>

@@ -21,11 +21,5 @@
 - [Statistical models and
   contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statistical_models.md):
 
-- [Exploring results and optional
-  consensus](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md):
-
-  Inspect per-method results, visualize selected contrasts and summarize
-  agreement.
-
 - [Saving and sharing analysis
   recipes](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md):

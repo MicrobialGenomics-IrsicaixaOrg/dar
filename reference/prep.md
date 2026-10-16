@@ -37,6 +37,14 @@ prep(
 
 A `PrepRecipe` object.
 
+## Details
+
+Recipes containing differential-abundance steps require an explicit
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+before execution. Preprocessing-only recipes remain supported without a
+model. A missing model is reported before preprocessing or dependency
+checks, so the input data are not modified.
+
 ## Examples
 
 ``` r

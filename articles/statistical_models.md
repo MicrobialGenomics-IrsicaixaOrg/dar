@@ -5,9 +5,13 @@ defines one statistical design shared by every compatible
 differential-abundance step. Its `targets` and `tax_level` arguments are
 the single source of truth for the analysis configuration; other fixed
 terms provide covariate adjustment. Method-specific thresholds,
-normalization and rarefaction settings remain active. A model-free
-recipe remains valid for preprocessing, but differential-abundance
-execution without a model is deprecated.
+normalization and rarefaction settings remain active. Preprocessing can
+run without a model, but differential-abundance execution requires
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+before
+[`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md).
+Steps can be configured before or after adding the model. Inspect the
+current specification with `get_model(rec)`.
 
 ## Small example data
 
@@ -151,16 +155,17 @@ structure required by the study design and choose a compatible method.
 
 ## Engine capabilities
 
-| Engine    | Fixed adjustment | Time interaction | Random effects |
-|:----------|:----------------:|:----------------:|:--------------:|
-| DESeq2    |       yes        |       yes        |       no       |
-| ALDEx2    |       yes        |       yes        |       no       |
-| ANCOM-BC2 |       yes        |       yes        |      yes       |
-| corncob   |       yes        |       yes        |       no       |
-| LinDA     |       yes        |       yes        |      yes       |
-| MaAsLin3  |       yes        |       yes        |      yes       |
-| Wilcoxon  |        no        |        no        |       no       |
-| LEfSe     |        no        |        no        |       no       |
+| Engine    | Fixed adjustment | Time interaction |  Random effects  |
+|:----------|:----------------:|:----------------:|:----------------:|
+| DESeq2    |       yes        |       yes        |        no        |
+| ALDEx2    |       yes        |       yes        |        no        |
+| ALDEx3    |       yes        |       yes        | yes (exact lme4) |
+| ANCOM-BC2 |       yes        |       yes        |       yes        |
+| corncob   |       yes        |       yes        |        no        |
+| LinDA     |       yes        |       yes        |       yes        |
+| MaAsLin3  |       yes        |       yes        |       yes        |
+| Wilcoxon  |        no        |        no        |        no        |
+| LEfSe     |        no        |        no        |        no        |
 
 Fixed adjustment includes an additive time term, even when that column
 is declared with `time`. Wilcoxon and LEfSe support one categorical
@@ -175,24 +180,55 @@ compatible, preparation stops. Real engine failures and missing planned
 contrasts remain errors.
 
 Use `contrast_id`, `comparison` and `contrast_type` to identify the
-hypothesis represented by each result. See [Exploring results and
-optional
-consensus](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/article.md)
-for the result columns, effect scales, selectors and plotting examples.
+hypothesis represented by each result. See [Getting started with
+dar](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/dar.md)
+for extracting results, inspecting execution records and plotting
+selected contrasts.
+
+## Interpret returned results
+
+[`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
+returns one row per returned taxon, contrast and configured step, not a
+complete grid of all possible tests. `method` identifies the engine and
+`step_id` identifies its configuration. Custom IDs must not collide with
+internal columns such as `effect`, `taxa_id` or `sum`; choose distinct
+IDs such as `linda_sensitivity`.
+
+The numerator and denominator define each contrast’s orientation.
+Positive effects point toward the numerator on the reported metric, but
+the metrics are not numerically interchangeable:
+
+| Engine    | Effect reported by the centralized API                     |
+|:----------|:-----------------------------------------------------------|
+| DESeq2    | Log2 fold change, with the configured shrinkage.           |
+| ALDEx2    | Contrast-oriented GLM coefficient.                         |
+| ALDEx3    | Log2 abundance coefficient conditional on the scale model. |
+| ANCOM-BC2 | Bias-corrected log fold change.                            |
+| corncob   | Logit mean-abundance coefficient.                          |
+| LinDA     | Bias-corrected log2 fold change.                           |
+| MaAsLin3  | Coefficient on the configured transformed abundance scale. |
+| Wilcoxon  | Difference in medians on the configured abundance scale.   |
+| LEfSe     | Direction-oriented LDA score.                              |
+
+Inspect `effect_metric` and the configured engine options before
+interpreting an estimate. `significant` preserves the originating
+method’s decision, including any additional criteria such as ANCOM-BC2’s
+pseudocount-sensitivity filter. Missing statistics remain missing: a
+nonsignificant result does not prove that every estimate was available
+or that there is no effect. Absent rows are not automatically
+nonsignificant results. Agreement plots do not establish calibrated
+false-discovery rates.
 
 For centralized ALDEx2 analyses, `effect` is the contrast-oriented
 coefficient from the same GLM as the adjusted P value, averaged over
 Monte Carlo instances and labeled `aldex_glm_coefficient`. With default
 settings it is on the base-2 CLR response scale, not an
 absolute-abundance fold change or ALDEx2’s standardized two-group
-effect. Advanced native settings can change its scale. Recompute
-previously prepared centralized ALDEx2 results to obtain the GLM
-coefficients; deprecated model-free analyses retain their standardized
-effects.
+effect. Advanced native settings can change its scale.
 
 ## Advanced native-engine arguments
 
-The eight DA steps accept `engine_args`, a named list grouped by
+The nine DA steps accept `engine_args`, a named list grouped by
 native-call stage. This keeps advanced settings attached to the
 configured step and avoids an ambiguous `...`. For example:
 
@@ -242,54 +278,83 @@ complete `iter_control` list, including `verbose`, rather than only the
 values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr` and `fit` for ALDEx2; `fit` for ANCOM-BC2, corncob, and
-LinDA; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon; and
-`transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths
-and arguments already exposed by each dar wrapper are protected.
-Non-empty `engine_args` require a centralized model. A configured stage
-that is not used by the selected execution route is reported as an
-error. ALDEx2’s former `effect` stage is rejected because centralized
-effects now come directly from the GLM fit.
+DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3 and ANCOM-BC2,
+corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for
+Wilcoxon; and `transform` and `fit` for LEfSe. Data, formulas,
+contrasts, output paths and arguments already exposed by each dar
+wrapper are protected. A configured stage that is not used by the
+selected execution route is reported as an error. Engine-specific
+validation and errors are left to the engine. dar checks its own
+configuration, design compatibility and the identities used to align
+data and results. ALDEx2 effects come directly from the GLM fit.
 
 See [Saving and sharing analysis
 recipes](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/import_export_recipes.md)
 for exporting model settings and native options without executing an
 analysis.
 
-## Migrating legacy selectors
+## ALDEx2 and ALDEx3
 
-The former `recipe(..., var_info=, tax_info=)`,
-[`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
-[`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md),
-[`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
-and
-[`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-interfaces, and model-free DA execution, are deprecated in Bioconductor
-3.24, become defunct in 3.25 and are scheduled for removal in 3.26.
-Preprocessing without a model remains supported. Move the selectors into
-[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-and inspect them with `get_model(rec)`:
+Use
+[`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)
+for ALDEx2 and
+[`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md)
+for ALDEx3.
+
+Supply sequence counts for ALDEx3 inference. Fixed models use native
+`lm`; mixed models use exact `lme4`, with one native fit per planned
+contrast. The approximate `blmm` engine is not enabled. Expect
+substantial cost for many taxa, Monte Carlo draws and longitudinal
+contrasts; `nsample = 2000` follows the native default.
 
 \
-`# Deprecated`\
-`old`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``phy``, var_info ``=`` ``"condition"``, tax_info ``=`` ``"Species"``)`\
-\
-`# Current API`\
-`current`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``phy``)`` ``|>`\
+`aldex3_rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``longitudinal_phy``)`` ``|>`\
 `  `[`add_model`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)`(`\
-`    ``~`` ``condition``,`\
-`    targets ``=`` ``"condition"``,`\
-`    tax_level ``=`` ``"Species"`\
-`  ``)`
+`    ``~`` ``condition`` ``*`` ``visit`` ``+`` ``(``1`` ``|`` ``subject``)``, targets ``=`` ``"condition"``,`\
+`    tax_level ``=`` ``"Species"``, time ``=`` ``"visit"``, contrasts ``=`` ``"all"`\
+`  ``)`` ``|>`\
+`  `[`step_aldex3`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md)`(``scale_model ``=`` ``"clr"``, scale_args ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``gamma ``=`` ``0.5``)``)`\
+`aldex3_rec`\
+`#> ── ``DAR Recipe`` ──────────────────────────────────────────────────────────────────`\
+`#> Inputs:`\
+`#> `\
+`#>      ``ℹ`` phyloseq object with ``12`` taxa and ``36`` samples `\
+`#>      ``ℹ`` variable of interes ``condition`` (class: character, levels: control, treated) `\
+`#>      ``ℹ`` taxonomic level ``Species`` `\
+`#> `\
+`#> Statistical model:`\
+`#> `\
+`#>      ``ℹ`` ``~condition * visit + (1 | subject)`` `\
+`#> `\
+`#> Preprocessing steps:`\
+`#> `\
+`#> `\
+`#> DA steps:`\
+`#> `\
+`#>      ``◉`` step_aldex3() ``id = aldex3__Tortita_negra`
 
-[`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-is defunct in 3.24; use
-[`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md).
-The retired
-[`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-is no longer exported. Legacy executable recipe files must be recreated
-in the current API before export; they are not accepted by the current
-importer.
+This is a scale assumption, not a measurement of microbial load. `clr`
+and `tss` accept a non-negative log2 coefficient SD `gamma`; zero fixes
+their scale assumption. `sample` accepts external log2 means and SDs
+named by sample ID (`s.mu`, `s.sd`); `coefficient` accepts means and SDs
+named by the columns of the resolved fixed design (`c.mu`, `c.sd`). Only
+independent SDs are supported, not covariance matrices or arbitrary
+functions. Complete-case selection subsets external information by
+sample ID. The scale model always uses the original resolved design, so
+contrast releveling does not change its prior. Shared preprocessing
+defines the analyzed composition: excluded features are not silently
+restored as an “other” feature. The default uncertainty is a modeling
+choice, not a data-derived quantity; coefficient coding and numeric
+covariate units affect these scale priors.
+
+Effects retain their scale-model-dependent interpretation and are
+labeled `aldex3_log2_abundance_coefficient`. Native P values and
+adjusted P values include directional Monte Carlo averaging, with
+adjustment across taxa per coefficient, not across all planned
+contrasts. Missing estimates stay missing.
+[`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
+records the ALDEx3 version, seed, Monte Carlo settings, scale
+specification, native engine and elapsed time.
 
 \
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
@@ -369,59 +434,60 @@ importer.
 `#>  [95] bluster_1.23.1                  TH.data_1.1-5                  `\
 `#>  [97] nlme_3.1-171                    ANCOMBC_2.15.1                 `\
 `#>  [99] phyloseq_1.57.0                 bbotk_1.13.1                   `\
-`#> [101] fBasics_4052.98                 bslib_0.12.0                   `\
-`#> [103] MicrobiomeStat_1.4              mlr3_1.8.0                     `\
-`#> [105] irlba_2.4.1                     vipor_0.4.7                    `\
-`#> [107] otel_0.2.0                      rpart_4.1.27                   `\
-`#> [109] colorspace_2.1-4                Hmisc_5.3-0                    `\
-`#> [111] mlr3mbo_1.2.1                   moocore_0.3.2                  `\
-`#> [113] BiocGenerics_0.59.12            DBI_1.3.0                      `\
-`#> [115] nnet_7.3-21                     ade4_1.7-24                    `\
-`#> [117] mlr3misc_0.23.0                 Exact_3.3                      `\
-`#> [119] DESeq2_1.53.6                   tidyselect_1.2.1               `\
-`#> [121] timeSeries_4052.112             compiler_4.6.1                 `\
-`#> [123] htmlTable_2.5.0                 BiocNeighbors_2.7.3            `\
-`#> [125] lgr_0.5.2                       expm_1.0-1                     `\
-`#> [127] desc_1.4.3                      DelayedArray_0.39.8            `\
-`#> [129] checkmate_2.3.4                 scales_1.4.0                   `\
-`#> [131] quadprog_1.5-8                  spatial_7.3-19                 `\
-`#> [133] rappdirs_0.3.4                  palmerpenguins_0.1.1           `\
-`#> [135] stringr_1.6.0                   digest_0.6.39                  `\
-`#> [137] minqa_1.2.8                     rmarkdown_2.32                 `\
-`#> [139] XVector_0.53.0                  base64enc_0.1-6                `\
-`#> [141] htmltools_0.5.9                 pkgconfig_2.0.3                `\
-`#> [143] lme4_2.0-6                      sparseMatrixStats_1.25.0       `\
-`#> [145] MatrixGenerics_1.25.0           stabledist_0.7-2               `\
-`#> [147] fastmap_1.2.0                   rlang_1.3.0                    `\
-`#> [149] htmlwidgets_1.6.4               DelayedMatrixStats_1.35.0      `\
-`#> [151] farver_2.1.2                    jquerylib_0.1.4                `\
-`#> [153] zoo_1.9-1                       energy_1.7-12                  `\
-`#> [155] jsonlite_2.0.0                  BiocParallel_1.47.0            `\
-`#> [157] BiocSingular_1.29.2             magrittr_2.0.5                 `\
-`#> [159] Formula_1.2-6                   scuttle_1.23.2                 `\
-`#> [161] Rcpp_1.1.2                      ape_5.8-1                      `\
-`#> [163] viridis_0.6.5                   stringi_1.8.9                  `\
-`#> [165] rootSolve_1.8.2.4               stable_1.1.7                   `\
-`#> [167] MASS_7.3-66                     plyr_1.8.9                     `\
-`#> [169] parallel_4.6.1                  listenv_1.1.0                  `\
-`#> [171] ggrepel_0.9.8                   forcats_1.0.1                  `\
-`#> [173] lmom_3.3                        Biostrings_2.81.9              `\
-`#> [175] splines_4.6.1                   multtest_2.69.0                `\
-`#> [177] hms_1.1.4                       locfit_1.5-9.12                `\
-`#> [179] igraph_2.3.4                    uuid_1.2-2                     `\
-`#> [181] rngtools_1.5.2                  reshape2_1.4.5                 `\
-`#> [183] stats4_4.6.1                    ScaledMatrix_1.21.0            `\
-`#> [185] rmutil_1.1.10                   evaluate_1.0.5                 `\
-`#> [187] nloptr_2.2.1                    tzdb_0.5.0                     `\
-`#> [189] foreach_1.5.2                   tidyr_1.3.2                    `\
-`#> [191] purrr_1.2.2                     future_1.76.0                  `\
-`#> [193] clue_0.3-68                     ggplot2_4.0.3                  `\
-`#> [195] ashr_2.2-63                     rsvd_1.0.5                     `\
-`#> [197] e1071_1.7-17                    tidytree_0.4.8                 `\
-`#> [199] viridisLite_0.4.3               class_7.3-24                   `\
-`#> [201] ragg_1.5.2                      gsl_2.1-9                      `\
-`#> [203] truncnorm_1.0-9                 tibble_3.3.1                   `\
-`#> [205] lmerTest_3.2-1                  beeswarm_0.4.0                 `\
-`#> [207] IRanges_2.47.5                  cluster_2.1.8.3                `\
-`#> [209] TreeSummarizedExperiment_2.21.0 globals_0.20.0                 `\
-`#> [211] mia_1.21.11`
+`#> [101] fBasics_4052.98                 TMB_1.9.25                     `\
+`#> [103] bslib_0.12.0                    MicrobiomeStat_1.4             `\
+`#> [105] mlr3_1.8.0                      irlba_2.4.1                    `\
+`#> [107] vipor_0.4.7                     otel_0.2.0                     `\
+`#> [109] rpart_4.1.27                    colorspace_2.1-4               `\
+`#> [111] Hmisc_5.3-0                     mlr3mbo_1.2.1                  `\
+`#> [113] moocore_0.3.2                   BiocGenerics_0.59.12           `\
+`#> [115] DBI_1.3.0                       nnet_7.3-21                    `\
+`#> [117] ade4_1.7-24                     mlr3misc_0.23.0                `\
+`#> [119] Exact_3.3                       DESeq2_1.53.6                  `\
+`#> [121] tidyselect_1.2.1                timeSeries_4052.112            `\
+`#> [123] compiler_4.6.1                  htmlTable_2.5.0                `\
+`#> [125] BiocNeighbors_2.7.3             lgr_0.5.2                      `\
+`#> [127] expm_1.0-1                      desc_1.4.3                     `\
+`#> [129] DelayedArray_0.39.8             checkmate_2.3.4                `\
+`#> [131] scales_1.4.0                    quadprog_1.5-8                 `\
+`#> [133] spatial_7.3-19                  rappdirs_0.3.4                 `\
+`#> [135] palmerpenguins_0.1.1            stringr_1.6.0                  `\
+`#> [137] digest_0.6.39                   minqa_1.2.8                    `\
+`#> [139] rmarkdown_2.32                  XVector_0.53.0                 `\
+`#> [141] base64enc_0.1-6                 htmltools_0.5.9                `\
+`#> [143] pkgconfig_2.0.3                 lme4_2.0-6                     `\
+`#> [145] sparseMatrixStats_1.25.0        MatrixGenerics_1.25.0          `\
+`#> [147] stabledist_0.7-2                fastmap_1.2.0                  `\
+`#> [149] rlang_1.3.0                     htmlwidgets_1.6.4              `\
+`#> [151] DelayedMatrixStats_1.35.0       farver_2.1.2                   `\
+`#> [153] jquerylib_0.1.4                 zoo_1.9-1                      `\
+`#> [155] energy_1.7-12                   jsonlite_2.0.0                 `\
+`#> [157] BiocParallel_1.47.0             BiocSingular_1.29.2            `\
+`#> [159] magrittr_2.0.5                  Formula_1.2-6                  `\
+`#> [161] scuttle_1.23.2                  Rcpp_1.1.2                     `\
+`#> [163] ape_5.8-1                       viridis_0.6.5                  `\
+`#> [165] stringi_1.8.9                   rootSolve_1.8.2.4              `\
+`#> [167] stable_1.1.7                    MASS_7.3-66                    `\
+`#> [169] plyr_1.8.9                      parallel_4.6.1                 `\
+`#> [171] listenv_1.1.0                   ggrepel_0.9.8                  `\
+`#> [173] forcats_1.0.1                   lmom_3.3                       `\
+`#> [175] Biostrings_2.81.9               splines_4.6.1                  `\
+`#> [177] multtest_2.69.0                 hms_1.1.4                      `\
+`#> [179] locfit_1.5-9.12                 ALDEx3_1.3.1                   `\
+`#> [181] igraph_2.3.4                    uuid_1.2-2                     `\
+`#> [183] rngtools_1.5.2                  reshape2_1.4.5                 `\
+`#> [185] stats4_4.6.1                    ScaledMatrix_1.21.0            `\
+`#> [187] rmutil_1.1.10                   evaluate_1.0.5                 `\
+`#> [189] nloptr_2.2.1                    tzdb_0.5.0                     `\
+`#> [191] foreach_1.5.2                   tidyr_1.3.2                    `\
+`#> [193] purrr_1.2.2                     future_1.80.0                  `\
+`#> [195] clue_0.3-68                     ggplot2_4.0.3                  `\
+`#> [197] ashr_2.2-63                     rsvd_1.0.5                     `\
+`#> [199] e1071_1.7-17                    tidytree_0.4.8                 `\
+`#> [201] viridisLite_0.4.3               class_7.3-24                   `\
+`#> [203] ragg_1.5.2                      gsl_2.1-9                      `\
+`#> [205] truncnorm_1.0-9                 tibble_3.3.1                   `\
+`#> [207] lmerTest_3.2-1                  beeswarm_0.4.0                 `\
+`#> [209] IRanges_2.47.5                  cluster_2.1.8.3                `\
+`#> [211] TreeSummarizedExperiment_2.21.0 globals_0.20.0                 `\
+`#> [213] mia_1.21.11`

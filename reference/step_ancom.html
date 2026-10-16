@@ -5,15 +5,15 @@ interest (e.g., group). The current version of ancombc2 function implements
 Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC2) in
 cross-sectional and repeated measurements data. In addition to the two-group
 comparison, ANCOM-BC2 also supports testing for continuous covariates and
-multi-group comparisons, including the global test, pairwise directional
-test, Dunnett's type of test, and trend test."><meta property="og:description" content="Determine taxa whose absolute abundances, per unit volume, of the ecosystem
+multi-group comparisons. This adapter executes the planned contrasts from
+add_model(), not the native global, Dunnett or trend tests."><meta property="og:description" content="Determine taxa whose absolute abundances, per unit volume, of the ecosystem
 (e.g., gut) are significantly different with changes in the covariate of
 interest (e.g., group). The current version of ancombc2 function implements
 Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC2) in
 cross-sectional and repeated measurements data. In addition to the two-group
 comparison, ANCOM-BC2 also supports testing for continuous covariates and
-multi-group comparisons, including the global test, pairwise directional
-test, Dunnett's type of test, and trend test."><meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png"></head><body>
+multi-group comparisons. This adapter executes the planned contrasts from
+add_model(), not the native global, Dunnett or trend tests."><meta property="og:image" content="https://microbialgenomics-irsicaixaorg.github.io/dar/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -36,7 +36,6 @@ test, Dunnett's type of test, and trend test."><meta property="og:image" content
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -62,8 +61,8 @@ interest (e.g., group). The current version of ancombc2 function implements
 Analysis of Compositions of Microbiomes with Bias Correction (ANCOM-BC2) in
 cross-sectional and repeated measurements data. In addition to the two-group
 comparison, ANCOM-BC2 also supports testing for continuous covariates and
-multi-group comparisons, including the global test, pairwise directional
-test, Dunnett's type of test, and trend test.</p>
+multi-group comparisons. This adapter executes the planned contrasts from
+<code><a href="add_model.html">add_model()</a></code>, not the native global, Dunnett or trend tests.</p>
     </div>
 
     <div class="section level2">
@@ -98,16 +97,16 @@ test, Dunnett's type of test, and trend test.</p>
 
 <dl><dt id="arg-rec">rec<a class="anchor" aria-label="anchor" href="#arg-rec"></a></dt>
 <dd><p>A Recipe object. The step will be added to the sequence of
-operations for this Recipe.</p></dd>
+operations for this Recipe. Execution requires <code><a href="add_model.html">add_model()</a></code> before
+<code><a href="prep.html">prep()</a></code>; the step can be configured before adding the model.</p></dd>
 
 
 <dt id="arg-fix-formula">fix_formula<a class="anchor" aria-label="anchor" href="#arg-fix-formula"></a></dt>
 <dd><p>the character string expresses how the microbial absolute
 abundances for each taxon depend on the fixed effects in metadata. When
 specifying the fix_formula, make sure to include the group variable in the
-formula if it is not NULL. Defaults to <code>NULL</code>: use the centralized model,
-or the recipe targets during deprecated model-free execution. An explicit
-formula is overridden with a warning when a centralized model is defined.</p></dd>
+formula if it is not NULL. Defaults to <code>NULL</code>: use <code><a href="add_model.html">add_model()</a></code>.
+An explicit formula is overridden with a warning by the shared model.</p></dd>
 
 
 <dt id="arg-rand-formula">rand_formula<a class="anchor" aria-label="anchor" href="#arg-rand-formula"></a></dt>
@@ -228,16 +227,16 @@ stage. Arguments managed by dar or exposed above cannot be overridden.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Significance follows ANCOM-BC2's sensitivity-aware <code>diff_robust</code>
 decision when <code>pseudo_sens = TRUE</code> (the default), rather than the basic
-<code>diff</code> decision alone. With a centralized model,
+<code>diff</code> decision alone.
 <code>engine_args = list(fit = list(pseudo_sens = FALSE))</code> explicitly disables
-sensitivity analysis and uses <code>diff</code>. Deprecated model-free execution
-uses the default sensitivity analysis. Adjusted p-values and effect
+sensitivity analysis and uses <code>diff</code>. Adjusted p-values and effect
 estimates are not changed by this selection.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Diff taxa steps:
-<code><a href="step_aldex.html">step_aldex()</a></code>,
+<code><a href="step_aldex2.html">step_aldex2()</a></code>,
+<code><a href="step_aldex3.html">step_aldex3()</a></code>,
 <code><a href="step_corncob.html">step_corncob()</a></code>,
 <code><a href="step_deseq.html">step_deseq()</a></code>,
 <code><a href="step_lefse.html">step_lefse()</a></code>,
@@ -257,9 +256,6 @@ estimates are not changed by this selection.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'DescTools':</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method         from  </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   reorder.factor gplots</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'lme4':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method           from</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   na.action.merMod car </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Pass advanced convergence controls to ANCOM-BC2.</span></span></span>
 <span class="r-in"><span><span class="va">rec_custom</span> <span class="op">&lt;-</span> <span class="fu">step_ancom</span><span class="op">(</span></span></span>

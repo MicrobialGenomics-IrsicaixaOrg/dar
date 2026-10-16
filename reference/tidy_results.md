@@ -45,39 +45,39 @@ instance in `step_id`.
 data(test_prep_rec)
 results <- tidy_results(test_prep_rec)
 results
-#> # A tibble: 448 × 17
+#> # A tibble: 312 × 17
 #>    taxa_id taxa             contrast_id comparison contrast_type var   numerator
 #>    <chr>   <chr>            <chr>       <chr>      <chr>         <chr> <chr>    
-#>  1 Otu_1   Methanobrevibac… RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  2 Otu_10  Bifidobacterium  RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  3 Otu_18  Bifidobacterium  RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  4 Otu_34  Olsenella        RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  5 Otu_35  Collinsella      RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  6 Otu_37  Collinsella      RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  7 Otu_39  Enorma           RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  8 Otu_45  Slackia          RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#>  9 Otu_46  Bacteroides      RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#> 10 Otu_47  Bacteroides      RiskGroup2… hts_msm    legacy_pairw… Risk… NA       
-#> # ℹ 438 more rows
+#>  1 Otu_1   Methanobrevibac… RiskGroup2… RiskGroup… main          Risk… msm      
+#>  2 Otu_10  Bifidobacterium  RiskGroup2… RiskGroup… main          Risk… msm      
+#>  3 Otu_34  Olsenella        RiskGroup2… RiskGroup… main          Risk… msm      
+#>  4 Otu_35  Collinsella      RiskGroup2… RiskGroup… main          Risk… msm      
+#>  5 Otu_39  Enorma           RiskGroup2… RiskGroup… main          Risk… msm      
+#>  6 Otu_45  Slackia          RiskGroup2… RiskGroup… main          Risk… msm      
+#>  7 Otu_78  Bacteroides      RiskGroup2… RiskGroup… main          Risk… msm      
+#>  8 Otu_82  Barnesiella      RiskGroup2… RiskGroup… main          Risk… msm      
+#>  9 Otu_86  Butyricimonas    RiskGroup2… RiskGroup… main          Risk… msm      
+#> 10 Otu_88  Odoribacter      RiskGroup2… RiskGroup… main          Risk… msm      
+#> # ℹ 302 more rows
 #> # ℹ 10 more variables: denominator <chr>, at_var <chr>, at_level <chr>,
 #> #   effect_size <dbl>, effect_metric <chr>, p_value <dbl>, adj_p_value <dbl>,
 #> #   significant <lgl>, method <chr>, step_id <chr>
 
 tidy_results(test_prep_rec, significant_only = TRUE)
-#> # A tibble: 101 × 17
-#>    taxa_id taxa        contrast_id      comparison contrast_type var   numerator
-#>    <chr>   <chr>       <chr>            <chr>      <chr>         <chr> <chr>    
-#>  1 Otu_35  Collinsella RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  2 Otu_37  Collinsella RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  3 Otu_46  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  4 Otu_47  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  5 Otu_51  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  6 Otu_52  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  7 Otu_62  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  8 Otu_69  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#>  9 Otu_76  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#> 10 Otu_77  Bacteroides RiskGroup2[hts_… hts_msm    legacy_pairw… Risk… NA       
-#> # ℹ 91 more rows
+#> # A tibble: 62 × 17
+#>    taxa_id taxa            contrast_id  comparison contrast_type var   numerator
+#>    <chr>   <chr>           <chr>        <chr>      <chr>         <chr> <chr>    
+#>  1 Otu_35  Collinsella     RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  2 Otu_78  Bacteroides     RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  3 Otu_82  Barnesiella     RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  4 Otu_86  Butyricimonas   RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  5 Otu_88  Odoribacter     RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  6 Otu_94  Paraprevotella  RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  7 Otu_96  Prevotella      RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  8 Otu_119 Alistipes       RiskGroup2[… RiskGroup… main          Risk… msm      
+#>  9 Otu_125 Parabacteroides RiskGroup2[… RiskGroup… main          Risk… msm      
+#> 10 Otu_259 Coprococcus     RiskGroup2[… RiskGroup… main          Risk… msm      
+#> # ℹ 52 more rows
 #> # ℹ 10 more variables: denominator <chr>, at_var <chr>, at_level <chr>,
 #> #   effect_size <dbl>, effect_metric <chr>, p_value <dbl>, adj_p_value <dbl>,
 #> #   significant <lgl>, method <chr>, step_id <chr>

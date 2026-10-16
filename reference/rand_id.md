@@ -23,5 +23,5 @@ underscore.
 
 ``` r
 rand_id("step")
-#> [1] "step__Cannoli_siciliani"
+#> [1] "step__Fig_roll"
 ```

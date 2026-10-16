@@ -47,7 +47,6 @@
 <li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
@@ -91,7 +90,10 @@ an optional summary, not a required endpoint.</p>
 <code>phyloseq</code> dataset from <a href="https://doi.org/10.1016/j.ebiom.2016.01.032" class="external-link">Noguera-Julian et
 al. (2016)</a>. Here we compare its recorded <code>RiskGroup2</code>
 categories. This unadjusted example illustrates the software; it does
-not establish causal effects or validated microbial biomarkers.</p>
+not establish causal effects or validated microbial biomarkers. The
+profiling pipeline and measurement units of this derived table have not
+been independently verified, so its use here is not a recommendation of
+count-based methods for abundance profiles of unknown origin.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaHIV_phy"</span>, package <span class="op">=</span> <span class="st">"dar"</span><span class="op">)</span></span>
 <span><span class="va">metaHIV_phy</span></span>
@@ -205,46 +207,97 @@ p-values.</p>
 <span><span class="va">results</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">step_id</span>, <span class="va">contrast_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
+<span>    n_returned <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    n_finite_effects <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">effect_size</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    n_significant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">significant</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    .groups <span class="op">=</span> <span class="st">"drop"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 3</span></span></span>
-<span><span class="co">#&gt;   step_id contrast_id          n_significant</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> deseq   RiskGroup2[msm-hts]            121</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> deseq   RiskGroup2[pwid-hts]            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> deseq   RiskGroup2[pwid-msm]           108</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> maaslin RiskGroup2[msm-hts]             39</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> maaslin RiskGroup2[pwid-hts]             5</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> maaslin RiskGroup2[pwid-msm]            21</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
+<span><span class="co">#&gt;   step_id contrast_id          n_returned n_finite_effects n_significant</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> deseq   RiskGroup2[msm-hts]         278              278           121</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> deseq   RiskGroup2[pwid-hts]        278              278            63</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> deseq   RiskGroup2[pwid-msm]        278              278           108</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> maaslin RiskGroup2[msm-hts]         278              251            39</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> maaslin RiskGroup2[pwid-hts]        278              218             5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> maaslin RiskGroup2[pwid-msm]        278              211            21</span></span></code></pre></div>
 <p>These results can be used directly, without <code><a href="../reference/bake.html">bake()</a></code> or
 <code><a href="../reference/cool.html">cool()</a></code>.</p>
+<p><code><a href="../reference/get_execution.html">get_execution()</a></code> exposes the recorded contrast plan,
+samples removed by the model’s missing-value policy, and executed or
+skipped steps. It does not record every engine’s internal filtering.
+Older prepared objects can contain <code>NULL</code> fields because that
+information was not recorded.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">execution</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_execution.html">get_execution</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
+<span><span class="va">execution</span><span class="op">$</span><span class="va">contrasts</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 9</span></span></span>
+<span><span class="co">#&gt;   contrast_id        comparison contrast_type var   numerator denominator at_var</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> RiskGroup2[msm-ht… RiskGroup… main          Risk… msm       hts         <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> RiskGroup2[pwid-h… RiskGroup… main          Risk… pwid      hts         <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> RiskGroup2[pwid-m… RiskGroup… main          Risk… pwid      msm         <span style="color: #BB0000;">NA</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: at_level &lt;chr&gt;, weights &lt;list&gt;</span></span></span>
+<span><span class="va">execution</span><span class="op">$</span><span class="va">dropped_samples</span></span>
+<span><span class="co">#&gt; character(0)</span></span>
+<span><span class="va">execution</span><span class="op">$</span><span class="va">executed_steps</span></span>
+<span><span class="co">#&gt; [1] "deseq"   "maaslin"</span></span>
+<span><span class="va">execution</span><span class="op">$</span><span class="va">skipped_steps</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 0 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 variables: step_id &lt;chr&gt;, engine &lt;chr&gt;, compatible &lt;lgl&gt;, reason &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="plot-a-selected-comparison">Plot a selected comparison<a class="anchor" aria-label="anchor" href="#plot-a-selected-comparison"></a>
 </h2>
 <p>Plots accept explicit contrast selectors so distinct hypotheses are
-not mixed. Here we show up to six taxa detected by at least one method
-for the comparison of <code>msm</code> with <code>hts</code>. An empty
-selection is a valid result, not a plotting failure.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+not mixed. <code><a href="../reference/effect_plt.html">effect_plt()</a></code> displays each step and effect
+metric in a separate panel. Its automatic <code>top_n</code> selects the
+largest absolute finite effects within each panel, not the taxa most
+supported by other methods. Colours preserve the method’s configured
+decision; no universal confidence intervals are inferred.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">comparison_id</span> <span class="op">&lt;-</span> <span class="st">"RiskGroup2[msm-hts]"</span></span>
-<span><span class="va">taxa_ids</span> <span class="op">&lt;-</span> <span class="va">results</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">contrast_id</span> <span class="op">==</span> <span class="va">comparison_id</span>, <span class="va">significant</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">taxa_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">taxa_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">6</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">taxa_ids</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/abundance_plt.html">abundance_plt</a></span><span class="op">(</span></span>
-<span>    <span class="va">fit</span>, taxa_ids <span class="op">=</span> <span class="va">taxa_ids</span>,</span>
-<span>    contrast_id <span class="op">=</span> <span class="va">comparison_id</span>, type <span class="op">=</span> <span class="st">"boxplot"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"No significant taxa for this comparison."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="fu"><a href="../reference/effect_plt.html">effect_plt</a></span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>, steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deseq"</span>, <span class="st">"maaslin"</span><span class="op">)</span>,</span>
+<span>  contrast_id <span class="op">=</span> <span class="va">comparison_id</span>, top_n <span class="op">=</span> <span class="fl">6</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="dar_files/figure-html/effects-1.png" class="r-plt" alt="" width="768"></p>
+<p>For observed abundances, select discoveries from one configured step
+rather than requiring agreement. <code>steps</code> uses the IDs
+assigned when the methods were configured. These abundances use the
+shared taxonomic analysis view before engine-specific operations; they
+are not adjusted model predictions.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_plt.html">abundance_plt</a></span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>, steps <span class="op">=</span> <span class="st">"deseq"</span>, contrast_id <span class="op">=</span> <span class="va">comparison_id</span>,</span>
+<span>  top_n <span class="op">=</span> <span class="fl">6</span>, type <span class="op">=</span> <span class="st">"boxplot"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; You have inserted a phyloseq object. The phyloseq-based methods will be deprecated. We recommend switching to the (Tree)SummarizedExperiment framework and mia R/Bioconductor package.</span></span></code></pre></div>
 <p><img src="dar_files/figure-html/abundance-1.png" class="r-plt" alt="" width="672"></p>
+<p>For several steps, choose <code>selection = "union"</code> for
+discoveries from any selected step, or <code>selection = "shared"</code>
+for those supported by every selected step in the same contrast and
+effect direction. An empty selection is valid and does not trigger a
+different selection rule. Explicit <code>taxa_ids</code> can also select
+taxa independently of significance or agreement.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/abundance_plt.html">abundance_plt</a></span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>, steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deseq"</span>, <span class="st">"maaslin"</span><span class="op">)</span>, selection <span class="op">=</span> <span class="st">"union"</span>,</span>
+<span>  contrast_id <span class="op">=</span> <span class="va">comparison_id</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/abundance_plt.html">abundance_plt</a></span><span class="op">(</span></span>
+<span>  <span class="va">fit</span>, steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deseq"</span>, <span class="st">"maaslin"</span><span class="op">)</span>, selection <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>  contrast_id <span class="op">=</span> <span class="va">comparison_id</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>For custom tables and graphics, see <code><a href="../reference/tidy_abundance.html">tidy_abundance()</a></code> in
+<a href="data_import.html">Data inputs and inspection</a>. Optional
+agreement plots such as <code><a href="../reference/intersection_plt.html">intersection_plt()</a></code> are described in
+their function help. They describe agreement, not statistical accuracy.
+<code><a href="../reference/bake.html">bake()</a></code> defines an optional consensus rule and
+<code><a href="../reference/cool.html">cool()</a></code> extracts its results; their help includes exclusions
+and weights. More agreement does not guarantee greater accuracy or
+false-discovery rate control, and weights are not probabilities that
+methods are correct.</p>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
@@ -261,15 +314,11 @@ preprocessing</a>: QC and filters.</li>
 contrasts</a>: adjustment, repeated measurements and method
 compatibility.</li>
 <li>
-<a href="article.html">Exploring results and optional consensus</a>:
-effect interpretation, agreement plots and explicit consensus
-rules.</li>
-<li>
 <a href="import_export_recipes.html">Saving and sharing analysis
 recipes</a>: reusable configurations and the limits of recipe
 export.</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>

@@ -46,8 +46,10 @@
 
 ## Step Functions - Differential Abundance Methods
 
-- [`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md)
+- [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)
   : ALDEx2 analysis
+- [`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md)
+  : ALDEx3 fixed- and mixed-effects analysis
 - [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
   : ANCOM analysis
 - [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
@@ -68,8 +70,14 @@
 - [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
   : Collect differential-abundance results in a tidy contract
 
+- [`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)
+  : Extract abundances in the shared taxonomic analysis view
+
+- [`effect_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)
+  : Plot method-specific differential-abundance effects
+
 - [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
-  : Abundance boxplot
+  : Plot observed abundances of selected analysis taxa
 
 - [`corr_heatmap()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/corr_heatmap.md)
   :
@@ -96,6 +104,8 @@
 
 ## Recipe Data Access
 
+- [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
+  : Inspect the recorded execution of a prepared recipe
 - [`get_phy()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_phy.md)
   : Returns phyloseq from Recipe-class object
 - [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)

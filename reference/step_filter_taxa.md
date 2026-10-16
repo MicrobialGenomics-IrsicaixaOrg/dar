@@ -95,7 +95,7 @@ recipe(metaHIV_phy) |>
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_taxa() id = filter_taxa__Pithivier 
+#>      ◉ step_filter_taxa() id = filter_taxa__Cannoli_siciliani 
 #> 
 #> DA steps:
 #> 

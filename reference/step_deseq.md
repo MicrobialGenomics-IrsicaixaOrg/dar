@@ -32,7 +32,11 @@ step_deseq(
 - rec:
 
   A Recipe object. The step will be added to the sequence of operations
-  for this Recipe.
+  for this Recipe. Execution requires
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+  before
+  [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md);
+  the step can be configured before adding the model.
 
 - test:
 
@@ -102,7 +106,8 @@ An object of class `Recipe`
 ## See also
 
 Other Diff taxa steps:
-[`step_aldex()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex.md),
+[`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md),
+[`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md),
 [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md),
 [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md),
 [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md),

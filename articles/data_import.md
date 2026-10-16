@@ -113,6 +113,84 @@ genuine study metadata before calling
 [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md);
 do not manufacture groups just to make an example run.
 
+## Extract the shared taxonomic analysis view
+
+Selecting `tax_level = "Genus"` with
+[`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+does not replace the stored features returned by
+[`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md).
+[`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)
+instead exposes the shared analysis view: counts are summed through the
+selected rank, using the same taxon identities as differential-abundance
+results. Features with the same label but different lineages remain
+distinct analysis units.
+
+\
+`genus_rec`` ``<-`` `[`recipe`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md)`(``metaHIV_phy``)`` ``|>`\
+`  `[`add_model`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)`(``~`` ``RiskGroup2``, targets ``=`` ``"RiskGroup2"``, tax_level ``=`` ``"Genus"``)`\
+\
+`genus_abundances`` ``<-`` `[`tidy_abundance`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)`(``genus_rec``, metadata ``=`` ``"RiskGroup2"``)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``genus_abundances``)`\
+`#> ``# A tibble: 6 × 12`\
+`#>   taxa_id taxa              sample_id abundance taxonomy_Kingdom taxonomy_Phylum`\
+`#>   ``<chr>``   ``<chr>``             ``<chr>``         ``<dbl>`` ``<chr>``            ``<chr>``          `\
+`#> ``1`` Otu_1   Methanobrevibact… Sample_1…      ``2``538 Archaea          Euryarchaeota  `\
+`#> ``2`` Otu_1   Methanobrevibact… Sample_1…         0 Archaea          Euryarchaeota  `\
+`#> ``3`` Otu_1   Methanobrevibact… Sample_1…      ``9``026 Archaea          Euryarchaeota  `\
+`#> ``4`` Otu_1   Methanobrevibact… Sample_1…     ``12``049 Archaea          Euryarchaeota  `\
+`#> ``5`` Otu_1   Methanobrevibact… Sample_1…     ``22``126 Archaea          Euryarchaeota  `\
+`#> ``6`` Otu_1   Methanobrevibact… Sample_1…     ``15``374 Archaea          Euryarchaeota  `\
+`#> ``# ℹ 6 more variables: taxonomy_Class <chr>, taxonomy_Order <chr>,`\
+`#> ``#   taxonomy_Family <chr>, taxonomy_Genus <chr>, taxonomy_Species <chr>,`\
+`#> ``#   metadata_RiskGroup2 <chr>`\
+[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`\
+`  stored_features ``=`` `[`nrow`](https://rdrr.io/r/base/nrow.html)`(``dar``::`[`otu_table`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)`(``genus_rec``)``)``,`\
+`  analysis_taxa ``=`` ``dplyr``::`[`n_distinct`](https://dplyr.tidyverse.org/reference/n_distinct.html)`(``genus_abundances``$``taxa_id``)`\
+`)`\
+`#>   stored_features analysis_taxa`\
+`#> 1             451           143`
+
+The long table has one row per taxon and sample, with `taxa_id`, `taxa`,
+`sample_id` and `abundance`. Taxonomy has a `taxonomy_` prefix and
+selected sample metadata a `metadata_` prefix, so annotations cannot
+overwrite these columns. Supply original metadata names to `metadata`;
+`NULL` includes all metadata and `character(0)` excludes them. Lineage
+is retained through the selected rank; lower ranks removed by
+aggregation remain missing.
+
+For within-sample fractions, select `transform = "compositional"`. The
+denominator includes **all shared analysis taxa**, before selecting
+taxon IDs; fractions of a displayed subset need not sum to one.
+
+\
+`selected_ids`` ``<-`` `[`head`](https://rdrr.io/r/utils/head.html)`(`[`unique`](https://rdrr.io/r/base/unique.html)`(``genus_abundances``$``taxa_id``)``, ``2``)`\
+`fractions`` ``<-`` `[`tidy_abundance`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)`(`\
+`  ``genus_rec``, taxa_ids ``=`` ``selected_ids``,`\
+`  transform ``=`` ``"compositional"``, metadata ``=`` ``"RiskGroup2"`\
+`)`\
+[`head`](https://rdrr.io/r/utils/head.html)`(``fractions``)`\
+`#> ``# A tibble: 6 × 12`\
+`#>   taxa_id taxa              sample_id abundance taxonomy_Kingdom taxonomy_Phylum`\
+`#>   ``<chr>``   ``<chr>``             ``<chr>``         ``<dbl>`` ``<chr>``            ``<chr>``          `\
+`#> ``1`` Otu_1   Methanobrevibact… Sample_1…  0.000``597`` Archaea          Euryarchaeota  `\
+`#> ``2`` Otu_1   Methanobrevibact… Sample_1…  0        Archaea          Euryarchaeota  `\
+`#> ``3`` Otu_1   Methanobrevibact… Sample_1…  0.000``928`` Archaea          Euryarchaeota  `\
+`#> ``4`` Otu_1   Methanobrevibact… Sample_1…  0.001``82``  Archaea          Euryarchaeota  `\
+`#> ``5`` Otu_1   Methanobrevibact… Sample_1…  0.006``09``  Archaea          Euryarchaeota  `\
+`#> ``6`` Otu_1   Methanobrevibact… Sample_1…  0.001``60``  Archaea          Euryarchaeota  `\
+`#> ``# ℹ 6 more variables: taxonomy_Class <chr>, taxonomy_Order <chr>,`\
+`#> ``#   taxonomy_Family <chr>, taxonomy_Genus <chr>, taxonomy_Species <chr>,`\
+`#> ``#   metadata_RiskGroup2 <chr>`
+
+The default `transform = "identity"` preserves the stored abundance
+scale while summing aggregated features. Extraction from an unprepared
+recipe does not execute pending steps. A prepared recipe includes common
+preprocessing and the shared model cohort, but this view does not
+reproduce method-specific filtering, rarefaction or transformations. It
+is not a table of adjusted predictions. For paired graphics, include the
+actual visit and participant columns in `metadata` and use them to group
+descriptive trajectories.
+
 ## Import a BIOM table
 
 This example uses a file distributed with `phyloseq`, without
@@ -249,65 +327,66 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#> [1] dar_1.9.12`\
 `#> `\
 `#> loaded via a namespace (and not attached):`\
-`#>   [1] DBI_1.3.0                       gridExtra_2.3.1                `\
-`#>   [3] permute_0.9-10                  rlang_1.3.0                    `\
-`#>   [5] magrittr_2.0.5                  ade4_1.7-24                    `\
-`#>   [7] scater_1.41.2                   otel_0.2.0                     `\
-`#>   [9] matrixStats_1.5.0               compiler_4.6.1                 `\
-`#>  [11] DelayedMatrixStats_1.35.0       mgcv_1.9-4                     `\
-`#>  [13] systemfonts_1.3.2               vctrs_0.7.3                    `\
-`#>  [15] reshape2_1.4.5                  stringr_1.6.0                  `\
-`#>  [17] pkgconfig_2.0.3                 crayon_1.5.3                   `\
-`#>  [19] fastmap_1.2.0                   backports_1.5.1                `\
-`#>  [21] XVector_0.53.0                  scuttle_1.23.2                 `\
-`#>  [23] utf8_1.2.6                      rmarkdown_2.32                 `\
-`#>  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    `\
-`#>  [27] ragg_1.5.2                      purrr_1.2.2                    `\
-`#>  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    `\
-`#>  [31] xfun_0.61                       cachem_1.1.0                   `\
-`#>  [33] beachmat_2.29.3                 jsonlite_2.0.0                 `\
-`#>  [35] biomformat_1.41.0               DelayedArray_0.39.8            `\
-`#>  [37] BiocParallel_1.47.0             irlba_2.4.1                    `\
-`#>  [39] parallel_4.6.1                  cluster_2.1.8.3                `\
-`#>  [41] R6_2.6.1                        bslib_0.12.0                   `\
-`#>  [43] stringi_1.8.9                   RColorBrewer_1.1-3             `\
-`#>  [45] GenomicRanges_1.65.4            jquerylib_0.1.4                `\
-`#>  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  `\
-`#>  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               `\
-`#>  [51] knitr_1.52                      DECIPHER_3.9.3                 `\
-`#>  [53] IRanges_2.47.5                  mia_1.21.11                    `\
-`#>  [55] Matrix_1.7-6                    splines_4.6.1                  `\
-`#>  [57] igraph_2.3.4                    tidyselect_1.2.1               `\
-`#>  [59] viridis_0.6.5                   abind_1.4-8                    `\
-`#>  [61] yaml_2.3.12                     vegan_2.7-6                    `\
-`#>  [63] TreeSummarizedExperiment_2.21.0 codetools_0.2-20               `\
-`#>  [65] lattice_0.23-1                  tibble_3.3.1                   `\
-`#>  [67] plyr_1.8.9                      Biobase_2.73.2                 `\
-`#>  [69] treeio_1.37.1                   S7_0.2.2                       `\
-`#>  [71] evaluate_1.0.5                  desc_1.4.3                     `\
-`#>  [73] survival_3.8-12                 Biostrings_2.81.9              `\
-`#>  [75] pillar_1.11.1                   phyloseq_1.57.0                `\
-`#>  [77] MatrixGenerics_1.25.0           checkmate_2.3.4                `\
-`#>  [79] foreach_1.5.2                   stats4_4.6.1                   `\
-`#>  [81] generics_0.1.4                  S4Vectors_0.51.10              `\
-`#>  [83] ggplot2_4.0.3                   sparseMatrixStats_1.25.0       `\
-`#>  [85] scales_1.4.0                    tidytree_0.4.8                 `\
-`#>  [87] glue_1.8.1                      lazyeval_0.2.3                 `\
-`#>  [89] tools_4.6.1                     BiocNeighbors_2.7.3            `\
-`#>  [91] data.table_1.18.6.1             ScaledMatrix_1.21.0            `\
-`#>  [93] fs_2.1.0                        grid_4.6.1                     `\
-`#>  [95] tidyr_1.3.2                     ape_5.8-1                      `\
-`#>  [97] SingleCellExperiment_1.35.2     nlme_3.1-171                   `\
-`#>  [99] beeswarm_0.4.0                  BiocSingular_1.29.2            `\
-`#> [101] vipor_0.4.7                     cli_3.6.6                      `\
-`#> [103] rsvd_1.0.5                      rappdirs_0.3.4                 `\
-`#> [105] textshaping_1.0.5               viridisLite_0.4.3              `\
-`#> [107] S4Arrays_1.13.2                 dplyr_1.2.1                    `\
-`#> [109] gtable_0.3.6                    yulab.utils_0.2.5              `\
-`#> [111] sass_0.4.10                     digest_0.6.39                  `\
-`#> [113] BiocGenerics_0.59.12            ggrepel_0.9.8                  `\
-`#> [115] SparseArray_1.13.4              decontam_1.33.0                `\
-`#> [117] htmlwidgets_1.6.4               farver_2.1.2                   `\
-`#> [119] htmltools_0.5.9                 pkgdown_2.2.1                  `\
-`#> [121] multtest_2.69.0                 lifecycle_1.0.5                `\
-`#> [123] MASS_7.3-66`
+`#>   [1] Rdpack_2.6.6                    DBI_1.3.0                      `\
+`#>   [3] gridExtra_2.3.1                 permute_0.9-10                 `\
+`#>   [5] rlang_1.3.0                     magrittr_2.0.5                 `\
+`#>   [7] ade4_1.7-24                     scater_1.41.2                  `\
+`#>   [9] otel_0.2.0                      matrixStats_1.5.0              `\
+`#>  [11] compiler_4.6.1                  DelayedMatrixStats_1.35.0      `\
+`#>  [13] mgcv_1.9-4                      systemfonts_1.3.2              `\
+`#>  [15] vctrs_0.7.3                     reshape2_1.4.5                 `\
+`#>  [17] stringr_1.6.0                   pkgconfig_2.0.3                `\
+`#>  [19] crayon_1.5.3                    fastmap_1.2.0                  `\
+`#>  [21] backports_1.5.1                 XVector_0.53.0                 `\
+`#>  [23] scuttle_1.23.2                  utf8_1.2.6                     `\
+`#>  [25] rmarkdown_2.32                  ggbeeswarm_0.7.3               `\
+`#>  [27] DirichletMultinomial_1.55.1     ragg_1.5.2                     `\
+`#>  [29] purrr_1.2.2                     bluster_1.23.1                 `\
+`#>  [31] MultiAssayExperiment_1.39.1     xfun_0.61                      `\
+`#>  [33] cachem_1.1.0                    beachmat_2.29.3                `\
+`#>  [35] jsonlite_2.0.0                  biomformat_1.41.0              `\
+`#>  [37] DelayedArray_0.39.8             BiocParallel_1.47.0            `\
+`#>  [39] irlba_2.4.1                     parallel_4.6.1                 `\
+`#>  [41] cluster_2.1.8.3                 R6_2.6.1                       `\
+`#>  [43] bslib_0.12.0                    stringi_1.8.9                  `\
+`#>  [45] RColorBrewer_1.1-3              GenomicRanges_1.65.4           `\
+`#>  [47] jquerylib_0.1.4                 Rcpp_1.1.2                     `\
+`#>  [49] Seqinfo_1.3.2                   SummarizedExperiment_1.43.0    `\
+`#>  [51] iterators_1.0.14                knitr_1.52                     `\
+`#>  [53] DECIPHER_3.9.3                  IRanges_2.47.5                 `\
+`#>  [55] mia_1.21.11                     Matrix_1.7-6                   `\
+`#>  [57] splines_4.6.1                   igraph_2.3.4                   `\
+`#>  [59] tidyselect_1.2.1                viridis_0.6.5                  `\
+`#>  [61] abind_1.4-8                     yaml_2.3.12                    `\
+`#>  [63] vegan_2.7-6                     TreeSummarizedExperiment_2.21.0`\
+`#>  [65] codetools_0.2-20                lattice_0.23-1                 `\
+`#>  [67] tibble_3.3.1                    plyr_1.8.9                     `\
+`#>  [69] Biobase_2.73.2                  treeio_1.37.1                  `\
+`#>  [71] S7_0.2.2                        evaluate_1.0.5                 `\
+`#>  [73] desc_1.4.3                      survival_3.8-12                `\
+`#>  [75] Biostrings_2.81.9               pillar_1.11.1                  `\
+`#>  [77] phyloseq_1.57.0                 MatrixGenerics_1.25.0          `\
+`#>  [79] checkmate_2.3.4                 foreach_1.5.2                  `\
+`#>  [81] stats4_4.6.1                    reformulas_0.4.4               `\
+`#>  [83] generics_0.1.4                  S4Vectors_0.51.10              `\
+`#>  [85] ggplot2_4.0.3                   sparseMatrixStats_1.25.0       `\
+`#>  [87] scales_1.4.0                    tidytree_0.4.8                 `\
+`#>  [89] glue_1.8.1                      lazyeval_0.2.3                 `\
+`#>  [91] tools_4.6.1                     BiocNeighbors_2.7.3            `\
+`#>  [93] data.table_1.18.6.1             ScaledMatrix_1.21.0            `\
+`#>  [95] fs_2.1.0                        grid_4.6.1                     `\
+`#>  [97] tidyr_1.3.2                     ape_5.8-1                      `\
+`#>  [99] rbibutils_2.4.1                 SingleCellExperiment_1.35.2    `\
+`#> [101] nlme_3.1-171                    beeswarm_0.4.0                 `\
+`#> [103] BiocSingular_1.29.2             vipor_0.4.7                    `\
+`#> [105] cli_3.6.6                       rsvd_1.0.5                     `\
+`#> [107] rappdirs_0.3.4                  textshaping_1.0.5              `\
+`#> [109] viridisLite_0.4.3               S4Arrays_1.13.2                `\
+`#> [111] dplyr_1.2.1                     gtable_0.3.6                   `\
+`#> [113] yulab.utils_0.2.5               sass_0.4.10                    `\
+`#> [115] digest_0.6.39                   BiocGenerics_0.59.12           `\
+`#> [117] ggrepel_0.9.8                   SparseArray_1.13.4             `\
+`#> [119] decontam_1.33.0                 htmlwidgets_1.6.4              `\
+`#> [121] farver_2.1.2                    htmltools_0.5.9                `\
+`#> [123] pkgdown_2.2.1                   multtest_2.69.0                `\
+`#> [125] lifecycle_1.0.5                 MASS_7.3-66`

@@ -42,7 +42,6 @@
 <li><a class="dropdown-item" href="../articles/data_import.html">Data inputs and inspection</a></li>
     <li><a class="dropdown-item" href="../articles/filtering_subsetting.html">Quality control and preprocessing</a></li>
     <li><a class="dropdown-item" href="../articles/statistical_models.html">Statistical models and contrasts</a></li>
-    <li><a class="dropdown-item" href="../articles/article.html">Exploring results and optional consensus</a></li>
     <li><a class="dropdown-item" href="../articles/import_export_recipes.html">Saving and sharing analysis recipes</a></li>
   </ul>
 </li>
@@ -69,7 +68,7 @@
                         <h4 data-toc-skip class="author">dar
 authors</h4>
             
-            <h4 data-toc-skip class="date">2026-10-15</h4>
+            <h4 data-toc-skip class="date">2026-10-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/blob/devel/vignettes/statistical_models.Rmd" class="external-link"><code>vignettes/statistical_models.Rmd</code></a></small>
       <div class="d-none name"><code>statistical_models.Rmd</code></div>
@@ -82,9 +81,11 @@ every compatible differential-abundance step. Its <code>targets</code>
 and <code>tax_level</code> arguments are the single source of truth for
 the analysis configuration; other fixed terms provide covariate
 adjustment. Method-specific thresholds, normalization and rarefaction
-settings remain active. A model-free recipe remains valid for
-preprocessing, but differential-abundance execution without a model is
-deprecated.</p>
+settings remain active. Preprocessing can run without a model, but
+differential-abundance execution requires <code><a href="../reference/add_model.html">add_model()</a></code>
+before <code><a href="../reference/prep.html">prep()</a></code>. Steps can be configured before or after
+adding the model. Inspect the current specification with
+<code>get_model(rec)</code>.</p>
 <div class="section level2">
 <h2 id="small-example-data">Small example data<a class="anchor" aria-label="anchor" href="#small-example-data"></a>
 </h2>
@@ -248,36 +249,42 @@ compatible method.</p>
 <td align="center">no</td>
 </tr>
 <tr class="odd">
+<td align="left">ALDEx3</td>
+<td align="center">yes</td>
+<td align="center">yes</td>
+<td align="center">yes (exact lme4)</td>
+</tr>
+<tr class="even">
 <td align="left">ANCOM-BC2</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">corncob</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 <td align="center">no</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">LinDA</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">MaAsLin3</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 <td align="center">yes</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Wilcoxon</td>
 <td align="center">no</td>
 <td align="center">no</td>
 <td align="center">no</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">LEfSe</td>
 <td align="center">no</td>
 <td align="center">no</td>
@@ -297,23 +304,94 @@ preparation stops. Real engine failures and missing planned contrasts
 remain errors.</p>
 <p>Use <code>contrast_id</code>, <code>comparison</code> and
 <code>contrast_type</code> to identify the hypothesis represented by
-each result. See <a href="article.html">Exploring results and optional
-consensus</a> for the result columns, effect scales, selectors and
-plotting examples.</p>
+each result. See <a href="dar.html">Getting started with dar</a> for
+extracting results, inspecting execution records and plotting selected
+contrasts.</p>
+</div>
+<div class="section level2">
+<h2 id="interpret-returned-results">Interpret returned results<a class="anchor" aria-label="anchor" href="#interpret-returned-results"></a>
+</h2>
+<p><code><a href="../reference/tidy_results.html">tidy_results()</a></code> returns one row per returned taxon,
+contrast and configured step, not a complete grid of all possible tests.
+<code>method</code> identifies the engine and <code>step_id</code>
+identifies its configuration. Custom IDs must not collide with internal
+columns such as <code>effect</code>, <code>taxa_id</code> or
+<code>sum</code>; choose distinct IDs such as
+<code>linda_sensitivity</code>.</p>
+<p>The numerator and denominator define each contrast’s orientation.
+Positive effects point toward the numerator on the reported metric, but
+the metrics are not numerically interchangeable:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Engine</th>
+<th align="left">Effect reported by the centralized API</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">DESeq2</td>
+<td align="left">Log2 fold change, with the configured shrinkage.</td>
+</tr>
+<tr class="even">
+<td align="left">ALDEx2</td>
+<td align="left">Contrast-oriented GLM coefficient.</td>
+</tr>
+<tr class="odd">
+<td align="left">ALDEx3</td>
+<td align="left">Log2 abundance coefficient conditional on the scale
+model.</td>
+</tr>
+<tr class="even">
+<td align="left">ANCOM-BC2</td>
+<td align="left">Bias-corrected log fold change.</td>
+</tr>
+<tr class="odd">
+<td align="left">corncob</td>
+<td align="left">Logit mean-abundance coefficient.</td>
+</tr>
+<tr class="even">
+<td align="left">LinDA</td>
+<td align="left">Bias-corrected log2 fold change.</td>
+</tr>
+<tr class="odd">
+<td align="left">MaAsLin3</td>
+<td align="left">Coefficient on the configured transformed abundance
+scale.</td>
+</tr>
+<tr class="even">
+<td align="left">Wilcoxon</td>
+<td align="left">Difference in medians on the configured abundance
+scale.</td>
+</tr>
+<tr class="odd">
+<td align="left">LEfSe</td>
+<td align="left">Direction-oriented LDA score.</td>
+</tr>
+</tbody>
+</table>
+<p>Inspect <code>effect_metric</code> and the configured engine options
+before interpreting an estimate. <code>significant</code> preserves the
+originating method’s decision, including any additional criteria such as
+ANCOM-BC2’s pseudocount-sensitivity filter. Missing statistics remain
+missing: a nonsignificant result does not prove that every estimate was
+available or that there is no effect. Absent rows are not automatically
+nonsignificant results. Agreement plots do not establish calibrated
+false-discovery rates.</p>
 <p>For centralized ALDEx2 analyses, <code>effect</code> is the
 contrast-oriented coefficient from the same GLM as the adjusted P value,
 averaged over Monte Carlo instances and labeled
 <code>aldex_glm_coefficient</code>. With default settings it is on the
 base-2 CLR response scale, not an absolute-abundance fold change or
 ALDEx2’s standardized two-group effect. Advanced native settings can
-change its scale. Recompute previously prepared centralized ALDEx2
-results to obtain the GLM coefficients; deprecated model-free analyses
-retain their standardized effects.</p>
+change its scale.</p>
 </div>
 <div class="section level2">
 <h2 id="advanced-native-engine-arguments">Advanced native-engine arguments<a class="anchor" aria-label="anchor" href="#advanced-native-engine-arguments"></a>
 </h2>
-<p>The eight DA steps accept <code>engine_args</code>, a named list
+<p>The nine DA steps accept <code>engine_args</code>, a named list
 grouped by native-call stage. This keeps advanced settings attached to
 the configured step and avoids an ambiguous <code>...</code>. For
 example:</p>
@@ -363,45 +441,77 @@ the complete <code>iter_control</code> list, including
 <p>Available stages are <code>size_factors</code>, <code>fit</code>,
 <code>results</code>, and <code>shrink</code> for DESeq2;
 <code>clr</code> and <code>fit</code> for ALDEx2; <code>fit</code> for
-ANCOM-BC2, corncob, and LinDA; <code>fit</code> and
+ALDEx3 and ANCOM-BC2, corncob, and LinDA; <code>fit</code> and
 <code>contrast</code> for MaAsLin3; <code>test</code> for Wilcoxon; and
 <code>transform</code> and <code>fit</code> for LEfSe. Data, formulas,
 contrasts, output paths and arguments already exposed by each dar
-wrapper are protected. Non-empty <code>engine_args</code> require a
-centralized model. A configured stage that is not used by the selected
-execution route is reported as an error. ALDEx2’s former
-<code>effect</code> stage is rejected because centralized effects now
-come directly from the GLM fit.</p>
+wrapper are protected. A configured stage that is not used by the
+selected execution route is reported as an error. Engine-specific
+validation and errors are left to the engine. dar checks its own
+configuration, design compatibility and the identities used to align
+data and results. ALDEx2 effects come directly from the GLM fit.</p>
 <p>See <a href="import_export_recipes.html">Saving and sharing analysis
 recipes</a> for exporting model settings and native options without
 executing an analysis.</p>
 </div>
 <div class="section level2">
-<h2 id="migrating-legacy-selectors">Migrating legacy selectors<a class="anchor" aria-label="anchor" href="#migrating-legacy-selectors"></a>
+<h2 id="aldex2-and-aldex3">ALDEx2 and ALDEx3<a class="anchor" aria-label="anchor" href="#aldex2-and-aldex3"></a>
 </h2>
-<p>The former <code>recipe(..., var_info=, tax_info=)</code>,
-<code><a href="../reference/add_var.html">add_var()</a></code>, <code><a href="../reference/add_tax.html">add_tax()</a></code>, <code><a href="../reference/get_var.html">get_var()</a></code>
-and <code><a href="../reference/get_tax.html">get_tax()</a></code> interfaces, and model-free DA execution, are
-deprecated in Bioconductor 3.24, become defunct in 3.25 and are
-scheduled for removal in 3.26. Preprocessing without a model remains
-supported. Move the selectors into <code><a href="../reference/add_model.html">add_model()</a></code> and inspect
-them with <code>get_model(rec)</code>:</p>
+<p>Use <code><a href="../reference/step_aldex2.html">step_aldex2()</a></code> for ALDEx2 and
+<code><a href="../reference/step_aldex3.html">step_aldex3()</a></code> for ALDEx3.</p>
+<p>Supply sequence counts for ALDEx3 inference. Fixed models use native
+<code>lm</code>; mixed models use exact <code>lme4</code>, with one
+native fit per planned contrast. The approximate <code>blmm</code>
+engine is not enabled. Expect substantial cost for many taxa, Monte
+Carlo draws and longitudinal contrasts; <code>nsample = 2000</code>
+follows the native default.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Deprecated</span></span>
-<span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span>, var_info <span class="op">=</span> <span class="st">"condition"</span>, tax_info <span class="op">=</span> <span class="st">"Species"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Current API</span></span>
-<span><span class="va">current</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">aldex3_rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/recipe.html">recipe</a></span><span class="op">(</span><span class="va">longitudinal_phy</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/add_model.html">add_model</a></span><span class="op">(</span></span>
-<span>    <span class="op">~</span> <span class="va">condition</span>,</span>
-<span>    targets <span class="op">=</span> <span class="st">"condition"</span>,</span>
-<span>    tax_level <span class="op">=</span> <span class="st">"Species"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><code><a href="../reference/dar-defunct.html">phy_qc()</a></code> is defunct in 3.24; use
-<code><a href="../reference/recipe_qc.html">recipe_qc()</a></code>. The retired <code><a href="../reference/dar-defunct.html">step_metagenomeseq()</a></code>
-is no longer exported. Legacy executable recipe files must be recreated
-in the current API before export; they are not accepted by the current
-importer.</p>
+<span>    <span class="op">~</span> <span class="va">condition</span> <span class="op">*</span> <span class="va">visit</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">subject</span><span class="op">)</span>, targets <span class="op">=</span> <span class="st">"condition"</span>,</span>
+<span>    tax_level <span class="op">=</span> <span class="st">"Species"</span>, time <span class="op">=</span> <span class="st">"visit"</span>, contrasts <span class="op">=</span> <span class="st">"all"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/step_aldex3.html">step_aldex3</a></span><span class="op">(</span>scale_model <span class="op">=</span> <span class="st">"clr"</span>, scale_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>gamma <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">aldex3_rec</span></span>
+<span><span class="co">#&gt; ── <span style="color: #0000BB;">DAR Recipe</span> ──────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Inputs:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> phyloseq object with <span style="color: #0000BB;">12</span> taxa and <span style="color: #0000BB;">36</span> samples </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> variable of interes <span style="color: #0000BB;">condition</span> (class: character, levels: control, treated) </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> taxonomic level <span style="color: #0000BB;">Species</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Statistical model:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">ℹ</span> <span style="color: #0000BB;">~condition * visit + (1 | subject)</span> </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Preprocessing steps:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; DA steps:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;      <span style="color: #0000BB;">◉</span> step_aldex3() <span style="color: #555555;">id = aldex3__Tortita_negra</span></span></span></code></pre></div>
+<p>This is a scale assumption, not a measurement of microbial load.
+<code>clr</code> and <code>tss</code> accept a non-negative log2
+coefficient SD <code>gamma</code>; zero fixes their scale assumption.
+<code>sample</code> accepts external log2 means and SDs named by sample
+ID (<code>s.mu</code>, <code>s.sd</code>); <code>coefficient</code>
+accepts means and SDs named by the columns of the resolved fixed design
+(<code>c.mu</code>, <code>c.sd</code>). Only independent SDs are
+supported, not covariance matrices or arbitrary functions. Complete-case
+selection subsets external information by sample ID. The scale model
+always uses the original resolved design, so contrast releveling does
+not change its prior. Shared preprocessing defines the analyzed
+composition: excluded features are not silently restored as an “other”
+feature. The default uncertainty is a modeling choice, not a
+data-derived quantity; coefficient coding and numeric covariate units
+affect these scale priors.</p>
+<p>Effects retain their scale-model-dependent interpretation and are
+labeled <code>aldex3_log2_abundance_coefficient</code>. Native P values
+and adjusted P values include directional Monte Carlo averaging, with
+adjustment across taxa per coefficient, not across all planned
+contrasts. Missing estimates stay missing. <code><a href="../reference/get_execution.html">get_execution()</a></code>
+records the ALDEx3 version, seed, Monte Carlo settings, scale
+specification, native engine and elapsed time.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
@@ -480,62 +590,63 @@ importer.</p>
 <span><span class="co">#&gt;  [95] bluster_1.23.1                  TH.data_1.1-5                  </span></span>
 <span><span class="co">#&gt;  [97] nlme_3.1-171                    ANCOMBC_2.15.1                 </span></span>
 <span><span class="co">#&gt;  [99] phyloseq_1.57.0                 bbotk_1.13.1                   </span></span>
-<span><span class="co">#&gt; [101] fBasics_4052.98                 bslib_0.12.0                   </span></span>
-<span><span class="co">#&gt; [103] MicrobiomeStat_1.4              mlr3_1.8.0                     </span></span>
-<span><span class="co">#&gt; [105] irlba_2.4.1                     vipor_0.4.7                    </span></span>
-<span><span class="co">#&gt; [107] otel_0.2.0                      rpart_4.1.27                   </span></span>
-<span><span class="co">#&gt; [109] colorspace_2.1-4                Hmisc_5.3-0                    </span></span>
-<span><span class="co">#&gt; [111] mlr3mbo_1.2.1                   moocore_0.3.2                  </span></span>
-<span><span class="co">#&gt; [113] BiocGenerics_0.59.12            DBI_1.3.0                      </span></span>
-<span><span class="co">#&gt; [115] nnet_7.3-21                     ade4_1.7-24                    </span></span>
-<span><span class="co">#&gt; [117] mlr3misc_0.23.0                 Exact_3.3                      </span></span>
-<span><span class="co">#&gt; [119] DESeq2_1.53.6                   tidyselect_1.2.1               </span></span>
-<span><span class="co">#&gt; [121] timeSeries_4052.112             compiler_4.6.1                 </span></span>
-<span><span class="co">#&gt; [123] htmlTable_2.5.0                 BiocNeighbors_2.7.3            </span></span>
-<span><span class="co">#&gt; [125] lgr_0.5.2                       expm_1.0-1                     </span></span>
-<span><span class="co">#&gt; [127] desc_1.4.3                      DelayedArray_0.39.8            </span></span>
-<span><span class="co">#&gt; [129] checkmate_2.3.4                 scales_1.4.0                   </span></span>
-<span><span class="co">#&gt; [131] quadprog_1.5-8                  spatial_7.3-19                 </span></span>
-<span><span class="co">#&gt; [133] rappdirs_0.3.4                  palmerpenguins_0.1.1           </span></span>
-<span><span class="co">#&gt; [135] stringr_1.6.0                   digest_0.6.39                  </span></span>
-<span><span class="co">#&gt; [137] minqa_1.2.8                     rmarkdown_2.32                 </span></span>
-<span><span class="co">#&gt; [139] XVector_0.53.0                  base64enc_0.1-6                </span></span>
-<span><span class="co">#&gt; [141] htmltools_0.5.9                 pkgconfig_2.0.3                </span></span>
-<span><span class="co">#&gt; [143] lme4_2.0-6                      sparseMatrixStats_1.25.0       </span></span>
-<span><span class="co">#&gt; [145] MatrixGenerics_1.25.0           stabledist_0.7-2               </span></span>
-<span><span class="co">#&gt; [147] fastmap_1.2.0                   rlang_1.3.0                    </span></span>
-<span><span class="co">#&gt; [149] htmlwidgets_1.6.4               DelayedMatrixStats_1.35.0      </span></span>
-<span><span class="co">#&gt; [151] farver_2.1.2                    jquerylib_0.1.4                </span></span>
-<span><span class="co">#&gt; [153] zoo_1.9-1                       energy_1.7-12                  </span></span>
-<span><span class="co">#&gt; [155] jsonlite_2.0.0                  BiocParallel_1.47.0            </span></span>
-<span><span class="co">#&gt; [157] BiocSingular_1.29.2             magrittr_2.0.5                 </span></span>
-<span><span class="co">#&gt; [159] Formula_1.2-6                   scuttle_1.23.2                 </span></span>
-<span><span class="co">#&gt; [161] Rcpp_1.1.2                      ape_5.8-1                      </span></span>
-<span><span class="co">#&gt; [163] viridis_0.6.5                   stringi_1.8.9                  </span></span>
-<span><span class="co">#&gt; [165] rootSolve_1.8.2.4               stable_1.1.7                   </span></span>
-<span><span class="co">#&gt; [167] MASS_7.3-66                     plyr_1.8.9                     </span></span>
-<span><span class="co">#&gt; [169] parallel_4.6.1                  listenv_1.1.0                  </span></span>
-<span><span class="co">#&gt; [171] ggrepel_0.9.8                   forcats_1.0.1                  </span></span>
-<span><span class="co">#&gt; [173] lmom_3.3                        Biostrings_2.81.9              </span></span>
-<span><span class="co">#&gt; [175] splines_4.6.1                   multtest_2.69.0                </span></span>
-<span><span class="co">#&gt; [177] hms_1.1.4                       locfit_1.5-9.12                </span></span>
-<span><span class="co">#&gt; [179] igraph_2.3.4                    uuid_1.2-2                     </span></span>
-<span><span class="co">#&gt; [181] rngtools_1.5.2                  reshape2_1.4.5                 </span></span>
-<span><span class="co">#&gt; [183] stats4_4.6.1                    ScaledMatrix_1.21.0            </span></span>
-<span><span class="co">#&gt; [185] rmutil_1.1.10                   evaluate_1.0.5                 </span></span>
-<span><span class="co">#&gt; [187] nloptr_2.2.1                    tzdb_0.5.0                     </span></span>
-<span><span class="co">#&gt; [189] foreach_1.5.2                   tidyr_1.3.2                    </span></span>
-<span><span class="co">#&gt; [191] purrr_1.2.2                     future_1.76.0                  </span></span>
-<span><span class="co">#&gt; [193] clue_0.3-68                     ggplot2_4.0.3                  </span></span>
-<span><span class="co">#&gt; [195] ashr_2.2-63                     rsvd_1.0.5                     </span></span>
-<span><span class="co">#&gt; [197] e1071_1.7-17                    tidytree_0.4.8                 </span></span>
-<span><span class="co">#&gt; [199] viridisLite_0.4.3               class_7.3-24                   </span></span>
-<span><span class="co">#&gt; [201] ragg_1.5.2                      gsl_2.1-9                      </span></span>
-<span><span class="co">#&gt; [203] truncnorm_1.0-9                 tibble_3.3.1                   </span></span>
-<span><span class="co">#&gt; [205] lmerTest_3.2-1                  beeswarm_0.4.0                 </span></span>
-<span><span class="co">#&gt; [207] IRanges_2.47.5                  cluster_2.1.8.3                </span></span>
-<span><span class="co">#&gt; [209] TreeSummarizedExperiment_2.21.0 globals_0.20.0                 </span></span>
-<span><span class="co">#&gt; [211] mia_1.21.11</span></span></code></pre></div>
+<span><span class="co">#&gt; [101] fBasics_4052.98                 TMB_1.9.25                     </span></span>
+<span><span class="co">#&gt; [103] bslib_0.12.0                    MicrobiomeStat_1.4             </span></span>
+<span><span class="co">#&gt; [105] mlr3_1.8.0                      irlba_2.4.1                    </span></span>
+<span><span class="co">#&gt; [107] vipor_0.4.7                     otel_0.2.0                     </span></span>
+<span><span class="co">#&gt; [109] rpart_4.1.27                    colorspace_2.1-4               </span></span>
+<span><span class="co">#&gt; [111] Hmisc_5.3-0                     mlr3mbo_1.2.1                  </span></span>
+<span><span class="co">#&gt; [113] moocore_0.3.2                   BiocGenerics_0.59.12           </span></span>
+<span><span class="co">#&gt; [115] DBI_1.3.0                       nnet_7.3-21                    </span></span>
+<span><span class="co">#&gt; [117] ade4_1.7-24                     mlr3misc_0.23.0                </span></span>
+<span><span class="co">#&gt; [119] Exact_3.3                       DESeq2_1.53.6                  </span></span>
+<span><span class="co">#&gt; [121] tidyselect_1.2.1                timeSeries_4052.112            </span></span>
+<span><span class="co">#&gt; [123] compiler_4.6.1                  htmlTable_2.5.0                </span></span>
+<span><span class="co">#&gt; [125] BiocNeighbors_2.7.3             lgr_0.5.2                      </span></span>
+<span><span class="co">#&gt; [127] expm_1.0-1                      desc_1.4.3                     </span></span>
+<span><span class="co">#&gt; [129] DelayedArray_0.39.8             checkmate_2.3.4                </span></span>
+<span><span class="co">#&gt; [131] scales_1.4.0                    quadprog_1.5-8                 </span></span>
+<span><span class="co">#&gt; [133] spatial_7.3-19                  rappdirs_0.3.4                 </span></span>
+<span><span class="co">#&gt; [135] palmerpenguins_0.1.1            stringr_1.6.0                  </span></span>
+<span><span class="co">#&gt; [137] digest_0.6.39                   minqa_1.2.8                    </span></span>
+<span><span class="co">#&gt; [139] rmarkdown_2.32                  XVector_0.53.0                 </span></span>
+<span><span class="co">#&gt; [141] base64enc_0.1-6                 htmltools_0.5.9                </span></span>
+<span><span class="co">#&gt; [143] pkgconfig_2.0.3                 lme4_2.0-6                     </span></span>
+<span><span class="co">#&gt; [145] sparseMatrixStats_1.25.0        MatrixGenerics_1.25.0          </span></span>
+<span><span class="co">#&gt; [147] stabledist_0.7-2                fastmap_1.2.0                  </span></span>
+<span><span class="co">#&gt; [149] rlang_1.3.0                     htmlwidgets_1.6.4              </span></span>
+<span><span class="co">#&gt; [151] DelayedMatrixStats_1.35.0       farver_2.1.2                   </span></span>
+<span><span class="co">#&gt; [153] jquerylib_0.1.4                 zoo_1.9-1                      </span></span>
+<span><span class="co">#&gt; [155] energy_1.7-12                   jsonlite_2.0.0                 </span></span>
+<span><span class="co">#&gt; [157] BiocParallel_1.47.0             BiocSingular_1.29.2            </span></span>
+<span><span class="co">#&gt; [159] magrittr_2.0.5                  Formula_1.2-6                  </span></span>
+<span><span class="co">#&gt; [161] scuttle_1.23.2                  Rcpp_1.1.2                     </span></span>
+<span><span class="co">#&gt; [163] ape_5.8-1                       viridis_0.6.5                  </span></span>
+<span><span class="co">#&gt; [165] stringi_1.8.9                   rootSolve_1.8.2.4              </span></span>
+<span><span class="co">#&gt; [167] stable_1.1.7                    MASS_7.3-66                    </span></span>
+<span><span class="co">#&gt; [169] plyr_1.8.9                      parallel_4.6.1                 </span></span>
+<span><span class="co">#&gt; [171] listenv_1.1.0                   ggrepel_0.9.8                  </span></span>
+<span><span class="co">#&gt; [173] forcats_1.0.1                   lmom_3.3                       </span></span>
+<span><span class="co">#&gt; [175] Biostrings_2.81.9               splines_4.6.1                  </span></span>
+<span><span class="co">#&gt; [177] multtest_2.69.0                 hms_1.1.4                      </span></span>
+<span><span class="co">#&gt; [179] locfit_1.5-9.12                 ALDEx3_1.3.1                   </span></span>
+<span><span class="co">#&gt; [181] igraph_2.3.4                    uuid_1.2-2                     </span></span>
+<span><span class="co">#&gt; [183] rngtools_1.5.2                  reshape2_1.4.5                 </span></span>
+<span><span class="co">#&gt; [185] stats4_4.6.1                    ScaledMatrix_1.21.0            </span></span>
+<span><span class="co">#&gt; [187] rmutil_1.1.10                   evaluate_1.0.5                 </span></span>
+<span><span class="co">#&gt; [189] nloptr_2.2.1                    tzdb_0.5.0                     </span></span>
+<span><span class="co">#&gt; [191] foreach_1.5.2                   tidyr_1.3.2                    </span></span>
+<span><span class="co">#&gt; [193] purrr_1.2.2                     future_1.80.0                  </span></span>
+<span><span class="co">#&gt; [195] clue_0.3-68                     ggplot2_4.0.3                  </span></span>
+<span><span class="co">#&gt; [197] ashr_2.2-63                     rsvd_1.0.5                     </span></span>
+<span><span class="co">#&gt; [199] e1071_1.7-17                    tidytree_0.4.8                 </span></span>
+<span><span class="co">#&gt; [201] viridisLite_0.4.3               class_7.3-24                   </span></span>
+<span><span class="co">#&gt; [203] ragg_1.5.2                      gsl_2.1-9                      </span></span>
+<span><span class="co">#&gt; [205] truncnorm_1.0-9                 tibble_3.3.1                   </span></span>
+<span><span class="co">#&gt; [207] lmerTest_3.2-1                  beeswarm_0.4.0                 </span></span>
+<span><span class="co">#&gt; [209] IRanges_2.47.5                  cluster_2.1.8.3                </span></span>
+<span><span class="co">#&gt; [211] TreeSummarizedExperiment_2.21.0 globals_0.20.0                 </span></span>
+<span><span class="co">#&gt; [213] mia_1.21.11</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

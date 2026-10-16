@@ -73,7 +73,7 @@ recipe(metaHIV_phy) |>
 #>      ✖ undefined taxonomic level. Use add_model() to define the analysis! 
 #> Preprocessing steps:
 #> 
-#>      ◉ step_filter_by_variance() id = filter_by_variance__Bridie 
+#>      ◉ step_filter_by_variance() id = filter_by_variance__Gujiya 
 #> 
 #> DA steps:
 #> 
