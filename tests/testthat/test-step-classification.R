@@ -27,6 +27,7 @@ test_that("every supported constructor has a class-based execution role", {
     lefse = function(x, id) suppressWarnings(step_lefse(x, id = id)),
     linda = function(x, id) step_linda(x, id = id),
     maaslin = function(x, id) step_maaslin(x, id = id),
+    rademu = function(x, id) step_rademu(x, id = id),
     wilcox = function(x, id) step_wilcox(x, id = id)
   )
 

@@ -12,7 +12,7 @@ test_that("DA constructors reject reserved IDs before modifying recipes", {
     add_model(~ condition, targets = "condition", tax_level = "Species")
   constructors <- list(
     step_aldex2, step_aldex3, step_ancom, step_corncob, step_deseq, step_lefse,
-    step_linda, step_maaslin, step_wilcox
+    step_linda, step_maaslin, step_rademu, step_wilcox
   )
   for (constructor in constructors) {
     for (id in reserved_da_ids) {

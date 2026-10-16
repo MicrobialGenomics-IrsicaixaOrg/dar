@@ -1,4 +1,4 @@
-# Function add_step() @ L273
+# Function add_step() @ L276
 
     Code
       rec <- step_maaslin(rec, id = "test_2")

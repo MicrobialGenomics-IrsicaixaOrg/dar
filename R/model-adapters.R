@@ -69,8 +69,10 @@ reparameterize_model_contrast <- function(compiled, contrast) {
 
 #' @noRd
 bind_model_result <- function(result, contrast, rec, effect, padj, signif) {
-  result <- tibble::as_tibble(result, rownames = "taxa_id") |>
+  result <-
+    tibble::as_tibble(result, rownames = "taxa_id") |>
     dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
+
   result$contrast_id <- contrast$contrast_id[[1]]
   result$comparison <- contrast$comparison[[1]]
   result$contrast_type <- contrast$contrast_type[[1]]
@@ -373,6 +375,128 @@ run_aldex3_model <- function(rec, max_significance, nsample, scale_model,
     scale_basis = colnames(compiled$matrix), sample_ids = compiled$data$sample_id,
     p_adj_method = p_adj_method, engine_args = engine_args,
     native_calls = nrow(compiled$contrasts),
+    elapsed_seconds = proc.time()[["elapsed"]] - started
+  )
+  result
+}
+
+# RADEMU ----------------------------------------------------------------------
+
+#' @noRd
+run_rademu_model <- function(rec, test, cluster, max_significance, p_adj_method,
+                             constraint_param, seed, rarefy, engine_args = list()) {
+  compiled <- compile_model(rec, "rademu")
+  check_unused_engine_args("rademu", engine_args, "fit")
+  if (getNamespaceVersion("radEmu") < "2.3.2.0") {
+    cli::cli_abort(
+      "The radEmu adapter requires version 2.3.2.0 or later.",
+      class = "dar_error_missing_package"
+    )
+  }
+  reads <- t(recipe_count_matrix(rec, phy = model_phyloseq(rec, rarefy)))
+  reads <- reads[compiled$data$sample_id, , drop = FALSE]
+  cluster_ids <- NULL
+  if (!is.null(cluster)) {
+    if (!cluster %in% names(compiled$data)) {
+      cli::cli_abort(
+        "Cluster column {.val {cluster}} is missing from the model metadata.",
+        class = "dar_error_missing_vars"
+      )
+    }
+    cluster_ids <- compiled$data[[cluster]]
+    if (anyNA(cluster_ids) || any(!nzchar(as.character(cluster_ids)))) {
+      cli::cli_abort(
+        "Cluster IDs must be present for every sample in the common model cohort.",
+        class = "dar_error_model_missing_values"
+      )
+    }
+  }
+  diagnostics <- vector("list", nrow(compiled$contrasts))
+  started <- proc.time()[["elapsed"]]
+  out <- purrr::map_dfr(seq_len(nrow(compiled$contrasts)), function(index) {
+    contrast <- compiled$contrasts[index, , drop = FALSE]
+    parameterized <- reparameterize_model_contrast(compiled, contrast)
+    metadata <- data.frame(
+      parameterized$data,
+      row.names = parameterized$data$sample_id,
+      check.names = FALSE
+    )
+    tests <- data.frame(k = parameterized$coefficient, j = seq_len(ncol(reads)))
+    fit <- withr::with_seed(
+      seed,
+      exec_engine_stage(
+        "rademu",
+        "fit",
+        engine_args,
+        fixed = list(
+          Y = reads,
+          formula = compiled$formula,
+          data = metadata,
+          cluster = cluster_ids,
+          constraint_param = constraint_param,
+          test_kj = tests,
+          run_score_tests = identical(test, "score"),
+          return_wald_p = identical(test, "wald"),
+          compute_cis = TRUE,
+          refit = TRUE,
+          match_row_names = TRUE
+        )
+      ),
+      .rng_kind = "Mersenne-Twister",
+      .rng_normal_kind = "Inversion",
+      .rng_sample_kind = "Rejection"
+    )
+    p_column <- if (identical(test, "score")) "pval" else "wald_p"
+    result <- fit$coef
+    required <- c("covariate", "category", "estimate", p_column)
+    if (!inherits(result, "data.frame") || !all(required %in% names(result))) {
+      cli::cli_abort(
+        "radEmu returned an invalid coefficient table.",
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    coefficient_rows <- which(result$covariate == parameterized$coefficient)
+    result <- result[coefficient_rows, , drop = FALSE]
+    if (!nrow(result) || anyNA(result$category) || anyDuplicated(result$category) ||
+        any(!result$category %in% colnames(reads))) {
+      cli::cli_abort(
+        "radEmu returned invalid taxon identities for the planned coefficient.",
+        class = "dar_error_invalid_result_contract"
+      )
+    }
+    result <- result[order(match(result$category, colnames(reads))), , drop = FALSE]
+    rownames(result) <- result$category
+    result$pvalue <- result[[p_column]]
+    result$padj <- stats::p.adjust(result$pvalue, method = p_adj_method)
+    result$test <- test
+    result$contrast_sign <- parameterized$sign
+    diagnostics[[index]] <<- list(
+      contrast_id = contrast$contrast_id[[1]],
+      coefficient = parameterized$coefficient,
+      estimation_converged = fit$estimation_converged,
+      cluster_ids = fit$cluster,
+      tested_taxa = colnames(reads),
+      score_test_hyperparams = fit$score_test_hyperparams,
+      null_estimation_unconverged = fit$null_estimation_unconverged
+    )
+    bind_model_result(
+      result,
+      contrast,
+      rec,
+      effect = result$estimate * parameterized$sign,
+      padj = result$padj,
+      signif = !is.na(result$padj) & result$padj < max_significance
+    )
+  })
+  result <- list(model = out)
+  attr(result, "engine_execution") <- list(
+    package = "radEmu", version = as.character(getNamespaceVersion("radEmu")),
+    test = test, p_adj_method = p_adj_method, max_significance = max_significance,
+    constraint = "pseudohuber_median", constraint_param = constraint_param,
+    cluster = cluster, sample_ids = compiled$data$sample_id,
+    requested_cluster_ids = cluster_ids, diagnostics = diagnostics,
+    seed = seed, rng_kind = c("Mersenne-Twister", "Inversion", "Rejection"),
+    engine_args = engine_args, native_calls = nrow(compiled$contrasts),
     elapsed_seconds = proc.time()[["elapsed"]] - started
   )
   result

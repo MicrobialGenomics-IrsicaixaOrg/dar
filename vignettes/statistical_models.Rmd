@@ -134,6 +134,7 @@ the study design and choose a compatible method.
 | corncob | yes | yes | no |
 | LinDA | yes | yes | yes |
 | MaAsLin3 | yes | yes | yes |
+| radEmu | yes | yes | no; explicit GEE clustering |
 | Wilcoxon | no | no | no |
 | LEfSe | no | no | no |
 
@@ -172,6 +173,7 @@ are not numerically interchangeable:
 | corncob | Logit mean-abundance coefficient. |
 | LinDA | Bias-corrected log2 fold change. |
 | MaAsLin3 | Coefficient on the configured transformed abundance scale. |
+| radEmu | Centred natural-log fold difference across analysis taxa. |
 | Wilcoxon | Difference in medians on the configured abundance scale. |
 | LEfSe | Direction-oriented LDA score. |
 
@@ -191,7 +193,7 @@ standardized two-group effect. Advanced native settings can change its scale.
 
 ## Advanced native-engine arguments
 
-The nine DA steps accept `engine_args`, a named list grouped by native-call
+All DA steps accept `engine_args`, a named list grouped by native-call
 stage. This keeps advanced settings attached to the configured step and avoids
 an ambiguous `...`. For example:
 
@@ -220,8 +222,8 @@ are not merged with its defaults. For ANCOM-BC2, supply the complete
 `iter_control` list, including `verbose`, rather than only the values changed.
 
 Available stages are `size_factors`, `fit`, `results`, and `shrink` for
-DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3 and ANCOM-BC2,
-corncob, and LinDA; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon;
+DESeq2; `clr` and `fit` for ALDEx2; `fit` for ALDEx3, ANCOM-BC2,
+corncob, LinDA and radEmu; `fit` and `contrast` for MaAsLin3; `test` for Wilcoxon;
 and `transform` and `fit` for LEfSe. Data, formulas, contrasts, output paths
 and arguments already exposed by each dar wrapper are protected. A configured
 stage that is not used by the selected execution route is reported as an error.
@@ -271,6 +273,42 @@ include directional Monte Carlo averaging, with adjustment across taxa per
 coefficient, not across all planned contrasts. Missing estimates stay
 missing. `get_execution()` records the ALDEx3 version, seed, Monte Carlo
 settings, scale specification, native engine and elapsed time.
+
+## radEmu: fixed models and clustered inference
+
+`step_rademu()` reports native robust score tests by default. Use
+`test = "wald"` explicitly for native Wald tests. Effects are natural-log fold
+differences relative to radEmu's pseudo-Huber centre across analysis taxa,
+not unqualified absolute changes. Each contrast is reparameterized and fitted
+with its native centring constraint; a nonlinear centre is not replaced by a
+linear combination of previously centred coefficients. dar adjusts the selected
+native P values across returned taxa within each contrast, using BH by default.
+This correction is not joint across planned contrasts. Native missing values
+and zero-comparison exclusions stay missing.
+
+For dependent observations, name a metadata column in `cluster`. This uses
+radEmu's GEE-based covariance, not a random-intercept model. A formula with
+random effects is incompatible even if `cluster` is supplied; dar does not
+silently translate `(1 | subject)` into another dependence model.
+
+```{r rademu-config}
+rademu_rec <- recipe(longitudinal_phy) |>
+  add_model(
+    ~ condition * visit, targets = "condition", time = "visit",
+    tax_level = "Species", contrasts = "all"
+  ) |>
+  step_rademu(cluster = "subject")
+rademu_rec
+```
+
+Cluster labels follow the common model cohort. Missing cluster IDs are errors,
+not grounds for a private sample exclusion. Native options can be passed in
+`engine_args$fit`, for example `tolerance`, `maxit` or
+`remove_zero_comparison_pvals`; data, tested coordinates and test selection are
+managed by dar. Native numerical validation stays in radEmu. `get_execution()`
+records the effective package version, test, centre, requested and effective
+cluster labels, seed and native convergence diagnostics. Score testing may be
+expensive because each taxon requires a restricted fit.
 
 ```{r session-info}
 sessionInfo()

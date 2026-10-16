@@ -3,7 +3,7 @@ contract_recipe <- function() {
     add_model(~ condition, targets = "condition", tax_level = "Species")
   engines <- c(
     "deseq", "aldex2", "ancom", "corncob", "linda", "maaslin",
-    "wilcox", "lefse", "aldex3"
+    "wilcox", "lefse", "aldex3", "rademu"
   )
   for (engine in engines) {
     arguments <- list(subclass = engine, id = paste0(engine, "__contract"))
@@ -58,6 +58,9 @@ contract_results <- function(rec = contract_recipe()) {
     )),
     aldex3__contract = list(model = dplyr::mutate(
       common, pval = 0.018, padj = 0.028
+    )),
+    rademu__contract = list(model = dplyr::mutate(
+      common, pvalue = 0.019, padj = 0.029
     ))
   )
 }
@@ -102,17 +105,17 @@ test_that("tidy_results exposes the canonical contract for every engine", {
     logical(1)
   )))
   expect_identical(prepared@results, raw)
-  expect_equal(nrow(result), 9L)
+  expect_equal(nrow(result), 10L)
   expect_equal(
     result$method,
     c(
       "deseq", "aldex2", "ancom", "corncob", "linda", "maaslin",
-      "wilcox", "lefse", "aldex3"
+      "wilcox", "lefse", "aldex3", "rademu"
     )
   )
   expect_equal(result$step_id, names(raw))
-  expect_equal(result$p_value, seq(0.01, 0.018, by = 0.001))
-  expect_equal(result$adj_p_value, seq(0.02, 0.028, by = 0.001))
+  expect_equal(result$p_value, seq(0.01, 0.019, by = 0.001))
+  expect_equal(result$adj_p_value, seq(0.02, 0.029, by = 0.001))
   expect_equal(result$effect_metric, c(
     "log2_fold_change",
     "standardized_clr_effect",
@@ -122,7 +125,8 @@ test_that("tidy_results exposes the canonical contract for every engine", {
     "transformed_abundance_coefficient",
     "median_clr_difference",
     "lda_score",
-    "aldex3_log2_abundance_coefficient"
+    "aldex3_log2_abundance_coefficient",
+    "rademu_centered_log_fold_difference"
   ))
 })
 
@@ -130,7 +134,7 @@ test_that("tidy_results supports filtering, step selection and empty recipes", {
   prepared <- contract_prepared()
   prepared@results$aldex2__contract$model$signif <- FALSE
 
-  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 8L)
+  expect_equal(nrow(tidy_results(prepared, significant_only = TRUE)), 9L)
   expect_equal(
     tidy_results(prepared, steps = "aldex2__contract")$method,
     "aldex2"
