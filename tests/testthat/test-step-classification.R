@@ -19,7 +19,8 @@ test_that("every supported constructor has a class-based execution role", {
     rarefaction = function(x, id) step_rarefaction(x, id = id)
   )
   da <- list(
-    aldex = function(x, id) step_aldex(x, id = id),
+    aldex2 = function(x, id) step_aldex2(x, id = id),
+    aldex3 = function(x, id) step_aldex3(x, id = id),
     ancom = function(x, id) step_ancom(x, id = id),
     corncob = function(x, id) step_corncob(x, id = id),
     deseq = function(x, id) step_deseq(x, id = id),

@@ -10,7 +10,8 @@
 #' assigned and used within the analysis.
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
-#'   operations for this Recipe.
+#'   operations for this Recipe. Execution requires [add_model()] before
+#'   [prep()]; the step can be configured before adding the model.
 #' @param kruskal.threshold numeric(1) The p-value for the Kruskal-Wallis Rank
 #'   Sum Test (default 0.05).
 #' @param wilcox.threshold numeric(1) The p-value for the Wilcoxon Rank-Sum Test
@@ -46,7 +47,8 @@
 #'
 #' expect_condition(
 #'  test <-
-#'    suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+#'    recipe(metaHIV_phy) |>
+#'    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'    step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'    step_filter_by_prevalence() |>
 #'    step_lefse() |>
@@ -79,14 +81,15 @@ step_lefse <- function(rec,
                        rarefy = TRUE,
                        id = rand_id("lefse"),
                        engine_args = list()) {
-
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")
 
   if (!rarefy & !contains_rarefaction(rec)) {
-    cli::cli_inform(c(
-      "!" = "Running {.pkg lefse} without rarefaction is not recommended ({.arg id} = {.val {id}})."
-    ))
+    cli::cli_inform(
+      c(
+        "!" = "Running {.pkg lefse} without rarefaction is not recommended ({.arg id} = {.val {id}})."
+      )
+    )
   }
 
   add_step(
@@ -119,75 +122,18 @@ run_lefse <- function(rec,
                       rarefy,
                       id,
                       engine_args = list()) {
+  engine_args <- check_engine_args_execution(rec, "lefse", engine_args)
 
-  engine_args <- check_engine_args_execution(
-    rec, "lefse", engine_args, id
+  run_lefse_model(
+    rec,
+    kruskal.threshold,
+    wilcox.threshold,
+    lda.threshold,
+    assay,
+    trim.names,
+    rarefy,
+    engine_args
   )
-
-  if (!is.null(get_model(rec))) {
-    return(run_lefse_model(
-      rec, kruskal.threshold, wilcox.threshold, lda.threshold,
-      assay, trim.names, rarefy, engine_args
-    ))
-  }
-
-  lefse_mat <- prepro_lefse(rec, rarefy)
-  vars <- recipe_targets(rec)
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>%
-        purrr::map_dfr(function(comparison) {
-          sample_data <-
-            dplyr::filter(
-              analysis_sample_data(rec),
-              !!dplyr::sym(var) %in% comparison
-            )
-
-          se <- SummarizedExperiment::SummarizedExperiment(
-            assays = list(counts = lefse_mat[, sample_data$sample_id]),
-            colData = sample_data
-          ) %>% lefser::relativeAb()
-
-          # Note: We set internal thresholds loosely (1, 1, 0) to capture all results,
-          # then filter manually below using the user-provided thresholds.
-          lefse_res <- lefser::lefser(
-            se,
-            classCol = var,
-            kruskal.threshold = 1,
-            wilcox.threshold = 1,
-            lda.threshold = 0,
-            subclassCol = subclassCol,
-            assay = assay,
-            trim.names = trim.names
-          )
-
-          adjpval <- ifelse(is.null(subclassCol), kruskal.threshold, wilcox.threshold)
-
-          lefse_res %>%
-            tibble::as_tibble() %>%
-            dplyr::rename(otu = features) %>%
-            dplyr::mutate(otu = stringr::str_remove_all(otu, "\`")) %>%
-            dplyr::left_join(
-              kruskal_test(se, sample_data[[var]]), by = "otu"
-            ) %>%
-            dplyr::arrange(pvalue, dplyr::desc(abs(scores))) %>%
-            dplyr::mutate(
-              comparison = stringr::str_c(comparison, collapse = "_"),
-              var = var,
-              taxa = stringr::str_remove_all(otu, ".*[|]"),
-              effect = scores,
-              signif = ifelse(
-                adjp < adjpval & abs(scores) >= lda.threshold,
-                TRUE,
-                FALSE
-              )
-            ) %>%
-            dplyr::left_join(analysis_tax_table(rec), by = "taxa") %>%
-            dplyr::rename(lefse_id = otu) %>%
-            dplyr::relocate(taxa_id, .before = 1)
-        })
-    })
 }
 
 #' @noRd
@@ -199,66 +145,10 @@ required_pkgs_lefse <- function(x, ...) {
 #' @noRd
 #' @autoglobal
 #' @keywords internal
-prepro_lefse <- function(rec, rarefy) {
-
-  tax_level <- recipe_tax_level(rec)
-  phy <-
-    get_phy(rec) %>%
-    use_rarefy(rarefy)
-
-  # Defining iterating tax levels -------------------------------------------
-  tax_otp <-
-    c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "Species") %>%
-    .[. %in% colnames(phy@tax_table)]
-
-  tax_lev_f <- tax_otp[seq_len(match(tax_level, tax_otp))]
-
-  # Computing output table --------------------------------------------------
-  lefse_input <-
-    purrr::map2_dfr(tax_lev_f, seq_along(tax_lev_f), function(tax, it) {
-      dat <- phyloseq::tax_glom(phy, taxrank = tax, NArm = FALSE)
-      abundance_df <- phyloseq::otu_table(dat) %>% to_tibble("RTC")
-      tax_lev_names <-
-        dat %>%
-        phyloseq::tax_table(object = .) %>%
-        data.frame() %>%
-        tibble::as_tibble() %>%
-        dplyr::select(dplyr::all_of(seq_len(it))) %>%
-        dplyr::mutate(dplyr::across(
-          dplyr::everything(),
-          .fns = function(x) stringr::str_replace_all(x, " |[.]|-", "_")
-        ))
-
-      if (it == 1) {
-        tax_lev_names <- tax_lev_names %>% dplyr::pull(!!tax)
-      } else {
-        tax_lev_names <-
-          tax_lev_names %>%
-          tidyr::unite('name', Kingdom:(!!tax), sep = "|") %>%
-          dplyr::pull()
-      }
-
-      abundance_df <- abundance_df %>% dplyr::mutate(RTC = tax_lev_names)
-    }) %>%
-    dplyr::filter(
-      stringr::str_count(RTC, "[|]") == match(tax_level, tax_otp) - 1
-    ) %>%
-    dplyr::arrange(RTC) %>%
-    data.frame(row.names = 1, check.names = FALSE) %>%
-    as.matrix()
-
-  lefse_input
-}
-
-#' @noRd
-#' @autoglobal
-#' @keywords internal
 kruskal_test <- function(se, levels, assay = 1L) {
   group <- levels %>% as.factor() %>% as.numeric()
   expr <- SummarizedExperiment::assay(se, i = assay)
-  apply(expr, 1L, function(x) {
-    stats::kruskal.test(x ~ group)[["p.value"]]
-  }) %>%
+  apply(expr, 1L, function(x) { stats::kruskal.test(x ~ group)[["p.value"]] }) %>%
     tibble::as_tibble(rownames = "otu") %>%
     dplyr::rename(pvalue = value) %>%
     dplyr::mutate(adjp = stats::p.adjust(pvalue, method = "BH"))

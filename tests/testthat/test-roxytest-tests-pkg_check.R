@@ -3,10 +3,10 @@
 # File R/pkg_check.R: @tests
 
 test_that("Function recipes_pkg_check() @ L18", {
-  dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()") |> 
+  dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex2()") |>
     expect_snapshot()
     
-  dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()") |> 
+  dar:::recipes_pkg_check(dar:::required_pkgs_aldex2(), "step_aldex2()") |>
     expect_snapshot()
 })
 

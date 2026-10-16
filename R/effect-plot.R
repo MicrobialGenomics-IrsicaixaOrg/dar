@@ -47,7 +47,9 @@ effect_plt <- function(rec,
   checkmate::assert_count(top_n, positive = TRUE)
   if (!is.null(taxa_ids)) {
     checkmate::assert_character(
-      taxa_ids, any.missing = FALSE, unique = TRUE,
+      taxa_ids,
+      any.missing = FALSE,
+      unique = TRUE,
       pattern = ".+"
     )
     unknown <- setdiff(taxa_ids, analysis_tax_table(rec)$taxa_id)
@@ -61,7 +63,10 @@ effect_plt <- function(rec,
 
   results <- tidy_results(rec, steps = steps)
   results <- select_effect_plot_contrast(
-    results, rec, target = target, contrast_id = contrast_id
+    results,
+    rec,
+    target = target,
+    contrast_id = contrast_id
   )
   if (!is.null(taxa_ids)) {
     results <- dplyr::filter(results, .data$taxa_id %in% .env$taxa_ids)
@@ -75,22 +80,21 @@ effect_plt <- function(rec,
   results$.step_order <- match(results$step_id, steps)
   results <- results |>
     dplyr::group_by(.data$step_id, .data$effect_metric) |>
-    dplyr::arrange(
-      .data$.step_order, dplyr::desc(abs(.data$effect_size)), .data$taxa_id
-    )
-  if (is.null(taxa_ids)) {
-    results <- dplyr::slice_head(results, n = top_n)
-  }
+    dplyr::arrange(.data$.step_order, dplyr::desc(abs(.data$effect_size)), .data$taxa_id)
+  if (is.null(taxa_ids)) { results <- dplyr::slice_head(results, n = top_n) }
   results <- dplyr::ungroup(results) |>
     dplyr::arrange(
-      .data$.step_order, dplyr::desc(abs(.data$effect_size)), .data$taxa_id
+      .data$.step_order,
+      dplyr::desc(abs(.data$effect_size)),
+      .data$taxa_id
     ) |>
     dplyr::select(-".step_order")
   panel_names <- paste(results$step_id, results$effect_metric, sep = "\n")
   results$panel <- factor(panel_names, levels = unique(panel_names))
   results$decision <- factor(
     ifelse(
-      is.na(results$significant), "Not available",
+      is.na(results$significant),
+      "Not available",
       ifelse(results$significant, "Significant", "Not significant")
     ),
     levels = c("Significant", "Not significant", "Not available")
@@ -98,20 +102,14 @@ effect_plt <- function(rec,
   labels <- effect_plot_taxon_labels(results)
   results$.plot_taxon <- factor(
     paste(as.integer(results$panel), results$taxa_id, sep = "\r"),
-    levels = rev(unique(paste(
-      as.integer(results$panel), results$taxa_id, sep = "\r"
-    )))
+    levels = rev(unique(paste(as.integer(results$panel), results$taxa_id, sep = "\r")))
   )
   plot_labels <- labels[results$taxa_id]
   names(plot_labels) <- as.character(results$.plot_taxon)
 
   ggplot2::ggplot(
     results,
-    ggplot2::aes(
-      x = .data$effect_size, y = .data$.plot_taxon,
-      colour = .data$decision
-    )
-  ) +
+    ggplot2::aes(x = .data$effect_size, y = .data$.plot_taxon, colour = .data$decision)) +
     ggplot2::geom_vline(xintercept = 0, colour = "grey70", linetype = "dashed") +
     ggplot2::geom_point(size = 2) +
     ggplot2::facet_wrap(ggplot2::vars(.data$panel), scales = "free") +
@@ -125,8 +123,10 @@ effect_plt <- function(rec,
     ) +
     ggplot2::theme_minimal() +
     ggplot2::labs(
-      x = "Effect estimate (panel-specific metric)", y = NULL,
-      colour = "Method decision", title = unique(results$contrast_id),
+      x = "Effect estimate (panel-specific metric)",
+      y = NULL,
+      colour = "Method decision",
+      title = unique(results$contrast_id),
       caption = "Point estimates on method-specific scales; no confidence intervals are inferred."
     )
 }
@@ -136,7 +136,10 @@ select_effect_plot_contrast <- function(results, rec, target = NULL, contrast_id
   if (!is.null(get_model(rec))) {
     plan <- resolve_model(rec)$contrast_plan
     results <- filter_model_hypotheses(
-      results, rec, target = target, contrast_id = contrast_id
+      results,
+      rec,
+      target = target,
+      contrast_id = contrast_id
     )
   } else {
     plan <- dplyr::distinct(results, .data$contrast_id, .data$var)
@@ -146,15 +149,11 @@ select_effect_plot_contrast <- function(results, rec, target = NULL, contrast_id
       results <- dplyr::filter(results, .data$var %in% .env$target)
     }
   }
-  if (!is.null(target)) {
-    plan <- dplyr::filter(plan, .data$var %in% .env$target)
-  }
+  if (!is.null(target)) { plan <- dplyr::filter(plan, .data$var %in% .env$target) }
   if (!is.null(contrast_id)) {
     check_effect_plot_selector(contrast_id, "contrast_id", plan$contrast_id)
     plan <- dplyr::filter(plan, .data$contrast_id %in% .env$contrast_id)
-    results <- dplyr::filter(
-      results, .data$contrast_id %in% .env$contrast_id
-    )
+    results <- dplyr::filter(results, .data$contrast_id %in% .env$contrast_id)
   }
   if (dplyr::n_distinct(plan$contrast_id) > 1L) {
     cli::cli_abort(

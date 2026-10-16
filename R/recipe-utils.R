@@ -3,21 +3,15 @@
 #' @noRd
 recipe_targets <- function(rec) {
   model <- normalize_model_spec(rec, rec@model)
-  if (!is.null(model)) {
-    return(model$targets)
-  }
-  if (is.null(rec@var_info) || !"vars" %in% names(rec@var_info)) {
-    return(character())
-  }
+  if (!is.null(model)) { return(model$targets) }
+  if (is.null(rec@var_info) || !"vars" %in% names(rec@var_info)) { return(character()) }
   rec@var_info$vars
 }
 
 #' @noRd
 recipe_tax_level <- function(rec) {
   model <- normalize_model_spec(rec, rec@model)
-  if (!is.null(model)) {
-    return(model$tax_level)
-  }
+  if (!is.null(model)) { return(model$tax_level) }
   if (is.null(rec@tax_info) || !"tax_lev" %in% names(rec@tax_info)) {
     return(character())
   }
@@ -26,11 +20,7 @@ recipe_tax_level <- function(rec) {
 
 #' @noRd
 warn_deprecated_selector <- function(selector, replacement) {
-  .Deprecated(
-    new = replacement,
-    package = "dar",
-    old = selector
-  )
+  .Deprecated(new = replacement, package = "dar", old = selector)
 }
 
 # GETTERS ----------------------------------------------------------------------
@@ -116,9 +106,14 @@ add_var <- function(rec, var_info) {
     rec@var_info <- tibble::tibble(vars = var_info)
   } else {
     rec <- add_model(
-      rec, model$formula, targets = var_info, tax_level = model$tax_level,
-      time = model$time, reference = model$reference,
-      contrasts = model$contrasts, na_action = model$na_action,
+      rec,
+      model$formula,
+      targets = var_info,
+      tax_level = model$tax_level,
+      time = model$time,
+      reference = model$reference,
+      contrasts = model$contrasts,
+      na_action = model$na_action,
       max_time_levels = model$max_time_levels
     )
   }
@@ -158,9 +153,14 @@ add_tax <- function(rec, tax_info) {
     rec@tax_info <- tibble::tibble(tax_lev = tax_info)
   } else {
     rec <- add_model(
-      rec, model$formula, targets = model$targets, tax_level = tax_info,
-      time = model$time, reference = model$reference,
-      contrasts = model$contrasts, na_action = model$na_action,
+      rec,
+      model$formula,
+      targets = model$targets,
+      tax_level = tax_info,
+      time = model$time,
+      reference = model$reference,
+      contrasts = model$contrasts,
+      na_action = model$na_action,
       max_time_levels = model$max_time_levels
     )
   }
@@ -234,9 +234,7 @@ recipe_metadata_data <- function(rec) {
     as(phyloseq::sample_data(phy), "data.frame"),
     error = function(cnd) NULL
   )
-  if (is.null(metadata)) {
-    return(tibble::tibble(sample_id = sample_ids))
-  }
+  if (is.null(metadata)) { return(tibble::tibble(sample_id = sample_ids)) }
   metadata[sample_ids, , drop = FALSE] |>
     tibble::as_tibble(rownames = "sample_id")
 }
@@ -245,13 +243,8 @@ recipe_metadata_data <- function(rec) {
 #' @noRd
 recipe_taxonomy_data <- function(rec, phy = rec@phyloseq) {
   taxa_ids <- phyloseq::taxa_names(phy)
-  taxonomy <- tryCatch(
-    as(phyloseq::tax_table(phy), "matrix"),
-    error = function(cnd) NULL
-  )
-  if (is.null(taxonomy)) {
-    return(tibble::tibble(taxa_id = taxa_ids))
-  }
+  taxonomy <- tryCatch(as(phyloseq::tax_table(phy), "matrix"), error = function(cnd) NULL)
+  if (is.null(taxonomy)) { return(tibble::tibble(taxa_id = taxa_ids)) }
   taxonomy[taxa_ids, , drop = FALSE] |>
     data.frame(check.names = FALSE) |>
     tibble::as_tibble(rownames = "taxa_id")
@@ -274,10 +267,7 @@ single_rank_tax_glom <- function(phy) {
   groups <- groups[!(groups %in% c(NA, "", " ", "\t"))]
   groups <- tapply(names(groups), factor(groups), list)
   groups <- groups[lengths(groups) > 1L]
-  if (length(groups) == 0L) {
-    return(phy)
-  }
-
+  if (length(groups) == 0L) { return(phy) }
   merged_taxonomy <- taxonomy
   phyloseq::tax_table(phy) <- NULL
   for (taxa in groups) {
@@ -300,15 +290,9 @@ single_rank_tax_glom <- function(phy) {
 #' @noRd
 analysis_phyloseq <- function(rec) {
   phy <- get_phy(rec)
-  if (is.null(get_model(rec))) {
-    return(phy)
-  }
-  if (length(phyloseq::rank_names(phy)) == 1L) {
-    return(single_rank_tax_glom(phy))
-  }
-  phyloseq::tax_glom(
-    phy, taxrank = recipe_tax_level(rec), NArm = FALSE
-  )
+  if (is.null(get_model(rec))) { return(phy) }
+  if (length(phyloseq::rank_names(phy)) == 1L) { return(single_rank_tax_glom(phy)) }
+  phyloseq::tax_glom(phy, taxrank = recipe_tax_level(rec), NArm = FALSE)
 }
 
 #' Extract analysis counts in canonical taxa-by-sample orientation
@@ -328,20 +312,14 @@ analysis_tax_table <- function(rec) {
       class = "dar_error_invalid_recipe"
     )
   }
-  dplyr::transmute(
-    taxonomy,
-    taxa_id = .data$taxa_id,
-    taxa = .data[[tax_level]]
-  )
+  dplyr::transmute(taxonomy, taxa_id = .data$taxa_id, taxa = .data[[tax_level]])
 }
 
 #' Extract counts in canonical taxa-by-sample orientation
 #' @noRd
 recipe_count_matrix <- function(rec, phy = rec@phyloseq) {
   counts <- as(phyloseq::otu_table(phy), "matrix")
-  if (!phyloseq::taxa_are_rows(phy)) {
-    counts <- t(counts)
-  }
+  if (!phyloseq::taxa_are_rows(phy)) { counts <- t(counts) }
   counts[
     phyloseq::taxa_names(phy),
     phyloseq::sample_names(phy),
@@ -356,7 +334,6 @@ recipe_count_matrix <- function(rec, phy = rec@phyloseq) {
 #' @keywords internal
 #' @autoglobal
 required_pkgs_prep <- function(x, ...) { c("furrr", "future") }
-
 #' Performs all the steps defined in a Recipe
 #'
 #' For a Recipe with at least one preprocessing or DA operation run the steps in
@@ -409,11 +386,14 @@ required_pkgs_prep <- function(x, ...) { c("furrr", "future") }
 #'   regexp = "filter_taxa__empty",
 #'   class = "dar_error_preprocessing_step"
 #' )
+#' @details Recipes containing differential-abundance steps require an
+#'   explicit [add_model()] before execution. Preprocessing-only recipes
+#'   remain supported without a model. A missing model is reported before
+#'   preprocessing or dependency checks, so the input data are not modified.
 prep <- function(rec,
                  parallel = TRUE,
                  workers = future::availableCores(constraints = "connections-16"),
                  force = FALSE) {
-
   if (inherits(rec, "PrepRecipe") && !force) {
     cli::cli_abort(
       c(
@@ -425,10 +405,8 @@ prep <- function(rec,
   }
 
   check_any_recipe(rec)
-  validate_engine_args_model(rec)
-
   initial_da_steps <- purrr::keep(rec@steps, is_da_step)
-  warn_model_free_da(rec)
+  if (length(initial_da_steps) > 0L) { require_da_model(rec) }
   static_status <- model_steps_status(rec)
   dependency_steps <- model_dependency_steps(rec, static_status)
 
@@ -520,10 +498,11 @@ prep <- function(rec,
 
     res <-
       da_calls %>%
-      furrr::future_map(~ {
-          rec <- rec
-          base::eval(.x)
-        },
+      furrr::future_map(
+        ~ {
+            rec <- rec
+            base::eval(.x)
+          },
         .options = furrr::furrr_options(
           seed = TRUE,
           packages = "dar",
@@ -532,23 +511,24 @@ prep <- function(rec,
       )
 
     names(res) <- da_names
-
   } else {
     res <-
       da_calls %>%
-      purrr::map(~ {
-        rec <- rec
-        base::eval(.x)
-      })
+      purrr::map(
+        ~ {
+          rec <- rec
+          base::eval(.x)
+        }
+      )
 
     names(res) <- da_names
   }
 
+  engine_details <- purrr::map(res, ~ attr(.x, "engine_execution", exact = TRUE)) |>
+    purrr::compact()
   for (step_id in names(res)) {
-    if (!is.null(get_model(rec))) {
-      res[[step_id]] <- harmonize_model_output(res[[step_id]], rec)
-      validate_model_result_contract(flatten_model_output(res[[step_id]]), rec, step_id)
-    }
+    res[[step_id]] <- harmonize_model_output(res[[step_id]], rec)
+    validate_model_result_contract(flatten_model_output(res[[step_id]]), rec, step_id)
     standardize_da_result(res[[step_id]], rec, step_id)
   }
 
@@ -558,7 +538,7 @@ prep <- function(rec,
     executed_steps = names(res),
     skipped_steps = skipped
   )
-
+  if (length(engine_details) > 0L) { execution$engine_details <- engine_details }
   prep_recipe(rec, res, list(), execution = execution)
 }
 
@@ -583,26 +563,19 @@ prep <- function(rec,
 #' head(df)
 intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
                             target = NULL, contrast_id = NULL) {
-
   check_prep_recipe(rec)
   validate_consensus_steps(rec, steps)
 
   if (!is.null(get_model(rec))) {
     taxa_ids <- analysis_tax_table(rec)$taxa_id
-    keys <- c(
-      "taxa_id", "contrast_id", "comparison", "contrast_type", "var",
-      "effect"
-    )
+    keys <- c("taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect")
     all_results <- tidy_results(rec, steps = steps) |>
       dplyr::mutate(effect = effect_direction(.data$effect_size))
     directions <- all_results |>
       dplyr::distinct(dplyr::across(dplyr::all_of(keys)))
     plan <- resolve_model(rec)$contrast_plan |>
       dplyr::select("contrast_id", "comparison", "contrast_type", "var")
-    universe <- tidyr::crossing(
-      taxa_id = taxa_ids,
-      plan
-    ) |>
+    universe <- tidyr::crossing(taxa_id = taxa_ids, plan) |>
       dplyr::left_join(
         directions,
         by = c("taxa_id", "contrast_id", "comparison", "contrast_type", "var")
@@ -611,15 +584,19 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
     calls <- all_results |>
       dplyr::filter(.data$significant %in% TRUE) |>
       dplyr::transmute(
-        dplyr::across(dplyr::all_of(keys)), method = .data$step_id, value = 1L
+        dplyr::across(dplyr::all_of(keys)),
+        method = .data$step_id,
+        value = 1L
       ) |>
       dplyr::distinct()
     df <- universe |>
       dplyr::left_join(calls, by = keys) |>
       dplyr::mutate(value = tidyr::replace_na(.data$value, 0L)) |>
       tidyr::pivot_wider(
-        id_cols = dplyr::all_of(keys), names_from = "method",
-        values_from = "value", values_fill = 0L
+        id_cols = dplyr::all_of(keys),
+        names_from = "method",
+        values_from = "value",
+        values_fill = 0L
       )
     for (step_id in setdiff(steps, names(df))) {
       df[[step_id]] <- 0L
@@ -627,23 +604,18 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
     df <- dplyr::select(df, dplyr::all_of(c(keys, steps))) |>
       filter_model_hypotheses(rec, target = target, contrast_id = contrast_id) |>
       dplyr::mutate(
-        .tax_order = match(
-          .data$taxa_id, taxa_ids
-        ),
-        .contrast_order = match(
-          .data$contrast_id, plan$contrast_id
-        ),
+        .tax_order = match(.data$taxa_id, taxa_ids),
+        .contrast_order = match(.data$contrast_id, plan$contrast_id),
         .effect_order = match(.data$effect, c("up", "down", "neutral"))
       ) |>
-      dplyr::arrange(
-        .data$.tax_order, .data$.contrast_order, .data$.effect_order
-      ) |>
-      dplyr::select(-dplyr::all_of(c(
-        ".tax_order", ".contrast_order", ".effect_order"
-      )))
+      dplyr::arrange(.data$.tax_order, .data$.contrast_order, .data$.effect_order) |>
+      dplyr::select(-dplyr::all_of(c(".tax_order", ".contrast_order", ".effect_order")))
     if (tidy) {
       df <- tidyr::pivot_longer(
-        df, dplyr::all_of(steps), names_to = "name", values_to = "value"
+        df,
+        dplyr::all_of(steps),
+        names_to = "name",
+        values_to = "value"
       )
     }
     return(as.data.frame(df))
@@ -653,22 +625,20 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
   df <-
     steps %>%
     purrr::set_names() %>%
-    purrr::map_dfc( ~ {
-      taxa <- tidy_result %>%
-        dplyr::filter(.data$step_id == .x) %>%
-        dplyr::pull(taxa_id)
+    purrr::map_dfc(
+      ~ {
+        taxa <- tidy_result %>%
+          dplyr::filter(.data$step_id == .x) %>%
+          dplyr::pull(taxa_id)
 
-      phyloseq::taxa_names(rec@phyloseq) %>%
-        tibble::tibble(taxa_id = .) %>%
-        dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
-        dplyr::select(!!.x)
-    }) %>%
-    dplyr::mutate(
-      taxa_id = phyloseq::taxa_names(rec@phyloseq),
-      .before = 1
+        phyloseq::taxa_names(rec@phyloseq) %>%
+          tibble::tibble(taxa_id = .) %>%
+          dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
+          dplyr::select(!!.x)
+      }
     ) %>%
+    dplyr::mutate(taxa_id = phyloseq::taxa_names(rec@phyloseq), .before = 1) %>%
     as.data.frame()
-
   if (tidy) { df <- tidyr::pivot_longer(df, -taxa_id) }
   df
 }
@@ -692,10 +662,8 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
 #' head(df)
 overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all",
                        target = NULL, contrast_id = NULL) {
-
   check_prep_recipe(rec)
-  if (!is.character(type) || length(type) != 1L ||
-      !type %in% c("all", "da")) {
+  if (!is.character(type) || length(type) != 1L || !type %in% c("all", "da")) {
     cli::cli_abort(
       "{.arg type} must be one of {.val all} or {.val da}.",
       class = "dar_error_invalid_overlap_type"
@@ -703,9 +671,7 @@ overlap_df <- function(rec, steps = steps_ids(rec, "da"), type = "all",
   }
 
   df <-
-    intersection_df(
-      rec, steps = steps, target = target, contrast_id = contrast_id
-    ) %>%
+    intersection_df(rec, steps = steps, target = target, contrast_id = contrast_id) %>%
     tibble::as_tibble() %>%
     dplyr::select(dplyr::all_of(steps))
 
@@ -771,19 +737,11 @@ filter_model_hypotheses <- function(data, rec, target = NULL, contrast_id = NULL
     value
   }
   target <- validate_selector(target, "target", unique(plan$var))
-  if (!is.null(target)) {
-    plan <- dplyr::filter(plan, .data$var %in% .env$target)
-  }
-  contrast_id <- validate_selector(
-    contrast_id, "contrast_id", plan$contrast_id
-  )
-  if (!is.null(target)) {
-    data <- dplyr::filter(data, .data$var %in% .env$target)
-  }
+  if (!is.null(target)) { plan <- dplyr::filter(plan, .data$var %in% .env$target) }
+  contrast_id <- validate_selector(contrast_id, "contrast_id", plan$contrast_id)
+  if (!is.null(target)) { data <- dplyr::filter(data, .data$var %in% .env$target) }
   if (!is.null(contrast_id)) {
-    data <- dplyr::filter(
-      data, .data$contrast_id %in% .env$contrast_id
-    )
+    data <- dplyr::filter(data, .data$contrast_id %in% .env$contrast_id)
   }
   data
 }
@@ -802,7 +760,6 @@ filter_model_hypotheses <- function(data, rec, target = NULL, contrast_id = NULL
 #' rec <- bake(test_prep_rec)
 #' cool(rec)
 cool <- function(rec, bake = 1) {
-
   check_prep_recipe(rec)
 
   all_bakes <- rec@bakes
@@ -827,10 +784,6 @@ cool <- function(rec, bake = 1) {
       class = "dar_error_missing_bake_name"
     )
   }
-
-  if (!is.numeric(bake)) {
-    bake <- which(all_names == bake)
-  }
-
+  if (!is.numeric(bake)) { bake <- which(all_names == bake) }
   base::eval(step_to_call(rec@bakes[[bake]]))
 }

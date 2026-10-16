@@ -2,7 +2,7 @@
 
 # File R/steps_and_checks.R: @tests
 
-test_that("Function step() @ L198", {
+test_that("Function step() @ L210", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy) |>
     add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species") |>
@@ -13,7 +13,7 @@ test_that("Function step() @ L198", {
 })
 
 
-test_that("Function add_step() @ L261", {
+test_that("Function add_step() @ L273", {
   data(metaHIV_phy)
   
   # 1. Test adding steps to a normal Recipe

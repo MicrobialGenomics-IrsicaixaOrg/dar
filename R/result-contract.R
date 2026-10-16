@@ -25,17 +25,11 @@
 #' results
 #'
 #' tidy_results(test_prep_rec, significant_only = TRUE)
-tidy_results <- function(rec,
-                         steps = steps_ids(rec, "da"),
-                         significant_only = FALSE) {
+tidy_results <- function(rec, steps = steps_ids(rec, "da"), significant_only = FALSE) {
   check_prep_recipe(rec)
   checkmate::assert_character(steps, any.missing = FALSE, unique = TRUE)
   checkmate::assert_flag(significant_only)
-
-  if (length(steps) == 0L) {
-    return(empty_tidy_results())
-  }
-
+  if (length(steps) == 0L) { return(empty_tidy_results()) }
   executed <- names(rec@results)
   unavailable <- setdiff(steps, executed)
   if (length(unavailable) > 0L) {
@@ -61,16 +55,9 @@ tidy_results <- function(rec,
     )
   }
 
-  result <- purrr::map_dfr(
-    steps,
-    ~ standardize_da_result(rec@results[[.x]], rec, .x)
-  )
+  result <- purrr::map_dfr(steps, ~ standardize_da_result(rec@results[[.x]], rec, .x))
   validate_tidy_result_contract(result)
-
-  if (significant_only) {
-    result <- dplyr::filter(result, .data$significant %in% TRUE)
-  }
-
+  if (significant_only) { result <- dplyr::filter(result, .data$significant %in% TRUE) }
   order_tidy_results(result, rec, steps)
 }
 
@@ -87,12 +74,23 @@ tidy_result_columns <- function() {
 #' @noRd
 empty_tidy_results <- function() {
   tibble::tibble(
-    taxa_id = character(), taxa = character(), contrast_id = character(),
-    comparison = character(), contrast_type = character(), var = character(),
-    numerator = character(), denominator = character(), at_var = character(),
-    at_level = character(), effect_size = numeric(), effect_metric = character(),
-    p_value = numeric(), adj_p_value = numeric(), significant = logical(),
-    method = character(), step_id = character()
+    taxa_id = character(),
+    taxa = character(),
+    contrast_id = character(),
+    comparison = character(),
+    contrast_type = character(),
+    var = character(),
+    numerator = character(),
+    denominator = character(),
+    at_var = character(),
+    at_level = character(),
+    effect_size = numeric(),
+    effect_metric = character(),
+    p_value = numeric(),
+    adj_p_value = numeric(),
+    significant = logical(),
+    method = character(),
+    step_id = character()
   )
 }
 
@@ -103,9 +101,13 @@ da_result_registry <- function() {
       effect_metric = "log2_fold_change",
       p_value = c("pvalue"), adj_p_value = c("padj")
     ),
-    aldex = list(
+    aldex2 = list(
       effect_metric = "standardized_clr_effect",
       p_value = c("pval", "we.ep"), adj_p_value = c("padj", "we.eBH")
+    ),
+    aldex3 = list(
+      effect_metric = "aldex3_log2_abundance_coefficient",
+      p_value = "pval", adj_p_value = "padj"
     ),
     ancom = list(
       effect_metric = "bias_corrected_log_fold_change",
@@ -147,10 +149,7 @@ result_step <- function(rec, step_id) {
 }
 
 #' @noRd
-result_method <- function(step) {
-  step_engine(step)
-}
-
+result_method <- function(step) { step_engine(step) }
 #' @noRd
 result_effect_metric <- function(method, step, result = NULL) {
   registry <- da_result_registry()
@@ -164,7 +163,7 @@ result_effect_metric <- function(method, step, result = NULL) {
     norm_method <- step$norm_method %||% "compositional"
     return(paste0("median_", norm_method, "_difference"))
   }
-  if (identical(method, "aldex") && "effect_metric" %in% names(result)) {
+  if (identical(method, "aldex2") && "effect_metric" %in% names(result)) {
     metric <- result$effect_metric
     allowed <- c("standardized_clr_effect", "aldex_glm_coefficient")
     if (!is.character(metric) || anyNA(metric) || any(!metric %in% allowed)) {
@@ -183,9 +182,7 @@ result_effect_metric <- function(method, step, result = NULL) {
 #' @noRd
 result_numeric_column <- function(result, candidates, context) {
   selected <- candidates[candidates %in% names(result)][1L]
-  if (length(selected) == 0L || is.na(selected)) {
-    return(rep(NA_real_, nrow(result)))
-  }
+  if (length(selected) == 0L || is.na(selected)) { return(rep(NA_real_, nrow(result))) }
   value <- result[[selected]]
   if (!is.numeric(value)) {
     cli::cli_abort(
@@ -202,7 +199,7 @@ aldex_model_p_value <- function(result, rec, context) {
   if (is.null(get_model(rec)) || !"contrast_id" %in% names(result)) {
     return(rep(NA_real_, nrow(result)))
   }
-  compiled <- compile_model(rec, "aldex")
+  compiled <- compile_model(rec, "aldex2")
   columns <- purrr::map_chr(
     seq_len(nrow(compiled$contrasts)),
     function(index) {
@@ -215,9 +212,7 @@ aldex_model_p_value <- function(result, rec, context) {
   values <- rep(NA_real_, nrow(result))
   for (contrast_id in intersect(unique(result$contrast_id), names(columns))) {
     column <- columns[[contrast_id]]
-    if (!column %in% names(result)) {
-      next
-    }
+    if (!column %in% names(result)) { next }
     if (!is.numeric(result[[column]])) {
       cli::cli_abort(
         "Result column {.field {column}} for {context} must be numeric.",
@@ -236,17 +231,13 @@ result_p_value <- function(result, method, rec, candidates, context) {
   if (length(selected) > 0L && !is.na(selected)) {
     return(result_numeric_column(result, candidates, context))
   }
-  if (identical(method, "aldex")) {
-    return(aldex_model_p_value(result, rec, context))
-  }
+  if (identical(method, "aldex2")) { return(aldex_model_p_value(result, rec, context)) }
   rep(NA_real_, nrow(result))
 }
 
 #' @noRd
 result_character_column <- function(result, name, default = NA_character_) {
-  if (!name %in% names(result)) {
-    return(rep(default, nrow(result)))
-  }
+  if (!name %in% names(result)) { return(rep(default, nrow(result))) }
   as.character(result[[name]])
 }
 
@@ -263,9 +254,7 @@ standardize_da_result <- function(result, rec, step_id) {
   }
 
   result <- flatten_model_output(result)
-  if (nrow(result) == 0L) {
-    return(empty_tidy_results())
-  }
+  if (nrow(result) == 0L) { return(empty_tidy_results()) }
   result <- harmonize_model_result(result, rec)
 
   required <- c("taxa_id", "effect", "signif")
@@ -341,7 +330,9 @@ standardize_da_result <- function(result, rec, step_id) {
     contrast_id = contrast_id,
     comparison = comparison,
     contrast_type = result_character_column(
-      result, "contrast_type", default = "legacy_pairwise"
+      result,
+      "contrast_type",
+      default = "legacy_pairwise"
     ),
     var = var,
     numerator = result_character_column(result, "numerator"),
@@ -350,14 +341,20 @@ standardize_da_result <- function(result, rec, step_id) {
     at_level = result_character_column(result, "at_level"),
     effect_size = as.numeric(result$effect),
     effect_metric = rep(
-      result_effect_metric(method, step, result), length.out = nrow(result)
+      result_effect_metric(method, step, result),
+      length.out = nrow(result)
     ),
     p_value = result_p_value(
-      result, method, rec, config$p_value,
+      result,
+      method,
+      rec,
+      config$p_value,
       paste0(method, " step ", step_id)
     ),
     adj_p_value = result_numeric_column(
-      result, config$adj_p_value, paste0(method, " step ", step_id)
+      result,
+      config$adj_p_value,
+      paste0(method, " step ", step_id)
     ),
     significant = as.logical(result$signif),
     method = rep(method, nrow(result)),
@@ -390,9 +387,7 @@ validate_tidy_result_contract <- function(result) {
       class = "dar_error_invalid_result_contract"
     )
   }
-  identifier_columns <- c(
-    "taxa_id", "contrast_id", "effect_metric", "method", "step_id"
-  )
+  identifier_columns <- c("taxa_id", "contrast_id", "effect_metric", "method", "step_id")
   invalid_identifier <- vapply(
     result[identifier_columns],
     function(value) anyNA(value) || any(!nzchar(value)),
@@ -426,9 +421,7 @@ validate_tidy_result_contract <- function(result) {
 
 #' @noRd
 order_tidy_results <- function(result, rec, steps) {
-  if (nrow(result) == 0L) {
-    return(empty_tidy_results())
-  }
+  if (nrow(result) == 0L) { return(empty_tidy_results()) }
   contrast_order <- rec@execution$contrasts$contrast_id
   contrast_order <- unique(c(contrast_order, result$contrast_id))
   taxa_order <- phyloseq::taxa_names(analysis_phyloseq(rec))
@@ -440,7 +433,9 @@ order_tidy_results <- function(result, rec, steps) {
       .taxa_order = match(.data$taxa_id, taxa_order)
     ) |>
     dplyr::arrange(
-      .data$.step_order, .data$.contrast_order, .data$.taxa_order,
+      .data$.step_order,
+      .data$.contrast_order,
+      .data$.taxa_order,
       .data$taxa_id
     ) |>
     dplyr::select(-dplyr::starts_with("."))

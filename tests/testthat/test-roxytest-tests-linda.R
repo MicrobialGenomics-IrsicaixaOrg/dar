@@ -2,7 +2,7 @@
 
 # File R/linda.R: @tests
 
-test_that("Function step_linda() @ L51", {
+test_that("Function step_linda() @ L55", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy) |>
     add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")

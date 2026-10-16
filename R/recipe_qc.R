@@ -60,10 +60,7 @@ recipe_qc <- function(rec, group_by = NULL) {
     tibble::tibble(group_by = NA_character_, group = NA_character_),
     qc_metrics(counts)
   )
-  if (is.null(group_by)) {
-    return(overall)
-  }
-
+  if (is.null(group_by)) { return(overall) }
   metadata <- grouping$metadata
   group_values <- metadata[[group_by]]
   sample_groups <- as.character(group_values)
@@ -102,16 +99,11 @@ recipe_qc <- function(rec, group_by = NULL) {
 #' @export
 #' @keywords internal
 #' @rdname dar-defunct
-phy_qc <- function(rec, ...) {
-  .Defunct(new = "recipe_qc", package = "dar")
-}
-
+phy_qc <- function(rec, ...) { .Defunct(new = "recipe_qc", package = "dar") }
 #' Validate the recipe QC grouping specification
 #' @noRd
 validate_qc_group <- function(rec, group_by) {
-  if (is.null(group_by)) {
-    return(list(name = NULL, metadata = NULL))
-  }
+  if (is.null(group_by)) { return(list(name = NULL, metadata = NULL)) }
   if (!is.character(group_by) || length(group_by) != 1L ||
       is.na(group_by) || !nzchar(group_by)) {
     cli::cli_abort(
@@ -147,11 +139,7 @@ validate_qc_group <- function(rec, group_by) {
 #' @noRd
 qc_sample_metadata <- function(rec) {
   metadata <- recipe_metadata_data(rec)
-  data.frame(
-    metadata[-1],
-    row.names = metadata$sample_id,
-    check.names = FALSE
-  )
+  data.frame(metadata[-1], row.names = metadata$sample_id, check.names = FALSE)
 }
 
 #' Reshape a recipe count matrix once for all QC summaries
@@ -159,9 +147,7 @@ qc_sample_metadata <- function(rec) {
 qc_count_data <- function(rec) {
   counts <- recipe_count_matrix(rec)
   tibble::as_tibble(counts, rownames = "taxa_id") |>
-    tidyr::pivot_longer(
-      cols = -"taxa_id", names_to = "sample_id", values_to = "value"
-    )
+    tidyr::pivot_longer(cols = -"taxa_id", names_to = "sample_id", values_to = "value")
 }
 
 #' Return deterministic observed QC groups

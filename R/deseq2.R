@@ -11,7 +11,8 @@
 #' be generated using the lfcShrink function.
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
-#'   operations for this Recipe.
+#'   operations for this Recipe. Execution requires [add_model()] before
+#'   [prep()]; the step can be configured before adding the model.
 #' @param test Either "Wald" or "LRT", which will then use either Wald
 #'   significance tests (defined by nbinomWaldTest), or the likelihood ratio
 #'   test on the difference in deviance between a full and reduced model formula
@@ -52,7 +53,8 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+#'  recipe(metaHIV_phy) |>
+#'  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_rarity(0.95) |> 
 #'  step_deseq()
@@ -88,14 +90,13 @@ step_deseq <- function(rec,
                        rarefy = FALSE,
                        id = rand_id("deseq"),
                        engine_args = list()) {
-  
   check_recipe(rec)
   if (type == "ashr") {
     recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
   } else {
     recipes_pkg_check(required_pkgs_deseq()[-2], "step_deseq()")
   }
-  
+
   add_step(
     rec,
     step(
@@ -126,89 +127,21 @@ run_deseq <- function(rec,
                       rarefy,
                       id,
                       engine_args = list()) {
+  engine_args <- check_engine_args_execution(rec, "deseq", engine_args)
 
-  engine_args <- check_engine_args_execution(
-    rec, "deseq", engine_args, id
+  run_deseq_model(
+    rec,
+    test,
+    fitType,
+    betaPrior,
+    type,
+    max_significance,
+    log2FC,
+    rarefy,
+    engine_args
   )
-
-  if (!is.null(get_model(rec))) {
-    return(run_deseq_model(
-      rec, test, fitType, betaPrior, type, max_significance, log2FC, rarefy,
-      engine_args
-    ))
-  }
-
-  vars <- recipe_targets(rec)
-  tax_level <- recipe_tax_level(rec)
-  phy <- 
-    get_phy(rec) %>% 
-    use_rarefy(rarefy)
-  
-  phy <- phyloseq::tax_glom(phy, taxrank = tax_level, NArm = FALSE)
-  phyloseq::sample_data(phy) <-  
-    phyloseq::sample_data(phy) %>%
-    to_tibble("sample_id") %>% 
-    dplyr::mutate(dplyr::across(where(is.character), as.factor)) %>% 
-    data.frame(row.names = 1) %>% 
-    phyloseq::sample_data() 
-    
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      dds <- suppressMessages(
-        phy %>%
-          phyloseq::phyloseq_to_deseq2(
-            design = stats::as.formula(stringr::str_c("~", var))
-          )
-      )
-
-      dds <-
-        dds %>%
-        DESeq2::estimateSizeFactors(geoMeans = apply(
-          X = DESeq2::counts(.),
-          MARGIN = 1,
-          FUN = function(x) {
-            exp(sum(log(x[x > 0]), na.rm = TRUE) / length(x))
-          }
-        )) %>%
-        DESeq2::DESeq(
-          fitType = fitType,
-          test = test,
-          betaPrior = betaPrior,
-          quiet = TRUE
-        )
-
-      contrasts_df <- get_comparisons(var, phy, as_list = FALSE, n_cut = 1)
-      seq_len(nrow(contrasts_df)) %>%
-        purrr::map_dfr(function(it) {
-          x <- contrasts_df[[it, "x"]]
-          y <- contrasts_df[[it, "y"]]
-          DESeq2::lfcShrink(
-            dds = dds,
-            contrast = c(var, y, x),
-            type = type,
-            quiet = TRUE
-          ) %>%
-            tibble::as_tibble(rownames = "taxa_id") %>%
-            dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
-            dplyr::mutate(
-              comparison = stringr::str_c(x, "_", y), 
-              var = !!var
-            ) %>%
-            dplyr::mutate(
-              effect = log2FoldChange,
-              signif = ifelse(
-                padj < max_significance & abs(log2FoldChange) >= log2FC,
-                TRUE,
-                FALSE
-              )
-            )
-        })
-    })
 }
 
 #' @noRd
 #' @keywords internal
-required_pkgs_deseq <- function(x, ...) {
-  c("bioc::DESeq2", "bioc::apeglm", "ashr")
-}
+required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ashr") }

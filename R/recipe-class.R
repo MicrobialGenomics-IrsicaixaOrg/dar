@@ -68,8 +68,6 @@ methods::setClass(
 #'
 #' @return An object of class `Recipe` containing the microbiome object, an
 #'   optional centralized model and the configured processing or DA steps.
-#'   Legacy selector slots are retained for compatibility during the
-#'   deprecation cycle.
 #'
 #' @aliases Recipe
 #' @export
@@ -146,14 +144,14 @@ recipe <- function(microbiome_object = NULL,
                    var_info = NULL,
                    tax_info = NULL,
                    steps = list()) {
-
   if (!is(microbiome_object, "phyloseq") &&
       !is(microbiome_object, "TreeSummarizedExperiment")) {
-    cli::cli_abort(c(
-      "x" = "{.arg microbiome_object} must be a {.cls phyloseq} or {.cls TreeSummarizedExperiment} object.",
-      "i" = "You supplied an object of class: {.cls {class(microbiome_object)}}."
-    ),
-    class = "dar_error_invalid_microbiome_object"
+    cli::cli_abort(
+      c(
+        "x" = "{.arg microbiome_object} must be a {.cls phyloseq} or {.cls TreeSummarizedExperiment} object.",
+        "i" = "You supplied an object of class: {.cls {class(microbiome_object)}}."
+      ),
+      class = "dar_error_invalid_microbiome_object"
     )
   }
 
@@ -182,12 +180,13 @@ recipe <- function(microbiome_object = NULL,
     phyloseq::tax_table(microbiome_object) <- tax_tbl
     tax_expected <- mia::getTaxonomyRanks() %>% stringr::str_to_sentence()
     if (!all(tax_names %in% tax_expected)) {
-      cli::cli_abort(c(
-        "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
-        "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} or {.cls TreeSummarizedExperiment} with standard names.",
-        "i" = "Standard names: {.val {mia::getTaxonomyRanks()}}."
-      ),
-      class = "dar_error_invalid_rank_names"
+      cli::cli_abort(
+        c(
+          "x" = "{.arg rank} must be a value from {.fun taxonomyRanks}.",
+          "i" = "Rename the columns from the {.code tax_table} slot of your input {.cls phyloseq} or {.cls TreeSummarizedExperiment} with standard names.",
+          "i" = "Standard names: {.val {mia::getTaxonomyRanks()}}."
+        ),
+        class = "dar_error_invalid_rank_names"
       )
     }
   }
@@ -196,11 +195,12 @@ recipe <- function(microbiome_object = NULL,
     s_data <- as(phyloseq::sample_data(microbiome_object), "data.frame")
     if (!all(var_info %in% colnames(s_data))) {
       missing_vars <- setdiff(var_info, colnames(s_data))
-      cli::cli_abort(c(
-        "x" = "Column{?s} {.val {missing_vars}} {?does not/do not} exist in the {.arg microbiome_object} metadata.",
-        "i" = "Available columns: {.val {colnames(s_data)}}."
-      ),
-      class = "dar_error_missing_vars"
+      cli::cli_abort(
+        c(
+          "x" = "Column{?s} {.val {missing_vars}} {?does not/do not} exist in the {.arg microbiome_object} metadata.",
+          "i" = "Available columns: {.val {colnames(s_data)}}."
+        ),
+        class = "dar_error_missing_vars"
       )
     }
   }
@@ -210,11 +210,12 @@ recipe <- function(microbiome_object = NULL,
     tax_ranks <- phyloseq::rank_names(microbiome_object)
     if (!all(tax_info %in% tax_ranks)) {
       missing_tax <- setdiff(tax_info, tax_ranks)
-      cli::cli_abort(c(
-        "x" = "Taxonomic rank{?s} {.val {missing_tax}} {?does not/do not} exist in the {.arg microbiome_object}.",
-        "i" = "Available ranks: {.val {tax_ranks}}."
-      ),
-      class = "dar_error_missing_tax"
+      cli::cli_abort(
+        c(
+          "x" = "Taxonomic rank{?s} {.val {missing_tax}} {?does not/do not} exist in the {.arg microbiome_object}.",
+          "i" = "Available ranks: {.val {tax_ranks}}."
+        ),
+        class = "dar_error_missing_tax"
       )
     }
   }
@@ -314,19 +315,14 @@ recipe_validity_problems <- function(object) {
 
   problems <- c(
     problems,
-    step_slot_validation_problems(
-      object@steps, "steps", c("preprocessing", "da")
-    ),
+    step_slot_validation_problems(object@steps, "steps", c("preprocessing", "da")),
     duplicate_step_id_problems(object@steps)
   )
 
   var_info <- object@var_info
   if (!is.null(var_info) && ncol(var_info) > 0) {
     if (!identical(names(var_info), "vars")) {
-      problems <- c(
-        problems,
-        "`var_info` must contain only a `vars` column"
-      )
+      problems <- c(problems, "`var_info` must contain only a `vars` column")
     } else if (!is.character(var_info$vars)) {
       problems <- c(problems, "`var_info$vars` must be a character vector")
     } else {
@@ -349,10 +345,7 @@ recipe_validity_problems <- function(object) {
   tax_info <- object@tax_info
   if (!is.null(tax_info) && ncol(tax_info) > 0) {
     if (!identical(names(tax_info), "tax_lev")) {
-      problems <- c(
-        problems,
-        "`tax_info` must contain only a `tax_lev` column"
-      )
+      problems <- c(problems, "`tax_info` must contain only a `tax_lev` column")
     } else if (!is.character(tax_info$tax_lev)) {
       problems <- c(problems, "`tax_info$tax_lev` must be a character vector")
     } else {
@@ -386,10 +379,7 @@ recipe_validity_problems <- function(object) {
   if (length(problems) == 0) TRUE else problems
 }
 
-methods::setValidity(
-  Class = "Recipe",
-  method = recipe_validity_problems
-)
+methods::setValidity(Class = "Recipe", method = recipe_validity_problems)
 
 ## printing ----
 
@@ -427,14 +417,8 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
       levs <- factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
       msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
     }
-    if (is.numeric(var_vals)) {
-      msg <- glue::glue("class: numeric")
-    }
-    cat(glue::glue(
-      "     {info()} variable of interes {crayon::blue(var)} ({msg})"
-      ),
-      "\n"
-    )
+    if (is.numeric(var_vals)) { msg <- glue::glue("class: numeric") }
+    cat(glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"), "\n")
   }
 
   ## Taxa
@@ -448,10 +432,7 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
       "\n"
     )
   } else {
-    cat(glue::glue(
-      "     {info()} taxonomic level {crayon::blue(tax_level)}"),
-      "\n\n"
-    )
+    cat(glue::glue("     {info()} taxonomic level {crayon::blue(tax_level)}"), "\n\n")
   }
 
   if (!is.null(get_model(object))) {
@@ -464,31 +445,35 @@ methods::setMethod("show", signature = "Recipe", definition = function(object) {
   if (length(object@steps) > 0) {
     cat("Preprocessing steps:\n\n")
     object@steps %>%
-      purrr::walk(~ {
-        if (is_preprocessing_step(.x)) {
-          id <-
-            glue::glue("id = {.x[['id']]}") %>%
-            crayon::silver()
+      purrr::walk(
+        ~ {
+          if (is_preprocessing_step(.x)) {
+            id <-
+              glue::glue("id = {.x[['id']]}") %>%
+              crayon::silver()
 
-          class(.x)[[1]]
-          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+            class(.x)[[1]]
+            cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+          }
         }
-      })
+      )
   }
   cat("\n")
   if (length(object@steps) > 0) {
     cat("DA steps:\n\n")
     object@steps %>%
-      purrr::walk(~ {
-        if (is_da_step(.x)) {
-          id <-
-            glue::glue("id = {.x[['id']]}") %>%
-            crayon::silver()
+      purrr::walk(
+        ~ {
+          if (is_da_step(.x)) {
+            id <-
+              glue::glue("id = {.x[['id']]}") %>%
+              crayon::silver()
 
-          class(.x)[[1]]
-          cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+            class(.x)[[1]]
+            cat(c(glue::glue("     {dot()} {class(.x)[[1]]}() {id}"), "\n"))
+          }
         }
-      })
+      )
   }
 })
 
@@ -523,17 +508,12 @@ methods::setClass(
 prep_recipe_validity_problems <- function(object) {
   problems <- c(
     step_slot_validation_problems(object@bakes, "bakes", "bake"),
-    duplicate_step_id_problems(
-      c(object@steps, object@bakes), "`steps` and `bakes`"
-    )
+    duplicate_step_id_problems(c(object@steps, object@bakes), "`steps` and `bakes`")
   )
   if (length(problems) == 0L) TRUE else problems
 }
 
-methods::setValidity(
-  Class = "PrepRecipe",
-  method = prep_recipe_validity_problems
-)
+methods::setValidity(Class = "PrepRecipe", method = prep_recipe_validity_problems)
 
 ## constructor ----
 
@@ -618,12 +598,11 @@ methods::setMethod(
           factor(var_vals) %>% levels() %>% stringr::str_c(collapse = ", ")
         msg <- glue::glue("class: {class(var_vals)}, levels: {levs}")
       }
-      if (is.numeric(var_vals)) {
-        msg <- glue::glue("class: numeric")
-      }
-      cat(glue::glue(
-        "     {info()} variable of interes {crayon::blue(var)} ({msg})"),
-        "\n")
+      if (is.numeric(var_vals)) { msg <- glue::glue("class: numeric") }
+      cat(
+        glue::glue("     {info()} variable of interes {crayon::blue(var)} ({msg})"),
+        "\n"
+      )
     }
 
     ## Taxa
@@ -639,28 +618,25 @@ methods::setMethod(
         "\n"
       )
     } else {
-      cat(glue::glue(
-        "     {info()} taxonomic level {crayon::blue(tax_level)}"
-      ),
-      "\n\n")
+      cat(glue::glue("     {info()} taxonomic level {crayon::blue(tax_level)}"), "\n\n")
     }
 
     ## Results
     cat("Results:\n\n")
     names(object@results) %>%
-      purrr::walk( ~ {
-        n_taxa <-
-          tidy_results(
-            object, steps = .x, significant_only = TRUE
-          ) %>%
-          dplyr::pull(taxa_id) %>%
-          unique() %>%
-          length()
+      purrr::walk(
+        ~ {
+          n_taxa <-
+            tidy_results(object, steps = .x, significant_only = TRUE) %>%
+            dplyr::pull(taxa_id) %>%
+            unique() %>%
+            length()
 
-        n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
+          n_taxa <- crayon::silver(glue::glue("diff_taxa = {n_taxa}"))
 
-        cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
-      })
+          cat(c(glue::glue("     {tick()} {.x} {n_taxa}"), "\n"))
+        }
+      )
 
     if (length(object@execution$skipped_steps) > 0L &&
         nrow(object@execution$skipped_steps) > 0L) {
@@ -676,16 +652,16 @@ methods::setMethod(
     if (length(object@results) > 0) {
       n_overlap <-
         find_intersections(object) %>%
-        dplyr::filter(
-          sum_methods == length(steps_ids(object, type = "da"))
-        ) %>%
+        dplyr::filter(sum_methods == length(steps_ids(object, type = "da"))) %>%
         nrow()
 
       cli::cat_line()
       overlap_unit <- if (is.null(get_model(object))) "taxa" else
         "taxon-contrast effects"
-      cat(glue::glue(
-        "     {info()} {n_overlap} {overlap_unit} are present in all tested methods"),
+      cat(
+        glue::glue(
+          "     {info()} {n_overlap} {overlap_unit} are present in all tested methods"
+        ),
         "\n\n"
       )
     }
@@ -695,30 +671,35 @@ methods::setMethod(
       cat("Bakes:\n\n")
 
       object@bakes %>%
-        purrr::iwalk(~ {
-          msg <-
-            .x %>%
-            purrr::map2_chr(names(.), ~ {
-              if (is.null(.x)) {
-                .x <- "NULL"
-              }
-              if (.y == "weights" & .x != "NULL") {
-                .x <-
-                  glue::glue("{names(.x)} = {.x}") %>%
-                  stringr::str_c(collapse = ", ") %>%
-                  stringr::str_c("c(", ., ")")
-              }
-              glue::glue("{.y}: {.x}")
-            }) %>% stringr::str_c(collapse = ", ")
+        purrr::iwalk(
+          ~ {
+            msg <-
+              .x %>%
+              purrr::map2_chr(
+                names(.),
+                ~ {
+                  if (is.null(.x)) { .x <- "NULL" }
+                  if (.y == "weights" & .x != "NULL") {
+                    .x <-
+                      glue::glue("{names(.x)} = {.x}") %>%
+                      stringr::str_c(collapse = ", ") %>%
+                      stringr::str_c("c(", ., ")")
+                  }
+                  glue::glue("{.y}: {.x}")
+                }
+              ) %>% stringr::str_c(collapse = ", ")
 
-          cat(c(
-            glue::glue(
-              "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} ",
-              "{crayon::silver(msg)}"
-            ),
-            "\n"
-          ))
-        })
+            cat(
+              c(
+                glue::glue(
+                  "     {dot()} {crayon::blue(crayon::bold(paste0(.y, ' ->')))} ",
+                  "{crayon::silver(msg)}"
+                ),
+                "\n"
+              )
+            )
+          }
+        )
     }
   }
 )

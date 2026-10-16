@@ -25,8 +25,9 @@ microbiome data. It accepts `phyloseq` and `TreeSummarizedExperiment`
 inputs and combines preprocessing, quality control and multiple
 statistical methods through a common, pipeable interface.
 
-A centralized model defines covariates, contrasts, reference levels and
-the taxonomic level of analysis. Compatibility checks identify which
+A centralized model is required for DA execution. It defines covariates,
+contrasts, reference levels and the taxonomic level of analysis.
+Compatibility checks identify which
 methods can execute that design. Results can be inspected, visualized
 and compared in a common format while retaining method-specific effect
 scales. Native options remain explicit, and recipes can be shared
@@ -64,7 +65,7 @@ rec <-
   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
   step_filter_taxa(.f = "function(x) sum(x > 0) >= (0.03 * length(x))") |>
   step_maaslin() |>
-  step_aldex()
+  step_aldex2()
 
 rec
 

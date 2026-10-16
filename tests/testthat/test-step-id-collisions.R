@@ -11,7 +11,7 @@ test_that("DA constructors reject reserved IDs before modifying recipes", {
   rec <- recipe(make_multilevel_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")
   constructors <- list(
-    step_aldex, step_ancom, step_corncob, step_deseq, step_lefse,
+    step_aldex2, step_aldex3, step_ancom, step_corncob, step_deseq, step_lefse,
     step_linda, step_maaslin, step_wilcox
   )
   for (constructor in constructors) {
@@ -139,7 +139,6 @@ test_that("safe IDs preserve consensus columns and overlap calculations", {
 
 test_that("dotted custom IDs survive native execution and serialization", {
   skip_if_not_installed("microbiome")
-  skip_if_not_installed("rstatix")
   rec <- recipe(make_multilevel_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species") |>
     step_wilcox(id = ".custom")

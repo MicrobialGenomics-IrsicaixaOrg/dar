@@ -338,18 +338,6 @@ test_that("legacy recipes remain model-free", {
   expect_true(methods::validObject(rec, test = TRUE))
 })
 
-test_that("model-free DA execution emits one classified migration warning", {
-  rec <- suppressWarnings(
-    recipe(make_longitudinal_phy(), "condition", "Species")
-  )
-  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__legacy"))
-
-  expect_warning(
-    dar:::warn_model_free_da(rec),
-    class = "dar_warning_deprecated_legacy_da"
-  )
-  expect_silent(dar:::warn_model_free_da(recipe(make_longitudinal_phy())))
-})
 
 test_that("models support multiple targets and are independent of step order", {
   rec <- recipe(make_longitudinal_phy())
@@ -400,7 +388,7 @@ test_that("all engine compilers receive the same design and contrast plan", {
       ~ condition * time + batch,
       targets = "condition", tax_level = "Species", time = "time"
     )
-  engines <- c("deseq", "aldex", "ancom", "corncob", "linda", "maaslin")
+  engines <- c("deseq", "aldex2", "aldex3", "ancom", "corncob", "linda", "maaslin")
   compiled <- lapply(engines, function(engine) dar:::compile_model(rec, engine))
 
   expect_true(all(vapply(compiled, function(x) {
@@ -721,7 +709,6 @@ test_that("prep records skipped steps and errors when none can run", {
 
 test_that("sequential and parallel model execution preserve contrast IDs", {
   skip_if_not_installed("microbiome")
-  skip_if_not_installed("rstatix")
   skip_if_not_installed("furrr")
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species") |>

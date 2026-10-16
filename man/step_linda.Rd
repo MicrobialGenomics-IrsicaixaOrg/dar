@@ -24,7 +24,8 @@ step_linda(
 )
 }
 \arguments{
-\item{rec}{A \link[=Recipe-class]{Recipe} object with a centralized model.}
+\item{rec}{An unprepared \link[=Recipe-class]{Recipe} object. Execution requires
+\code{\link[=add_model]{add_model()}} before \code{\link[=prep]{prep()}}; the step can be configured first.}
 
 \item{prev_filter}{Minimum feature prevalence retained for analysis.}
 
@@ -91,7 +92,8 @@ rec_filtered <- step_linda(rec, prev_filter = 0.1)
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_deseq]{step_deseq()}},

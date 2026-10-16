@@ -17,55 +17,6 @@ rand_id <- function(prefix = "step") {
   paste(prefix, candidate, sep = "__")
 }
 
-#' Generate all unique contrasts between levels of a categorical variable.
-#'
-#' @param var categorical variable
-#' @param phy phyloseq object
-#' @param as_list boolean indicating if output must be returned as a list.
-#' @param n_cut minimum of observations by level.
-#'
-#' @return tibble or list
-#' @keywords internal
-#' @autoglobal
-#'
-#' @tests
-#' data("metaHIV_phy")
-#' phy <- metaHIV_phy
-#' var <- "RiskGroup2"
-#'
-#' is_list <- get_comparisons(var, phy)
-#' is_tibb <- get_comparisons(var, phy, as_list = FALSE)
-#' filtered <- get_comparisons(var, phy, n_cut = 30)
-#'
-#' expect_equal(class(is_list), "list")
-#' expect_s3_class(is_tibb, "tbl_df")
-#' expect_length(is_list, 3)
-#' expect_equal(nrow(is_tibb), 3)
-#' expect_length(filtered, 1)
-#'
-#' @examples
-#' data(metaHIV_phy)
-#' dar:::get_comparisons("RiskGroup2", metaHIV_phy)
-get_comparisons <- function(var, phy, as_list = TRUE, n_cut = 1) {
-  dat <-
-    phyloseq::sample_data(phy) %>%
-    to_tibble("sample_id") %>%
-    dplyr::count(!!dplyr::sym(var)) %>%
-    dplyr::filter(n >= .env$n_cut) %>%
-    dplyr::pull(!!dplyr::sym(var)) %>%
-    as.character() %>%
-    sort() %>%
-    utils::combn(m = 2) %>%
-    t() %>%
-    tibble::as_tibble(.name_repair = "minimal") %>%
-    stats::setNames(c("x", "y"))
-
-  if (as_list) {
-    dat <- purrr::map(seq_len(nrow(dat)), ~ c(dat[[.x, 1]], dat[[.x, 2]]))
-  }
-  dat
-}
-
 #' Wrapper to convert phyloseq slots to tibble
 #'
 #' @param df output of `otu_table()`, `sample_data()` or `tax_table()` phyloseq
@@ -158,9 +109,7 @@ to_tibble <- function(df, id_name = "otu_id") {
 step_to_call <- function(step) {
   fn_obj <- step_runner(step)
   args <- step
-  if (!"id" %in% names(formals(fn_obj))) {
-    args[["id"]] <- NULL
-  }
+  if (!"id" %in% names(formals(fn_obj))) { args[["id"]] <- NULL }
   rlang::call2(fn_obj, rec = quote(rec), !!!args)
 }
 
@@ -234,22 +183,32 @@ step_call_label <- function(step) {
 find_intersections <- function(rec, steps = steps_ids(rec, "da"),
                                target = NULL, contrast_id = NULL) {
   df <- intersection_df(
-    rec, steps, target = target, contrast_id = contrast_id
+    rec,
+    steps,
+    target = target,
+    contrast_id = contrast_id
   ) %>% tibble::as_tibble()
   if (!is.null(get_model(rec))) {
     return(
       df %>%
         tidyr::pivot_longer(
-          dplyr::all_of(steps), names_to = "name", values_to = "value"
+          dplyr::all_of(steps),
+          names_to = "name",
+          values_to = "value"
         ) %>%
         dplyr::filter(.data$value == 1) %>%
         dplyr::group_by(
-          .data$taxa_id, .data$contrast_id, .data$comparison,
-          .data$contrast_type, .data$var, .data$effect
+          .data$taxa_id,
+          .data$contrast_id,
+          .data$comparison,
+          .data$contrast_type,
+          .data$var,
+          .data$effect
         ) %>%
         dplyr::summarise(
           step_ids = paste(sort(unique(.data$name)), collapse = ", "),
-          sum_methods = sum(.data$value), .groups = "drop"
+          sum_methods = sum(.data$value),
+          .groups = "drop"
         ) %>%
         dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
         dplyr::arrange(dplyr::desc(.data$sum_methods))
@@ -324,7 +283,6 @@ steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
       ),
       class = "dar_error_invalid_step_type"
     )
-
   }
 
   selected_steps <- switch(
@@ -344,28 +302,16 @@ steps_ids <- function(rec, type = "all", include_skipped = FALSE) {
 
 #' @keywords internal
 #' @autoglobal
-tick <- function() {
-  crayon::green(cli::symbol$tick)
-}
-
+tick <- function() { crayon::green(cli::symbol$tick) }
 #' @keywords internal
 #' @autoglobal
-cross <- function() {
-  crayon::red(cli::symbol$cross)
-}
-
+cross <- function() { crayon::red(cli::symbol$cross) }
 #' @keywords internal
 #' @autoglobal
-info <- function() {
-  crayon::blue(cli::symbol$info)
-}
-
+info <- function() { crayon::blue(cli::symbol$info) }
 #' @keywords internal
 #' @autoglobal
-dot <- function() {
-  crayon::blue(cli::symbol$circle_filled)
-}
-
+dot <- function() { crayon::blue(cli::symbol$circle_filled) }
 #' Export step parameters as json.
 #'
 #' @param rec A Recipe object.
@@ -377,9 +323,7 @@ dot <- function() {
 .legacy_export_steps <- function(rec, file_name) {
   check_any_recipe(rec)
   inp <- rec@steps
-  if (methods::is(rec, "PrepRecipe")) {
-    inp <- c(rec@steps, rec@bakes)
-  }
+  if (methods::is(rec, "PrepRecipe")) { inp <- c(rec@steps, rec@bakes) }
   if (!is.null(get_model(rec))) {
     model <- get_model(rec)
     model$id <- "model__central"
@@ -393,11 +337,7 @@ dot <- function() {
         c(setdiff(names(.x), "id"), intersect("id", names(.x))) %>%
         purrr::map_chr(function(.y) {
           val <- .x[[.y]]
-
-          if (identical(.y, "engine_args") && length(val) == 0L) {
-            return(NA_character_)
-          }
-
+          if (identical(.y, "engine_args") && length(val) == 0L) { return(NA_character_) }
           # functions & formulas
           if (is.function(val) || inherits(val, "formula")) {
             val <-
@@ -432,7 +372,9 @@ dot <- function() {
 
           stringr::str_c(
             "   ",
-            glue::double_quote(.y), ": ", paste0(val, collapse = ""),
+            glue::double_quote(.y),
+            ": ",
+            paste0(val, collapse = ""),
             ","
           )
         }) %>%
@@ -470,12 +412,8 @@ dot <- function() {
   id_idx <- which(stringr::str_detect(lines, "id"))
   for (i in seq_along(id_idx)) {
     low_idx <- 1
-    if (i != 1) {
-      low_idx <- id_idx[i - 1] + 1
-    }
-    if (stringr::str_detect(lines[id_idx[i]], "bake_")) {
-      next
-    }
+    if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
+    if (stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
     fun_name <- lines[id_idx[i]] %>%
       stringr::str_remove_all(".*: |,|\\\"") %>%
       stringr::str_remove_all("__.*") %>%
@@ -498,20 +436,18 @@ dot <- function() {
   }
 
   if (any(stringr::str_detect(lines, "bake__"))) {
-    cli::cli_inform(c(
-      "!" = "bakes found in imported recipe",
-      "i" = "running {.fun prep}"
-    ))
+    cli::cli_inform(
+      c(
+        "!" = "bakes found in imported recipe",
+        "i" = "running {.fun prep}"
+      )
+    )
 
     rec <- prep(rec, parallel = parallel, workers = workers)
     for (i in seq_along(id_idx)) {
       low_idx <- 1
-      if (i != 1) {
-        low_idx <- id_idx[i - 1] + 1
-      }
-      if (!stringr::str_detect(lines[id_idx[i]], "bake_")) {
-        next
-      }
+      if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
+      if (!stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
       fun_name <- lines[id_idx[i]] %>%
         stringr::str_remove_all(".*: |,|\\\"") %>%
         stringr::str_remove_all("__.*") %>%
@@ -550,7 +486,6 @@ extract_instructions <- function(lines) {
 
         value <- encodeString(value, quote = "'")
       }
-
       if (stringr::str_count(value) == 0) { value <- expression(NULL) }
       stringr::str_c(param, " = ", paste0(value, sep = ""))
     })
@@ -599,9 +534,7 @@ use_rarefy <- function(phy, rarefy) {
   if (isTRUE(rarefy)) {
     phy <- phyloseq::rarefy_even_depth(phy, rngseed = 1234, verbose = FALSE)
   }
-  if (rarefy == "no_seed") {
-    phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE)
-  }
+  if (rarefy == "no_seed") { phy <- phyloseq::rarefy_even_depth(phy, verbose = FALSE) }
   phy
 }
 
@@ -612,24 +545,30 @@ rarefy_msg <- function(steps) {
   info_rarefy <- "Rarefaction is a process that randomly subsamples the data..."
   rarefy_vals <- purrr::map(steps, ~ .x[["rarefy"]])
 
-  has_true <- any(purrr::map_lgl(
-    rarefy_vals,
-    ~ isTRUE(.x) || identical(.x, as.name("T"))
-  ))
+  has_true <- any(
+    purrr::map_lgl(
+      rarefy_vals,
+      ~ isTRUE(.x) || identical(.x, as.name("T"))
+    )
+  )
   has_no_seed <- any(purrr::map_lgl(rarefy_vals, ~ identical(.x, "no_seed")))
 
   if (has_true) {
-    cli::cli_inform(c(
-      "!" = "Rarefaction is enabled (with set seed).",
-      "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
-    ))
+    cli::cli_inform(
+      c(
+        "!" = "Rarefaction is enabled (with set seed).",
+        "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
+      )
+    )
   }
 
   if (has_no_seed) {
-    cli::cli_inform(c(
-      "!" = "Rarefaction is enabled (without set seed).",
-      "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
-    ))
+    cli::cli_inform(
+      c(
+        "!" = "Rarefaction is enabled (without set seed).",
+        "i" = "This process is not without controversy. Use {.fun rarefaction_help} to get more info."
+      )
+    )
   }
 
   steps
@@ -652,10 +591,12 @@ rarefaction_help <- function() {
   cli::cli_alert_info(c("{.strong What is Rarefaction?} It is a process that randomly subsamples the data to a specified depth to account for differences in sequencing depth between samples."))
   cli::cli_text("")
   cli::cli_alert_warning("{.strong The Controversy:}")
-  cli::cli_bullets(c(
-    "i" = "It can lead to an irreversible {.strong loss of information}.",
-    "i" = "It can lead to {.strong false positives} in differential abundance testing."
-  ))
+  cli::cli_bullets(
+    c(
+      "i" = "It can lead to an irreversible {.strong loss of information}.",
+      "i" = "It can lead to {.strong false positives} in differential abundance testing."
+    )
+  )
   cli::cli_text("")
   cli::cli_alert_success("{.strong Reproducibility:} If performed with a {.emph set seed}, it ensures reproducible results, but removes randomness in the subsampling process.")
   cli::cli_alert_info("{.strong More info:} {.url https://microbiomejournal.biomedcentral.com/articles/10.1186/s40168-019-0650-2}")

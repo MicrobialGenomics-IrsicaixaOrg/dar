@@ -24,7 +24,8 @@ step_maaslin(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{min_abundance}{The minimum abundance for each feature.}
 
@@ -89,7 +90,8 @@ rec_filtered <- step_maaslin(rec, min_prevalence = 0.2)
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_deseq]{step_deseq()}},

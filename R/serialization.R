@@ -4,15 +4,10 @@ recipe_schema_format <- "dar-recipe"
 recipe_schema_version <- 1L
 
 #' @noRd
-abort_recipe_schema <- function(message, class, record = NULL, field = NULL,
-                                parent = NULL) {
+abort_recipe_schema <- function(message, class, record = NULL, field = NULL, parent = NULL) {
   details <- character()
-  if (!is.null(record)) {
-    details <- c(details, paste0("Record: `", record, "`."))
-  }
-  if (!is.null(field)) {
-    details <- c(details, paste0("Field: `", field, "`."))
-  }
+  if (!is.null(record)) { details <- c(details, paste0("Record: `", record, "`.")) }
+  if (!is.null(field)) { details <- c(details, paste0("Field: `", field, "`.")) }
   cli::cli_abort(
     c("x" = message, stats::setNames(details, rep("i", length(details)))),
     class = c(class, "dar_error_invalid_recipe_schema"),
@@ -23,8 +18,7 @@ abort_recipe_schema <- function(message, class, record = NULL, field = NULL,
 }
 
 #' @noRd
-validate_schema_fields <- function(x, allowed, required = allowed,
-                                   record = NULL, field = NULL) {
+validate_schema_fields <- function(x, allowed, required = allowed, record = NULL, field = NULL) {
   if (!is.list(x) || (length(x) > 0L && is.null(names(x)))) {
     abort_recipe_schema(
       "Expected a JSON object.", "dar_error_invalid_recipe_record",
@@ -32,8 +26,7 @@ validate_schema_fields <- function(x, allowed, required = allowed,
     )
   }
   object_names <- names(x) %||% character()
-  if (anyNA(object_names) || any(!nzchar(object_names)) ||
-      anyDuplicated(object_names)) {
+  if (anyNA(object_names) || any(!nzchar(object_names)) || anyDuplicated(object_names)) {
     abort_recipe_schema(
       "JSON object fields must be non-empty and unique.",
       "dar_error_invalid_recipe_record", record, field
@@ -44,13 +37,17 @@ validate_schema_fields <- function(x, allowed, required = allowed,
   if (length(unknown) > 0L) {
     abort_recipe_schema(
       paste0("Unknown field(s): ", paste(unknown, collapse = ", "), "."),
-      "dar_error_invalid_recipe_record", record, field
+      "dar_error_invalid_recipe_record",
+      record,
+      field
     )
   }
   if (length(missing) > 0L) {
     abort_recipe_schema(
       paste0("Missing field(s): ", paste(missing, collapse = ", "), "."),
-      "dar_error_invalid_recipe_record", record, field
+      "dar_error_invalid_recipe_record",
+      record,
+      field
     )
   }
   invisible(x)
@@ -58,14 +55,13 @@ validate_schema_fields <- function(x, allowed, required = allowed,
 
 #' @noRd
 validate_unique_json_fields <- function(x, path = "root") {
-  if (!is.list(x)) {
-    return(invisible(NULL))
-  }
+  if (!is.list(x)) { return(invisible(NULL)) }
   object_names <- names(x)
   if (!is.null(object_names) && anyDuplicated(object_names)) {
     abort_recipe_schema(
       "Duplicate JSON fields are not allowed.",
-      "dar_error_invalid_recipe_record", field = path
+      "dar_error_invalid_recipe_record",
+      field = path
     )
   }
   for (i in seq_along(x)) {
@@ -101,9 +97,7 @@ safe_atomic_values <- function(x) {
 
 #' @noRd
 encode_recipe_value <- function(value, context = "value") {
-  if (is.null(value)) {
-    return(list(type = "null"))
-  }
+  if (is.null(value)) { return(list(type = "null")) }
   if (is.function(value)) {
     cli::cli_abort(
       "Cannot export {.arg {context}} because executable functions are not supported.",
@@ -127,9 +121,7 @@ encode_recipe_value <- function(value, context = "value") {
       )
     ))
   }
-  if (is.atomic(value) && typeof(value) %in% c(
-    "character", "logical", "integer", "double"
-  )) {
+  if (is.atomic(value) && typeof(value) %in% c("character", "logical", "integer", "double")) {
     if (is.double(value) && any(!is.finite(value[!is.na(value)]))) {
       cli::cli_abort(
         "Cannot export {.arg {context}} because non-finite numbers are not supported.",
@@ -140,12 +132,9 @@ encode_recipe_value <- function(value, context = "value") {
     return(c(list(type = typeof(value)), encoded))
   }
   if (is.list(value) && !is.data.frame(value) && !methods::is(value, "S4")) {
-    if (length(value) == 0L) {
-      return(list(type = "list", entries = list()))
-    }
+    if (length(value) == 0L) { return(list(type = "list", entries = list())) }
     value_names <- names(value)
-    if (is.null(value_names) || anyNA(value_names) ||
-        any(!nzchar(value_names)) || anyDuplicated(value_names)) {
+    if (is.null(value_names) || anyNA(value_names) || any(!nzchar(value_names)) || anyDuplicated(value_names)) {
       cli::cli_abort(
         "Cannot export {.arg {context}}: nested lists must have non-empty, unique names.",
         class = "dar_error_unserializable_step"
@@ -154,6 +143,7 @@ encode_recipe_value <- function(value, context = "value") {
     entries <- purrr::map2(value, value_names, function(item, name) {
       list(name = name, value = encode_recipe_value(item, paste0(context, "$", name)))
     })
+
     return(list(type = "list", entries = unname(entries)))
   }
   cli::cli_abort(
@@ -164,22 +154,21 @@ encode_recipe_value <- function(value, context = "value") {
 
 #' @noRd
 decode_atomic_value <- function(value, type, context) {
-  validate_schema_fields(
-    value, c("type", "values", "missing", "names"),
-    record = context
-  )
-  if (!is.list(value$values) || !is.list(value$missing) ||
-      length(value$values) != length(value$missing)) {
+  validate_schema_fields(value, c("type", "values", "missing", "names"), record = context)
+  if (!is.list(value$values) || !is.list(value$missing) || length(value$values) != length(value$missing)) {
     abort_recipe_schema(
       "Atomic values and their missingness mask must be arrays of equal length.",
-      "dar_error_invalid_recipe_record", context
+      "dar_error_invalid_recipe_record",
+      context
     )
   }
   missing <- vapply(value$missing, function(x) {
     if (!is_json_scalar(x, "logical")) {
       abort_recipe_schema(
         "The missingness mask must contain only Boolean values.",
-        "dar_error_invalid_recipe_record", context, "missing"
+        "dar_error_invalid_recipe_record",
+        context,
+        "missing"
       )
     }
     x
@@ -208,32 +197,42 @@ decode_atomic_value <- function(value, type, context) {
   )
   decoded <- tryCatch(
     vapply(value$values, scalar, switch(
-      type, character = character(1), logical = logical(1),
-      integer = integer(1), double = double(1)
+      type, character = character(1),
+      logical = logical(1),
+      integer = integer(1),
+      double = double(1)
     )),
     error = function(cnd) {
       abort_recipe_schema(
-        conditionMessage(cnd), "dar_error_invalid_recipe_record",
-        context, "values", parent = cnd
+        conditionMessage(cnd),
+        "dar_error_invalid_recipe_record",
+        context, "values",
+        parent = cnd
       )
     }
   )
   decoded[missing] <- switch(
-    type, character = NA_character_, logical = NA, integer = NA_integer_,
+    type,
+    character = NA_character_,
+    logical = NA,
+    integer = NA_integer_,
     double = NA_real_
   )
   if (!is.null(value$names)) {
     if (!is.list(value$names) || length(value$names) != length(decoded)) {
       abort_recipe_schema(
         "Names must be null or an array matching the value length.",
-        "dar_error_invalid_recipe_record", context, "names"
+        "dar_error_invalid_recipe_record",
+        context,
+        "names"
       )
     }
     decoded_names <- vapply(value$names, function(x) {
       if (!is_json_scalar(x, "character")) {
         abort_recipe_schema(
           "Value names must be strings.", "dar_error_invalid_recipe_record",
-          context, "names"
+          context,
+          "names"
         )
       }
       x
@@ -241,7 +240,9 @@ decode_atomic_value <- function(value, type, context) {
     if (any(!nzchar(decoded_names)) || anyDuplicated(decoded_names)) {
       abort_recipe_schema(
         "Value names must be non-empty and unique.",
-        "dar_error_invalid_recipe_record", context, "names"
+        "dar_error_invalid_recipe_record",
+        context,
+        "names"
       )
     }
     names(decoded) <- decoded_names
@@ -254,7 +255,8 @@ decode_recipe_value <- function(value, context = "value") {
   if (!is.list(value) || !is_json_scalar(value$type, "character")) {
     abort_recipe_schema(
       "Encoded values must be objects with a scalar `type` field.",
-      "dar_error_invalid_recipe_record", context
+      "dar_error_invalid_recipe_record",
+      context
     )
   }
   type <- value$type
@@ -277,14 +279,16 @@ decode_recipe_value <- function(value, context = "value") {
     if (!is.list(value$levels) || !is_json_scalar(value$ordered, "logical")) {
       abort_recipe_schema(
         "Factor levels must be an array and `ordered` must be Boolean.",
-        "dar_error_invalid_recipe_record", context
+        "dar_error_invalid_recipe_record",
+        context
       )
     }
     levels <- vapply(value$levels, function(x) {
       if (!is_json_scalar(x, "character")) {
         abort_recipe_schema(
           "Factor levels must be strings.", "dar_error_invalid_recipe_record",
-          context, "levels"
+          context,
+          "levels"
         )
       }
       x
@@ -296,7 +300,8 @@ decode_recipe_value <- function(value, context = "value") {
     if (!is_json_scalar(value$text, "character")) {
       abort_recipe_schema(
         "Formula text must be one string.", "dar_error_invalid_recipe_record",
-        context, "text"
+        context,
+        "text"
       )
     }
     return(decode_safe_formula(value$text, context))
@@ -306,7 +311,8 @@ decode_recipe_value <- function(value, context = "value") {
     if (!is.list(value$entries)) {
       abort_recipe_schema(
         "List entries must be an array.", "dar_error_invalid_recipe_record",
-        context, "entries"
+        context,
+        "entries"
       )
     }
     entries <- purrr::map(seq_along(value$entries), function(index) {
@@ -316,7 +322,9 @@ decode_recipe_value <- function(value, context = "value") {
       if (!is_json_scalar(entry$name, "character") || !nzchar(entry$name)) {
         abort_recipe_schema(
           "List entry names must be non-empty strings.",
-          "dar_error_invalid_recipe_record", entry_context, "name"
+          "dar_error_invalid_recipe_record",
+          entry_context,
+          "name"
         )
       }
       list(
@@ -328,14 +336,18 @@ decode_recipe_value <- function(value, context = "value") {
     if (anyDuplicated(entry_names)) {
       abort_recipe_schema(
         "Nested list names must be unique.",
-        "dar_error_invalid_recipe_record", context, "entries"
+        "dar_error_invalid_recipe_record",
+        context,
+        "entries"
       )
     }
     return(stats::setNames(lapply(entries, `[[`, "value"), entry_names))
   }
   abort_recipe_schema(
     paste0("Unsupported encoded value type: `", type, "`."),
-    "dar_error_unsafe_recipe_value", context, "type"
+    "dar_error_unsafe_recipe_value",
+    context,
+    "type"
   )
 }
 
@@ -351,14 +363,18 @@ validate_safe_formula_node <- function(node, context) {
   if (!is.call(node)) {
     abort_recipe_schema(
       "Formula contains an unsupported literal or expression.",
-      "dar_error_unsafe_recipe_value", context, "formula"
+      "dar_error_unsafe_recipe_value",
+      context,
+      "formula"
     )
   }
   operator <- as.character(node[[1L]])
   if (length(operator) != 1L || !operator %in% safe_formula_operators) {
     abort_recipe_schema(
       paste0("Formula call `", paste(operator, collapse = ""), "` is not allowed."),
-      "dar_error_unsafe_recipe_value", context, "formula"
+      "dar_error_unsafe_recipe_value",
+      context,
+      "formula"
     )
   }
   lapply(as.list(node)[-1L], validate_safe_formula_node, context = context)
@@ -369,7 +385,9 @@ validate_safe_formula_node <- function(node, context) {
 validate_safe_formula <- function(formula, context = "formula") {
   if (!inherits(formula, "formula")) {
     abort_recipe_schema(
-      "Expected an R formula.", "dar_error_unsafe_recipe_value", context
+      "Expected an R formula.",
+      "dar_error_unsafe_recipe_value",
+      context
     )
   }
   validate_safe_formula_node(formula, context)
@@ -382,8 +400,11 @@ decode_safe_formula <- function(text, context = "formula") {
     str2lang(text),
     error = function(cnd) {
       abort_recipe_schema(
-        "Formula text could not be parsed.", "dar_error_unsafe_recipe_value",
-        context, "formula", parent = cnd
+        "Formula text could not be parsed.",
+        "dar_error_unsafe_recipe_value",
+        context,
+        "formula",
+        parent = cnd
       )
     }
   )
@@ -392,7 +413,10 @@ decode_safe_formula <- function(text, context = "formula") {
     error = function(cnd) {
       abort_recipe_schema(
         "Formula text does not describe a formula.",
-        "dar_error_unsafe_recipe_value", context, "formula", parent = cnd
+        "dar_error_unsafe_recipe_value",
+        context,
+        "formula",
+        parent = cnd
       )
     }
   )
@@ -412,9 +436,7 @@ safe_predicate_aggregates <- c(
 #' @noRd
 safe_predicate_environment <- function() {
   # Bind only the allowlisted functions absent from base, not all of stats.
-  env <- rlang::env(
-    baseenv(), median = stats::median, var = stats::var, sd = stats::sd
-  )
+  env <- rlang::env(baseenv(), median = stats::median, var = stats::var, sd = stats::sd)
   lockEnvironment(env, bindings = TRUE)
   env
 }
@@ -452,8 +474,10 @@ encode_predicate_node <- function(node, context = ".f") {
   }
   call_args <- as.list(node)[-1L]
   arg_names <- names(call_args) %||% rep("", length(call_args))
-  if (any(nzchar(arg_names) &
-          !(operator %in% safe_predicate_aggregates & arg_names == "na.rm"))) {
+  if (any(
+    nzchar(arg_names) &
+            !(operator %in% safe_predicate_aggregates & arg_names == "na.rm")
+  )) {
     cli::cli_abort(
       "Cannot export {.arg {context}} because the predicate contains an unsupported named argument.",
       class = "dar_error_unserializable_step"
@@ -476,7 +500,8 @@ normalize_filter_predicate <- function(predicate, context = ".f") {
       error = function(cnd) {
         cli::cli_abort(
           "{.arg {context}} must be a safely serializable one-expression function.",
-          class = "dar_error_invalid_filter_predicate", parent = cnd
+          class = "dar_error_invalid_filter_predicate",
+          parent = cnd
         )
       }
     )
@@ -486,9 +511,7 @@ normalize_filter_predicate <- function(predicate, context = ".f") {
         class = "dar_error_invalid_filter_predicate"
       )
     }
-    predicate <- rlang::new_function(
-      predicate[[2L]], predicate[[3L]], env = baseenv()
-    )
+    predicate <- rlang::new_function(predicate[[2L]], predicate[[3L]], env = baseenv())
   }
   if (!is.function(predicate)) {
     cli::cli_abort(
@@ -529,7 +552,9 @@ decode_predicate_node <- function(node, context = ".f") {
   if (!is.list(node) || !is_json_scalar(node$node, "character")) {
     abort_recipe_schema(
       "Predicate nodes must be typed JSON objects.",
-      "dar_error_unsafe_recipe_value", context, "predicate"
+      "dar_error_unsafe_recipe_value",
+      context,
+      "predicate"
     )
   }
   if (identical(node$node, "symbol")) {
@@ -537,7 +562,9 @@ decode_predicate_node <- function(node, context = ".f") {
     if (!is_json_scalar(node$name, "character") || !identical(node$name, "x")) {
       abort_recipe_schema(
         "Predicate symbols are restricted to `x`.",
-        "dar_error_unsafe_recipe_value", context, "predicate"
+        "dar_error_unsafe_recipe_value",
+        context,
+        "predicate"
       )
     }
     return(as.name("x"))
@@ -547,7 +574,9 @@ decode_predicate_node <- function(node, context = ".f") {
     if (!is_json_scalar(node$value, "logical")) {
       abort_recipe_schema(
         "Predicate logical literals must be finite Boolean values.",
-        "dar_error_unsafe_recipe_value", context, "predicate"
+        "dar_error_unsafe_recipe_value",
+        context,
+        "predicate"
       )
     }
     return(node$value)
@@ -558,7 +587,9 @@ decode_predicate_node <- function(node, context = ".f") {
         is.na(node$value) || !is.finite(node$value)) {
       abort_recipe_schema(
         "Predicate numeric literals must be finite numbers.",
-        "dar_error_unsafe_recipe_value", context, "predicate"
+        "dar_error_unsafe_recipe_value",
+        context,
+        "predicate"
       )
     }
     return(as.double(node$value))
@@ -566,17 +597,19 @@ decode_predicate_node <- function(node, context = ".f") {
   if (!identical(node$node, "call")) {
     abort_recipe_schema(
       paste0("Unknown predicate node: `", node$node, "`."),
-      "dar_error_unsafe_recipe_value", context, "predicate"
+      "dar_error_unsafe_recipe_value",
+      context,
+      "predicate"
     )
   }
-  validate_schema_fields(
-    node, c("node", "operator", "arguments"), record = context
-  )
+  validate_schema_fields(node, c("node", "operator", "arguments"), record = context)
   if (!is_json_scalar(node$operator, "character") ||
       !node$operator %in% safe_predicate_calls || !is.list(node$arguments)) {
     abort_recipe_schema(
-      "Predicate call is not allowlisted.", "dar_error_unsafe_recipe_value",
-      context, "predicate"
+      "Predicate call is not allowlisted.",
+      "dar_error_unsafe_recipe_value",
+      context,
+      "predicate"
     )
   }
   args <- purrr::map(seq_along(node$arguments), function(index) {
@@ -589,7 +622,9 @@ decode_predicate_node <- function(node, context = ".f") {
         !node$operator %in% safe_predicate_aggregates)) {
       abort_recipe_schema(
         "Predicate named argument is not allowlisted.",
-        "dar_error_unsafe_recipe_value", arg_context, "name"
+        "dar_error_unsafe_recipe_value",
+        arg_context,
+        "name"
       )
     }
     list(name = name, value = decode_predicate_node(argument$value, arg_context))
@@ -602,22 +637,20 @@ decode_predicate_node <- function(node, context = ".f") {
 
 #' @noRd
 decode_filter_predicate <- function(value, context = ".f") {
-  validate_schema_fields(
-    value, c("type", "argument", "body"), record = context
-  )
+  validate_schema_fields(value, c("type", "argument", "body"), record = context)
   if (!is_json_scalar(value$type, "character") ||
       !identical(value$type, "predicate") ||
       !is_json_scalar(value$argument, "character") ||
       !identical(value$argument, "x")) {
     abort_recipe_schema(
       "Filter predicates must declare the single argument `x`.",
-      "dar_error_unsafe_recipe_value", context, "predicate"
+      "dar_error_unsafe_recipe_value",
+      context,
+      "predicate"
     )
   }
   body <- decode_predicate_node(value$body, context)
-  rlang::new_function(
-    formals(function(x) NULL), body, env = safe_predicate_environment()
-  )
+  rlang::new_function(formals(function(x) NULL), body, env = safe_predicate_environment())
 }
 
 #' @noRd
@@ -628,11 +661,7 @@ recipe_serialization_registry <- function() {
     } else {
       paste0("step_", spec$method)
     }
-    list(
-      constructor = constructor,
-      role = spec$role,
-      concrete_class = concrete_class
-    )
+    list(constructor = constructor, role = spec$role, concrete_class = concrete_class)
   })
   stats::setNames(registry, vapply(registry, `[[`, character(1), "constructor"))
 }
@@ -709,8 +738,13 @@ export_steps <- function(rec, file_name) {
   }
   document <- recipe_serialization_document(rec)
   jsonlite::write_json(
-    document, path = file_name, auto_unbox = TRUE, pretty = TRUE,
-    null = "null", na = "null", digits = NA
+    document,
+    path = file_name,
+    auto_unbox = TRUE,
+    pretty = TRUE,
+    null = "null",
+    na = "null",
+    digits = NA
   )
   invisible(file_name)
 }
@@ -728,7 +762,8 @@ read_recipe_document <- function(file) {
       !nzchar(file) || !file.exists(file)) {
     abort_recipe_schema(
       "{.arg file} must identify one existing readable file.",
-      "dar_error_invalid_recipe_file", field = "file"
+      "dar_error_invalid_recipe_file",
+      field = "file"
     )
   }
   text <- paste(readLines(file, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
@@ -743,7 +778,8 @@ read_recipe_document <- function(file) {
       )
     }
     abort_recipe_schema(
-      "The recipe file is not valid JSON.", "dar_error_invalid_recipe_file",
+      "The recipe file is not valid JSON.",
+      "dar_error_invalid_recipe_file",
       field = "file"
     )
   }
@@ -752,7 +788,9 @@ read_recipe_document <- function(file) {
     error = function(cnd) {
       abort_recipe_schema(
         "The recipe JSON could not be decoded.",
-        "dar_error_invalid_recipe_file", field = "file", parent = cnd
+        "dar_error_invalid_recipe_file",
+        field = "file",
+        parent = cnd
       )
     }
   )
@@ -770,13 +808,13 @@ constructor_arguments <- function(constructor) {
 #' @noRd
 decode_step_record <- function(record, section, index) {
   context <- paste0(section, "[[", index, "]]")
-  validate_schema_fields(
-    record, c("constructor", "id", "arguments"), record = context
-  )
+  validate_schema_fields(record, c("constructor", "id", "arguments"), record = context)
   if (!is_json_scalar(record$constructor, "character")) {
     abort_recipe_schema(
-      "Constructor must be one string.", "dar_error_invalid_recipe_record",
-      context, "constructor"
+      "Constructor must be one string.",
+      "dar_error_invalid_recipe_record",
+      context,
+      "constructor"
     )
   }
   registry <- recipe_serialization_registry()
@@ -784,41 +822,50 @@ decode_step_record <- function(record, section, index) {
   if (is.null(spec)) {
     abort_recipe_schema(
       paste0("Constructor `", record$constructor, "` is not supported."),
-      "dar_error_invalid_recipe_record", context, "constructor"
+      "dar_error_invalid_recipe_record",
+      context,
+      "constructor"
     )
   }
   expected_role <- if (identical(section, "bakes")) "bake" else c("preprocessing", "da")
   if (!spec$role %in% expected_role) {
     abort_recipe_schema(
       paste0("Constructor `", record$constructor, "` is not valid in `", section, "`."),
-      "dar_error_invalid_recipe_record", context, "constructor"
+      "dar_error_invalid_recipe_record",
+      context,
+      "constructor"
     )
   }
   if (!is_json_scalar(record$id, "character") || !nzchar(record$id)) {
     abort_recipe_schema(
       "Step ID must be one non-empty string.",
-      "dar_error_invalid_recipe_record", context, "id"
+      "dar_error_invalid_recipe_record",
+      context,
+      "id"
     )
   }
   id_problems <- step_id_validation_problems(record$id, spec$role)
   if (length(id_problems) > 0L) {
-    abort_recipe_schema(
-      id_problems, "dar_error_invalid_recipe_record", context, "id"
-    )
+    abort_recipe_schema(id_problems, "dar_error_invalid_recipe_record", context, "id")
   }
   if (!is.list(record$arguments) ||
       (length(record$arguments) > 0L && is.null(names(record$arguments)))) {
     abort_recipe_schema(
       "Step arguments must be a JSON object.",
-      "dar_error_invalid_recipe_record", context, "arguments"
+      "dar_error_invalid_recipe_record",
+      context,
+      "arguments"
     )
   }
   formals <- constructor_arguments(record$constructor)
   allowed <- names(formals)
   required <- allowed[vapply(formals, identical, logical(1), quote(expr = ))]
   validate_schema_fields(
-    record$arguments, allowed, required,
-    record = context, field = "arguments"
+    record$arguments,
+    allowed,
+    required,
+    record = context,
+    field = "arguments"
   )
   arguments <- stats::setNames(lapply(names(record$arguments), function(name) {
     value_context <- paste0(context, "$arguments$", name)
@@ -850,7 +897,9 @@ decode_model_record <- function(model) {
   if (!inherits(decoded$formula, "formula")) {
     abort_recipe_schema(
       "The central model formula must use the formula value type.",
-      "dar_error_invalid_recipe_record", "model", "formula"
+      "dar_error_invalid_recipe_record",
+      "model",
+      "formula"
     )
   }
   decoded
@@ -859,27 +908,33 @@ decode_model_record <- function(model) {
 #' @noRd
 decode_recipe_document <- function(document) {
   validate_schema_fields(
-    document, c("format", "version", "model", "steps", "bakes"),
+    document,
+    c("format", "version", "model", "steps", "bakes"),
     record = "root"
   )
   if (!is_json_scalar(document$format, "character") ||
       !identical(document$format, recipe_schema_format)) {
     abort_recipe_schema(
       "Unsupported recipe serialization format.",
-      "dar_error_unsupported_recipe_schema", "root", "format"
+      "dar_error_unsupported_recipe_schema",
+      "root",
+      "format"
     )
   }
   if (!is.numeric(document$version) || length(document$version) != 1L ||
       is.na(document$version) || document$version != recipe_schema_version) {
     abort_recipe_schema(
       paste0("Unsupported recipe schema version; expected ", recipe_schema_version, "."),
-      "dar_error_unsupported_recipe_schema", "root", "version"
+      "dar_error_unsupported_recipe_schema",
+      "root",
+      "version"
     )
   }
   if (!is.list(document$steps) || !is.list(document$bakes)) {
     abort_recipe_schema(
       "`steps` and `bakes` must be JSON arrays.",
-      "dar_error_invalid_recipe_record", "root"
+      "dar_error_invalid_recipe_record",
+      "root"
     )
   }
   steps <- lapply(seq_along(document$steps), function(index) {
@@ -893,7 +948,9 @@ decode_recipe_document <- function(document) {
   if (length(duplicate_ids) > 0L) {
     abort_recipe_schema(
       paste0("Step IDs must be unique; duplicated: ", paste(duplicate_ids, collapse = ", "), "."),
-      "dar_error_invalid_recipe_record", "root", "id"
+      "dar_error_invalid_recipe_record",
+      "root",
+      "id"
     )
   }
   list(model = decode_model_record(document$model), steps = steps, bakes = bakes)
@@ -913,20 +970,26 @@ apply_serialized_step <- function(rec, spec) {
 assert_prepared_import_matches <- function(rec, document) {
   current <- recipe_serialization_document(rec)
   canonical_json <- function(x) {
-    as.character(jsonlite::toJSON(
-      x, auto_unbox = TRUE, null = "null", na = "null", digits = NA
-    ))
+    as.character(
+      jsonlite::toJSON(
+        x,
+        auto_unbox = TRUE,
+        null = "null",
+        na = "null",
+        digits = NA
+      )
+    )
   }
   model_matches <- identical(
-    canonical_json(current$model), canonical_json(document$model)
+    canonical_json(current$model),
+    canonical_json(document$model)
   )
-  steps_match <- identical(
-    canonical_json(current$steps), canonical_json(document$steps)
-  )
+  steps_match <- identical(canonical_json(current$steps), canonical_json(document$steps))
   if (!model_matches || !steps_match) {
     abort_recipe_schema(
       "The serialized model and steps do not match the supplied `PrepRecipe`.",
-      "dar_error_recipe_import_mismatch", "root"
+      "dar_error_recipe_import_mismatch",
+      "root"
     )
   }
   invisible(NULL)

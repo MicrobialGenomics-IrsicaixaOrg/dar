@@ -36,7 +36,7 @@ test_that("ALDEx2 compiles and executes a centralized contrast", {
   withr::local_seed(130)
   rec <- model_smoke_recipe()
   result <- suppressWarnings(
-    dar:::run_aldex_model(rec, 0.05, 8, "all", FALSE)
+    dar:::run_aldex2_model(rec, 0.05, 8, "all", FALSE)
   )
   expect_complete_model_result(result, rec)
   expect_model_directions(result)
@@ -207,15 +207,15 @@ test_that("ALDEx2 routes advanced arguments through CLR and GLM only", {
   stages <- record_engine_stages()
   withr::local_seed(130)
   rec <- model_smoke_recipe()
-  result <- suppressWarnings(dar:::run_aldex_model(
+  result <- suppressWarnings(dar:::run_aldex2_model(
     rec, 0.05, 8, "all", FALSE,
-    engine_args = dar:::normalize_engine_args("aldex", list(
+    engine_args = dar:::normalize_engine_args("aldex2", list(
       clr = list(useMC = FALSE), fit = list(verbose = FALSE)
     ))
   ))
   expect_complete_model_result(result, rec)
   expect_setequal(
-    unique(stages()), c("aldex:clr", "aldex:fit")
+    unique(stages()), c("aldex2:clr", "aldex2:fit")
   )
 })
 

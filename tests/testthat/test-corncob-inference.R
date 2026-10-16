@@ -69,51 +69,6 @@ test_that("central corncob propagates robust covariance to its decisions", {
   expect_identical(robust$contrast_id, basic$contrast_id)
 })
 
-test_that("legacy corncob forwards the requested bootstrap count", {
-  skip_if_not_installed("corncob")
-  calls <- list()
-  testthat::local_mocked_bindings(
-    differentialTest = function(formula, data, phi.formula, formula_null,
-                                phi.formula_null, link, phi.link, test,
-                                boot, B, filter_discriminant, fdr_cutoff, fdr) {
-      calls[[length(calls) + 1L]] <<- list(B = B, boot = boot)
-      ids <- phyloseq::taxa_names(data)
-      models <- lapply(ids, function(id) {
-        list(
-          np.mu = 2L,
-          coefficients = rbind(
-            intercept = c(Estimate = 0, Std.Error = 0.1),
-            conditiontreated = c(Estimate = 1, Std.Error = 0.1)
-          )
-        )
-      })
-      structure(list(
-        data = data, significant_taxa = ids, significant_models = models,
-        p_fdr = stats::setNames(rep(0.01, length(ids)), ids)
-      ), class = "differentialTest")
-    },
-    .package = "corncob"
-  )
-  phy <- make_longitudinal_phy()
-  taxonomy <- cbind(
-    Genus = paste0("Genus_", seq_len(phyloseq::ntaxa(phy))),
-    as(phyloseq::tax_table(phy), "matrix")
-  )
-  phyloseq::tax_table(phy) <- phyloseq::tax_table(taxonomy)
-  rec <- suppressWarnings(recipe(phy, "condition", "Species"))
-
-  custom <- rec |>
-    step_corncob(boot = TRUE, B = 7L, id = "corncob__bootstrap_custom")
-  default <- rec |>
-    step_corncob(boot = TRUE, id = "corncob__bootstrap_default")
-  custom_prepared <- suppressWarnings(prep(custom, parallel = FALSE))
-  default_prepared <- suppressWarnings(prep(default, parallel = FALSE))
-  expect_s4_class(custom_prepared, "PrepRecipe")
-  expect_s4_class(default_prepared, "PrepRecipe")
-  expect_identical(calls, list(
-    list(B = 7L, boot = TRUE), list(B = 1000, boot = TRUE)
-  ))
-})
 
 test_that("corncob robust covariance agrees with the native implementation", {
   skip_if_not_installed("corncob")

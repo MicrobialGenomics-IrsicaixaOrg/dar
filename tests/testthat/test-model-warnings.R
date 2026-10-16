@@ -6,7 +6,7 @@ test_that("default engine designs do not produce model override warnings", {
   rec <- recipe(make_longitudinal_phy()) |>
     add_model(~ condition, targets = "condition", tax_level = "Species")
   constructors <- list(
-    step_aldex, step_ancom, step_corncob, step_deseq,
+    step_aldex2, step_aldex3, step_ancom, step_corncob, step_deseq,
     step_lefse, step_linda, step_maaslin, step_wilcox
   )
 

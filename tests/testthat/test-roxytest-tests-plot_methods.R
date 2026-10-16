@@ -15,7 +15,7 @@ test_that("Function corr_heatmap() @ L32", {
 })
 
 
-test_that("Function intersection_plt() @ L104", {
+test_that("Function intersection_plt() @ L106", {
   data(test_rec)
   data(test_prep_rec)
   expect_error(intersection_plt(test_rec))
@@ -28,7 +28,7 @@ test_that("Function intersection_plt() @ L104", {
 })
 
 
-test_that("Function exclusion_plt() @ L159", {
+test_that("Function exclusion_plt() @ L158", {
   data(test_rec)
   data(test_prep_rec)
   
@@ -41,7 +41,7 @@ test_that("Function exclusion_plt() @ L159", {
 })
 
 
-test_that("Function abundance_plt() @ L308", {
+test_that("Function abundance_plt() @ L305", {
   data(test_rec)
   data(test_prep_rec)
   results <- tidy_results(test_prep_rec)
@@ -82,7 +82,7 @@ test_that("Function abundance_plt() @ L308", {
 })
 
 
-test_that("Function mutual_plt() @ L456", {
+test_that("Function mutual_plt() @ L443", {
   data(test_rec)
   data(test_prep_rec)
   comparison <- tidy_results(test_prep_rec)$comparison[[1]]

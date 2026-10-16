@@ -136,69 +136,7 @@ test_that("robust ANCOM-BC2 does not silently fall back to basic calls or q", {
   )
 })
 
-test_that("legacy ANCOM-BC2 extraction uses robust calls without altering q", {
-  rec <- suppressWarnings(recipe(
-    make_longitudinal_phy(), var_info = "condition", tax_info = "Species"
-  ))
-  native <- ancom_significance_fixture()
-  robust <- dar:::ancom_stats_tbl(
-    native, "condition", rec, c("control", "treated")
-  )
-  basic <- dar:::ancom_stats_tbl(
-    native, "condition", rec, c("control", "treated"), pseudo_sens = FALSE
-  )
 
-  expect_identical(robust$signif, native$diff_robust_conditiontreated)
-  expect_identical(basic$signif, native$diff_conditiontreated)
-  expect_identical(robust$q, native$q_conditiontreated)
-  expect_identical(robust$effect, native$lfc_conditiontreated)
-  expect_identical(robust$diff, native$diff_conditiontreated)
-  expect_identical(robust$passed_ss, native$passed_ss_conditiontreated)
-
-  native$diff_robust_conditiontreated <- NULL
-  expect_error(
-    dar:::ancom_stats_tbl(
-      native, "condition", rec, c("control", "treated")
-    ),
-    class = "dar_error_invalid_result_contract"
-  )
-  expect_identical(
-    dar:::ancom_stats_tbl(
-      native, "condition", rec, c("control", "treated"), pseudo_sens = FALSE
-    )$signif,
-    native$diff_conditiontreated
-  )
-})
-
-test_that("legacy ANCOM-BC2 execution enables and propagates robust calls", {
-  skip_if_not_installed("ANCOMBC")
-  native <- ancom_significance_fixture()
-  observed <- logical()
-  testthat::local_mocked_bindings(
-    ancombc2 = function(pseudo_sens = FALSE, ...) {
-      observed <<- c(observed, pseudo_sens)
-      list(res = native)
-    },
-    .package = "ANCOMBC"
-  )
-  rec <- suppressWarnings(recipe(
-    make_longitudinal_phy(), var_info = "condition", tax_info = "Species"
-  )) |>
-    step_ancom(id = "ancom__legacy_robust")
-  prepared <- suppressWarnings(prep(rec, parallel = FALSE))
-
-  expect_identical(observed, TRUE)
-  expect_identical(
-    prepared@results$ancom__legacy_robust$condition$signif,
-    native$diff_robust_conditiontreated
-  )
-  expect_identical(
-    tidy_results(prepared, significant_only = TRUE)$taxa_id, "taxon_2"
-  )
-  expect_identical(
-    cool(bake(prepared, count_cutoff = 1))$taxa_id, "taxon_2"
-  )
-})
 
 test_that("ANCOM-BC2 significance columns must match the requested mode", {
   columns <- c(

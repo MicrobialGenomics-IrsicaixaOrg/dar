@@ -19,7 +19,8 @@ step_lefse(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{kruskal.threshold}{numeric(1) The p-value for the Kruskal-Wallis Rank
 Sum Test (default 0.05).}
@@ -83,7 +84,8 @@ rec_higher_lda <- step_lefse(rec, lda.threshold = 3)
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_deseq]{step_deseq()}},

@@ -33,34 +33,23 @@
 #'
 #' recipe(metaHIV_phy) |>
 #'   step_filter_by_variance()
-step_filter_by_variance <- function(rec, 
-                                    threshold = 0.01, 
+step_filter_by_variance <- function(rec,
+                                    threshold = 0.01,
                                     id = rand_id("filter_by_variance")) {
-  
   check_recipe(rec)
-  recipes_pkg_check(
-    required_pkgs_filter_by_variance(), 
-    "step_filter_by_variance()"
-  )
-  
-  add_step(
-    rec,
-    step(
-      subclass = "filter_by_variance", 
-      threshold = threshold, 
-      id = id
-    )
-  )
+  recipes_pkg_check(required_pkgs_filter_by_variance(), "step_filter_by_variance()")
+
+  add_step(rec, step(subclass = "filter_by_variance", threshold = threshold, id = id))
 }
 
 #' @noRd
 #' @autoglobal
 #' @keywords internal
 run_filter_by_variance <- function(rec, threshold = 0.01, id) {
-  rec@phyloseq <- 
+  rec@phyloseq <-
     get_phy(rec) %>%
-    phyloseq::filter_taxa(function(x) stats::var(x) > threshold, TRUE) 
-  
+    phyloseq::filter_taxa(function(x) stats::var(x) > threshold, TRUE)
+
   rec
 }
 

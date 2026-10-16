@@ -14,6 +14,9 @@ A list containing the recorded \code{contrasts}, \code{dropped_samples},
 \code{executed_steps} and \code{skipped_steps}. The contrasts and skipped-step tables
 retain their existing columns, including incompatibility reasons. No
 centralized model also yields \code{NULL} contrasts in current recipes.
+When supplied by an engine, an additional \code{engine_details} list records
+its effective settings and package version. ALDEx3 records its seed,
+scale-model basis, Monte Carlo settings, fitting engine and elapsed time.
 }
 \description{
 \code{get_execution()} exposes the manifest recorded by \code{\link[=prep]{prep()}} without

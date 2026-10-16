@@ -9,24 +9,7 @@ test_that("Function rand_id() @ L15", {
 })
 
 
-test_that("Function get_comparisons() @ L49", {
-  data("metaHIV_phy")
-  phy <- metaHIV_phy
-  var <- "RiskGroup2"
-  
-  is_list <- get_comparisons(var, phy)
-  is_tibb <- get_comparisons(var, phy, as_list = FALSE)
-  filtered <- get_comparisons(var, phy, n_cut = 30)
-  
-  expect_equal(class(is_list), "list")
-  expect_s3_class(is_tibb, "tbl_df")
-  expect_length(is_list, 3)
-  expect_equal(nrow(is_tibb), 3)
-  expect_length(filtered, 1)
-})
-
-
-test_that("Function to_tibble() @ L96", {
+test_that("Function to_tibble() @ L47", {
   data("metaHIV_phy")
   phy <- metaHIV_phy
   df <- phyloseq::otu_table(phy)
@@ -42,7 +25,7 @@ test_that("Function to_tibble() @ L96", {
 })
 
 
-test_that("Function step_to_call() @ L158", {
+test_that("Function step_to_call() @ L109", {
   # 1. Test standard string and numeric parameters
   step_standard <- step("maaslin",
     id = "maaslin__123",
@@ -84,7 +67,7 @@ test_that("Function step_to_call() @ L158", {
 })
 
 
-test_that("Function find_intersections() @ L234", {
+test_that("Function find_intersections() @ L183", {
   data(test_prep_rec)
   res_1 <- find_intersections(
     test_prep_rec, steps = steps_ids(test_prep_rec, type = "da")
@@ -119,7 +102,7 @@ test_that("Function find_intersections() @ L234", {
 })
 
 
-test_that("Function steps_ids() @ L317", {
+test_that("Function steps_ids() @ L276", {
   data(test_prep_rec)
   expect_snapshot(
     print(test_prep_rec),

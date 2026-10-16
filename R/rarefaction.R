@@ -48,13 +48,7 @@
 step_rarefaction <- function(rec, id = rand_id("rarefaction")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")
-  add_step(
-    rec,
-    step(
-      subclass = "rarefaction", 
-      id = id
-    )
-  )
+  add_step(rec, step(subclass = "rarefaction", id = id))
 }
 
 #' @noRd

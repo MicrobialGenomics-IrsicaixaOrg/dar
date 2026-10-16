@@ -1,13 +1,13 @@
 # Function recipes_pkg_check() @ L18
 
     Code
-      dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex()")
+      dar:::recipes_pkg_check(dar:::required_pkgs_error(), "step_aldex2()")
     Message
-      i 2 packages are needed for "step_aldex()" and is not installed: randompackage and packrandom.
+      i 2 packages are needed for "step_aldex2()" and is not installed: randompackage and packrandom.
       * Start a clean R session then run: `BiocManager::install(c("randompackage", "packrandom"))`
 
 ---
 
     Code
-      dar:::recipes_pkg_check(dar:::required_pkgs_aldex(), "step_aldex()")
+      dar:::recipes_pkg_check(dar:::required_pkgs_aldex2(), "step_aldex2()")
 

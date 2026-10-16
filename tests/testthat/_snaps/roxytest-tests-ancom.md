@@ -1,4 +1,4 @@
-# Function step_ancom() @ L126
+# Function step_ancom() @ L119
 
     Code
       res
@@ -14,6 +14,6 @@
       
            v ancom__Utap diff_taxa = 2 
       
-           i 0 taxa are present in all tested methods 
+           i 2 taxon-contrast effects are present in all tested methods 
       
 

@@ -19,7 +19,8 @@ step_deseq(
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of
-operations for this Recipe.}
+operations for this Recipe. Execution requires \code{\link[=add_model]{add_model()}} before
+\code{\link[=prep]{prep()}}; the step can be configured before adding the model.}
 
 \item{test}{Either "Wald" or "LRT", which will then use either Wald
 significance tests (defined by nbinomWaldTest), or the likelihood ratio
@@ -96,7 +97,8 @@ rec_custom <- step_deseq(
 }
 \seealso{
 Other Diff taxa steps:
-\code{\link[=step_aldex]{step_aldex()}},
+\code{\link[=step_aldex2]{step_aldex2()}},
+\code{\link[=step_aldex3]{step_aldex3()}},
 \code{\link[=step_ancom]{step_ancom()}},
 \code{\link[=step_corncob]{step_corncob()}},
 \code{\link[=step_lefse]{step_lefse()}},

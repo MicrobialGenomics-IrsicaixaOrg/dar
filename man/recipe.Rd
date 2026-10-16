@@ -28,8 +28,6 @@ any context. Deprecated; supply \code{tax_level} to \code{\link[=add_model]{add_
 \value{
 An object of class \code{Recipe} containing the microbiome object, an
 optional centralized model and the configured processing or DA steps.
-Legacy selector slots are retained for compatibility during the
-deprecation cycle.
 }
 \description{
 A Recipe is a description of the steps to be applied to a data set in order

@@ -1,11 +1,13 @@
-test_that("step_linda requires a centralized model", {
+test_that("LinDA can be configured before adding the required model", {
   skip_if_not_installed("MicrobiomeStat")
-  legacy <- recipe(make_longitudinal_phy())
-
+  rec <- step_linda(recipe(make_longitudinal_phy()))
   expect_error(
-    step_linda(legacy),
+    prep(rec, parallel = FALSE),
     class = "dar_error_model_required"
   )
+  expect_silent(add_model(
+    rec, ~ condition, targets = "condition", tax_level = "Species"
+  ))
 })
 
 test_that("step_linda stores validated public and advanced arguments", {

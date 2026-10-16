@@ -2,7 +2,7 @@
 
 # File R/rarefaction.R: @tests
 
-test_that("Function step_rarefaction() @ L58", {
+test_that("Function step_rarefaction() @ L48", {
   data(metaHIV_phy)
   data(test_prep_rec)
   test <- 

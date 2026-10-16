@@ -1,4 +1,4 @@
-make_legacy_maaslin_phy <- function(taxa_are_rows = TRUE) {
+make_model_maaslin_phy <- function(taxa_are_rows = TRUE) {
   counts <- rbind(
     ASV_1 = c(40, 50, 60, 70, 80, 90),
     ASV_2 = c(10, 12, 14, 16, 18, 20),
@@ -27,20 +27,30 @@ make_legacy_maaslin_phy <- function(taxa_are_rows = TRUE) {
   )
 }
 
-capture_legacy_maaslin_inputs <- function() {
+capture_model_maaslin_inputs <- function() {
   calls <- list()
   testthat::local_mocked_bindings(
-    maaslin3_quietly = function(input_data, input_metadata, ...) {
-      calls[[length(calls) + 1L]] <<- list(
-        counts = input_data, metadata = input_metadata
-      )
-      list(result = list(fit_data_abundance = list(results = data.frame(
-        feature = rownames(input_data),
-        coef = seq_len(nrow(input_data)),
-        stderr = 0.1,
-        pval_individual = 0.01,
-        qval_individual = 0.02
-      ))))
+    engine_stage_function = function(engine, stage) {
+      expect_identical(engine, "maaslin")
+      if (identical(stage, "fit")) {
+        return(function(input_data, input_metadata, ...) {
+          calls[[length(calls) + 1L]] <<- list(
+            counts = input_data, metadata = input_metadata
+          )
+          rownames(input_data)
+        })
+      }
+      function(maaslin3_fit, contrast_mat, ...) {
+        list(fit_data_abundance = list(results = data.frame(
+          feature = maaslin3_fit,
+          test = rownames(contrast_mat),
+          coef = seq_along(maaslin3_fit),
+          stderr = 0.1,
+          pval_individual = 0.01,
+          qval_individual = 0.02,
+          error = NA_character_
+        )))
+      }
     },
     .package = "dar",
     .env = parent.frame()
@@ -48,7 +58,7 @@ capture_legacy_maaslin_inputs <- function() {
   function() calls
 }
 
-run_legacy_maaslin_counts <- function(rec, rarefy = FALSE) {
+run_model_maaslin_counts <- function(rec, rarefy = FALSE) {
   dar:::run_maaslin(
     rec = rec,
     min_abundance = 0,
@@ -63,15 +73,16 @@ run_legacy_maaslin_counts <- function(rec, rarefy = FALSE) {
     reference = NULL,
     median_comparison_abundance = TRUE,
     rarefy = rarefy,
-    id = "maaslin__legacy_aggregation"
+    id = "maaslin__aggregation"
   )
 }
 
-test_that("legacy MaAsLin fits aggregated counts in either OTU orientation", {
-  calls <- capture_legacy_maaslin_inputs()
+test_that("MaAsLin fits aggregated counts in either OTU orientation", {
+  calls <- capture_model_maaslin_inputs()
   for (taxa_are_rows in c(TRUE, FALSE)) {
-    phy <- make_legacy_maaslin_phy(taxa_are_rows)
-    rec <- suppressWarnings(recipe(phy, "condition", "Genus"))
+    phy <- make_model_maaslin_phy(taxa_are_rows)
+    rec <- recipe(phy) |>
+      add_model(~ condition, targets = "condition", tax_level = "Genus")
     original <- get_phy(rec)
     counts <- as(phyloseq::otu_table(phy), "matrix")
     if (!taxa_are_rows) counts <- t(counts)
@@ -81,18 +92,18 @@ test_that("legacy MaAsLin fits aggregated counts in either OTU orientation", {
     )
 
     previous_calls <- length(calls())
-    result <- run_legacy_maaslin_counts(rec)$condition
+    result <- run_model_maaslin_counts(rec)$model
     observed <- tail(calls(), length(calls()) - previous_calls)
 
-    expect_length(observed, 3L)
+    expect_length(observed, 1L)
     for (call in observed) {
       expect_identical(colnames(call$counts), rownames(call$metadata))
       expect_equal(
         call$counts,
         expected[, rownames(call$metadata), drop = FALSE]
       )
-      expect_equal(ncol(call$counts), 4L)
-      expect_length(unique(call$metadata$condition), 2L)
+      expect_equal(ncol(call$counts), 6L)
+      expect_length(unique(call$metadata$condition), 3L)
     }
     expect_equal(nrow(result), 9L)
     expect_setequal(result$taxa_id, rownames(expected))
@@ -108,31 +119,30 @@ test_that("legacy MaAsLin fits aggregated counts in either OTU orientation", {
   }
 })
 
-test_that("legacy MaAsLin fits rarefied rather than stored counts", {
+test_that("MaAsLin fits rarefied rather than stored counts", {
   withr::local_seed(130)
-  calls <- capture_legacy_maaslin_inputs()
+  calls <- capture_model_maaslin_inputs()
   for (taxa_are_rows in c(TRUE, FALSE)) {
-    phy <- make_legacy_maaslin_phy(taxa_are_rows)
-    rec <- suppressWarnings(recipe(phy, "condition", "Genus"))
-    expected_phy <- phyloseq::rarefy_even_depth(
-      phy, rngseed = 1234, verbose = FALSE
-    ) |>
-      phyloseq::tax_glom(taxrank = "Genus", NArm = FALSE)
+    phy <- make_model_maaslin_phy(taxa_are_rows)
+    rec <- recipe(phy) |>
+      add_model(~ condition, targets = "condition", tax_level = "Genus")
+    expected_phy <- phyloseq::tax_glom(phy, taxrank = "Genus", NArm = FALSE) |>
+      phyloseq::rarefy_even_depth(rngseed = 1234, verbose = FALSE)
     expected <- as(phyloseq::otu_table(expected_phy), "matrix")
     if (!taxa_are_rows) expected <- t(expected)
     target_depth <- min(phyloseq::sample_sums(phy))
 
     previous_calls <- length(calls())
-    result <- run_legacy_maaslin_counts(rec, rarefy = TRUE)$condition
+    result <- run_model_maaslin_counts(rec, rarefy = TRUE)$model
     observed <- tail(calls(), length(calls()) - previous_calls)
 
-    expect_length(observed, 3L)
+    expect_length(observed, 1L)
     for (call in observed) {
       expect_equal(
         call$counts,
         expected[, rownames(call$metadata), drop = FALSE]
       )
-      expect_equal(unname(colSums(call$counts)), rep(target_depth, 4L))
+      expect_equal(unname(colSums(call$counts)), rep(target_depth, 6L))
       expect_identical(colnames(call$counts), rownames(call$metadata))
     }
     expect_setequal(result$taxa_id, rownames(expected))

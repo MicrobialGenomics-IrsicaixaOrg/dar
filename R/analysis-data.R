@@ -98,8 +98,7 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
 
   taxonomy <- recipe_taxonomy_data(rec, phy = phy)
   tax_level <- recipe_tax_level(rec)
-  result$taxa <- if (length(tax_level) == 1L &&
-                     tax_level %in% names(taxonomy)) {
+  result$taxa <- if (length(tax_level) == 1L && tax_level %in% names(taxonomy)) {
     taxonomy[[tax_level]][match(result$taxa_id, taxonomy$taxa_id)]
   } else {
     result$taxa_id
@@ -110,10 +109,7 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
     setdiff(names(taxonomy), "taxa_id"),
     drop = FALSE
   ]
-  if (ncol(taxonomy) > 0L) {
-    names(taxonomy) <- paste0("taxonomy_", names(taxonomy))
-  }
-
+  if (ncol(taxonomy) > 0L) { names(taxonomy) <- paste0("taxonomy_", names(taxonomy)) }
   sample_metadata <- tryCatch(
     as(phyloseq::sample_data(phy), "data.frame"),
     error = function(cnd) NULL
@@ -126,9 +122,7 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
       class = "dar_error_invalid_input"
     )
   }
-  if (length(metadata_names) == 0L) {
-    return(dplyr::bind_cols(result, taxonomy))
-  }
+  if (length(metadata_names) == 0L) { return(dplyr::bind_cols(result, taxonomy)) }
   sample_metadata <- sample_metadata[
     match(result$sample_id, rownames(sample_metadata)),
     metadata_names,
@@ -155,6 +149,9 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
 #'   `executed_steps` and `skipped_steps`. The contrasts and skipped-step tables
 #'   retain their existing columns, including incompatibility reasons. No
 #'   centralized model also yields `NULL` contrasts in current recipes.
+#'   When supplied by an engine, an additional `engine_details` list records
+#'   its effective settings and package version. ALDEx3 records its seed,
+#'   scale-model basis, Monte Carlo settings, fitting engine and elapsed time.
 #' @export
 #' @autoglobal
 #' @examples
@@ -166,5 +163,6 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
 get_execution <- function(rec) {
   check_prep_recipe(rec)
   fields <- c("contrasts", "dropped_samples", "executed_steps", "skipped_steps")
+  if (!is.null(rec@execution$engine_details)) { fields <- c(fields, "engine_details") }
   stats::setNames(lapply(fields, function(field) rec@execution[[field]]), fields)
 }

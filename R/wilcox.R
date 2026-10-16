@@ -5,7 +5,8 @@
 #' more groups of multiple samples.
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of
-#'   operations for this Recipe.
+#'   operations for this Recipe. Execution requires [add_model()] before
+#'   [prep()]; the step can be configured before adding the model.
 #' @param norm_method Transformation to apply. The options include:
 #'   'compositional' (ie relative abundance), 'Z', 'log10', 'log10p',
 #'   'hellinger', 'identity', 'clr', 'alr', or any method from the
@@ -32,7 +33,8 @@
 #' data(metaHIV_phy)
 #' 
 #' test <-
-#'  suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Phylum")) |>
+#'  recipe(metaHIV_phy) |>
+#'  add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Phylum") |>
 #'  step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'  step_filter_by_variance() |> 
 #'  step_wilcox()
@@ -87,9 +89,7 @@ step_wilcox <- function(rec,
 
 #' @noRd
 #' @keywords internal
-required_pkgs_wilcox <- function(x, ...) {
-  c("bioc::microbiome", "rstatix")
-}
+required_pkgs_wilcox <- function(x, ...) { "bioc::microbiome"}
 
 #' @noRd
 #' @keywords internal
@@ -102,76 +102,6 @@ run_wilcox <- function(rec,
                        id,
                        engine_args = list()) {
 
-  engine_args <- check_engine_args_execution(
-    rec, "wilcox", engine_args, id
-  )
-
-  if (!is.null(get_model(rec))) {
-    return(run_wilcox_model(
-      rec, norm_method, max_significance, p_adj_method, rarefy, engine_args
-    ))
-  }
-
-  phy <- get_phy(rec) %>% use_rarefy(rarefy)
-  tax_level <- recipe_tax_level(rec)
-
-  prepro_df <- phy %>%
-    phyloseq::tax_glom(taxrank = tax_level, NArm = FALSE) %>%
-    microbiome::transform(transform = norm_method) %>%
-    phyloseq::otu_table() %>%
-    t() %>%
-    to_tibble("sample_id") %>%
-    dplyr::left_join(analysis_sample_data(rec), ., by = "sample_id")
-
-  vars <- recipe_targets(rec)
-  
-  vars %>%
-    purrr::set_names() %>%
-    purrr::map(function(var) {
-      meta_cols <- c("sample_id", var, names(analysis_sample_data(rec)))
-      features <- setdiff(names(prepro_df), meta_cols)
-      
-      features %>%
-        purrr::map_dfr(function(feature) {
-          prep <- prepro_df %>% dplyr::select(sample_id, !!var, !!feature)
-          to_exclude <- prep %>%
-            dplyr::group_by(!!dplyr::sym(var)) %>%
-            dplyr::summarise(sum = sum(!!dplyr::sym(feature), na.rm = TRUE), .groups = "drop") %>%
-            dplyr::filter(sum == 0) %>%
-            dplyr::pull(!!var)
-
-          comparisons <- get_comparisons(var, get_phy(rec), as_list = TRUE, n_cut = 1) %>% 
-            purrr::map(~ c(.x[[2]], .x[[1]]))
-          
-          if (length(to_exclude) >= 2) {
-            comparisons <- comparisons %>% 
-              purrr::discard(~ all(.x %in% to_exclude))
-          }
-          
-          if (length(comparisons) == 0) return(NULL)
-
-          res <- rstatix::wilcox_test(
-            data = prep,
-            formula = stats::as.formula(paste0("`", feature, "` ~ `", var, "`")),
-            comparisons = comparisons,
-            p.adjust.method = p_adj_method,
-            detailed = TRUE
-          ) %>%
-            tidyr::unite("comparison", group1:group2, sep = "_") %>% 
-            dplyr::rename(taxa_id = .y.)
-          
-          p_col <- if ("p.adj" %in% names(res)) "p.adj" else "p"
-          res <- 
-            res %>% 
-            dplyr::rename(padj = !!p_col) %>% 
-            dplyr::left_join(analysis_tax_table(rec), by = "taxa_id")
-        }) %>% 
-        dplyr::mutate(
-          estimate = -estimate, 
-          effect = estimate,
-          var = !!var,
-          signif = padj < max_significance
-        ) %>% 
-        dplyr::relocate(taxa_id, .before = 1)
-    })
+  engine_args <- check_engine_args_execution(rec, "wilcox", engine_args)
+  run_wilcox_model(rec, norm_method, max_significance, p_adj_method, rarefy, engine_args)
 }

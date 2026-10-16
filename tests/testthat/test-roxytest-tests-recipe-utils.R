@@ -2,7 +2,7 @@
 
 # File R/"recipe-utils.R": @tests
 
-test_that("Function add_var() @ L126", {
+test_that("Function add_var() @ L101", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
   
@@ -17,7 +17,7 @@ test_that("Function add_var() @ L126", {
 })
 
 
-test_that("Function add_tax() @ L172", {
+test_that("Function add_tax() @ L147", {
   data(metaHIV_phy)
   rec <- recipe(metaHIV_phy)
   
@@ -32,7 +32,7 @@ test_that("Function add_tax() @ L172", {
 })
 
 
-test_that("Function prep() @ L383", {
+test_that("Function prep() @ L393", {
   data(metaHIV_phy)
   invalid_rec <- suppressWarnings(recipe(
     metaHIV_phy,
