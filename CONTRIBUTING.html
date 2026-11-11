@@ -70,6 +70,10 @@
 <p>This check validates the pkgdown configuration without publishing the website. GitHub Actions runs the same validation for pull requests and deploys the full site only from <code>devel</code>.</p>
 </div>
 <div class="section level3">
+<h3 id="docker-image-publishing">Docker image publishing<a class="anchor" aria-label="anchor" href="#docker-image-publishing"></a></h3>
+<p>The <strong>Publish Docker image</strong> workflow runs after a successful <strong>R-CMD-check-bioc</strong> run from a push to the current tip of <code>devel</code> in this repository. It publishes that commit to Docker Hub as <code>dar:latest</code> and <code>dar:devel</code> under the account in <code>DOCKERHUB_USERNAME</code>. Set <code>DOCKERHUB_USERNAME</code> and a <code>DOCKERHUB_TOKEN</code> with write access as repository Actions secrets. Include <code>/nodocker</code> in the head commit message to skip publication for a push. Publication failures are reported in the Docker workflow independently of package validation.</p>
+</div>
+<div class="section level3">
 <h3 id="bioconductor-lifecycle">Bioconductor lifecycle<a class="anchor" aria-label="anchor" href="#bioconductor-lifecycle"></a></h3>
 <p>Released functions follow the three-cycle Bioconductor lifecycle: deprecated in one release, defunct in the next, and removed from R code and NAMESPACE in the following cycle while their migration alias remains documented. Every lifecycle change must name its target releases in NEWS and the statistical model vignette. BiocCheck warnings that point to intentional <code><a href="https://rdrr.io/r/base/Deprecated.html" class="external-link">.Deprecated()</a></code> or <code><a href="https://rdrr.io/r/base/Defunct.html" class="external-link">.Defunct()</a></code> calls are reviewed against that schedule; other warnings must be fixed or justified in the pull request.</p>
 </div>

@@ -25,7 +25,7 @@ step_linda(
   alpha = 0.05,
   n_cpus = 1L,
   rarefy = FALSE,
-  id = rand_id("linda"),
+  id = new_step_id(rec, "linda"),
   engine_args = list()
 )
 ```

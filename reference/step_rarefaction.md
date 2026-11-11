@@ -25,7 +25,7 @@ provide a single positive integer argument as rngseed.
 ## Usage
 
 ``` r
-step_rarefaction(rec, id = rand_id("rarefaction"))
+step_rarefaction(rec, id = new_step_id(rec, "rarefaction"))
 ```
 
 ## Arguments

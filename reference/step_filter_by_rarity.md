@@ -10,7 +10,11 @@ LESS than the provided threshold.
 ## Usage
 
 ``` r
-step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
+step_filter_by_rarity(
+  rec,
+  threshold = 0.01,
+  id = new_step_id(rec, "filter_by_rarity")
+)
 ```
 
 ## Arguments

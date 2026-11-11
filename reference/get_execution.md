@@ -34,9 +34,7 @@ time.
 
 ## Details
 
-Older prepared recipes may lack all or part of this manifest.
-Unavailable fields are returned as `NULL`: missing provenance does not
-imply that no samples were removed or no steps were skipped.
+Unrecorded fields are returned as `NULL`.
 
 ## Examples
 

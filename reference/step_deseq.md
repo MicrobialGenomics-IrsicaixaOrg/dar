@@ -22,7 +22,7 @@ step_deseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("deseq"),
+  id = new_step_id(rec, "deseq"),
   engine_args = list()
 )
 ```
@@ -103,6 +103,15 @@ step_deseq(
 
 An object of class `Recipe`
 
+## Details
+
+Size factors use DESeq2's native `type = "poscounts"` estimator, which
+accommodates zeros without adding pseudocounts. Results are extracted
+with `alpha = max_significance` before effect-size shrinkage. The same
+results object is passed to `lfcShrink()`, retaining native p-values,
+adjusted p-values and missingness with the default shrinkage settings.
+Advanced `results` controls apply both with and without shrinkage.
+
 ## See also
 
 Other Diff taxa steps:
@@ -131,6 +140,7 @@ rec_custom <- step_deseq(
   rec,
   engine_args = list(
     fit = list(minReplicatesForReplace = Inf),
+    results = list(pAdjustMethod = "BH"),
     shrink = list(lfcThreshold = 1)
   )
 )

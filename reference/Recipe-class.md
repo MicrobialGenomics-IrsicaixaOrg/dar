@@ -26,16 +26,6 @@ Recipe-class object
 
   Phyloseq-class object.
 
-- `var_info`:
-
-  Deprecated compatibility storage synchronized from `model$targets` for
-  modeled recipes.
-
-- `tax_info`:
-
-  Deprecated compatibility storage synchronized from `model$tax_level`
-  for modeled recipes.
-
 - `steps`:
 
   List of step-class objects that will be used by DA.

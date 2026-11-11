@@ -105,7 +105,7 @@ f <- function(arg) {
 f(1 + 1)
 #> <quosure>
 #> expr: ^1 + 1
-#> env:  0x55f392100860
+#> env:  0x60aced79c638
 
 # `enquos()` works with arguments and dots. It returns a list of
 # expressions
@@ -119,12 +119,12 @@ f(1 + 1, 2 * 10)
 #> [[1]]
 #> <quosure>
 #> expr: ^1 + 1
-#> env:  0x55f392100860
+#> env:  0x60aced79c638
 #> 
 #> [[2]]
 #> <quosure>
 #> expr: ^2 * 10
-#> env:  0x55f392100860
+#> env:  0x60aced79c638
 #> 
 
 # Convert a symbol to its name

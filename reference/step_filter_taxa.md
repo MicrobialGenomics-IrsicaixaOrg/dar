@@ -9,7 +9,7 @@ taxa for which the predicate returns `FALSE` are removed.
 ## Usage
 
 ``` r
-step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
+step_filter_taxa(rec, .f, id = new_step_id(rec, "filter_taxa"))
 ```
 
 ## Arguments

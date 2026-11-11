@@ -121,21 +121,6 @@
 - [`required_deps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/required_deps.md)
   : Returns required pakcages for Recipe object
 
-## Lifecycle and Migration
-
-Compatibility interfaces; use the centralized model API in new code.
-
-- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md)
-  : Add legacy variables of interest to a recipe
-- [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
-  : Add a legacy taxonomic level of interest to a recipe
-- [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md)
-  : Return legacy target information from a recipe
-- [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md)
-  : Return legacy taxonomic information from a recipe
-- [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-  : Defunct functions in dar
-
 ## Import and Export
 
 - [`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)

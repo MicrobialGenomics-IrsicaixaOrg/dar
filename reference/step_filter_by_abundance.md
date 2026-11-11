@@ -13,7 +13,7 @@ product of the total abundance and the provided threshold.
 step_filter_by_abundance(
   rec,
   threshold = 0.01,
-  id = rand_id("filter_by_abundance")
+  id = new_step_id(rec, "filter_by_abundance")
 )
 ```
 

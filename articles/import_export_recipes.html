@@ -175,10 +175,9 @@ Stochastic methods and execution settings can affect results even when
 the recipe parameters match.</p>
 <p>Recipe files are treated as untrusted data: constructors, fields,
 formulas and filter predicates are validated against explicit allowlists
-before the recipe is changed. R functions in <code>engine_args</code>
-are not serializable. Legacy executable exports are rejected; recreate
-their configuration using the current API and export it again rather
-than executing an old recipe file.</p>
+before the recipe is changed. Import accepts only the versioned
+<code>dar-recipe</code> JSON schema. R functions in
+<code>engine_args</code> are not serializable.</p>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
@@ -187,7 +186,7 @@ than executing an old recipe file.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -214,7 +213,7 @@ than executing an old recipe file.</p>
 <span><span class="co">#&gt;   [1] Rdpack_2.6.6                    DBI_1.3.0                      </span></span>
 <span><span class="co">#&gt;   [3] gridExtra_2.3.1                 permute_0.9-10                 </span></span>
 <span><span class="co">#&gt;   [5] rlang_1.3.0                     magrittr_2.0.5                 </span></span>
-<span><span class="co">#&gt;   [7] ade4_1.7-24                     scater_1.41.2                  </span></span>
+<span><span class="co">#&gt;   [7] ade4_1.7-24                     scater_1.41.3                  </span></span>
 <span><span class="co">#&gt;   [9] otel_0.2.0                      matrixStats_1.5.0              </span></span>
 <span><span class="co">#&gt;  [11] compiler_4.6.1                  DelayedMatrixStats_1.35.0      </span></span>
 <span><span class="co">#&gt;  [13] mgcv_1.9-4                      systemfonts_1.3.2              </span></span>
@@ -226,7 +225,7 @@ than executing an old recipe file.</p>
 <span><span class="co">#&gt;  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    </span></span>
 <span><span class="co">#&gt;  [27] ragg_1.5.2                      purrr_1.2.2                    </span></span>
 <span><span class="co">#&gt;  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    </span></span>
-<span><span class="co">#&gt;  [31] xfun_0.61                       cachem_1.1.0                   </span></span>
+<span><span class="co">#&gt;  [31] xfun_0.62                       cachem_1.1.0                   </span></span>
 <span><span class="co">#&gt;  [33] beachmat_2.29.3                 jsonlite_2.0.0                 </span></span>
 <span><span class="co">#&gt;  [35] biomformat_1.41.0               DelayedArray_0.39.8            </span></span>
 <span><span class="co">#&gt;  [37] BiocParallel_1.47.0             irlba_2.4.1                    </span></span>
@@ -237,7 +236,7 @@ than executing an old recipe file.</p>
 <span><span class="co">#&gt;  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  </span></span>
 <span><span class="co">#&gt;  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               </span></span>
 <span><span class="co">#&gt;  [51] knitr_1.52                      DECIPHER_3.9.3                 </span></span>
-<span><span class="co">#&gt;  [53] IRanges_2.47.5                  mia_1.21.11                    </span></span>
+<span><span class="co">#&gt;  [53] IRanges_2.47.5                  mia_1.21.14                    </span></span>
 <span><span class="co">#&gt;  [55] Matrix_1.7-6                    splines_4.6.1                  </span></span>
 <span><span class="co">#&gt;  [57] igraph_2.3.4                    tidyselect_1.2.1               </span></span>
 <span><span class="co">#&gt;  [59] viridis_0.6.5                   abind_1.4-8                    </span></span>
@@ -264,7 +263,7 @@ than executing an old recipe file.</p>
 <span><span class="co">#&gt; [101] SingleCellExperiment_1.35.2     nlme_3.1-171                   </span></span>
 <span><span class="co">#&gt; [103] beeswarm_0.4.0                  BiocSingular_1.29.2            </span></span>
 <span><span class="co">#&gt; [105] vipor_0.4.7                     cli_3.6.6                      </span></span>
-<span><span class="co">#&gt; [107] rsvd_1.0.5                      rappdirs_0.3.4                 </span></span>
+<span><span class="co">#&gt; [107] rsvd_1.0.6                      rappdirs_0.3.4                 </span></span>
 <span><span class="co">#&gt; [109] textshaping_1.0.5               viridisLite_0.4.3              </span></span>
 <span><span class="co">#&gt; [111] S4Arrays_1.13.2                 dplyr_1.2.1                    </span></span>
 <span><span class="co">#&gt; [113] gtable_0.3.6                    yulab.utils_0.2.5              </span></span>

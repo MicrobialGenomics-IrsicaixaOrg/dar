@@ -11,7 +11,7 @@ bake(
   count_cutoff = NULL,
   weights = NULL,
   exclude = NULL,
-  id = rand_id("bake")
+  id = new_step_id(rec, "bake")
 )
 ```
 

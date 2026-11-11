@@ -1,399 +1,66 @@
 # Changelog
 
-## dar 1.9.12
+## dar 2.0.0 (unreleased)
+
+Changes since dar 1.8.0.
 
 ### Breaking changes
 
-- All DA methods require
-  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  before
-  [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md).
-  The model-free execution paths and their extraction helpers are
-  removed. Preprocessing-only recipes remain supported without a model,
-  and steps can be configured before adding the model. Previously
-  prepared results are not silently recomputed.
-- `step_aldex()` is replaced by the explicit
-  [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md);
-  the old constructor and step class are removed, without an alias.
-  Rebuild old ALDEx2 recipes with
-  [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md).
-  Its engine identifier is now `aldex2`.
-- R 4.6 or later is required.
-- [`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-  is removed after its defunct release cycle. Replace it with a
-  supported DA step when rebuilding legacy recipes
-  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
-- DA step IDs must not use reserved consensus column names such as
-  `effect` or `sum`. Rename conflicting IDs, for example to `da_effect`,
-  before constructing or importing a recipe. Other IDs, including those
-  beginning with a dot, remain unchanged.
-- ComplexHeatmap, gplots, heatmaply and UpSetR are optional
-  dependencies. Install the relevant package explicitly to use its
-  plotting functions; missing dependencies produce installation guidance
-  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
-- Centralized ALDEx2 results report `aldex_glm_coefficient` rather than
-  a standardized two-group effect. Recompute previously prepared results
-  to obtain the corrected effects; their former effect values are not
-  relabeled. The obsolete `engine_args$effect` stage is rejected.
-- [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
-  no longer substitutes a largest-overlap selection when no taxa satisfy
-  the requested shared-discovery rule. Use `selection = "union"`, one
-  `steps` ID or explicit `taxa_ids` for those views.
-
-### New features
-
-- [`step_rademu()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_rademu.md)
-  supports adjusted fixed designs and planned interactions with native
-  robust score or explicit Wald tests. Clustered observations are
-  declared with a metadata column and use native GEE inference, not an
-  implicit translation of random effects. Results retain radEmu’s
-  centred natural-log effect scale, missing statistics and native
-  diagnostics; dar adjusts the selected P values within each contrast
-  ([\#177](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/177)).
-- [`step_aldex3()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex3.md)
-  supports centralized fixed and exact `lme4` mixed models, including
-  planned interactions. Named CLR, TSS, external sample-scale and
-  coefficient-scale models expose independent scale uncertainty
-  explicitly. Scale assumptions remain tied to the original design
-  across contrast releveling. Results preserve native Monte Carlo
-  significance, and
-  [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
-  exposes the effective engine settings and version. Numerical parameter
-  and input validation is delegated to ALDEx3; dar checks its
-  configuration and the identities used to align data and results.
-- [`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md)
-  extracts the shared taxonomic analysis view in long form, with lineage
-  and selected sample metadata under collision-safe prefixes.
-  Compositional fractions use all analysis taxa before taxon selection;
-  this view does not reproduce each engine’s private filtering or
-  transformation.
-- [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
-  exposes recorded contrasts, model-excluded samples and
-  executed/skipped steps without recomputing historical provenance.
-- [`effect_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)
-  displays individual method estimates for a selected contrast,
-  preserving native significance decisions and separating effect metrics
-  into distinct panels. It does not infer common confidence intervals.
-- [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md)
-  accepts selected DA `steps`, including a single configured method, and
-  explicit `"shared"` or `"union"` discovery selection. Explicit taxon
-  IDs remain available regardless of significance.
-
-### Deprecations
-
-- Legacy selectors remain available in Bioconductor 3.24, become defunct
-  in 3.25 and are scheduled for removal in 3.26. Use
-  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  to configure DA analyses and
-  [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
-  to inspect their targets and taxonomic rank
-  ([\#157](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/157)).
-
-### Bug fixes
-
-- Centralized MaAsLin3 tests evaluate each planned contrast
-  independently after one fit. An unestimable contrast no longer hides
-  estimable contrasts for the same taxon; native missing values and the
-  joint correction family across taxa and planned contrasts are
-  retained.
-- `metaHIV_phy` documentation reports the full 156-sample example and
-  removes unverified profiling and count-construction details. Five
-  focused guides replace the overlapping article vignette.
-- Bundled `test_rec` and `test_prep_rec` examples now use the
-  centralized genus- level model. The prepared MaAsLin3 and DESeq2
-  results are regenerated from the shared aggregated counts, with
-  explicit contrast selection in examples.
-- [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)
-  extracts centralized effects from the same native GLM and contrast as
-  its adjusted P values, preserving adjustment and interaction semantics
-  instead of combining them with a post-hoc binary-group effect.
-- Modeled engines, consensus tables and abundance plots share one
-  aggregated taxonomic view with stable IDs. Abundance transformations
-  use aggregated counts, and public accessors retain the complete
-  underlying data.
-- [`abundance_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/abundance_plt.md),
-  [`intersection_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/intersection_plt.md)
-  and
-  [`mutual_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/mutual_plt.md)
-  check selectors against planned model hypotheses, including those with
-  no significant taxa. For empty selections, discovery plots report a
-  message and return invisible `NULL`. Abundance plots with explicit
-  `taxa_ids` remain available regardless of significance.
-- [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  override warnings are emitted only for explicitly supplied
-  engine-specific designs; default ANCOM-BC2 and corncob steps remain
-  quiet.
-- [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md)
-  emits the DA rarefaction caution when rarefying steps execute, rather
-  than when they are constructed.
-- [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
-  preserves stable taxon IDs after ANCOM-BC2 aggregation.
-- [`step_ancom()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_ancom.md)
-  uses ANCOM-BC2’s robust significance decision when pseudocount
-  sensitivity analysis is enabled. Disabling sensitivity analysis
-  retains the basic native decision.
-- [`step_corncob()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_corncob.md)
-  uses native sandwich covariance for centralized Wald contrasts when
-  `robust = TRUE`.
-- [`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md)
-  locally corrects MicrobiomeStat 1.4’s adaptive zero-handling
-  capitalization error, restoring depth-dependent imputation without
-  modifying the installed dependency or the remaining native algorithm.
-- [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
-  executes allowed [`median()`](https://rdrr.io/r/stats/median.html),
-  [`var()`](https://rdrr.io/r/stats/cor.html) and
-  [`sd()`](https://rdrr.io/r/stats/sd.html) predicates locally and after
-  JSON import, using fixed trusted bindings without expanding the
-  permitted syntax or capturing external functions.
-- [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md)
-  joins modeled results by taxon ID, keeping identically named taxa from
-  different lineages distinct.
-- [`step_wilcox()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_wilcox.md)
-  and
-  [`step_lefse()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_lefse.md)
-  skip unsupported additive time adjustment, including when the time
-  column is explicitly declared.
-
-### Documentation
-
-- Function examples illustrate supported workflows without redundant
-  setup, repeated defaults or intentional error demonstrations.
-- [`step_filter_taxa()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_filter_taxa.md)
-  documents its single, restricted serializable predicate and filtering
-  during
-  [`prep()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/prep.md),
-  rather than arbitrary function lists or a `prune` argument.
-- Six focused vignettes cover getting started, data inputs,
-  preprocessing, models and contrasts, results and optional consensus,
-  and recipe sharing. The duplicate case study is merged into the
-  results guide. Examples use the central model API, execute adjusted
-  and longitudinal designs, and import a bundled BIOM file into both
-  supported input classes.
-- Results guides start with per-method findings and distinguish
-  agreement from calibrated error control and comparable effect scales.
-  Input guidance distinguishes relative abundances from raw counts; the
-  advanced ANCOM-BC2 example supplies a complete native control list.
-
-### Development infrastructure
-
-- The development-only Monte Carlo validation suite and its dedicated
-  workflow are archived in the frozen
-  `codex/scientific-validation-frozen-20261015` branch and removed from
-  `devel`. The historical baseline is preserved without recalibration or
-  relabeling. Previously generated reports are retained separately.
-- Statistical correctness and native-engine regression tests remain in
-  `tests/testthat`, alongside the ordinary package checks and vignette
-  builds.
-
-## dar 1.9.11
-
-### Bug fixes
-
-- Consensus tables, plots and bake results keep modeled targets,
-  contrasts and effect directions as separate hypotheses
-  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
-- Modeled intersections use the complete taxon-by-contrast universe,
-  including non-significant hypotheses, and classify zero effects as
-  neutral
-  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
-- Method exclusions are applied before consensus support is counted.
-  Invalid cutoffs, weights and exclusions produce classified errors
-  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
-- Modeled exploration functions accept explicit `target` and
-  `contrast_id` selectors; abundance plots require them when automatic
-  selection is ambiguous
-  ([\#154](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/154)).
-
-## dar 1.9.10
-
-### Breaking changes
-
-- [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
-  always returns counts with taxa in rows and deterministic taxon and
-  sample ordering. Adapt code that assumes the stored phyloseq
-  orientation
-  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
-- [`sample_data()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/sample_data.md)
-  and
-  [`tax_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tax_table.md)
-  expose complete recipe metadata and taxonomy instead of
-  model-restricted views. Use
-  [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
-  to inspect the analysis configuration, and select columns explicitly
-  when needed
-  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
-
-### Improvements
-
-- DA engines and plots use explicit internal target-only and
-  selected-rank views, keeping analysis inputs independent of public
-  accessor semantics
-  ([\#153](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/153)).
-
-## dar 1.9.9
-
-### Breaking changes
-
-- [`export_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/export_steps.md)
-  and
-  [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
-  use a versioned, non-executable JSON schema. Legacy pseudo-JSON files
-  are rejected. Recreate trusted legacy recipes with the current API and
-  export them again
-  ([\#152](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152)).
-- [`import_steps()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/import_steps.md)
-  requires explicit `prepare = TRUE` to execute an analysis when
-  importing bake configurations into an unprepared recipe
-  ([\#152](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152)).
-
-### Improvements
-
-- Imported constructors, arguments, formulas, nested values and filter
-  predicates are allowlisted and validated transactionally before the
-  recipe is changed
-  ([\#152](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/152)).
-
-## dar 1.9.8
-
-- Recipe steps are classified by their concrete classes, so custom IDs
-  do not change preprocessing, DA or bake semantics
-  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
-- Preprocessing operations execute in their configured order, including
-  recipes that interleave filtering, subsetting and rarefaction
-  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
-- Unsupported, misplaced and duplicate-ID steps fail with classified
-  validation errors before execution
-  ([\#151](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/151)).
-
-## dar 1.9.7
-
-### Breaking changes
-
-- [`phy_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-  is defunct. Use
+- R 4.6 or later is required. Differential-abundance recipes configure
+  their targets and taxonomic rank with
+  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md).
+  The old selectors and recipe slots are removed. Rebuild saved recipes
+  from their inputs.
+- Use
+  [`step_aldex2()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_aldex2.md)
+  for ALDEx2 and
   [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
-  with an explicit `group_by` when grouped quality-control metrics are
-  required
-  ([\#112](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112)).
+  for quality control. `step_aldex()`, `phy_qc()` and
+  `step_metagenomeseq()` are removed. ALDEx2 effects now use the fitted
+  GLM coefficient.
+- Recipes use a versioned JSON exchange format. Importing bakes into an
+  unprepared recipe requires `prepare = TRUE`.
+- [`otu_table()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/otu_table.md)
+  returns counts with taxa in rows. Sample and taxonomy accessors return
+  the full tables. ComplexHeatmap, gplots, heatmaply and UpSetR are
+  optional.
 
-### New features
+### Models and results
 
-- [`recipe_qc()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe_qc.md)
-  provides model-independent overall or explicitly grouped
-  quality-control metrics for `Recipe` and `PrepRecipe` objects.
-  Summaries expose unambiguous `group_by` and `group` columns and handle
-  either count-table orientation
-  ([\#112](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/112)).
-
-## dar 1.9.6
-
-- [`step_linda()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/step_linda.md)
-  integrates bias-corrected LinDA linear and mixed-effects models with
-  every compatible centralized contrast. LinDA participates in the tidy
-  result contract and Monte Carlo validation with explicit log2
-  fold-change semantics
-  ([\#128](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/128)).
-
-## dar 1.9.5
-
-- The seven centralized DA engines accept structured `engine_args` for
-  advanced arguments at explicit native-call stages
-  ([\#126](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126)).
-- Step export and import preserve nested advanced arguments and reject
-  values that cannot be reconstructed faithfully
-  ([\#126](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/126)).
-
-## dar 1.9.4
-
-- [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md)
-  provides a stable, engine-labelled result contract while preserving
-  the native tables in `PrepRecipe@results`
-  ([\#127](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127)).
-- Result consumers validate taxon-contrast-step keys and use explicit
-  effect metrics and p-value mappings
-  ([\#127](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/127)).
-
-## dar 1.9.3
-
-### Breaking changes
-
-- [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  becomes the single source of truth for DA targets and taxonomic
-  resolution. Supply `targets` and `tax_level` there
-  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
-- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
-  [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md),
-  [`get_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_var.md),
-  [`get_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_tax.md),
-  the `var_info` and `tax_info` arguments to
-  [`recipe()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/recipe.md),
-  and model-free DA execution are deprecated. They remain functional
-  during the first Bioconductor deprecation cycle; migrate to
-  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
+- Shared models support covariate adjustment, longitudinal contrasts and
+  compatible mixed designs. Added LinDA, ALDEx3 and radEmu, with
+  per-stage `engine_args` for advanced options.
+- [`tidy_results()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_results.md),
+  [`tidy_abundance()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/tidy_abundance.md),
+  [`get_execution()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_execution.md)
   and
-  [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
-  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
+  [`effect_plt()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/effect_plt.md)
+  expose per-method results, aggregated abundances, execution details
+  and effect estimates.
+- Abundance plots support shared or union discoveries and explicit taxa.
+  Automatic selection requires a contrast when ambiguous. Consensus
+  outputs retain the contrast and direction of each discovery.
 
-### Improvements
+### Fixes and maintenance
 
-- Legacy centralized models, serialized recipes and imported step files
-  are normalized to the new model representation without changing
-  original microbiome metadata
-  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
-
-### Bug fixes
-
-- Modeled exclusion and mutual plots preserve contrast and
-  effect-direction keys, and normalize adjusted p-value aliases without
-  duplicate columns
-  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
-- LEfSe executes every planned pairwise contrast for multilevel targets
-  ([\#142](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/142)).
-
-## dar 1.9.2
-
-### New features
-
-- [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  and
-  [`get_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/get_model.md)
-  define and inspect a shared statistical design with fixed confounders,
-  target-time interactions, supported random effects, explicit
-  references and a common missing-value policy
-  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
-- Centralized models generate deterministic condition-within-time,
-  time-within-condition and optional difference-in-differences
-  contrasts, with a common result contract across DESeq2, ALDEx2,
-  ANCOM-BC2, corncob, MaAsLin3, Wilcoxon and LEfSe
-  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
-
-### Improvements
-
-- Prepared recipes record executed and skipped methods, validate engine
-  capabilities before execution and separate consensus results by
-  contrast and effect direction
-  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
-- Step export and import preserve centralized model specifications
-  ([\#130](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/130)).
-
-## dar 1.9.1
-
-- `Recipe` and `PrepRecipe` enforce structural invariants through S4
-  validity checks
-  ([\#124](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124)).
-- [`add_var()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_var.md),
-  [`add_tax()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_tax.md)
-  and preprocessing results are validated early, with contextual errors
-  identifying the failing step
-  ([\#124](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/124)).
+- Recipes validate steps before execution, run preprocessing in declared
+  order, reserve result column names and assign unique automatic IDs
+  ([\#187](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/187)).
+- DESeq2 uses native `poscounts` normalization and applies the
+  significance threshold and result options before shrinkage
+  ([\#188](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/188)).
+- Corrected contrast handling in MaAsLin3 and LEfSe, robust inference in
+  ANCOM-BC2 and corncob, and depth-dependent zero handling in LinDA.
+- Five vignettes document the current workflow. Docker Hub publication
+  runs separately from GitHub package checks
+  ([\#190](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/190)).
 
 ## dar 1.5.6
 
 ### Breaking changes
 
-- [`step_metagenomeseq()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/dar-defunct.md)
-  is defunct; its model implementation and related references are
-  removed.
+- `step_metagenomeseq()` is defunct; its model implementation and
+  related references are removed.
 
 ## dar 1.5.5
 

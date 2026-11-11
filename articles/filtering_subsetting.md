@@ -201,7 +201,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
 `#> R version 4.6.1 (2026-06-24)`\
 `#> Platform: x86_64-pc-linux-gnu`\
-`#> Running under: Ubuntu 24.04.4 LTS`\
+`#> Running under: Ubuntu 24.04.5 LTS`\
 `#> `\
 `#> Matrix products: default`\
 `#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 `\
@@ -228,7 +228,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#>   [1] DBI_1.3.0                       gridExtra_2.3.1                `\
 `#>   [3] permute_0.9-10                  rlang_1.3.0                    `\
 `#>   [5] magrittr_2.0.5                  ade4_1.7-24                    `\
-`#>   [7] scater_1.41.2                   otel_0.2.0                     `\
+`#>   [7] scater_1.41.3                   otel_0.2.0                     `\
 `#>   [9] matrixStats_1.5.0               compiler_4.6.1                 `\
 `#>  [11] DelayedMatrixStats_1.35.0       mgcv_1.9-4                     `\
 `#>  [13] systemfonts_1.3.2               vctrs_0.7.3                    `\
@@ -240,7 +240,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#>  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    `\
 `#>  [27] ragg_1.5.2                      purrr_1.2.2                    `\
 `#>  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    `\
-`#>  [31] xfun_0.61                       cachem_1.1.0                   `\
+`#>  [31] xfun_0.62                       cachem_1.1.0                   `\
 `#>  [33] beachmat_2.29.3                 jsonlite_2.0.0                 `\
 `#>  [35] biomformat_1.41.0               DelayedArray_0.39.8            `\
 `#>  [37] BiocParallel_1.47.0             irlba_2.4.1                    `\
@@ -251,7 +251,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#>  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  `\
 `#>  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               `\
 `#>  [51] knitr_1.52                      DECIPHER_3.9.3                 `\
-`#>  [53] IRanges_2.47.5                  mia_1.21.11                    `\
+`#>  [53] IRanges_2.47.5                  mia_1.21.14                    `\
 `#>  [55] Matrix_1.7-6                    splines_4.6.1                  `\
 `#>  [57] igraph_2.3.4                    tidyselect_1.2.1               `\
 `#>  [59] viridis_0.6.5                   abind_1.4-8                    `\
@@ -276,7 +276,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#>  [97] ape_5.8-1                       SingleCellExperiment_1.35.2    `\
 `#>  [99] nlme_3.1-171                    beeswarm_0.4.0                 `\
 `#> [101] BiocSingular_1.29.2             vipor_0.4.7                    `\
-`#> [103] cli_3.6.6                       rsvd_1.0.5                     `\
+`#> [103] cli_3.6.6                       rsvd_1.0.6                     `\
 `#> [105] rappdirs_0.3.4                  textshaping_1.0.5              `\
 `#> [107] viridisLite_0.4.3               S4Arrays_1.13.2                `\
 `#> [109] dplyr_1.2.1                     gtable_0.3.6                   `\

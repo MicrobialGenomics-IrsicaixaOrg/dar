@@ -21,7 +21,7 @@ step_lefse(
   assay = 1L,
   trim.names = FALSE,
   rarefy = TRUE,
-  id = rand_id("lefse"),
+  id = new_step_id(rec, "lefse"),
   engine_args = list()
 )
 ```

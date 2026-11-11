@@ -13,7 +13,7 @@ provided threshold.
 step_filter_by_variance(
   rec,
   threshold = 0.01,
-  id = rand_id("filter_by_variance")
+  id = new_step_id(rec, "filter_by_variance")
 )
 ```
 

@@ -1,4 +1,4 @@
-pandoc: '3.11'
+pandoc: '3.13'
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
@@ -7,7 +7,7 @@ articles:
   filtering_subsetting: filtering_subsetting.html
   import_export_recipes: import_export_recipes.html
   statistical_models: statistical_models.html
-last_built: 2026-10-16T11:48Z
+last_built: 2026-11-11T17:54Z
 urls:
   reference: https://microbialgenomics-irsicaixaorg.github.io/dar/reference
   article: https://microbialgenomics-irsicaixaorg.github.io/dar/articles

@@ -112,10 +112,9 @@ affect results even when the recipe parameters match.
 
 Recipe files are treated as untrusted data: constructors, fields,
 formulas and filter predicates are validated against explicit allowlists
-before the recipe is changed. R functions in `engine_args` are not
-serializable. Legacy executable exports are rejected; recreate their
-configuration using the current API and export it again rather than
-executing an old recipe file.
+before the recipe is changed. Import accepts only the versioned
+`dar-recipe` JSON schema. R functions in `engine_args` are not
+serializable.
 
 ## Session info
 
@@ -123,7 +122,7 @@ executing an old recipe file.
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
 `#> R version 4.6.1 (2026-06-24)`\
 `#> Platform: x86_64-pc-linux-gnu`\
-`#> Running under: Ubuntu 24.04.4 LTS`\
+`#> Running under: Ubuntu 24.04.5 LTS`\
 `#> `\
 `#> Matrix products: default`\
 `#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 `\
@@ -150,7 +149,7 @@ executing an old recipe file.
 `#>   [1] Rdpack_2.6.6                    DBI_1.3.0                      `\
 `#>   [3] gridExtra_2.3.1                 permute_0.9-10                 `\
 `#>   [5] rlang_1.3.0                     magrittr_2.0.5                 `\
-`#>   [7] ade4_1.7-24                     scater_1.41.2                  `\
+`#>   [7] ade4_1.7-24                     scater_1.41.3                  `\
 `#>   [9] otel_0.2.0                      matrixStats_1.5.0              `\
 `#>  [11] compiler_4.6.1                  DelayedMatrixStats_1.35.0      `\
 `#>  [13] mgcv_1.9-4                      systemfonts_1.3.2              `\
@@ -162,7 +161,7 @@ executing an old recipe file.
 `#>  [25] ggbeeswarm_0.7.3                DirichletMultinomial_1.55.1    `\
 `#>  [27] ragg_1.5.2                      purrr_1.2.2                    `\
 `#>  [29] bluster_1.23.1                  MultiAssayExperiment_1.39.1    `\
-`#>  [31] xfun_0.61                       cachem_1.1.0                   `\
+`#>  [31] xfun_0.62                       cachem_1.1.0                   `\
 `#>  [33] beachmat_2.29.3                 jsonlite_2.0.0                 `\
 `#>  [35] biomformat_1.41.0               DelayedArray_0.39.8            `\
 `#>  [37] BiocParallel_1.47.0             irlba_2.4.1                    `\
@@ -173,7 +172,7 @@ executing an old recipe file.
 `#>  [47] Rcpp_1.1.2                      Seqinfo_1.3.2                  `\
 `#>  [49] SummarizedExperiment_1.43.0     iterators_1.0.14               `\
 `#>  [51] knitr_1.52                      DECIPHER_3.9.3                 `\
-`#>  [53] IRanges_2.47.5                  mia_1.21.11                    `\
+`#>  [53] IRanges_2.47.5                  mia_1.21.14                    `\
 `#>  [55] Matrix_1.7-6                    splines_4.6.1                  `\
 `#>  [57] igraph_2.3.4                    tidyselect_1.2.1               `\
 `#>  [59] viridis_0.6.5                   abind_1.4-8                    `\
@@ -200,7 +199,7 @@ executing an old recipe file.
 `#> [101] SingleCellExperiment_1.35.2     nlme_3.1-171                   `\
 `#> [103] beeswarm_0.4.0                  BiocSingular_1.29.2            `\
 `#> [105] vipor_0.4.7                     cli_3.6.6                      `\
-`#> [107] rsvd_1.0.5                      rappdirs_0.3.4                 `\
+`#> [107] rsvd_1.0.6                      rappdirs_0.3.4                 `\
 `#> [109] textshaping_1.0.5               viridisLite_0.4.3              `\
 `#> [111] S4Arrays_1.13.2                 dplyr_1.2.1                    `\
 `#> [113] gtable_0.3.6                    yulab.utils_0.2.5              `\

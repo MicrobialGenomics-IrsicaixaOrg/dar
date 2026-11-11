@@ -6,12 +6,7 @@ order to prepare it for data analysis.
 ## Usage
 
 ``` r
-recipe(
-  microbiome_object = NULL,
-  var_info = NULL,
-  tax_info = NULL,
-  steps = list()
-)
+recipe(microbiome_object = NULL, steps = list())
 ```
 
 ## Arguments
@@ -19,20 +14,6 @@ recipe(
 - microbiome_object:
 
   Phyloseq-class object or TreeSummarizedExperiment-class object.
-
-- var_info:
-
-  A character string of column names corresponding to variables that
-  will be used in any context. Deprecated; supply `targets` to
-  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  instead.
-
-- tax_info:
-
-  A character string of taxonomic levels that will be used in any
-  context. Deprecated; supply `tax_level` to
-  [`add_model()`](https://microbialgenomics-irsicaixaorg.github.io/dar/reference/add_model.md)
-  instead.
 
 - steps:
 

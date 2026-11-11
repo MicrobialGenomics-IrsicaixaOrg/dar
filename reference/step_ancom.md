@@ -33,7 +33,7 @@ step_ancom(
   dunnet = FALSE,
   trend = FALSE,
   rarefy = FALSE,
-  id = rand_id("ancom"),
+  id = new_step_id(rec, "ancom"),
   engine_args = list()
 )
 ```

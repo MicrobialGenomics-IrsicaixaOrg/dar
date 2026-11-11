@@ -13,7 +13,7 @@ step_wilcox(
   max_significance = 0.05,
   p_adj_method = "BH",
   rarefy = FALSE,
-  id = rand_id("wilcox"),
+  id = new_step_id(rec, "wilcox"),
   engine_args = list()
 )
 ```

@@ -49,12 +49,7 @@ to prepare it for data analysis.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">recipe</span><span class="op">(</span></span>
-<span>  microbiome_object <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  var_info <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  tax_info <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">recipe</span><span class="op">(</span>microbiome_object <span class="op">=</span> <span class="cn">NULL</span>, steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,17 +59,6 @@ to prepare it for data analysis.</p>
 <dl><dt id="arg-microbiome-object">microbiome_object<a class="anchor" aria-label="anchor" href="#arg-microbiome-object"></a></dt>
 <dd><p>Phyloseq-class object or
 TreeSummarizedExperiment-class object.</p></dd>
-
-
-<dt id="arg-var-info">var_info<a class="anchor" aria-label="anchor" href="#arg-var-info"></a></dt>
-<dd><p>A character string of column names corresponding to variables
-that will be used in any context. Deprecated; supply <code>targets</code> to
-<code><a href="add_model.html">add_model()</a></code> instead.</p></dd>
-
-
-<dt id="arg-tax-info">tax_info<a class="anchor" aria-label="anchor" href="#arg-tax-info"></a></dt>
-<dd><p>A character string of taxonomic levels that will be used in
-any context. Deprecated; supply <code>tax_level</code> to <code><a href="add_model.html">add_model()</a></code> instead.</p></dd>
 
 
 <dt id="arg-steps">steps<a class="anchor" aria-label="anchor" href="#arg-steps"></a></dt>

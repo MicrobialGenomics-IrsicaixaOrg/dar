@@ -19,7 +19,7 @@ step_aldex3(
   n_cores = 1,
   seed = 130L,
   rarefy = FALSE,
-  id = rand_id("aldex3"),
+  id = new_step_id(rec, "aldex3"),
   engine_args = list()
 )
 ```

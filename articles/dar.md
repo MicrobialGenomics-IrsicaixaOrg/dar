@@ -96,10 +96,10 @@ available memory.
 `#> `\
 `#> Results:`\
 `#> `\
-`#>      ``✔`` deseq ``diff_taxa = 155`` `\
+`#>      ``✔`` deseq ``diff_taxa = 167`` `\
 `#>      ``✔`` maaslin ``diff_taxa = 47`` `\
 `#> `\
-`#>      ``ℹ`` 35 taxon-contrast effects are present in all tested methods`
+`#>      ``ℹ`` 27 taxon-contrast effects are present in all tested methods`
 
 ## Inspect per-method results
 
@@ -121,12 +121,12 @@ sizes or p-values.
 `#> ``# A tibble: 6 × 8`\
 `#>   taxa_id contrast_id   effect_size effect_metric adj_p_value significant method`\
 `#>   ``<chr>``   ``<chr>``               ``<dbl>`` ``<chr>``               ``<dbl>`` ``<lgl>``       ``<chr>`` `\
-`#> ``1`` Otu_1   RiskGroup2[m…       0.640 log2_fold_ch…    4.70``e``- 1`` FALSE       deseq `\
-`#> ``2`` Otu_2   RiskGroup2[m…       1.58  log2_fold_ch…    2.10``e``- 1`` FALSE       deseq `\
-`#> ``3`` Otu_7   RiskGroup2[m…       1.28  log2_fold_ch…    3.53``e``- 1`` FALSE       deseq `\
-`#> ``4`` Otu_10  RiskGroup2[m…       1.39  log2_fold_ch…    9.84``e``- 2`` FALSE       deseq `\
-`#> ``5`` Otu_11  RiskGroup2[m…      23.3   log2_fold_ch…    4.46``e``-12`` TRUE        deseq `\
-`#> ``6`` Otu_12  RiskGroup2[m…       2.23  log2_fold_ch…    9.35``e``- 2`` FALSE       deseq `\
+`#> ``1`` Otu_1   RiskGroup2[m…        1.34 log2_fold_ch…    1.36``e``- 1`` FALSE       deseq `\
+`#> ``2`` Otu_2   RiskGroup2[m…        2.41 log2_fold_ch…    8.12``e``- 2`` FALSE       deseq `\
+`#> ``3`` Otu_7   RiskGroup2[m…        2.29 log2_fold_ch…    1.86``e``- 1`` FALSE       deseq `\
+`#> ``4`` Otu_10  RiskGroup2[m…        2.49 log2_fold_ch…    2.56``e``- 3`` TRUE        deseq `\
+`#> ``5`` Otu_11  RiskGroup2[m…       25.2  log2_fold_ch…    8.97``e``-14`` TRUE        deseq `\
+`#> ``6`` Otu_12  RiskGroup2[m…        3.91 log2_fold_ch…    1.18``e``- 2`` TRUE        deseq `\
 `#> ``# ℹ 1 more variable: step_id <chr>`\
 \
 `results`` ``|>`\
@@ -140,9 +140,9 @@ sizes or p-values.
 `#> ``# A tibble: 6 × 5`\
 `#>   step_id contrast_id          n_returned n_finite_effects n_significant`\
 `#>   ``<chr>``   ``<chr>``                     ``<int>``            ``<int>``         ``<int>`\
-`#> ``1`` deseq   RiskGroup2[msm-hts]         278              278           121`\
-`#> ``2`` deseq   RiskGroup2[pwid-hts]        278              278            63`\
-`#> ``3`` deseq   RiskGroup2[pwid-msm]        278              278           108`\
+`#> ``1`` deseq   RiskGroup2[msm-hts]         278              278           137`\
+`#> ``2`` deseq   RiskGroup2[pwid-hts]        278              278            65`\
+`#> ``3`` deseq   RiskGroup2[pwid-msm]        278              278           117`\
 `#> ``4`` maaslin RiskGroup2[msm-hts]         278              251            39`\
 `#> ``5`` maaslin RiskGroup2[pwid-hts]        278              218             5`\
 `#> ``6`` maaslin RiskGroup2[pwid-msm]        278              211            21`
@@ -262,7 +262,7 @@ control, and weights are not probabilities that methods are correct.
 [`sessionInfo`](https://rdrr.io/r/utils/sessionInfo.html)`(``)`\
 `#> R version 4.6.1 (2026-06-24)`\
 `#> Platform: x86_64-pc-linux-gnu`\
-`#> Running under: Ubuntu 24.04.4 LTS`\
+`#> Running under: Ubuntu 24.04.5 LTS`\
 `#> `\
 `#> Matrix products: default`\
 `#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 `\
@@ -294,72 +294,69 @@ control, and weights are not probabilities that methods are correct.
 `#>  [11] vctrs_0.7.3                     multtest_2.69.0                `\
 `#>  [13] DelayedMatrixStats_1.35.0       SQUAREM_2026.1                 `\
 `#>  [15] mixsqp_0.3-54                   htmltools_0.5.9                `\
-`#>  [17] S4Arrays_1.13.2                 truncnorm_1.0-9                `\
-`#>  [19] BiocNeighbors_2.7.3             SparseArray_1.13.4             `\
+`#>  [17] S4Arrays_1.13.2                 BiocNeighbors_2.7.3            `\
+`#>  [19] truncnorm_1.0-9                 SparseArray_1.13.4             `\
 `#>  [21] sass_0.4.10                     bslib_0.12.0                   `\
 `#>  [23] htmlwidgets_1.6.4               desc_1.4.3                     `\
 `#>  [25] sandwich_3.1-3                  plyr_1.8.9                     `\
 `#>  [27] DECIPHER_3.9.3                  zoo_1.9-1                      `\
 `#>  [29] cachem_1.1.0                    igraph_2.3.4                   `\
 `#>  [31] lifecycle_1.0.5                 iterators_1.0.14               `\
-`#>  [33] pkgconfig_2.0.3                 rsvd_1.0.5                     `\
+`#>  [33] pkgconfig_2.0.3                 rsvd_1.0.6                     `\
 `#>  [35] Matrix_1.7-6                    R6_2.6.1                       `\
 `#>  [37] fastmap_1.2.0                   collapse_2.1.8                 `\
 `#>  [39] rbibutils_2.4.1                 MatrixGenerics_1.25.0          `\
-`#>  [41] numDeriv_2016.8-1.1             digest_0.6.39                  `\
-`#>  [43] S4Vectors_0.51.10               DESeq2_1.53.6                  `\
-`#>  [45] scater_1.41.2                   irlba_2.4.1                    `\
-`#>  [47] textshaping_1.0.5               GenomicRanges_1.65.4           `\
-`#>  [49] vegan_2.7-6                     beachmat_2.29.3                `\
-`#>  [51] labeling_0.4.3                  invgamma_1.2                   `\
-`#>  [53] TreeSummarizedExperiment_2.21.0 abind_1.4-8                    `\
-`#>  [55] mgcv_1.9-4                      compiler_4.6.1                 `\
-`#>  [57] withr_3.0.3                     S7_0.2.2                       `\
-`#>  [59] backports_1.5.1                 BiocParallel_1.47.0            `\
-`#>  [61] viridis_0.6.5                   DBI_1.3.0                      `\
-`#>  [63] MASS_7.3-66                     rappdirs_0.3.4                 `\
-`#>  [65] DelayedArray_0.39.8             biomformat_1.41.0              `\
-`#>  [67] bluster_1.23.1                  permute_0.9-10                 `\
-`#>  [69] optparse_1.8.2                  tools_4.6.1                    `\
-`#>  [71] vipor_0.4.7                     otel_0.2.0                     `\
-`#>  [73] beeswarm_0.4.0                  ape_5.8-1                      `\
-`#>  [75] glue_1.8.1                      nlme_3.1-171                   `\
-`#>  [77] grid_4.6.1                      Rtsne_0.17                     `\
-`#>  [79] checkmate_2.3.4                 mia_1.21.11                    `\
-`#>  [81] cluster_2.1.8.3                 reshape2_1.4.5                 `\
-`#>  [83] ade4_1.7-24                     generics_0.1.4                 `\
-`#>  [85] microbiome_1.35.1               gtable_0.3.6                   `\
-`#>  [87] tidyr_1.3.2                     data.table_1.18.6.1            `\
-`#>  [89] utf8_1.2.6                      BiocSingular_1.29.2            `\
-`#>  [91] ScaledMatrix_1.21.0             XVector_0.53.0                 `\
-`#>  [93] BiocGenerics_0.59.12            ggrepel_0.9.8                  `\
-`#>  [95] foreach_1.5.2                   pillar_1.11.1                  `\
-`#>  [97] stringr_1.6.0                   yulab.utils_0.2.5              `\
-`#>  [99] emdbook_1.3.14                  splines_4.6.1                  `\
-`#> [101] dplyr_1.2.1                     maaslin3_1.5.7                 `\
-`#> [103] treeio_1.37.1                   lattice_0.23-1                 `\
-`#> [105] survival_3.8-12                 tidyselect_1.2.1               `\
-`#> [107] DirichletMultinomial_1.55.1     SingleCellExperiment_1.35.2    `\
-`#> [109] locfit_1.5-9.12                 Biostrings_2.81.9              `\
-`#> [111] scuttle_1.23.2                  knitr_1.52                     `\
-`#> [113] reformulas_0.4.4                gridExtra_2.3.1                `\
-`#> [115] phyloseq_1.57.0                 IRanges_2.47.5                 `\
-`#> [117] Seqinfo_1.3.2                   SummarizedExperiment_1.43.0    `\
-`#> [119] stats4_4.6.1                    xfun_0.61                      `\
-`#> [121] Biobase_2.73.2                  matrixStats_1.5.0              `\
-`#> [123] stringi_1.8.9                   lazyeval_0.2.3                 `\
-`#> [125] yaml_2.3.12                     evaluate_1.0.5                 `\
-`#> [127] codetools_0.2-20                bbmle_1.0.26                   `\
-`#> [129] tibble_3.3.1                    cli_3.6.6                      `\
-`#> [131] systemfonts_1.3.2               Rdpack_2.6.6                   `\
-`#> [133] jquerylib_0.1.4                 mirai_2.7.3                    `\
-`#> [135] Rcpp_1.1.2                      coda_0.19-4.1                  `\
-`#> [137] nanonext_1.10.3                 bdsmatrix_1.3-7                `\
-`#> [139] parallel_4.6.1                  pkgdown_2.2.1                  `\
-`#> [141] ggplot2_4.0.3                   sparseMatrixStats_1.25.0       `\
-`#> [143] mvtnorm_1.4-2                   decontam_1.33.0                `\
-`#> [145] viridisLite_0.4.3               apeglm_1.35.0                  `\
-`#> [147] tidytree_0.4.8                  scales_1.4.0                   `\
-`#> [149] purrr_1.2.2                     crayon_1.5.3                   `\
-`#> [151] rlang_1.3.0                     multcomp_1.4-32                `\
-`#> [153] ashr_2.2-63`
+`#>  [41] digest_0.6.39                   S4Vectors_0.51.10              `\
+`#>  [43] DESeq2_1.53.7                   scater_1.41.3                  `\
+`#>  [45] irlba_2.4.1                     textshaping_1.0.5              `\
+`#>  [47] GenomicRanges_1.65.4            vegan_2.7-6                    `\
+`#>  [49] beachmat_2.29.3                 labeling_0.4.3                 `\
+`#>  [51] invgamma_1.2                    TreeSummarizedExperiment_2.21.0`\
+`#>  [53] abind_1.4-8                     mgcv_1.9-4                     `\
+`#>  [55] compiler_4.6.1                  withr_3.0.3                    `\
+`#>  [57] S7_0.2.2                        backports_1.5.1                `\
+`#>  [59] BiocParallel_1.47.0             viridis_0.6.5                  `\
+`#>  [61] DBI_1.3.0                       MASS_7.3-66                    `\
+`#>  [63] rappdirs_0.3.4                  DelayedArray_0.39.8            `\
+`#>  [65] biomformat_1.41.0               bluster_1.23.1                 `\
+`#>  [67] permute_0.9-10                  optparse_1.8.2                 `\
+`#>  [69] tools_4.6.1                     vipor_0.4.7                    `\
+`#>  [71] otel_0.2.0                      beeswarm_0.4.0                 `\
+`#>  [73] ape_5.8-1                       glue_1.8.1                     `\
+`#>  [75] nlme_3.1-171                    grid_4.6.1                     `\
+`#>  [77] Rtsne_0.17                      checkmate_2.3.4                `\
+`#>  [79] mia_1.21.14                     cluster_2.1.8.3                `\
+`#>  [81] reshape2_1.4.5                  ade4_1.7-24                    `\
+`#>  [83] generics_0.1.4                  microbiome_1.35.2              `\
+`#>  [85] gtable_0.3.6                    tidyr_1.3.2                    `\
+`#>  [87] data.table_1.18.6.1             utf8_1.2.6                     `\
+`#>  [89] BiocSingular_1.29.2             ScaledMatrix_1.21.0            `\
+`#>  [91] XVector_0.53.0                  BiocGenerics_0.59.12           `\
+`#>  [93] ggrepel_0.9.8                   foreach_1.5.2                  `\
+`#>  [95] pillar_1.11.1                   stringr_1.6.0                  `\
+`#>  [97] yulab.utils_0.2.5               splines_4.6.1                  `\
+`#>  [99] dplyr_1.2.1                     maaslin3_1.5.7                 `\
+`#> [101] treeio_1.37.1                   lattice_0.23-1                 `\
+`#> [103] survival_3.8-12                 tidyselect_1.2.1               `\
+`#> [105] DirichletMultinomial_1.55.1     SingleCellExperiment_1.35.2    `\
+`#> [107] locfit_1.5-9.12                 Biostrings_2.81.9              `\
+`#> [109] scuttle_1.23.2                  knitr_1.52                     `\
+`#> [111] reformulas_0.4.4                gridExtra_2.3.1                `\
+`#> [113] phyloseq_1.57.0                 IRanges_2.47.5                 `\
+`#> [115] Seqinfo_1.3.2                   SummarizedExperiment_1.43.0    `\
+`#> [117] stats4_4.6.1                    xfun_0.62                      `\
+`#> [119] Biobase_2.73.2                  matrixStats_1.5.0              `\
+`#> [121] stringi_1.8.9                   lazyeval_0.2.3                 `\
+`#> [123] yaml_2.3.12                     evaluate_1.0.5                 `\
+`#> [125] codetools_0.2-20                tibble_3.3.1                   `\
+`#> [127] cli_3.6.6                       systemfonts_1.3.2              `\
+`#> [129] Rdpack_2.6.6                    jquerylib_0.1.4                `\
+`#> [131] mirai_2.7.3                     Rcpp_1.1.2                     `\
+`#> [133] nanonext_1.10.3                 parallel_4.6.1                 `\
+`#> [135] pkgdown_2.2.1                   ggplot2_4.0.3                  `\
+`#> [137] sparseMatrixStats_1.25.0        mvtnorm_1.4-2                  `\
+`#> [139] decontam_1.33.0                 viridisLite_0.4.3              `\
+`#> [141] tidytree_0.4.8                  scales_1.4.0                   `\
+`#> [143] purrr_1.2.2                     crayon_1.5.3                   `\
+`#> [145] rlang_1.3.0                     multcomp_1.4-32                `\
+`#> [147] ashr_2.2-63`

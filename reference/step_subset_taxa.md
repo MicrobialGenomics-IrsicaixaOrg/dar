@@ -10,7 +10,7 @@ taxonomic level matches the provided taxa.
 ## Usage
 
 ``` r
-step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
+step_subset_taxa(rec, tax_level, taxa, id = new_step_id(rec, "subset_taxa"))
 ```
 
 ## Arguments

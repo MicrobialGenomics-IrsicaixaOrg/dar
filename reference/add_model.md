@@ -91,7 +91,7 @@ rec <- recipe(metaHIV_phy) |>
 get_model(rec)
 #> $formula
 #> ~RiskGroup2 + Cluster
-#> <environment: 0x55f3541ae608>
+#> <environment: 0x60acd16781b8>
 #> 
 #> $targets
 #> [1] "RiskGroup2"
