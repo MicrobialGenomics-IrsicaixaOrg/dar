@@ -1,3 +1,8 @@
+# dar 1.9.1
+
+* Describe the differential abundance workflow and optional consensus in
+  the package title and description.
+
 # dar 1.7.1
 
 # dar 1.5.6

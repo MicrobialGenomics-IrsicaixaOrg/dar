@@ -1,6 +1,6 @@
 Package: dar
-Title: Differential Abundance Analysis by Consensus
-Version: 1.9.0
+Title: Differential Abundance Workflows for Microbiome Data
+Version: 1.9.1
 Date: 2025-10-14
 Authors@R: 
     c(person(given = "Francesc",
@@ -9,18 +9,11 @@ Authors@R:
              email = "fcatala@irsicaixa.es",
              comment = c(ORCID = "0000-0002-2354-8648"))
     )
-Description: Differential abundance testing in microbiome data challenges both 
-    parametric and non-parametric statistical methods, due to its sparsity, high 
-    variability and compositional nature. Microbiome-specific statistical 
-    methods often assume classical distribution models or take into account 
-    compositional specifics. These produce results that range within the 
-    specificity vs sensitivity space in such a way that type I and type II error 
-    that are difficult to ascertain in real microbiome data when a single method 
-    is used. Recently, a consensus approach based on multiple differential 
-    abundance (DA) methods was recently suggested in order to increase robustness. 
-    With dar, you can use dplyr-like pipeable sequences of DA methods and then 
-    apply different consensus strategies. In this way we can obtain more reliable 
-    results in a fast, consistent and reproducible way.
+Description: Provides recipe-based workflows for differential abundance
+    analysis of microbiome data from phyloseq and TreeSummarizedExperiment
+    objects. A pipeable interface combines preprocessing, quality control
+    and multiple statistical methods. Users can inspect method-specific
+    results and summarize agreement using optional consensus rules.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(roclets = c("collate", "namespace", "rd", "roxytest::testthat_roclet",
