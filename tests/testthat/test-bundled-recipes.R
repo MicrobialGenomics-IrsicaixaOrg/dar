@@ -28,7 +28,7 @@ test_that("saved method results represent aggregated genera, not original featur
     anyDuplicated(results[c("taxa_id", "contrast_id", "step_id")]), 0L
   )
   expect_identical(results$taxa, unname(expected_taxonomy[results$taxa_id, "Genus"]))
-  expect_false(any(results$contrast_type == "legacy_pairwise"))
+  expect_true(all(results$contrast_type %in% get_execution(test_prep_rec)$contrasts$contrast_type))
   expect_false(anyNA(results$numerator))
   expect_false(anyNA(results$denominator))
 

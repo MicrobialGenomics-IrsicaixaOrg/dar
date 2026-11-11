@@ -2,54 +2,17 @@
 
 # File R/"recipe-utils.R": @tests
 
-test_that("Function add_var() @ L101", {
+test_that("Function prep() @ L243", {
   data(metaHIV_phy)
-  rec <- recipe(metaHIV_phy)
-  
-  expect_warning(
-    expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe"),
-    class = "deprecatedWarning"
-  )
-  expect_error(
-    suppressWarnings(add_var(rec, "missing_variable")),
-    class = "dar_error_invalid_recipe"
-  )
-})
-
-
-test_that("Function add_tax() @ L147", {
-  data(metaHIV_phy)
-  rec <- recipe(metaHIV_phy)
-  
-  expect_warning(
-    expect_s4_class(add_tax(rec, "Species"), "Recipe"),
-    class = "deprecatedWarning"
-  )
-  expect_error(
-    suppressWarnings(add_tax(rec, "Missing_rank")),
-    class = "dar_error_invalid_recipe"
-  )
-})
-
-
-test_that("Function prep() @ L393", {
-  data(metaHIV_phy)
-  invalid_rec <- suppressWarnings(recipe(
-    metaHIV_phy,
-    var_info = "RiskGroup2",
-    tax_info = "Species"
-  ))
-  invalid_rec@var_info <- tibble::tibble(vars = "missing_variable")
+  invalid_rec <- recipe(metaHIV_phy) |>
+    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+  invalid_rec@model$formula <- ~ missing_variable
   expect_error(
     prep(invalid_rec, parallel = FALSE),
     class = "dar_error_invalid_recipe"
   )
   
-  empty_filter_rec <- suppressWarnings(recipe(
-    metaHIV_phy,
-    var_info = "RiskGroup2",
-    tax_info = "Species"
-  )) |>
+  empty_filter_rec <- recipe(metaHIV_phy) |>
     step_filter_taxa(
       .f = function(x) FALSE,
       id = "filter_taxa__empty"

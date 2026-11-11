@@ -193,14 +193,6 @@ test_that("recipe_qc validates recipes and grouping specifications", {
   )
 
   corrupt <- rec
-  corrupt@var_info <- tibble::tibble(wrong = "cohort")
+  corrupt@phyloseq <- NULL
   expect_error(recipe_qc(corrupt), class = "dar_error_invalid_recipe")
-})
-
-test_that("phy_qc is defunct and points to recipe_qc", {
-  expect_error(
-    phy_qc(recipe(make_qc_phy())),
-    regexp = "recipe_qc",
-    class = "defunctError"
-  )
 })

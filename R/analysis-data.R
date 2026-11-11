@@ -139,9 +139,7 @@ tidy_abundance <- function(rec, taxa_ids = NULL, transform = "identity", metadat
 #' listed in `dropped_samples` were removed by the centralized model's
 #' missing-value policy, not by method-specific filtering.
 #'
-#' Older prepared recipes may lack all or part of this manifest. Unavailable
-#' fields are returned as `NULL`: missing provenance does not imply that no
-#' samples were removed or no steps were skipped.
+#' Unrecorded fields are returned as `NULL`.
 #'
 #' @param rec A [PrepRecipe-class] object.
 #'

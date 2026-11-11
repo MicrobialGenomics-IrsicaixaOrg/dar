@@ -3,7 +3,6 @@
 \docType{class}
 \name{phyloseq_or_null-class}
 \alias{phyloseq_or_null-class}
-\alias{tibble_or_NULL-class}
 \alias{list_or_NULL-class}
 \alias{Recipe-class}
 \alias{show,PrepRecipe-method}
@@ -25,12 +24,6 @@ to prepare it for data analysis.
 
 \describe{
 \item{\code{phyloseq}}{Phyloseq-class object.}
-
-\item{\code{var_info}}{Deprecated compatibility storage synchronized from
-\code{model$targets} for modeled recipes.}
-
-\item{\code{tax_info}}{Deprecated compatibility storage synchronized from
-\code{model$tax_level} for modeled recipes.}
 
 \item{\code{steps}}{List of step-class objects that will be used by DA.}
 

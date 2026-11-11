@@ -5,23 +5,11 @@
 \alias{Recipe}
 \title{Create a Recipe for preprocessing data}
 \usage{
-recipe(
-  microbiome_object = NULL,
-  var_info = NULL,
-  tax_info = NULL,
-  steps = list()
-)
+recipe(microbiome_object = NULL, steps = list())
 }
 \arguments{
 \item{microbiome_object}{Phyloseq-class object or
 TreeSummarizedExperiment-class object.}
-
-\item{var_info}{A character string of column names corresponding to variables
-that will be used in any context. Deprecated; supply \code{targets} to
-\code{\link[=add_model]{add_model()}} instead.}
-
-\item{tax_info}{A character string of taxonomic levels that will be used in
-any context. Deprecated; supply \code{tax_level} to \code{\link[=add_model]{add_model()}} instead.}
 
 \item{steps}{list with steps.}
 }

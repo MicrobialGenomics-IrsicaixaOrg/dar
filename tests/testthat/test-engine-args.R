@@ -117,12 +117,10 @@ test_that("engine_args distinguishes repeated instances of one engine", {
 })
 
 test_that("DA requires a model with or without advanced arguments", {
-  rec <- suppressWarnings(
-    recipe(make_longitudinal_phy(), "condition", "Species")
-  )
+  rec <- recipe(make_longitudinal_phy())
   rec <- dar:::add_step(rec, dar:::step(
     "wilcox", norm_method = "identity", max_significance = 0.05,
-    p_adj_method = "BH", rarefy = FALSE, id = "wilcox__legacy",
+    p_adj_method = "BH", rarefy = FALSE, id = "wilcox__model_required",
     engine_args = list(test = list(conf.int = TRUE))
   ))
 

@@ -188,44 +188,28 @@ find_intersections <- function(rec, steps = steps_ids(rec, "da"),
     target = target,
     contrast_id = contrast_id
   ) %>% tibble::as_tibble()
-  if (!is.null(get_model(rec))) {
-    return(
-      df %>%
-        tidyr::pivot_longer(
-          dplyr::all_of(steps),
-          names_to = "name",
-          values_to = "value"
-        ) %>%
-        dplyr::filter(.data$value == 1) %>%
-        dplyr::group_by(
-          .data$taxa_id,
-          .data$contrast_id,
-          .data$comparison,
-          .data$contrast_type,
-          .data$var,
-          .data$effect
-        ) %>%
-        dplyr::summarise(
-          step_ids = paste(sort(unique(.data$name)), collapse = ", "),
-          sum_methods = sum(.data$value),
-          .groups = "drop"
-        ) %>%
-        dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
-        dplyr::arrange(dplyr::desc(.data$sum_methods))
-    )
-  }
   df %>%
-    tidyr::pivot_longer(cols = -1) %>%
-    dplyr::filter(value == 1) %>%
-    dplyr::group_by(taxa_id) %>%
-    dplyr::summarise(
-      step_ids =
-        purrr::map_chr(name, ~ .x) %>%
-        stringr::str_c(collapse = ", "),
-      sum_methods = sum(value)
+    tidyr::pivot_longer(
+      dplyr::all_of(steps),
+      names_to = "name",
+      values_to = "value"
     ) %>%
-    dplyr::right_join(analysis_tax_table(rec), ., by = "taxa_id") %>%
-    dplyr::arrange(-sum_methods)
+    dplyr::filter(.data$value == 1) %>%
+    dplyr::group_by(
+      .data$taxa_id,
+      .data$contrast_id,
+      .data$comparison,
+      .data$contrast_type,
+      .data$var,
+      .data$effect
+    ) %>%
+    dplyr::summarise(
+      step_ids = paste(sort(unique(.data$name)), collapse = ", "),
+      sum_methods = sum(.data$value),
+      .groups = "drop"
+    ) %>%
+    dplyr::left_join(analysis_tax_table(rec), by = "taxa_id") %>%
+    dplyr::arrange(dplyr::desc(.data$sum_methods))
 }
 
 #' Get step_ids from recipe
@@ -312,185 +296,6 @@ info <- function() { crayon::blue(cli::symbol$info) }
 #' @keywords internal
 #' @autoglobal
 dot <- function() { crayon::blue(cli::symbol$circle_filled) }
-#' Export step parameters as json.
-#'
-#' @param rec A Recipe object.
-#' @param file_name The path and file name of the optout file.
-#'
-#' @return invisible
-#' @noRd
-#' @autoglobal
-.legacy_export_steps <- function(rec, file_name) {
-  check_any_recipe(rec)
-  inp <- rec@steps
-  if (methods::is(rec, "PrepRecipe")) { inp <- c(rec@steps, rec@bakes) }
-  if (!is.null(get_model(rec))) {
-    model <- get_model(rec)
-    model$id <- "model__central"
-    inp <- c(list(model), inp)
-  }
-
-  to_cat <-
-    inp %>%
-    purrr::map_chr(~ {
-      params <-
-        c(setdiff(names(.x), "id"), intersect("id", names(.x))) %>%
-        purrr::map_chr(function(.y) {
-          val <- .x[[.y]]
-          if (identical(.y, "engine_args") && length(val) == 0L) { return(NA_character_) }
-          # functions & formulas
-          if (is.function(val) || inherits(val, "formula")) {
-            val <-
-              paste(deparse(val), collapse = " ") %>%
-              stringr::str_squish() %>%
-              glue::double_quote()
-
-          # characters & factors
-          } else if (is.character(val) || is.factor(val)) {
-            val <- glue::double_quote(val)
-            if (!is.null(names(.x[[.y]])) && all(nzchar(names(.x[[.y]])))) {
-              val <- paste0(names(.x[[.y]]), " = ", val)
-            }
-            val <- val %>%
-              stringr::str_c(collapse = ", ") %>%
-              stringr::str_c("[c(", ., ")]")
-
-          # NULL
-          } else if (is.null(val)) {
-            val <- "NULL"
-
-          # recursively reconstructible named lists
-          } else if (is.list(val)) {
-            val <- paste0("[", encode_recipe_value(val, .y), "]")
-
-          # reject values that the text format cannot preserve
-          } else if (methods::is(val, "S4") || is.environment(val) ||
-                     typeof(val) %in% c("externalptr", "weakref") ||
-                     inherits(val, "connection")) {
-            encode_recipe_value(val, .y)
-          }
-
-          stringr::str_c(
-            "   ",
-            glue::double_quote(.y),
-            ": ",
-            paste0(val, collapse = ""),
-            ","
-          )
-        }) %>%
-        stats::na.omit() %>%
-        as.character() %>%
-        stringr::str_c(collapse = "\n")
-
-      stringr::str_c("{\n", params, "\n}")
-    })
-
-  writeLines(to_cat, file_name)
-}
-
-#' Import steps from json file
-#'
-#' @param rec A Recipe object.
-#' @param file Path to the input file.
-#' @param parallel if FALSE, no palatalization. if TRUE, parallel execution
-#'   using future and furrr packages.
-#' @param workers Number of workers for palatalization.
-#'
-#' @return recipe-class object
-#' @noRd
-#' @autoglobal
-.legacy_import_steps <- function(
-  rec,
-  file,
-  parallel = TRUE,
-  workers = future::availableCores(constraints = "connections-16")
-) {
-  lines <-
-    readr::read_lines(file) %>%
-    purrr::discard(stringr::str_detect(., "[{]|[}]"))
-
-  id_idx <- which(stringr::str_detect(lines, "id"))
-  for (i in seq_along(id_idx)) {
-    low_idx <- 1
-    if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
-    if (stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
-    fun_name <- lines[id_idx[i]] %>%
-      stringr::str_remove_all(".*: |,|\\\"") %>%
-      stringr::str_remove_all("__.*") %>%
-      stringr::str_replace_all("\\[|\\]|c\\(", "")
-
-    constructor <- if (identical(fun_name, "model")) {
-      "add_model"
-    } else {
-      paste0("step_", fun_name)
-    }
-    instruction_lines <- lines[low_idx:id_idx[i]]
-    if (identical(fun_name, "model")) {
-      instruction_lines <- instruction_lines[-length(instruction_lines)]
-    }
-
-    cli::cli_abort(
-      "Legacy executable recipe imports are disabled.",
-      class = "dar_error_legacy_recipe_schema"
-    )
-  }
-
-  if (any(stringr::str_detect(lines, "bake__"))) {
-    cli::cli_inform(
-      c(
-        "!" = "bakes found in imported recipe",
-        "i" = "running {.fun prep}"
-      )
-    )
-
-    rec <- prep(rec, parallel = parallel, workers = workers)
-    for (i in seq_along(id_idx)) {
-      low_idx <- 1
-      if (i != 1) { low_idx <- id_idx[i - 1] + 1 }
-      if (!stringr::str_detect(lines[id_idx[i]], "bake_")) { next }
-      fun_name <- lines[id_idx[i]] %>%
-        stringr::str_remove_all(".*: |,|\\\"") %>%
-        stringr::str_remove_all("__.*") %>%
-        stringr::str_replace_all("\\[|\\]|c\\(", "")
-
-      cli::cli_abort(
-        "Legacy executable recipe imports are disabled.",
-        class = "dar_error_legacy_recipe_schema"
-      )
-    }
-  }
-  rec
-}
-
-#' @noRd
-#' @keywords internal
-#' @autoglobal
-extract_instructions <- function(lines) {
-  lines %>%
-    purrr::map_chr(function(.x) {
-      params <- .x %>%
-        stringr::str_squish() %>%
-        stringr::str_split(pattern = ": ", n = 2) %>%
-        unlist()
-
-      param <- params[[1]] %>%
-        stringr::str_remove_all("\\\"")
-
-      value <- params[[2]] %>%
-        stringr::str_squish() %>%
-        stringr::str_remove_all(",$")
-
-      if (stringr::str_detect(value, "%in%")) {
-        value <- stringr::str_remove_all(value, "\\\"") %>%
-          stringr::str_replace_all("\\\\", "\\\"")
-
-        value <- encodeString(value, quote = "'")
-      }
-      if (stringr::str_count(value) == 0) { value <- expression(NULL) }
-      stringr::str_c(param, " = ", paste0(value, sep = ""))
-    })
-}
-
 #' Checks if Recipe contains a rarefaction step
 #'
 #' @param rec A Recipe object. The step will be added to the sequence of

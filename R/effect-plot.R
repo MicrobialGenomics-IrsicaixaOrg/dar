@@ -133,47 +133,17 @@ effect_plt <- function(rec,
 
 #' @noRd
 select_effect_plot_contrast <- function(results, rec, target = NULL, contrast_id = NULL) {
-  if (!is.null(get_model(rec))) {
-    plan <- resolve_model(rec)$contrast_plan
-    results <- filter_model_hypotheses(
-      results,
-      rec,
-      target = target,
-      contrast_id = contrast_id
-    )
-  } else {
-    plan <- dplyr::distinct(results, .data$contrast_id, .data$var)
-    available_targets <- unique(plan$var[!is.na(plan$var)])
-    if (!is.null(target)) {
-      check_effect_plot_selector(target, "target", available_targets)
-      results <- dplyr::filter(results, .data$var %in% .env$target)
-    }
-  }
-  if (!is.null(target)) { plan <- dplyr::filter(plan, .data$var %in% .env$target) }
-  if (!is.null(contrast_id)) {
-    check_effect_plot_selector(contrast_id, "contrast_id", plan$contrast_id)
-    plan <- dplyr::filter(plan, .data$contrast_id %in% .env$contrast_id)
-    results <- dplyr::filter(results, .data$contrast_id %in% .env$contrast_id)
-  }
+  require_da_model(rec)
+  plan <- filter_model_hypotheses(
+    resolve_model(rec)$contrast_plan, rec, target, contrast_id
+  )
   if (dplyr::n_distinct(plan$contrast_id) > 1L) {
     cli::cli_abort(
       "{.arg contrast_id} is required when multiple contrasts are available.",
       class = "dar_error_ambiguous_plot_contrast"
     )
   }
-  results
-}
-
-#' @noRd
-check_effect_plot_selector <- function(value, argument, available) {
-  if (!is.character(value) || length(value) != 1L || is.na(value) ||
-      !nzchar(value) || !value %in% available) {
-    cli::cli_abort(
-      "Invalid {.arg {argument}}. Available values: {.val {available}}.",
-      class = "dar_error_invalid_contrast_selector"
-    )
-  }
-  invisible(value)
+  dplyr::filter(results, .data$contrast_id %in% plan$contrast_id)
 }
 
 #' @noRd

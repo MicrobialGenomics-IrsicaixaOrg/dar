@@ -25,9 +25,7 @@ listed in \code{dropped_samples} were removed by the centralized model's
 missing-value policy, not by method-specific filtering.
 }
 \details{
-Older prepared recipes may lack all or part of this manifest. Unavailable
-fields are returned as \code{NULL}: missing provenance does not imply that no
-samples were removed or no steps were skipped.
+Unrecorded fields are returned as \code{NULL}.
 }
 \examples{
 data(metaHIV_phy)

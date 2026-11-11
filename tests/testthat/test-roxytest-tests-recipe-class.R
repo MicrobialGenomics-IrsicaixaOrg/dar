@@ -2,7 +2,7 @@
 
 # File R/"recipe-class.R": @tests
 
-test_that("Function recipe() @ L143", {
+test_that("Function recipe() @ L111", {
   data(metaHIV_phy)
   data(GlobalPatterns, package = "mia")
   
@@ -31,70 +31,21 @@ test_that("Function recipe() @ L143", {
   
   expect_s4_class(recipe(upper_phy), "Recipe")
   
-  # 4. Error: Invalid var_info missing in metadata
-  expect_error(
-    suppressWarnings(
-      recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species")
-    ),
-    class = "dar_error_missing_vars"
-  )
-  
-  # 5. Error: Invalid tax_info missing in tax_table
-  expect_error(
-    suppressWarnings(
-      recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax")
-    ),
-    class = "dar_error_missing_tax"
-  )
-  
-  # 6. Success: Valid TreeSummarizedExperiment
+  # 4. Success: Valid TreeSummarizedExperiment
   expect_s4_class(recipe(GlobalPatterns), "Recipe")
   
-  # 7. Success: Valid phyloseq
+  # 5. Success: Valid phyloseq
   expect_s4_class(recipe(metaHIV_phy), "Recipe")
 })
 
 
-test_that("Function recipe_validity_problems() @ L300", {
+test_that("Function recipe_validity_problems() @ L180", {
   data(metaHIV_phy)
   
-  complete_rec <- suppressWarnings(recipe(
-    metaHIV_phy,
-    var_info = "RiskGroup2",
-    tax_info = "Species"
-  ))
-  incomplete_rec <- recipe(metaHIV_phy)
-  
+  complete_rec <- recipe(metaHIV_phy) |>
+    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
   expect_true(methods::validObject(complete_rec, test = TRUE))
-  expect_true(methods::validObject(incomplete_rec, test = TRUE))
-  
-  invalid_var <- complete_rec
-  invalid_var@var_info <- tibble::tibble(vars = "missing_variable")
-  expect_match(
-    methods::validObject(invalid_var, test = TRUE),
-    "missing_variable"
-  )
-  
-  invalid_tax <- complete_rec
-  invalid_tax@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
-  expect_match(
-    methods::validObject(invalid_tax, test = TRUE),
-    "Missing_rank"
-  )
-  
-  malformed_var <- complete_rec
-  malformed_var@var_info <- tibble::tibble(wrong = "RiskGroup2")
-  expect_match(
-    methods::validObject(malformed_var, test = TRUE),
-    "var_info"
-  )
-  
-  malformed_tax <- complete_rec
-  malformed_tax@tax_info <- tibble::tibble(wrong = "Species")
-  expect_match(
-    methods::validObject(malformed_tax, test = TRUE),
-    "tax_info"
-  )
+  expect_true(methods::validObject(recipe(metaHIV_phy), test = TRUE))
   
   testthat::local_mocked_bindings(
     nsamples = function(x) 0,
@@ -107,15 +58,16 @@ test_that("Function recipe_validity_problems() @ L300", {
 })
 
 
-test_that("Function prep_recipe() @ L546", {
+test_that("Function prep_recipe() @ L374", {
   data(metaHIV_phy)
-  rec <- suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Species"))
+  rec <- recipe(metaHIV_phy) |>
+    add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
   
   prepped <- prep_recipe(rec, results = list(), bakes = list())
   expect_s4_class(prepped, "PrepRecipe")
   expect_true(methods::validObject(prepped, test = TRUE))
   
-  rec@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
+  rec@model$tax_level <- "Missing_rank"
   expect_error(
     prep_recipe(rec, results = list(), bakes = list()),
     regexp = "Missing_rank"

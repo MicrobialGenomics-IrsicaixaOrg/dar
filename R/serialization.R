@@ -750,13 +750,6 @@ export_steps <- function(rec, file_name) {
 }
 
 #' @noRd
-looks_like_legacy_recipe_file <- function(text) {
-  stringr::str_detect(text, "\\[c\\(") ||
-  stringr::str_detect(text, "\\}\\s*\\{") ||
-    stringr::str_detect(text, '"id"\\s*:\\s*\\[')
-}
-
-#' @noRd
 read_recipe_document <- function(file) {
   if (!is.character(file) || length(file) != 1L || is.na(file) ||
       !nzchar(file) || !file.exists(file)) {
@@ -768,15 +761,6 @@ read_recipe_document <- function(file) {
   }
   text <- paste(readLines(file, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
   if (!jsonlite::validate(text)) {
-    if (looks_like_legacy_recipe_file(text)) {
-      cli::cli_abort(
-        c(
-          "x" = "This file uses the executable pre-v1 dar recipe format and cannot be imported safely.",
-          "i" = "Only migrate files you trust in an isolated environment with the older dar release, then export the resulting recipe with the current version."
-        ),
-        class = c("dar_error_legacy_recipe_schema", "dar_error_invalid_recipe_schema")
-      )
-    }
     abort_recipe_schema(
       "The recipe file is not valid JSON.",
       "dar_error_invalid_recipe_file",

@@ -9,6 +9,12 @@
 * `step_aldex()` is replaced by the explicit `step_aldex2()`; the old
   constructor and step class are removed, without an alias. Rebuild old
   ALDEx2 recipes with `step_aldex2()`. Its engine identifier is now `aldex2`.
+* `add_var()`, `add_tax()`, `get_var()` and `get_tax()` are removed, along
+  with the `var_info` and `tax_info` arguments to `recipe()` and the
+  corresponding recipe slots. Define targets and taxonomic rank with
+  `add_model()` and inspect them with `get_model()`. Rebuild recipes saved
+  with the old API from their input data and prepare them again.
+* `phy_qc()` is removed. Use `recipe_qc()` for quality control.
 * R 4.6 or later is required.
 * `step_metagenomeseq()` is removed after its defunct release cycle. Replace
   it with a supported DA step when rebuilding legacy recipes (#157).
@@ -55,13 +61,6 @@
 * `abundance_plt()` accepts selected DA `steps`, including a single configured
   method, and explicit `"shared"` or `"union"` discovery selection. Explicit
   taxon IDs remain available regardless of significance.
-
-## Deprecations
-
-* Legacy selectors remain available in
-  Bioconductor 3.24, become defunct in 3.25 and are scheduled for removal in
-  3.26. Use `add_model()` to configure DA analyses and `get_model()` to
-  inspect their targets and taxonomic rank (#157).
 
 ## Bug fixes
 

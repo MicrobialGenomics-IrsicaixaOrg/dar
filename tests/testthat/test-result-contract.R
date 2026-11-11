@@ -36,7 +36,7 @@ contract_results <- function(rec = contract_recipe()) {
       common, pvalue = 0.01, padj = 0.02
     )),
     aldex2__contract = list(model = dplyr::mutate(
-      common, we.ep = 0.011, we.eBH = 0.021
+      common, pval = 0.011, padj = 0.021, effect_metric = "aldex_glm_coefficient"
     )),
     ancom__contract = list(model = dplyr::mutate(
       common, p = 0.012, q = 0.022
@@ -118,7 +118,7 @@ test_that("tidy_results exposes the canonical contract for every engine", {
   expect_equal(result$adj_p_value, seq(0.02, 0.029, by = 0.001))
   expect_equal(result$effect_metric, c(
     "log2_fold_change",
-    "standardized_clr_effect",
+    "aldex_glm_coefficient",
     "bias_corrected_log_fold_change",
     "logit_mean_abundance_coefficient",
     "bias_corrected_log2_fold_change",
@@ -155,7 +155,7 @@ test_that("modeled ALDEx2 p-values are read without changing native columns", {
     compiled, contrast
   )$coefficient
   native <- results$aldex2__contract$model |>
-    dplyr::select(-"we.ep", -"we.eBH")
+    dplyr::select(-"pval", -"padj")
   native[[paste0(coefficient, ":pval")]] <- 0.017
   native[[paste0(coefficient, ":pval.padj")]] <- 0.027
   native$padj <- 0.027
@@ -167,39 +167,19 @@ test_that("modeled ALDEx2 p-values are read without changing native columns", {
 
   expect_equal(result$p_value, 0.017)
   expect_equal(result$adj_p_value, 0.027)
-  expect_identical(result$effect_metric, "standardized_clr_effect")
+  expect_identical(result$effect_metric, "aldex_glm_coefficient")
   expect_identical(prepared@results$aldex2__contract, before)
 })
 
-test_that("ALDEx2 metric labels come from saved results, not the model alone", {
-  prepared <- contract_prepared()
-  native <- prepared@results$aldex2__contract$model
-  native$effect_metric <- "aldex_glm_coefficient"
-  prepared@results$aldex2__contract$model <- native
-
-  expect_identical(
-    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
-    "aldex_glm_coefficient"
-  )
-  prepared@results$aldex2__contract$model$effect_metric <- "standardized_clr_effect"
-  expect_identical(
-    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
-    "standardized_clr_effect"
-  )
-  prepared@results$aldex2__contract$model$effect_metric <- NULL
-  expect_identical(
-    tidy_results(prepared, steps = "aldex2__contract")$effect_metric,
-    "standardized_clr_effect"
-  )
-})
-
 test_that("ALDEx2 rejects malformed or unknown effect metric labels", {
-  for (metric in list(1, NA_character_, "log2_fold_change")) {
+  for (metric in list(NULL, 1, NA_character_, "standardized_clr_effect")) {
     prepared <- contract_prepared()
     prepared@results$aldex2__contract$model$effect_metric <- metric
-    expect_error(
-      tidy_results(prepared, steps = "aldex2__contract"),
-      class = "dar_error_invalid_result_contract"
+    expect_no_warning(
+      expect_error(
+        tidy_results(prepared, steps = "aldex2__contract"),
+        class = "dar_error_invalid_result_contract"
+      )
     )
   }
 })
@@ -302,39 +282,11 @@ test_that("unavailable and malformed engine results fail contextually", {
   )
 })
 
-test_that("legacy results receive deterministic contrast identifiers", {
-  rec <- recipe(make_longitudinal_phy())
-  rec@var_info <- tibble::tibble(vars = "condition")
-  rec@tax_info <- tibble::tibble(tax_lev = "Species")
-  rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__legacy"))
-  legacy <- tibble::tibble(
-    taxa_id = rep(c("taxon_1", "taxon_2"), 2),
-    taxa = rep(c("Species_1", "Species_2"), 2),
-    comparison = rep(c("control_treated", "treated_control"), each = 2),
-    var = "condition",
-    effect = c(1, -1, -1, 1),
-    signif = c(TRUE, FALSE, TRUE, FALSE),
-    pvalue = c(0.01, 0.5, 0.01, 0.5),
-    padj = c(0.02, 0.5, 0.02, 0.5)
-  )
-  prepared <- dar:::prep_recipe(
-    rec, list(deseq__legacy = list(condition = legacy)), list()
-  )
-  result <- tidy_results(prepared)
-
-  expect_identical(
-    result$contrast_id,
-    rep(c("condition[control_treated]", "condition[treated_control]"), each = 2)
-  )
-  expect_true(all(result$contrast_type == "legacy_pairwise"))
-  expect_true(all(is.na(result$numerator)))
-  expect_true(all(is.na(result$denominator)))
-  expect_identical(
-    anyDuplicated(result[c("taxa_id", "contrast_id", "step_id")]), 0L
-  )
-  prepared@results$deseq__legacy$condition <- dplyr::slice(legacy, 4:1)
-  expect_identical(
-    dplyr::arrange(tidy_results(prepared), taxa_id, contrast_id),
-    dplyr::arrange(result, taxa_id, contrast_id)
+test_that("DA results require an explicit contrast identifier", {
+  prepared <- contract_prepared()
+  prepared@results$deseq__contract$model$contrast_id <- NULL
+  expect_error(
+    tidy_results(prepared, steps = "deseq__contract"),
+    class = "dar_error_invalid_result_contract"
   )
 })

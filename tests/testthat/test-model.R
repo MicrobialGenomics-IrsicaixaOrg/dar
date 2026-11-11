@@ -1,3 +1,14 @@
+test_that("recipes expose a single model configuration", {
+  rec <- recipe(make_longitudinal_phy())
+  expect_identical(names(formals(recipe)), c("microbiome_object", "steps"))
+  expect_setequal(methods::slotNames(rec), c("phyloseq", "model", "steps"))
+  removed <- c("add_var", "add_tax", "get_var", "get_tax", "phy_qc",
+               "step_aldex", "step_metagenomeseq")
+  expect_false(any(vapply(
+    removed, exists, logical(1), envir = asNamespace("dar"), inherits = FALSE
+  )))
+})
+
 test_that("add_model owns targets and taxonomic resolution", {
   phy <- make_longitudinal_phy()
   rec <- recipe(phy)
@@ -12,8 +23,6 @@ test_that("add_model owns targets and taxonomic resolution", {
 
   expect_equal(get_model(modeled)$targets, "condition")
   expect_equal(get_model(modeled)$tax_level, "Species")
-  expect_equal(modeled@var_info$vars, "condition")
-  expect_equal(modeled@tax_info$tax_lev, "Species")
   expect_equal(get_model(modeled)$time, "time")
   expect_equal(get_model(modeled)$contrasts, "simple")
   expect_true(methods::validObject(modeled, test = TRUE))
@@ -55,74 +64,6 @@ test_that("add_model validates formula variables, targets and references", {
     add(~ scale(age) + condition),
     class = "dar_error_invalid_model"
   )
-})
-
-test_that("legacy selectors remain compatible with classified warnings", {
-  phy <- make_longitudinal_phy()
-  expect_warning(
-    legacy <- recipe(phy, var_info = "condition", tax_info = "Species"),
-    class = "dar_warning_deprecated_recipe_argument"
-  )
-  expect_warning(
-    legacy <- add_var(legacy, "batch"),
-    class = "deprecatedWarning"
-  )
-  expect_warning(
-    legacy <- add_tax(legacy, "species"),
-    class = "deprecatedWarning"
-  )
-  expect_warning(get_var(legacy), class = "deprecatedWarning")
-  expect_warning(get_tax(legacy), class = "deprecatedWarning")
-  expect_null(get_model(legacy))
-  expect_true(methods::validObject(legacy, test = TRUE))
-})
-
-test_that("legacy centralized models are normalized on access", {
-  rec <- recipe(make_longitudinal_phy()) |>
-    add_model(~ condition, targets = "condition", tax_level = "Species")
-  rec@model$targets <- NULL
-  rec@model$tax_level <- NULL
-
-  expect_true(methods::validObject(rec, test = TRUE))
-  expect_equal(get_model(rec)$targets, "condition")
-  expect_equal(get_model(rec)$tax_level, "Species")
-})
-
-test_that("deprecated setters cannot diverge from a centralized model", {
-  rec <- recipe(make_longitudinal_phy()) |>
-    add_model(
-      ~ condition + batch,
-      targets = "condition",
-      tax_level = "Species"
-    )
-
-  expect_warning(
-    rec <- add_var(rec, "batch"),
-    class = "deprecatedWarning"
-  )
-  expect_equal(get_model(rec)$targets, "batch")
-  expect_equal(rec@var_info$vars, "batch")
-
-  expect_warning(
-    rec <- add_tax(rec, "species"),
-    class = "deprecatedWarning"
-  )
-  expect_equal(get_model(rec)$tax_level, "Species")
-  expect_equal(rec@tax_info$tax_lev, "Species")
-
-  corrupt <- rec
-  corrupt@var_info$vars <- "condition"
-  expect_match(methods::validObject(corrupt, test = TRUE), "must agree")
-})
-
-test_that("removing a model preserves legacy selectors for migration", {
-  rec <- recipe(make_longitudinal_phy()) |>
-    add_model(~ condition, targets = "condition", tax_level = "Species") |>
-    add_model(NULL)
-
-  expect_null(get_model(rec))
-  expect_equal(rec@var_info$vars, "condition")
-  expect_equal(rec@tax_info$tax_lev, "Species")
 })
 
 test_that("model validity detects direct slot corruption and is inherited", {
@@ -320,24 +261,6 @@ test_that("capability checks skip only unsupported statistical designs", {
   expect_false(status$compatible[status$engine == "wilcox"])
   expect_true(status$compatible[status$engine == "ancom"])
 })
-
-test_that("legacy recipes remain model-free", {
-  expect_warning(
-    rec <- recipe(make_longitudinal_phy(), "condition", "Species"),
-    class = "dar_warning_deprecated_recipe_argument"
-  )
-  expect_null(get_model(rec))
-  expect_equal(
-    names(sample_data(rec)),
-    c("sample_id", "condition", "time", "subject", "batch", "age")
-  )
-  expect_equal(
-    names(dar:::analysis_sample_data(rec)),
-    c("sample_id", "condition")
-  )
-  expect_true(methods::validObject(rec, test = TRUE))
-})
-
 
 test_that("models support multiple targets and are independent of step order", {
   rec <- recipe(make_longitudinal_phy())

@@ -1,60 +1,12 @@
 # CANONICAL ANALYSIS CONFIGURATION --------------------------------------------
 
 #' @noRd
-recipe_targets <- function(rec) {
-  model <- normalize_model_spec(rec, rec@model)
-  if (!is.null(model)) { return(model$targets) }
-  if (is.null(rec@var_info) || !"vars" %in% names(rec@var_info)) { return(character()) }
-  rec@var_info$vars
-}
+recipe_targets <- function(rec) { rec@model$targets %||% character() }
 
 #' @noRd
-recipe_tax_level <- function(rec) {
-  model <- normalize_model_spec(rec, rec@model)
-  if (!is.null(model)) { return(model$tax_level) }
-  if (is.null(rec@tax_info) || !"tax_lev" %in% names(rec@tax_info)) {
-    return(character())
-  }
-  rec@tax_info$tax_lev
-}
-
-#' @noRd
-warn_deprecated_selector <- function(selector, replacement) {
-  .Deprecated(new = replacement, package = "dar", old = selector)
-}
+recipe_tax_level <- function(rec) { rec@model$tax_level %||% character() }
 
 # GETTERS ----------------------------------------------------------------------
-
-#' Return legacy target information from a recipe
-#'
-#' `get_var()` is deprecated. Use `get_model(rec)$targets` for modeled recipes.
-#' @param rec A `Recipe` or `PrepRecipe` object.
-#'
-#' @aliases get_var
-#' @return Tibble containing `var_info`.
-#' @export
-#' @autoglobal
-get_var <- function(rec) {
-  check_any_recipe(rec)
-  warn_deprecated_selector("get_var", "get_model")
-  tibble::tibble(vars = recipe_targets(rec))
-}
-
-#' Return legacy taxonomic information from a recipe
-#'
-#' `get_tax()` is deprecated. Use `get_model(rec)$tax_level` for modeled
-#' recipes.
-#' @param rec A `Recipe` or `PrepRecipe` object.
-#'
-#' @aliases get_tax
-#' @return Tibble containing `tax_info`.
-#' @export
-#' @autoglobal
-get_tax <- function(rec) {
-  check_any_recipe(rec)
-  warn_deprecated_selector("get_tax", "get_model")
-  tibble::tibble(tax_lev = recipe_tax_level(rec))
-}
 
 #' Returns phyloseq from Recipe-class object
 #'
@@ -71,101 +23,6 @@ get_tax <- function(rec) {
 get_phy <- function(rec) {
   check_any_recipe(rec)
   rec@phyloseq
-}
-
-# SETTERS ----------------------------------------------------------------------
-
-#' Add legacy variables of interest to a recipe
-#'
-#' `add_var()` is deprecated. Supply `targets` to [add_model()] instead.
-#' @param rec A `Recipe` object (must not be prepped).
-#' @param var_info A character string of column names corresponding to variables
-#'   that will be used in any context.
-#'
-#' @aliases add_var
-#' @return A `Recipe` object.
-#' @export
-#' @autoglobal
-#' @tests
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy)
-#'
-#' expect_warning(
-#'   expect_s4_class(add_var(rec, "RiskGroup2"), "Recipe"),
-#'   class = "deprecatedWarning"
-#' )
-#' expect_error(
-#'   suppressWarnings(add_var(rec, "missing_variable")),
-#'   class = "dar_error_invalid_recipe"
-#' )
-add_var <- function(rec, var_info) {
-  check_recipe(rec)
-  warn_deprecated_selector("add_var", "add_model")
-  model <- normalize_model_spec(rec, rec@model)
-  if (is.null(model)) {
-    rec@var_info <- tibble::tibble(vars = var_info)
-  } else {
-    rec <- add_model(
-      rec,
-      model$formula,
-      targets = var_info,
-      tax_level = model$tax_level,
-      time = model$time,
-      reference = model$reference,
-      contrasts = model$contrasts,
-      na_action = model$na_action,
-      max_time_levels = model$max_time_levels
-    )
-  }
-  validate_recipe_object(rec)
-  rec
-}
-
-#' Add a legacy taxonomic level of interest to a recipe
-#'
-#' `add_tax()` is deprecated. Supply `tax_level` to [add_model()] instead.
-#' @param rec A `Recipe` object (must not be prepped).
-#' @param tax_info A character string of taxonomic levels that will be used in
-#'   any context.
-#'
-#' @aliases add_tax
-#' @return A `Recipe` object.
-#' @export
-#' @autoglobal
-#' @tests
-#' data(metaHIV_phy)
-#' rec <- recipe(metaHIV_phy)
-#'
-#' expect_warning(
-#'   expect_s4_class(add_tax(rec, "Species"), "Recipe"),
-#'   class = "deprecatedWarning"
-#' )
-#' expect_error(
-#'   suppressWarnings(add_tax(rec, "Missing_rank")),
-#'   class = "dar_error_invalid_recipe"
-#' )
-add_tax <- function(rec, tax_info) {
-  check_recipe(rec)
-  warn_deprecated_selector("add_tax", "add_model")
-  tax_info <- stringr::str_to_sentence(tax_info)
-  model <- normalize_model_spec(rec, rec@model)
-  if (is.null(model)) {
-    rec@tax_info <- tibble::tibble(tax_lev = tax_info)
-  } else {
-    rec <- add_model(
-      rec,
-      model$formula,
-      targets = model$targets,
-      tax_level = tax_info,
-      time = model$time,
-      reference = model$reference,
-      contrasts = model$contrasts,
-      na_action = model$na_action,
-      max_time_levels = model$max_time_levels
-    )
-  }
-  validate_recipe_object(rec)
-  rec
 }
 
 # PHYLOSEQ EXTRACTION ----------------------------------------------------------
@@ -361,22 +218,15 @@ required_pkgs_prep <- function(x, ...) { c("furrr", "future") }
 #'
 #' @tests
 #' data(metaHIV_phy)
-#' invalid_rec <- suppressWarnings(recipe(
-#'   metaHIV_phy,
-#'   var_info = "RiskGroup2",
-#'   tax_info = "Species"
-#' ))
-#' invalid_rec@var_info <- tibble::tibble(vars = "missing_variable")
+#' invalid_rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
+#' invalid_rec@model$formula <- ~ missing_variable
 #' expect_error(
 #'   prep(invalid_rec, parallel = FALSE),
 #'   class = "dar_error_invalid_recipe"
 #' )
 #'
-#' empty_filter_rec <- suppressWarnings(recipe(
-#'   metaHIV_phy,
-#'   var_info = "RiskGroup2",
-#'   tax_info = "Species"
-#' )) |>
+#' empty_filter_rec <- recipe(metaHIV_phy) |>
 #'   step_filter_taxa(
 #'     .f = function(x) FALSE,
 #'     id = "filter_taxa__empty"
@@ -566,81 +416,58 @@ intersection_df <- function(rec, steps = steps_ids(rec, "da"), tidy = FALSE,
   check_prep_recipe(rec)
   validate_consensus_steps(rec, steps)
 
-  if (!is.null(get_model(rec))) {
-    taxa_ids <- analysis_tax_table(rec)$taxa_id
-    keys <- c("taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect")
-    all_results <- tidy_results(rec, steps = steps) |>
-      dplyr::mutate(effect = effect_direction(.data$effect_size))
-    directions <- all_results |>
-      dplyr::distinct(dplyr::across(dplyr::all_of(keys)))
-    plan <- resolve_model(rec)$contrast_plan |>
-      dplyr::select("contrast_id", "comparison", "contrast_type", "var")
-    universe <- tidyr::crossing(taxa_id = taxa_ids, plan) |>
-      dplyr::left_join(
-        directions,
-        by = c("taxa_id", "contrast_id", "comparison", "contrast_type", "var")
-      ) |>
-      dplyr::mutate(effect = tidyr::replace_na(.data$effect, "neutral"))
-    calls <- all_results |>
-      dplyr::filter(.data$significant %in% TRUE) |>
-      dplyr::transmute(
-        dplyr::across(dplyr::all_of(keys)),
-        method = .data$step_id,
-        value = 1L
-      ) |>
-      dplyr::distinct()
-    df <- universe |>
-      dplyr::left_join(calls, by = keys) |>
-      dplyr::mutate(value = tidyr::replace_na(.data$value, 0L)) |>
-      tidyr::pivot_wider(
-        id_cols = dplyr::all_of(keys),
-        names_from = "method",
-        values_from = "value",
-        values_fill = 0L
-      )
-    for (step_id in setdiff(steps, names(df))) {
-      df[[step_id]] <- 0L
-    }
-    df <- dplyr::select(df, dplyr::all_of(c(keys, steps))) |>
-      filter_model_hypotheses(rec, target = target, contrast_id = contrast_id) |>
-      dplyr::mutate(
-        .tax_order = match(.data$taxa_id, taxa_ids),
-        .contrast_order = match(.data$contrast_id, plan$contrast_id),
-        .effect_order = match(.data$effect, c("up", "down", "neutral"))
-      ) |>
-      dplyr::arrange(.data$.tax_order, .data$.contrast_order, .data$.effect_order) |>
-      dplyr::select(-dplyr::all_of(c(".tax_order", ".contrast_order", ".effect_order")))
-    if (tidy) {
-      df <- tidyr::pivot_longer(
-        df,
-        dplyr::all_of(steps),
-        names_to = "name",
-        values_to = "value"
-      )
-    }
-    return(as.data.frame(df))
+  all_results <- tidy_results(rec, steps = steps) |>
+    dplyr::mutate(effect = effect_direction(.data$effect_size))
+  taxa_ids <- analysis_tax_table(rec)$taxa_id
+  keys <- c("taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect")
+  directions <- all_results |>
+    dplyr::distinct(dplyr::across(dplyr::all_of(keys)))
+  plan <- resolve_model(rec)$contrast_plan |>
+    dplyr::select("contrast_id", "comparison", "contrast_type", "var")
+  universe <- tidyr::crossing(taxa_id = taxa_ids, plan) |>
+    dplyr::left_join(
+      directions,
+      by = c("taxa_id", "contrast_id", "comparison", "contrast_type", "var")
+    ) |>
+    dplyr::mutate(effect = tidyr::replace_na(.data$effect, "neutral"))
+  calls <- all_results |>
+    dplyr::filter(.data$significant %in% TRUE) |>
+    dplyr::transmute(
+      dplyr::across(dplyr::all_of(keys)),
+      method = .data$step_id,
+      value = 1L
+    ) |>
+    dplyr::distinct()
+  df <- universe |>
+    dplyr::left_join(calls, by = keys) |>
+    dplyr::mutate(value = tidyr::replace_na(.data$value, 0L)) |>
+    tidyr::pivot_wider(
+      id_cols = dplyr::all_of(keys),
+      names_from = "method",
+      values_from = "value",
+      values_fill = 0L
+    )
+  for (step_id in setdiff(steps, names(df))) {
+    df[[step_id]] <- 0L
   }
-
-  tidy_result <- tidy_results(rec, steps = steps, significant_only = TRUE)
-  df <-
-    steps %>%
-    purrr::set_names() %>%
-    purrr::map_dfc(
-      ~ {
-        taxa <- tidy_result %>%
-          dplyr::filter(.data$step_id == .x) %>%
-          dplyr::pull(taxa_id)
-
-        phyloseq::taxa_names(rec@phyloseq) %>%
-          tibble::tibble(taxa_id = .) %>%
-          dplyr::mutate(!!.x := dplyr::if_else(taxa_id %in% taxa, 1, 0)) %>%
-          dplyr::select(!!.x)
-      }
-    ) %>%
-    dplyr::mutate(taxa_id = phyloseq::taxa_names(rec@phyloseq), .before = 1) %>%
-    as.data.frame()
-  if (tidy) { df <- tidyr::pivot_longer(df, -taxa_id) }
-  df
+  df <- dplyr::select(df, dplyr::all_of(c(keys, steps))) |>
+    filter_model_hypotheses(rec, target = target, contrast_id = contrast_id) |>
+    dplyr::mutate(
+      .tax_order = match(.data$taxa_id, taxa_ids),
+      .contrast_order = match(.data$contrast_id, plan$contrast_id),
+      .effect_order = match(.data$effect, c("up", "down", "neutral"))
+    ) |>
+    dplyr::arrange(.data$.tax_order, .data$.contrast_order, .data$.effect_order) |>
+    dplyr::select(-dplyr::all_of(c(".tax_order", ".contrast_order", ".effect_order")))
+  if (tidy) {
+    df <- tidyr::pivot_longer(
+      df,
+      dplyr::all_of(steps),
+      names_to = "name",
+      values_to = "value"
+    )
+  }
+  as.data.frame(df)
 }
 
 #' Overlap of significant OTUs between tested methods.

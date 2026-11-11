@@ -478,27 +478,12 @@ mutual_plt <- function(rec,
     )
   }
 
-  all_significant <- .all_significant(rec, steps = steps)
-  if (!is.null(get_model(rec))) {
-    all_significant <- filter_model_hypotheses(
-      all_significant,
-      rec,
-      target = target,
-      contrast_id = contrast_id
-    )
-  }
+  all_significant <- selected_significant(rec, target, contrast_id, steps)
 
   if (!is.null(comparisons)) {
-    available <- if (is.null(get_model(rec))) {
-      unique(tidy_results(rec, steps = steps)$comparison)
-    } else {
-      filter_model_hypotheses(
-        resolve_model(rec)$contrast_plan,
-        rec,
-        target = target,
-        contrast_id = contrast_id
-      )$comparison
-    }
+    available <- filter_model_hypotheses(
+      resolve_model(rec)$contrast_plan, rec, target, contrast_id
+    )$comparison
     if (!is.character(comparisons) || anyNA(comparisons) ||
         !all(comparisons %in% available)) {
       cli::cli_abort(
@@ -512,11 +497,7 @@ mutual_plt <- function(rec,
   }
   if (nrow(all_significant) == 0L) { return(inform_empty_discovery_plot()) }
   df <- dplyr::filter(all_significant, .data$method_count >= .env$count_cutoff)
-  hypothesis_keys <- if (is.null(get_model(rec))) {
-    "taxa_id"
-  } else {
-    c("taxa_id", "contrast_id", "effect")
-  }
+  hypothesis_keys <- c("taxa_id", "contrast_id", "effect")
   ranked <- all_significant %>%
     dplyr::group_by(dplyr::across(dplyr::all_of(hypothesis_keys))) %>%
     dplyr::summarise(method_count = max(.data$method_count), .groups = "drop") %>%
@@ -552,7 +533,6 @@ mutual_plt <- function(rec,
   }
   if (!is.null(comparisons)) { df <- df %>% dplyr::filter(comparison %in% comparisons) }
   if (nrow(df) == 0L) { return(inform_empty_discovery_plot()) }
-  facet <- if (is.null(get_model(rec))) ~ comparison else ~ var + comparison
 
   df %>%
     dplyr::left_join(
@@ -565,7 +545,7 @@ mutual_plt <- function(rec,
     dplyr::mutate(zscore = scales::rescale(effect_v)) %>%
     ggplot(aes(taxa, method, fill = effect)) +
     geom_tile(width = 0.7, height = 0.8, alpha = 1) +
-    facet_wrap(facet, ncol = 1, strip.position = "right") +
+    facet_wrap(~ var + comparison, ncol = 1, strip.position = "right") +
     theme_light() +
     scale_fill_manual(values = c(down = "#74ADD1", neutral = "grey70", up = "#F46D43")) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1, vjust = 0.9)) +
@@ -594,8 +574,8 @@ inform_empty_discovery_plot <- function() {
 
 #' @noRd
 resolve_plot_target <- function(rec, target = NULL) {
+  require_da_model(rec)
   available <- recipe_targets(rec)
-  if (is.null(get_model(rec))) return(target %||% available[[1]])
   if (is.null(target) && length(available) != 1L) {
     cli::cli_abort(
       "{.arg target} is required when the model contains multiple targets.",
@@ -615,7 +595,6 @@ resolve_plot_target <- function(rec, target = NULL) {
 
 #' @noRd
 resolve_abundance_contrast <- function(rec, taxa_ids, target, contrast_id = NULL) {
-  if (is.null(get_model(rec))) return(NULL)
   plan <- resolve_model(rec)$contrast_plan
   available <- plan$contrast_id[plan$var %in% target]
   if (!is.null(taxa_ids) && is.null(contrast_id)) return(NULL)
@@ -644,25 +623,13 @@ resolve_abundance_contrast <- function(rec, taxa_ids, target, contrast_id = NULL
 selected_significant <- function(rec, target = NULL, contrast_id = NULL,
                                  steps = steps_ids(rec, "da")) {
   data <- .all_significant(rec, steps = steps)
-  if (!is.null(get_model(rec))) {
-    data <- filter_model_hypotheses(data, rec, target = target, contrast_id = contrast_id)
-  }
-  data
+  filter_model_hypotheses(data, rec, target = target, contrast_id = contrast_id)
 }
 
 #' @noRd
 select_abundance_taxa <- function(rec, steps, selection, target, contrast_id, top_n) {
   discoveries <- tidy_results(rec, steps = steps, significant_only = TRUE)
-  if (!is.null(get_model(rec))) {
-    discoveries <- filter_model_hypotheses(
-      discoveries,
-      rec,
-      target = target,
-      contrast_id = contrast_id
-    )
-  } else if (!is.null(target)) {
-    discoveries <- dplyr::filter(discoveries, .data$var == .env$target)
-  }
+  discoveries <- filter_model_hypotheses(discoveries, rec, target, contrast_id)
   support <- discoveries |>
     dplyr::mutate(
       direction = dplyr::if_else(
@@ -768,15 +735,6 @@ select_abundance_taxa <- function(rec, steps, selection, target, contrast_id, to
 }
 
 #' @noRd
-#' @keywords internal
-#' @autoglobal
-.otu_method_count <- function(rec, steps = steps_ids(rec, "da")) {
-  intersection_df(rec, steps = steps, tidy = TRUE) %>%
-    dplyr::group_by(taxa_id) %>%
-    dplyr::summarise(method_count = sum(value))
-}
-
-#' @noRd
 effect_direction <- function(effect) {
   dplyr::case_when(effect > 0 ~ "up", effect < 0 ~ "down", TRUE ~ "neutral")
 }
@@ -803,27 +761,18 @@ effect_direction <- function(effect) {
 #' @autoglobal
 .all_significant <- function(rec, steps = steps_ids(rec, "da")) {
   validate_consensus_steps(rec, steps)
-  if (!is.null(get_model(rec))) {
-    return(
-      .otu_effect_direction(rec, steps = steps) %>%
-        dplyr::group_by(
-          .data$taxa_id,
-          .data$taxa,
-          .data$contrast_id,
-          .data$comparison,
-          .data$contrast_type,
-          .data$var,
-          .data$effect
-        ) %>%
-        dplyr::mutate(method_count = dplyr::n_distinct(.data$method)) %>%
-        dplyr::ungroup()
-    )
-  }
-  dplyr::left_join(
-    .otu_effect_direction(rec, steps = steps),
-    .otu_method_count(rec, steps = steps),
-    by = "taxa_id"
-  )
+  .otu_effect_direction(rec, steps = steps) %>%
+    dplyr::group_by(
+      .data$taxa_id,
+      .data$taxa,
+      .data$contrast_id,
+      .data$comparison,
+      .data$contrast_type,
+      .data$var,
+      .data$effect
+    ) %>%
+    dplyr::mutate(method_count = dplyr::n_distinct(.data$method)) %>%
+    dplyr::ungroup()
 }
 
 #' @noRd

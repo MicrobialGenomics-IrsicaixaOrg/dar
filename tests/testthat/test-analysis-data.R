@@ -125,10 +125,6 @@ test_that("tidy abundances work without a model or optional annotations", {
   expect_equal(nrow(minimal), 16L)
   expect_error(tidy_abundance(recipe(minimal_phy), metadata = "subject"),
                class = "dar_error_invalid_input")
-
-  legacy <- suppressWarnings(recipe(phy, var_info = "condition", tax_info = "Species"))
-  expect_identical(unique(tidy_abundance(legacy)$taxa_id), phyloseq::taxa_names(phy))
-  expect_equal(tidy_abundance(legacy)$taxa[1], "Shared")
 })
 
 test_that("compositional extraction handles zero libraries explicitly", {
@@ -180,14 +176,14 @@ test_that("execution accessor returns recorded information without inference", {
   extracted$dropped_samples <- "changed"
   expect_identical(get_execution(prepared)$dropped_samples, "sample_4")
 
-  legacy <- dar:::prep_recipe(rec, results = list(), bakes = list())
-  expect_identical(get_execution(legacy), list(
+  unrecorded <- dar:::prep_recipe(rec, results = list(), bakes = list())
+  expect_identical(get_execution(unrecorded), list(
     contrasts = NULL, dropped_samples = NULL, executed_steps = NULL,
     skipped_steps = NULL
   ))
-  legacy@execution <- list(executed_steps = character())
-  expect_identical(get_execution(legacy)$executed_steps, character())
-  expect_null(get_execution(legacy)$dropped_samples)
+  unrecorded@execution <- list(executed_steps = character())
+  expect_identical(get_execution(unrecorded)$executed_steps, character())
+  expect_null(get_execution(unrecorded)$dropped_samples)
   expect_error(get_execution(rec), class = "dar_error_invalid_input")
   expect_error(get_execution(list()), class = "dar_error_invalid_input")
 })

@@ -1,5 +1,4 @@
-make_effect_plot_recipe <- function(multilevel = FALSE, legacy = FALSE,
-                                     duplicated_labels = FALSE) {
+make_effect_plot_recipe <- function(multilevel = FALSE, duplicated_labels = FALSE) {
   phy <- if (multilevel) make_multilevel_phy() else make_longitudinal_phy()
   if (duplicated_labels) {
     taxonomy <- as(phyloseq::tax_table(phy), "matrix")
@@ -9,26 +8,12 @@ make_effect_plot_recipe <- function(multilevel = FALSE, legacy = FALSE,
     )
     phyloseq::tax_table(phy) <- phyloseq::tax_table(taxonomy)
   }
-  rec <- if (legacy) {
-    suppressWarnings(recipe(phy, var_info = "condition", tax_info = "Species"))
-  } else {
-    recipe(phy)
-  }
-  if (!legacy) {
-    rec <- add_model(
-      rec, ~ condition, targets = "condition", tax_level = "Species"
-    )
-  }
+  rec <- recipe(phy) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species")
   rec <- dar:::add_step(rec, dar:::step("deseq", id = "deseq__effects"))
   rec <- dar:::add_step(rec, dar:::step("wilcox", id = "wilcox__effects"))
-  plan <- if (legacy) {
-    tibble::tibble(
-      comparison = "treated-control", var = "condition"
-    )
-  } else {
-    dar:::resolve_model(rec)$contrast_plan |>
-      dplyr::select("contrast_id", "comparison", "contrast_type", "var")
-  }
+  plan <- dar:::resolve_model(rec)$contrast_plan |>
+    dplyr::select("contrast_id", "comparison", "contrast_type", "var")
   rows <- tidyr::crossing(dar:::analysis_tax_table(rec), plan) |>
     dplyr::mutate(
       effect = rep(c(-4, 3, 2, 1, 0, NA_real_), each = nrow(plan)),
@@ -192,20 +177,6 @@ test_that("effect plots select contrast IDs across multiple targets", {
   expect_identical(unique(plot$data$contrast_id), contrast)
   expect_error(
     effect_plt(rec, target = "condition", contrast_id = contrast),
-    class = "dar_error_invalid_contrast_selector"
-  )
-})
-
-test_that("legacy effect plots use actual result contrasts", {
-  rec <- make_effect_plot_recipe(legacy = TRUE)
-  plot <- suppressMessages(effect_plt(rec, target = "condition"))
-  expect_identical(unique(plot$data$contrast_id), "condition[treated-control]")
-  expect_error(
-    effect_plt(rec, contrast_id = "missing"),
-    class = "dar_error_invalid_contrast_selector"
-  )
-  expect_error(
-    effect_plt(rec, target = "missing"),
     class = "dar_error_invalid_contrast_selector"
   )
 })

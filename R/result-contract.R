@@ -55,6 +55,7 @@ tidy_results <- function(rec, steps = steps_ids(rec, "da"), significant_only = F
     )
   }
 
+  require_da_model(rec)
   result <- purrr::map_dfr(steps, ~ standardize_da_result(rec@results[[.x]], rec, .x))
   validate_tidy_result_contract(result)
   if (significant_only) { result <- dplyr::filter(result, .data$significant %in% TRUE) }
@@ -102,8 +103,8 @@ da_result_registry <- function() {
       p_value = c("pvalue"), adj_p_value = c("padj")
     ),
     aldex2 = list(
-      effect_metric = "standardized_clr_effect",
-      p_value = c("pval", "we.ep"), adj_p_value = c("padj", "we.eBH")
+      effect_metric = "aldex_glm_coefficient",
+      p_value = "pval", adj_p_value = "padj"
     ),
     aldex3 = list(
       effect_metric = "aldex3_log2_abundance_coefficient",
@@ -167,19 +168,16 @@ result_effect_metric <- function(method, step, result = NULL) {
     norm_method <- step$norm_method %||% "compositional"
     return(paste0("median_", norm_method, "_difference"))
   }
-  if (identical(method, "aldex2") && "effect_metric" %in% names(result)) {
-    metric <- result$effect_metric
-    allowed <- c("standardized_clr_effect", "aldex_glm_coefficient")
-    if (!is.character(metric) || anyNA(metric) || any(!metric %in% allowed)) {
-      cli::cli_abort(
-        "ALDEx2 results must identify a supported {.field effect_metric}.",
-        class = "dar_error_invalid_result_contract"
-      )
-    }
-    return(metric)
+  if (identical(method, "aldex2") &&
+      !identical(
+        result[["effect_metric"]],
+        rep(registry[[method]]$effect_metric, nrow(result))
+      )) {
+    cli::cli_abort(
+      "ALDEx2 results must contain GLM coefficients. Refit the recipe with {.fun step_aldex2}.",
+      class = "dar_error_invalid_result_contract"
+    )
   }
-  # Unmarked ALDEx2 tables, including saved recipes from before the GLM
-  # coefficient correction, still contain the standardized binary-group effect.
   registry[[method]]$effect_metric
 }
 
@@ -200,9 +198,6 @@ result_numeric_column <- function(result, candidates, context) {
 #' Read ALDEx2 coefficient p-values without modifying its native result table
 #' @noRd
 aldex_model_p_value <- function(result, rec, context) {
-  if (is.null(get_model(rec)) || !"contrast_id" %in% names(result)) {
-    return(rep(NA_real_, nrow(result)))
-  }
   compiled <- compile_model(rec, "aldex2")
   columns <- purrr::map_chr(
     seq_len(nrow(compiled$contrasts)),
@@ -240,8 +235,8 @@ result_p_value <- function(result, method, rec, candidates, context) {
 }
 
 #' @noRd
-result_character_column <- function(result, name, default = NA_character_) {
-  if (!name %in% names(result)) { return(rep(default, nrow(result))) }
+result_character_column <- function(result, name) {
+  if (!name %in% names(result)) { return(rep(NA_character_, nrow(result))) }
   as.character(result[[name]])
 }
 
@@ -261,7 +256,7 @@ standardize_da_result <- function(result, rec, step_id) {
   if (nrow(result) == 0L) { return(empty_tidy_results()) }
   result <- harmonize_model_result(result, rec)
 
-  required <- c("taxa_id", "effect", "signif")
+  required <- c("taxa_id", "contrast_id", "comparison", "contrast_type", "var", "effect", "signif")
   missing <- setdiff(required, names(result))
   if (length(missing) > 0L) {
     cli::cli_abort(
@@ -287,42 +282,22 @@ standardize_da_result <- function(result, rec, step_id) {
   }
 
   taxa <- result_character_column(result, "taxa")
-  if (!is.null(get_model(rec))) {
-    taxonomy <- analysis_tax_table(rec)
-    unknown <- setdiff(taxa_id, taxonomy$taxa_id)
-    if (length(unknown) > 0L) {
-      cli::cli_abort(
-        c(
-          "x" = "DA step {.val {step_id}} returned taxon identifiers outside the analysis universe.",
-          "i" = "Unknown taxon{?s}: {.val {unknown}}."
-        ),
-        class = "dar_error_invalid_result_contract"
-      )
-    }
-    expected_taxa <- taxonomy$taxa[match(taxa_id, taxonomy$taxa_id)]
-    mismatched <- !is.na(taxa) & (is.na(expected_taxa) | taxa != expected_taxa)
-    if (any(mismatched)) {
-      cli::cli_abort(
-        "DA step {.val {step_id}} returned labels inconsistent with its taxon identifiers.",
-        class = "dar_error_invalid_result_contract"
-      )
-    }
-    taxa <- expected_taxa
-  }
-
-  comparison <- result_character_column(result, "comparison")
-  var <- result_character_column(result, "var")
-  contrast_id <- result_character_column(result, "contrast_id")
-  legacy <- is.na(contrast_id) | !nzchar(contrast_id)
-  legacy_id <- ifelse(
-    !is.na(var) & nzchar(var),
-    paste0(var, "[", comparison, "]"),
-    comparison
-  )
-  contrast_id[legacy] <- legacy_id[legacy]
-  if (anyNA(contrast_id) || any(!nzchar(contrast_id))) {
+  taxonomy <- analysis_tax_table(rec)
+  unknown <- setdiff(taxa_id, taxonomy$taxa_id)
+  if (length(unknown) > 0L) {
     cli::cli_abort(
-      "DA step {.val {step_id}} could not derive a contrast identifier.",
+      c(
+        "x" = "DA step {.val {step_id}} returned taxon identifiers outside the analysis universe.",
+        "i" = "Unknown taxon{?s}: {.val {unknown}}."
+      ),
+      class = "dar_error_invalid_result_contract"
+    )
+  }
+  expected_taxa <- taxonomy$taxa[match(taxa_id, taxonomy$taxa_id)]
+  mismatched <- !is.na(taxa) & (is.na(expected_taxa) | taxa != expected_taxa)
+  if (any(mismatched)) {
+    cli::cli_abort(
+      "DA step {.val {step_id}} returned labels inconsistent with its taxon identifiers.",
       class = "dar_error_invalid_result_contract"
     )
   }
@@ -330,15 +305,11 @@ standardize_da_result <- function(result, rec, step_id) {
   config <- registry[[method]]
   standardized <- tibble::tibble(
     taxa_id = taxa_id,
-    taxa = taxa,
-    contrast_id = contrast_id,
-    comparison = comparison,
-    contrast_type = result_character_column(
-      result,
-      "contrast_type",
-      default = "legacy_pairwise"
-    ),
-    var = var,
+    taxa = expected_taxa,
+    contrast_id = result_character_column(result, "contrast_id"),
+    comparison = result_character_column(result, "comparison"),
+    contrast_type = result_character_column(result, "contrast_type"),
+    var = result_character_column(result, "var"),
     numerator = result_character_column(result, "numerator"),
     denominator = result_character_column(result, "denominator"),
     at_var = result_character_column(result, "at_var"),

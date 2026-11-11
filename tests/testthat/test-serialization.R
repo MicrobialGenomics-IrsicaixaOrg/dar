@@ -152,7 +152,7 @@ test_that("legacy and malformed files are rejected without execution", {
 
   expect_error(
     import_steps(recipe(metaHIV_phy), legacy),
-    class = "dar_error_legacy_recipe_schema"
+    class = "dar_error_invalid_recipe_file"
   )
   expect_false(getOption("dar.import.executed"))
 

@@ -129,42 +129,33 @@ run_bake <- function(rec, count_cutoff, weights, exclude, id) {
   significant <- .all_significant(rec, steps = ids) %>%
     dplyr::left_join(df_weights, by = "method")
 
-  if (is.null(get_model(rec))) {
-    res <- significant %>%
-      dplyr::distinct(.data$taxa_id, .data$taxa, .data$method, .keep_all = TRUE) %>%
-      dplyr::group_by(.data$taxa_id, .data$taxa) %>%
-      dplyr::summarise(method_count = sum(.data$ponderation), .groups = "drop") %>%
-      dplyr::filter(.data$method_count >= count_cutoff) %>%
-      dplyr::distinct(.data$taxa_id, .data$taxa)
-  } else {
-    res <- significant %>%
-      dplyr::distinct(
-        .data$taxa_id,
-        .data$taxa,
-        .data$contrast_id,
-        .data$comparison,
-        .data$contrast_type,
-        .data$var,
-        .data$effect,
-        .data$method,
-        .keep_all = TRUE
-      ) %>%
-      dplyr::group_by(
-        .data$taxa_id,
-        .data$taxa,
-        .data$contrast_id,
-        .data$comparison,
-        .data$contrast_type,
-        .data$var,
-        .data$effect
-      ) %>%
-      dplyr::summarise(
-        method_count = sum(.data$ponderation),
-        methods = paste(sort(unique(.data$method)), collapse = ", "),
-        .groups = "drop"
-      ) %>%
-      dplyr::filter(.data$method_count >= count_cutoff)
-  }
+  res <- significant %>%
+    dplyr::distinct(
+      .data$taxa_id,
+      .data$taxa,
+      .data$contrast_id,
+      .data$comparison,
+      .data$contrast_type,
+      .data$var,
+      .data$effect,
+      .data$method,
+      .keep_all = TRUE
+    ) %>%
+    dplyr::group_by(
+      .data$taxa_id,
+      .data$taxa,
+      .data$contrast_id,
+      .data$comparison,
+      .data$contrast_type,
+      .data$var,
+      .data$effect
+    ) %>%
+    dplyr::summarise(
+      method_count = sum(.data$ponderation),
+      methods = paste(sort(unique(.data$method)), collapse = ", "),
+      .groups = "drop"
+    ) %>%
+    dplyr::filter(.data$method_count >= count_cutoff)
 
   cli::cli_inform(
     c(

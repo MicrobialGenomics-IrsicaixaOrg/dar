@@ -12,40 +12,33 @@ test_that("every DA engine requires add_model before any execution", {
     "aldex2", "aldex3", "ancom", "corncob", "deseq", "lefse",
     "linda", "maaslin", "rademu", "wilcox"
   )
-  for (selectors in c(FALSE, TRUE)) {
-    base <- if (selectors) {
-      suppressWarnings(recipe(phy, "condition", "Species"))
-    } else {
-      recipe(phy)
-    }
-    base <- step_filter_taxa(base, function(x) sum(x) > 0)
-    for (engine in engines) {
-      constructor <- getExportedValue("dar", paste0("step_", engine))
-      rec <- constructor(base, id = paste0(engine, "__required"))
-      seed <- .Random.seed
-      expect_error(
-        prep(rec, parallel = FALSE),
-        "add_model",
-        class = "dar_error_model_required",
-        info = engine
-      )
-      runner <- get(paste0("run_", engine), asNamespace("dar"))
-      # Other arguments must stay unevaluated until the model is checked.
-      expect_error(runner(rec), class = "dar_error_model_required", info = engine)
-      expect_error(
-        dar:::compile_model(rec, engine),
-        class = "dar_error_model_required",
-        info = engine
-      )
-      expect_identical(.Random.seed, seed)
-      expect_identical(get_phy(rec), phy)
-      expect_null(get_model(rec))
-      configured <- add_model(
-        rec, ~ condition, targets = "condition", tax_level = "Species"
-      )
-      expect_identical(get_model(configured)$targets, "condition")
-      expect_length(configured@steps, 2L)
-    }
+  base <- recipe(phy) |> step_filter_taxa(function(x) sum(x) > 0)
+  for (engine in engines) {
+    constructor <- getExportedValue("dar", paste0("step_", engine))
+    rec <- constructor(base, id = paste0(engine, "__required"))
+    seed <- .Random.seed
+    expect_error(
+      prep(rec, parallel = FALSE),
+      "add_model",
+      class = "dar_error_model_required",
+      info = engine
+    )
+    runner <- get(paste0("run_", engine), asNamespace("dar"))
+    # Other arguments must stay unevaluated until the model is checked.
+    expect_error(runner(rec), class = "dar_error_model_required", info = engine)
+    expect_error(
+      dar:::compile_model(rec, engine),
+      class = "dar_error_model_required",
+      info = engine
+    )
+    expect_identical(.Random.seed, seed)
+    expect_identical(get_phy(rec), phy)
+    expect_null(get_model(rec))
+    configured <- add_model(
+      rec, ~ condition, targets = "condition", tax_level = "Species"
+    )
+    expect_identical(get_model(configured)$targets, "condition")
+    expect_length(configured@steps, 2L)
   }
 })
 

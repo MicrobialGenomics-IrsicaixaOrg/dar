@@ -16,7 +16,7 @@
 #' get_model(rec)
 get_model <- function(rec) {
   check_any_recipe(rec)
-  normalize_model_spec(rec, rec@model)
+  rec@model
 }
 
 #' Add a centralized statistical model to a recipe
@@ -80,13 +80,6 @@ add_model <- function(rec,
   na_action <- match.arg(na_action)
   formula <- coerce_model_formula(formula)
 
-  if (is.null(targets) && !is.null(rec@var_info) && "vars" %in% names(rec@var_info)) {
-    targets <- rec@var_info$vars
-  }
-  if (is.null(tax_level) && !is.null(rec@tax_info) &&
-      "tax_lev" %in% names(rec@tax_info)) {
-    tax_level <- rec@tax_info$tax_lev
-  }
   if (!is.null(tax_level)) { tax_level <- stringr::str_to_sentence(tax_level) }
   candidate <- list(
     formula = formula,
@@ -101,41 +94,9 @@ add_model <- function(rec,
 
   validate_model_spec(rec, candidate)
   rec@model <- candidate
-  rec@var_info <- tibble::tibble(vars = targets)
-  rec@tax_info <- tibble::tibble(tax_lev = tax_level)
   validate_recipe_object(rec)
   report_model_step_warnings(rec)
   rec
-}
-
-#' Normalize models created before targets and taxonomic resolution were owned
-#' by add_model()
-#' @noRd
-normalize_model_spec <- function(rec, model) {
-  if (is.null(model)) { return(NULL) }
-  if (!"targets" %in% names(model)) {
-    model$targets <- if (!is.null(rec@var_info) && "vars" %in% names(rec@var_info)) {
-      rec@var_info$vars
-    } else {
-      NULL
-    }
-  }
-  if (!"tax_level" %in% names(model)) {
-    model$tax_level <- if (!is.null(rec@tax_info) && "tax_lev" %in% names(rec@tax_info)) {
-      rec@tax_info$tax_lev
-    } else {
-      NULL
-    }
-  }
-  if (!is.null(model$tax_level)) {
-    model$tax_level <- stringr::str_to_sentence(model$tax_level)
-  }
-  canonical <- c(
-    "formula", "targets", "tax_level", "time", "reference", "contrasts",
-    "na_action", "max_time_levels"
-  )
-  if (setequal(names(model), canonical)) { model <- model[canonical] }
-  model
 }
 
 #' @noRd
@@ -163,23 +124,17 @@ model_metadata <- function(rec) { recipe_metadata_data(rec) }
 #' Return model validity problems without throwing
 #' @noRd
 model_validity_problems <- function(object) {
-  stored_model <- object@model
-  if (is.null(stored_model)) { return(character()) }
-  legacy <- c("formula", "time", "reference", "contrasts", "na_action", "max_time_levels")
+  model <- object@model
+  if (is.null(model)) { return(character()) }
   required <- c(
     "formula", "targets", "tax_level", "time", "reference", "contrasts",
     "na_action", "max_time_levels"
   )
   problems <- character()
 
-  if (!identical(names(stored_model), required) &&
-      !identical(names(stored_model), legacy)) {
-    problems <- c(
-      problems,
-      paste0("`model` must contain exactly: ", paste(required, collapse = ", "))
-    )
+  if (!identical(names(model), required)) {
+    return(paste0("`model` must contain exactly: ", paste(required, collapse = ", ")))
   }
-  model <- normalize_model_spec(object, stored_model)
   if (!inherits(model$formula, "formula") || length(model$formula) != 2L) {
     problems <- c(problems, "`model$formula` must be a one-sided formula")
   }
@@ -218,7 +173,6 @@ model_validity_problems <- function(object) {
 
 #' @noRd
 validate_model_spec <- function(rec, model) {
-  model <- normalize_model_spec(rec, model)
   formula <- model$formula
   metadata <- model_metadata(rec)
   variables <- all.vars(formula)
@@ -978,17 +932,17 @@ apply_model_to_recipe <- function(rec) {
 #' Add common model columns to a method result
 #' @noRd
 harmonize_model_result <- function(result, rec) {
-  if (is.null(get_model(rec)) || !inherits(result, "data.frame")) { return(result) }
   result <- tibble::as_tibble(result)
-  if (!"contrast_id" %in% names(result) && "comparison" %in% names(result)) {
-    result$contrast_id <- result$comparison
-  }
-  if (!"comparison" %in% names(result) && "contrast_id" %in% names(result)) {
-    result$comparison <- result$contrast_id
+  if (!"contrast_id" %in% names(result)) {
+    cli::cli_abort(
+      "DA results must contain a planned contrast identifier.",
+      class = "dar_error_invalid_result_contract"
+    )
   }
   plan <- resolve_model(rec)$contrast_plan |>
     dplyr::select(
       "contrast_id",
+      "comparison",
       "contrast_type",
       "var",
       "numerator",
@@ -1010,7 +964,6 @@ harmonize_model_result <- function(result, rec) {
 #' Validate that an engine returned every planned contrast
 #' @noRd
 validate_model_result_contract <- function(result, rec, step_id) {
-  if (is.null(get_model(rec))) { return(invisible(TRUE)) }
   result <- harmonize_model_result(result, rec)
   expected <- resolve_model(rec)$contrast_plan$contrast_id
   observed <- unique(result$contrast_id)

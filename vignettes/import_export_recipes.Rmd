@@ -92,9 +92,8 @@ recipe parameters match.
 
 Recipe files are treated as untrusted data: constructors, fields, formulas and
 filter predicates are validated against explicit allowlists before the recipe
-is changed. R functions in `engine_args` are not serializable. Legacy executable
-exports are rejected; recreate their configuration using the current API and
-export it again rather than executing an old recipe file.
+is changed. Import accepts only the versioned `dar-recipe` JSON schema.
+R functions in `engine_args` are not serializable.
 
 ## Session info
 

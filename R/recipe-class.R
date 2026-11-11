@@ -6,9 +6,6 @@
 methods::setClassUnion("phyloseq_or_null", c("phyloseq", "NULL"))
 
 #' @rdname Recipe-class
-methods::setClassUnion("tibble_or_NULL", c("tbl_df", "NULL"))
-
-#' @rdname Recipe-class
 methods::setClassUnion("list_or_NULL", c("list", "NULL"))
 
 ## class def ----
@@ -19,10 +16,6 @@ methods::setClassUnion("list_or_NULL", c("list", "NULL"))
 #' to prepare it for data analysis.
 #'
 #' @slot phyloseq Phyloseq-class object.
-#' @slot var_info Deprecated compatibility storage synchronized from
-#'   `model$targets` for modeled recipes.
-#' @slot tax_info Deprecated compatibility storage synchronized from
-#'   `model$tax_level` for modeled recipes.
 #' @slot steps List of step-class objects that will be used by DA.
 #' @slot model Optional centralized statistical model specification created by
 #'   [add_model()].
@@ -36,15 +29,11 @@ methods::setClass(
   Class = "Recipe",
   slots = c(
     phyloseq = "phyloseq_or_null",
-    var_info = "tibble_or_NULL",
-    tax_info = "tibble_or_NULL",
     model = "list_or_NULL",
     steps = "list"
   ),
   prototype = list(
     phyloseq = NULL,
-    var_info = NULL,
-    tax_info = NULL,
     model = NULL,
     steps = list()
   )
@@ -59,11 +48,6 @@ methods::setClass(
 #'
 #' @param microbiome_object Phyloseq-class object or
 #'   TreeSummarizedExperiment-class object.
-#' @param var_info A character string of column names corresponding to variables
-#'   that will be used in any context. Deprecated; supply `targets` to
-#'   [add_model()] instead.
-#' @param tax_info A character string of taxonomic levels that will be used in
-#'   any context. Deprecated; supply `tax_level` to [add_model()] instead.
 #' @param steps list with steps.
 #'
 #' @return An object of class `Recipe` containing the microbiome object, an
@@ -101,26 +85,10 @@ methods::setClass(
 #'
 #' expect_s4_class(recipe(upper_phy), "Recipe")
 #'
-#' # 4. Error: Invalid var_info missing in metadata
-#' expect_error(
-#'   suppressWarnings(
-#'     recipe(metaHIV_phy, var_info = "error_var", tax_info = "Species")
-#'   ),
-#'   class = "dar_error_missing_vars"
-#' )
-#'
-#' # 5. Error: Invalid tax_info missing in tax_table
-#' expect_error(
-#'   suppressWarnings(
-#'     recipe(metaHIV_phy, var_info = "RiskGroup2", tax_info = "error_tax")
-#'   ),
-#'   class = "dar_error_missing_tax"
-#' )
-#'
-#' # 6. Success: Valid TreeSummarizedExperiment
+#' # 4. Success: Valid TreeSummarizedExperiment
 #' expect_s4_class(recipe(GlobalPatterns), "Recipe")
 #'
-#' # 7. Success: Valid phyloseq
+#' # 5. Success: Valid phyloseq
 #' expect_s4_class(recipe(metaHIV_phy), "Recipe")
 #'
 #' @examples
@@ -140,10 +108,7 @@ methods::setClass(
 #' ## A recipe without a model can be used for preprocessing
 #' rec <- recipe(metaHIV_phy) |>
 #'   step_filter_by_prevalence(threshold = 0.1)
-recipe <- function(microbiome_object = NULL,
-                   var_info = NULL,
-                   tax_info = NULL,
-                   steps = list()) {
+recipe <- function(microbiome_object = NULL, steps = list()) {
   if (!is(microbiome_object, "phyloseq") &&
       !is(microbiome_object, "TreeSummarizedExperiment")) {
     cli::cli_abort(
@@ -157,20 +122,6 @@ recipe <- function(microbiome_object = NULL,
 
   if (is(microbiome_object, "TreeSummarizedExperiment")) {
     microbiome_object <- mia::convertToPhyloseq(microbiome_object)
-  }
-
-  deprecated_arguments <- c(
-    if (!is.null(var_info)) "var_info",
-    if (!is.null(tax_info)) "tax_info"
-  )
-  if (length(deprecated_arguments) > 0L) {
-    cli::cli_warn(
-      c(
-        "!" = "Recipe argument{?s} {.arg {deprecated_arguments}} {?is/are} deprecated in Bioconductor 3.24 and will become defunct in 3.25.",
-        "i" = "Create the recipe without selectors, then define {.arg targets} and {.arg tax_level} with {.fun add_model}."
-      ),
-      class = "dar_warning_deprecated_recipe_argument"
-    )
   }
 
   if (!is.null(microbiome_object@tax_table)) {
@@ -191,43 +142,9 @@ recipe <- function(microbiome_object = NULL,
     }
   }
 
-  if (!is.null(var_info)) {
-    s_data <- as(phyloseq::sample_data(microbiome_object), "data.frame")
-    if (!all(var_info %in% colnames(s_data))) {
-      missing_vars <- setdiff(var_info, colnames(s_data))
-      cli::cli_abort(
-        c(
-          "x" = "Column{?s} {.val {missing_vars}} {?does not/do not} exist in the {.arg microbiome_object} metadata.",
-          "i" = "Available columns: {.val {colnames(s_data)}}."
-        ),
-        class = "dar_error_missing_vars"
-      )
-    }
-  }
-
-  if (!is.null(tax_info)) {
-    tax_info <- stringr::str_to_sentence(tax_info)
-    tax_ranks <- phyloseq::rank_names(microbiome_object)
-    if (!all(tax_info %in% tax_ranks)) {
-      missing_tax <- setdiff(tax_info, tax_ranks)
-      cli::cli_abort(
-        c(
-          "x" = "Taxonomic rank{?s} {.val {missing_tax}} {?does not/do not} exist in the {.arg microbiome_object}.",
-          "i" = "Available ranks: {.val {tax_ranks}}."
-        ),
-        class = "dar_error_missing_tax"
-      )
-    }
-  }
-
-  var_info <- tibble::tibble(vars = var_info)
-  tax_info <- tibble::tibble(tax_lev = tax_info)
-
   methods::new(
     Class = "Recipe",
     phyloseq = microbiome_object,
-    var_info = var_info,
-    tax_info = tax_info,
     model = NULL,
     steps = steps
   )
@@ -236,10 +153,6 @@ recipe <- function(microbiome_object = NULL,
 ## validity ----
 
 #' Validate the structural invariants of a Recipe
-#'
-#' Legacy `var_info` and `tax_info` may be unset for preprocessing-only recipes.
-#' When a model is present they must agree with its targets and taxonomic level;
-#' all configured values must describe the data stored in the recipe.
 #'
 #' @param object A `Recipe` object.
 #'
@@ -251,43 +164,10 @@ recipe <- function(microbiome_object = NULL,
 #' @tests
 #' data(metaHIV_phy)
 #'
-#' complete_rec <- suppressWarnings(recipe(
-#'   metaHIV_phy,
-#'   var_info = "RiskGroup2",
-#'   tax_info = "Species"
-#' ))
-#' incomplete_rec <- recipe(metaHIV_phy)
-#'
+#' complete_rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #' expect_true(methods::validObject(complete_rec, test = TRUE))
-#' expect_true(methods::validObject(incomplete_rec, test = TRUE))
-#'
-#' invalid_var <- complete_rec
-#' invalid_var@var_info <- tibble::tibble(vars = "missing_variable")
-#' expect_match(
-#'   methods::validObject(invalid_var, test = TRUE),
-#'   "missing_variable"
-#' )
-#'
-#' invalid_tax <- complete_rec
-#' invalid_tax@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
-#' expect_match(
-#'   methods::validObject(invalid_tax, test = TRUE),
-#'   "Missing_rank"
-#' )
-#'
-#' malformed_var <- complete_rec
-#' malformed_var@var_info <- tibble::tibble(wrong = "RiskGroup2")
-#' expect_match(
-#'   methods::validObject(malformed_var, test = TRUE),
-#'   "var_info"
-#' )
-#'
-#' malformed_tax <- complete_rec
-#' malformed_tax@tax_info <- tibble::tibble(wrong = "Species")
-#' expect_match(
-#'   methods::validObject(malformed_tax, test = TRUE),
-#'   "tax_info"
-#' )
+#' expect_true(methods::validObject(recipe(metaHIV_phy), test = TRUE))
 #'
 #' testthat::local_mocked_bindings(
 #'   nsamples = function(x) 0,
@@ -319,61 +199,8 @@ recipe_validity_problems <- function(object) {
     duplicate_step_id_problems(object@steps)
   )
 
-  var_info <- object@var_info
-  if (!is.null(var_info) && ncol(var_info) > 0) {
-    if (!identical(names(var_info), "vars")) {
-      problems <- c(problems, "`var_info` must contain only a `vars` column")
-    } else if (!is.character(var_info$vars)) {
-      problems <- c(problems, "`var_info$vars` must be a character vector")
-    } else {
-      sample_vars <- tryCatch(
-        colnames(as(phyloseq::sample_data(phy), "data.frame")),
-        error = function(cnd) character()
-      )
-      missing_vars <- setdiff(var_info$vars, sample_vars)
-      if (length(missing_vars) > 0) {
-        problems <- c(
-          problems,
-          glue::glue(
-            "Variables not found in `sample_data`: {paste(missing_vars, collapse = ', ')}"
-          )
-        )
-      }
-    }
-  }
-
-  tax_info <- object@tax_info
-  if (!is.null(tax_info) && ncol(tax_info) > 0) {
-    if (!identical(names(tax_info), "tax_lev")) {
-      problems <- c(problems, "`tax_info` must contain only a `tax_lev` column")
-    } else if (!is.character(tax_info$tax_lev)) {
-      problems <- c(problems, "`tax_info$tax_lev` must be a character vector")
-    } else {
-      missing_tax <- setdiff(tax_info$tax_lev, phyloseq::rank_names(phy))
-      if (length(missing_tax) > 0) {
-        problems <- c(
-          problems,
-          glue::glue(
-            "Taxonomic ranks not found in `tax_table`: {paste(missing_tax, collapse = ', ')}"
-          )
-        )
-      }
-    }
-  }
-
   if (!is.null(object@model)) {
     problems <- c(problems, model_validity_problems(object))
-    if ("targets" %in% names(object@model) &&
-        !identical(object@model$targets, object@var_info$vars)) {
-      problems <- c(problems, "`model$targets` and legacy `var_info` must agree")
-    }
-    if ("tax_level" %in% names(object@model) &&
-        !identical(
-          stringr::str_to_sentence(object@model$tax_level),
-          object@tax_info$tax_lev
-        )) {
-      problems <- c(problems, "`model$tax_level` and legacy `tax_info` must agree")
-    }
   }
 
   if (length(problems) == 0) TRUE else problems
@@ -532,13 +359,14 @@ methods::setValidity(Class = "PrepRecipe", method = prep_recipe_validity_problem
 #' @aliases PrepRecipe
 #' @tests
 #' data(metaHIV_phy)
-#' rec <- suppressWarnings(recipe(metaHIV_phy, "RiskGroup2", "Species"))
+#' rec <- recipe(metaHIV_phy) |>
+#'   add_model(~ RiskGroup2, targets = "RiskGroup2", tax_level = "Species")
 #'
 #' prepped <- prep_recipe(rec, results = list(), bakes = list())
 #' expect_s4_class(prepped, "PrepRecipe")
 #' expect_true(methods::validObject(prepped, test = TRUE))
 #'
-#' rec@tax_info <- tibble::tibble(tax_lev = "Missing_rank")
+#' rec@model$tax_level <- "Missing_rank"
 #' expect_error(
 #'   prep_recipe(rec, results = list(), bakes = list()),
 #'   regexp = "Missing_rank"
@@ -656,11 +484,9 @@ methods::setMethod(
         nrow()
 
       cli::cat_line()
-      overlap_unit <- if (is.null(get_model(object))) "taxa" else
-        "taxon-contrast effects"
       cat(
         glue::glue(
-          "     {info()} {n_overlap} {overlap_unit} are present in all tested methods"
+          "     {info()} {n_overlap} taxon-contrast effects are present in all tested methods"
         ),
         "\n\n"
       )
