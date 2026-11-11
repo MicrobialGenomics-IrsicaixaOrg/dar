@@ -1,6 +1,6 @@
 Package: dar
 Title: Differential Abundance Workflows for Microbiome Data
-Version: 1.9.12
+Version: 1.99.0
 Date: 2026-08-04
 Authors@R: 
     c(person(given = "Francesc",

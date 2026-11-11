@@ -1,4 +1,4 @@
-# dar 2.0.0 (unreleased)
+# dar 2.0.0
 
 Changes since dar 1.8.0.
 
