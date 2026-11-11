@@ -288,21 +288,120 @@ test_that("models support multiple targets and are independent of step order", {
   expect_equal(get_model(before)$formula, get_model(after)$formula)
 })
 
-test_that("random effects are rechecked after cohort changes", {
+test_that("random intercepts accept singleton groups alongside repeated groups", {
   phy <- make_longitudinal_phy()
   metadata <- as(phyloseq::sample_data(phy), "data.frame")
-  metadata$unique_subject <- rownames(metadata)
-  phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata)
+  keep <- metadata$time == 0 | metadata$subject == "c1"
+  phy <- phyloseq::prune_samples(rownames(metadata)[keep], phy)
   rec <- recipe(phy) |>
     add_model(
-      ~ condition + (1 | unique_subject),
+      ~ condition + (1 | subject),
       targets = "condition", tax_level = "Species"
     )
 
+  prepared <- prep(rec, parallel = FALSE)
+  expect_setequal(phyloseq::sample_names(get_phy(prepared)), rownames(metadata)[keep])
+  expect_identical(get_execution(prepared)$contrasts$contrast_id,
+                   "condition[treated-control]")
+  for (engine in c("aldex3", "ancom", "linda", "maaslin")) {
+    compiled <- dar:::compile_model(prepared, engine)
+    expect_setequal(compiled$data$sample_id, rownames(metadata)[keep])
+    expect_equal(sort(as.integer(table(compiled$data$subject))), c(1L, 1L, 1L, 3L))
+    expect_equal(compiled$rand_formula, "(1 | subject)")
+    expect_equal(compiled$contrasts$contrast_id, "condition[treated-control]")
+  }
+})
+
+test_that("random intercepts reject a single observed group", {
+  phy <- make_longitudinal_phy()
+  metadata <- as(phyloseq::sample_data(phy), "data.frame")
+  metadata$subject <- factor(ifelse(metadata$time == 2, "excluded", "observed"))
+  metadata$age[metadata$subject == "excluded"] <- NA_real_
+  phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata)
+  rec <- recipe(phy) |>
+    add_model(
+      ~ condition + age + (1 | subject),
+      targets = "condition", tax_level = "Species", na_action = "drop"
+    )
+
   expect_error(
-    dar:::resolve_model(rec),
+    prep(rec, parallel = FALSE), "At least two observed groups",
     class = "dar_error_non_estimable_model"
   )
+})
+
+test_that("random-slope checks use observed groups and require within-group variation", {
+  phy <- make_longitudinal_phy()
+  metadata <- as(phyloseq::sample_data(phy), "data.frame")
+  metadata$time <- as.integer(metadata$time > 0)
+  metadata$subject <- factor(metadata$subject)
+  phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata)
+  configure <- function(phy) {
+    recipe(phy) |>
+      add_model(~ condition + age + time + (time | subject), targets = "condition",
+                tax_level = "Species", time = "time", na_action = "drop")
+  }
+
+  drop <- metadata$subject == "c1"
+  phyloseq::sample_data(phy)$age[drop] <- NA_real_
+  prepared <- prep(configure(phy), parallel = FALSE)
+  expect_identical(get_execution(prepared)$dropped_samples, rownames(metadata)[drop])
+  expect_equal(phyloseq::nsamples(get_phy(prepared)), 9L)
+
+  phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata)
+  keep <- !(drop & metadata$time == 1L)
+  with_singleton <- configure(phyloseq::prune_samples(rownames(metadata)[keep], phy))
+  expect_error(
+    prep(with_singleton, parallel = FALSE), "Each group must contain at least two distinct slope values",
+    class = "dar_error_non_estimable_model"
+  )
+})
+
+test_that("random intercepts are rechecked after cohort changes and NA removal", {
+  phy <- make_longitudinal_phy()
+  metadata <- as(phyloseq::sample_data(phy), "data.frame")
+  metadata$age[metadata$subject == "c1" & metadata$time == 2] <- NA_real_
+  keep <- metadata$time == 0 | metadata$subject == "c1"
+  phy <- phyloseq::prune_samples(rownames(metadata)[keep], phy)
+  configure <- function(metadata) {
+    phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata[keep, , drop = FALSE])
+    recipe(phy) |>
+      add_model(~ condition + age + (1 | subject), targets = "condition",
+                tax_level = "Species", na_action = "drop")
+  }
+
+  prepared <- prep(configure(metadata), parallel = FALSE)
+  expect_identical(
+    get_execution(prepared)$dropped_samples, rownames(metadata)[is.na(metadata$age)]
+  )
+  expect_equal(phyloseq::nsamples(get_phy(prepared)), 5L)
+
+  metadata$age[metadata$subject == "c1" & metadata$time == 1] <- NA_real_
+  expect_error(
+    prep(configure(metadata), parallel = FALSE), "requires 4 random effects for 4 observations",
+    class = "dar_error_non_estimable_model"
+  )
+})
+
+test_that("random intercepts reject one observation per group throughout", {
+  phy <- make_longitudinal_phy()
+  metadata <- as(phyloseq::sample_data(phy), "data.frame")
+  subjects <- rownames(metadata)
+  subjects_with_na_level <- factor(replace(subjects, 1L, NA_character_), exclude = NULL)
+  for (groups in list(subjects, subjects_with_na_level)) {
+    metadata$unique_subject <- groups
+    phyloseq::sample_data(phy) <- phyloseq::sample_data(metadata)
+    rec <- recipe(phy) |>
+      add_model(
+        ~ condition + (1 | unique_subject),
+        targets = "condition", tax_level = "Species"
+      )
+
+    expect_error(
+      prep(rec, parallel = FALSE), "requires 12 random effects for 12 observations",
+      class = "dar_error_non_estimable_model"
+    )
+  }
 })
 
 test_that("all engine compilers receive the same design and contrast plan", {

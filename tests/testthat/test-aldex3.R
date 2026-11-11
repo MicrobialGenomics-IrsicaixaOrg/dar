@@ -127,6 +127,23 @@ test_that("ALDEx3 handles exact mixed models and interaction contrasts", {
   expect_true(all(is.finite(observed$effect_size)))
 })
 
+test_that("ALDEx3 fits a random intercept with singleton and repeated groups", {
+  skip_if_not_installed("ALDEx3")
+  phy <- make_longitudinal_phy()
+  metadata <- as(phyloseq::sample_data(phy), "data.frame")
+  keep <- metadata$time == 0 | metadata$subject %in% c("c1", "t1")
+  phy <- phyloseq::prune_samples(rownames(metadata)[keep], phy)
+  rec <- recipe(phy) |>
+    add_model(~ condition + (1 | subject), targets = "condition", tax_level = "Species")
+  prepared <- aldex3_test_fit(rec, scale_args = list(gamma = 0))
+  observed <- tidy_results(prepared)
+  expect_setequal(phyloseq::sample_names(get_phy(prepared)), rownames(metadata)[keep])
+  expect_identical(get_execution(prepared)$engine_details$aldex3__test$method, "lme4")
+  expect_identical(unique(observed$contrast_id), "condition[treated-control]")
+  expect_setequal(observed$taxa_id, phyloseq::taxa_names(phy))
+  expect_true(all(is.finite(observed$effect_size)))
+})
+
 test_that("external scale vectors are aligned by sample ID after exclusions", {
   skip_if_not_installed("ALDEx3")
   phy <- make_longitudinal_phy()

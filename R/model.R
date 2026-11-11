@@ -481,19 +481,20 @@ resolve_model <- function(rec, check_design = TRUE) {
   if (check_design && length(random_terms) > 0L) {
     for (term in random_terms) {
       grouping <- all.vars(term[[3]])[[1]]
-      group_sizes <- table(metadata[[grouping]])
-      if (length(group_sizes) < 2L || any(group_sizes < 2L)) {
+      groups <- droplevels(as.factor(metadata[[grouping]]))
+      n_groups <- nlevels(groups)
+      if (n_groups < 2L) {
         cli::cli_abort(
           c(
             "x" = "Random effect grouped by {.var {grouping}} is not estimable.",
-            "i" = "At least two groups with repeated observations are required."
+            "i" = "At least two observed groups are required."
           ),
           class = "dar_error_non_estimable_model"
         )
       }
       random_formula <- stats::as.formula(call("~", term[[2]]))
       random_matrix <- stats::model.matrix(random_formula, data = metadata)
-      random_effects <- ncol(random_matrix) * length(group_sizes)
+      random_effects <- ncol(random_matrix) * n_groups
       if (nrow(metadata) <= random_effects) {
         cli::cli_abort(
           c(
@@ -506,7 +507,7 @@ resolve_model <- function(rec, check_design = TRUE) {
       slopes <- setdiff(all.vars(term[[2]]), "1")
       for (slope in slopes) {
         distinct_per_group <- tapply(
-          metadata[[slope]], metadata[[grouping]],
+          metadata[[slope]], groups,
           function(x) length(unique(stats::na.omit(x)))
         )
         if (any(distinct_per_group < 2L)) {
