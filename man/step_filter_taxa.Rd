@@ -4,7 +4,7 @@
 \alias{step_filter_taxa}
 \title{Filter taxa based on across-sample OTU abundance criteria}
 \usage{
-step_filter_taxa(rec, .f, id = rand_id("filter_taxa"))
+step_filter_taxa(rec, .f, id = new_step_id(rec, "filter_taxa"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of

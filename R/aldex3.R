@@ -69,7 +69,7 @@
 step_aldex3 <- function(rec, max_significance = 0.05, nsample = 2000,
                         scale_model = "clr", scale_args = list(gamma = 0.5),
                         p_adj_method = "BH", n_cores = 1, seed = 130L,
-                        rarefy = FALSE, id = rand_id("aldex3"),
+                        rarefy = FALSE, id = new_step_id(rec, "aldex3"),
                         engine_args = list()) {
   check_recipe(rec)
   scale_model <- match.arg(scale_model, c("clr", "tss", "sample", "coefficient"))

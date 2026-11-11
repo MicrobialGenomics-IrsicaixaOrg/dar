@@ -79,7 +79,7 @@ step_lefse <- function(rec,
                        assay = 1L,
                        trim.names = FALSE,
                        rarefy = TRUE,
-                       id = rand_id("lefse"),
+                       id = new_step_id(rec, "lefse"),
                        engine_args = list()) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_lefse(), "step_lefse()")

@@ -19,7 +19,7 @@ step_corncob(
   fdr = "fdr",
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("corncob"),
+  id = new_step_id(rec, "corncob"),
   engine_args = list()
 )
 }

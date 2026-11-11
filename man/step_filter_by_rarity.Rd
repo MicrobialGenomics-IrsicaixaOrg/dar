@@ -4,7 +4,11 @@
 \alias{step_filter_by_rarity}
 \title{Filter taxa by rarity}
 \usage{
-step_filter_by_rarity(rec, threshold = 0.01, id = rand_id("filter_by_rarity"))
+step_filter_by_rarity(
+  rec,
+  threshold = 0.01,
+  id = new_step_id(rec, "filter_by_rarity")
+)
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of

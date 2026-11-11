@@ -53,6 +53,16 @@ This check validates the pkgdown configuration without publishing the website.
 GitHub Actions runs the same validation for pull requests and deploys the full
 site only from `devel`.
 
+### Docker image publishing
+
+The **Publish Docker image** workflow runs after a successful **R-CMD-check-bioc**
+run from a push to the current tip of `devel` in this repository. It publishes
+that commit to Docker Hub as `dar:latest` and `dar:devel` under the account in
+`DOCKERHUB_USERNAME`. Set `DOCKERHUB_USERNAME` and a `DOCKERHUB_TOKEN` with
+write access as repository Actions secrets. Include `/nodocker` in the head
+commit message to skip publication for a push. Publication failures are
+reported in the Docker workflow independently of package validation.
+
 ### Bioconductor lifecycle
 
 Released functions follow the three-cycle Bioconductor lifecycle: deprecated

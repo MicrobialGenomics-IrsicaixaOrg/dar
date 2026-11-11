@@ -58,7 +58,7 @@
 step_rademu <- function(rec, test = c("score", "wald"), cluster = NULL,
                         max_significance = 0.05, p_adj_method = "BH",
                         constraint_param = 0.1, seed = 130L, rarefy = FALSE,
-                        id = rand_id("rademu"), engine_args = list()) {
+                        id = new_step_id(rec, "rademu"), engine_args = list()) {
   check_recipe(rec)
   test <- match.arg(test)
   checkmate::assert_string(cluster, null.ok = TRUE, min.chars = 1)

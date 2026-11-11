@@ -35,7 +35,7 @@
 #'   step_filter_by_variance()
 step_filter_by_variance <- function(rec,
                                     threshold = 0.01,
-                                    id = rand_id("filter_by_variance")) {
+                                    id = new_step_id(rec, "filter_by_variance")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_filter_by_variance(), "step_filter_by_variance()")
 

@@ -134,7 +134,7 @@ step_ancom <- function(rec,
                        dunnet = FALSE,
                        trend = FALSE,
                        rarefy = FALSE,
-                       id = rand_id("ancom"),
+                       id = new_step_id(rec, "ancom"),
                        engine_args = list()) {
   check_recipe(rec)
   recipes_pkg_check(c("bioc::ANCOMBC"), "step_ancom()")

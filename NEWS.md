@@ -64,6 +64,16 @@
 
 ## Bug fixes
 
+* `step_deseq()` uses native `poscounts` size-factor estimation and extracts
+  results with `alpha = max_significance` before shrinkage. The default
+  `ashr` path preserves those native P values, adjusted P values and missing
+  statistics; advanced `results` controls also apply when shrinkage is used.
+  Dependency checks require only the selected shrinkage backend.
+  Re-run `prep()` to apply the updated normalization and filtering to existing
+  fitted recipes.
+* Automatically generated IDs are unique across the steps and bakes of a
+  recipe. Configurations with distinct parameters can reuse the same method
+  even when the random ID generator draws the same name (#187).
 * Centralized MaAsLin3 tests evaluate each planned contrast independently
   after one fit. An unestimable contrast no longer hides estimable contrasts
   for the same taxon; native missing values and the joint correction family

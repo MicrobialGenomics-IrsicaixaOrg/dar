@@ -299,10 +299,7 @@ add_step <- function(rec, object) {
     return(rec)
   }
 
-  configured_operations <- rec@steps
-  if (is_prep) { configured_operations <- c(configured_operations, rec@bakes) }
-  configured_ids <- purrr::map_chr(configured_operations, ~ .x[["id"]])
-  if (object[["id"]] %in% configured_ids) {
+  if (object[["id"]] %in% configured_step_ids(rec)) {
     cli::cli_abort(
       c(
         "x" = "Step ID {.val {object[['id']]}} is already configured.",
@@ -323,4 +320,19 @@ add_step <- function(rec, object) {
 
   validate_recipe_object(rec)
   rec
+}
+
+configured_step_ids <- function(rec) {
+  bakes <- if (methods::is(rec, "PrepRecipe")) rec@bakes
+  valid_step_ids(c(rec@steps, bakes))
+}
+
+new_step_id <- function(rec, prefix) {
+  id <- rand_id(prefix)
+  used_ids <- configured_step_ids(rec)
+  if (!id %in% used_ids) { return(id) }
+
+  # The base ID occupies one slot, so at least one suffix is available.
+  candidates <- paste0(id, "_", seq_along(used_ids))
+  candidates[!candidates %in% used_ids][[1L]]
 }

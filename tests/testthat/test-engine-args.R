@@ -89,7 +89,7 @@ test_that("native stages combine fixed, default and advanced arguments", {
 test_that("configured but unexecuted stages are rejected", {
   expect_error(
     dar:::check_unused_engine_args(
-      "deseq", list(results = list(alpha = 0.1)), "shrink"
+      "deseq", list(results = list(independentFiltering = FALSE)), "shrink"
     ),
     class = "dar_error_invalid_engine_args"
   )

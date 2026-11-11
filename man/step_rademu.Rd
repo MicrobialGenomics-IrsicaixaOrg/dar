@@ -13,7 +13,7 @@ step_rademu(
   constraint_param = 0.1,
   seed = 130L,
   rarefy = FALSE,
-  id = rand_id("rademu"),
+  id = new_step_id(rec, "rademu"),
   engine_args = list()
 )
 }

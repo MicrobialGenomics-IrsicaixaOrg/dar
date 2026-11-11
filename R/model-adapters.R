@@ -91,25 +91,19 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
                             engine_args = list()) {
   compiled <- compile_model(rec, "deseq")
   phy <- model_phyloseq(rec, rarefy)
-  result_stage <- if (identical(type, "normal") &&
-                      length(compiled$resolved$interaction_targets) > 0L) {
-    "results"
-  } else {
-    "shrink"
-  }
-  check_unused_engine_args("deseq", engine_args, c("size_factors", "fit", result_stage))
+  use_shrinkage <- !identical(type, "normal") ||
+    length(compiled$resolved$interaction_targets) == 0L
+  check_unused_engine_args(
+    "deseq", engine_args, c("size_factors", "fit", "results", if (use_shrinkage) "shrink")
+  )
 
   fit_dds <- function(phy, design) {
     dds <- suppressMessages(phyloseq::phyloseq_to_deseq2(phy, design = design))
-    geo_means <- apply(DESeq2::counts(dds), 1, function(x) {
-      positive <- x[x > 0]
-      if (length(positive) == 0L) 1 else exp(mean(log(positive)))
-    })
     dds <- exec_engine_stage(
       "deseq",
       "size_factors",
       engine_args,
-      fixed = list(object = dds, geoMeans = geo_means)
+      fixed = list(object = dds, type = "poscounts")
     )
     tryCatch(
       exec_engine_stage(
@@ -167,19 +161,23 @@ run_deseq_model <- function(rec, test, fitType, betaPrior, type,
         class = "dar_error_invalid_result_contract"
       )
     }
-    res <- if (identical(result_stage, "results")) {
-      exec_engine_stage(
-        "deseq",
-        "results",
-        engine_args,
-        fixed = list(object = contrast_dds, name = result_names[[coefficient_index]])
+    res <- exec_engine_stage(
+      "deseq",
+      "results",
+      engine_args,
+      fixed = list(
+        object = contrast_dds, name = result_names[[coefficient_index]],
+        alpha = max_significance
       )
-    } else {
-      exec_engine_stage(
+    )
+    if (use_shrinkage) {
+      res <- exec_engine_stage(
         "deseq",
         "shrink",
         engine_args,
-        fixed = list(dds = contrast_dds, coef = coefficient_index, type = type),
+        fixed = list(
+          dds = contrast_dds, coef = coefficient_index, type = type, res = res
+        ),
         defaults = list(quiet = TRUE)
       )
     }

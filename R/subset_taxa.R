@@ -34,7 +34,7 @@
 #' recipe(metaHIV_phy) |>
 #'   step_subset_taxa(tax_level = "Kingdom", taxa = c("Bacteria", "Archaea")) |>
 #'   prep()
-step_subset_taxa <- function(rec, tax_level, taxa, id = rand_id("subset_taxa")) {
+step_subset_taxa <- function(rec, tax_level, taxa, id = new_step_id(rec, "subset_taxa")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_subset_taxa(), "step_subset_taxa()")
   add_step(

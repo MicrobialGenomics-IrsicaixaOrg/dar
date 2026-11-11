@@ -4,7 +4,7 @@
 \alias{step_rarefaction}
 \title{Resample an OTU table such that all samples have the same library size.}
 \usage{
-step_rarefaction(rec, id = rand_id("rarefaction"))
+step_rarefaction(rec, id = new_step_id(rec, "rarefaction"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of

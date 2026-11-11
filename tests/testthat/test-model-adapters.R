@@ -169,7 +169,8 @@ test_that("DESeq2 routes advanced arguments through fit and shrink", {
   )
   expect_complete_model_result(result, rec)
   expect_setequal(
-    unique(stages()), c("deseq:size_factors", "deseq:fit", "deseq:shrink")
+    unique(stages()),
+    c("deseq:size_factors", "deseq:fit", "deseq:results", "deseq:shrink")
   )
 })
 

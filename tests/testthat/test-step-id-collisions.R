@@ -3,6 +3,57 @@ reserved_da_ids <- c(
   "sum", ".tax_order", ".contrast_order", ".effect_order"
 )
 
+test_that("colliding automatic IDs keep distinct MaAsLin3 configurations", {
+  local_mocked_bindings(
+    rand_id = function(prefix) paste0(prefix, "__Xuixo"),
+    recipes_pkg_check = function(...) invisible(NULL),
+    .package = "dar"
+  )
+  phy <- make_multilevel_phy()
+  rec <- recipe(phy) |>
+    add_model(~ condition, targets = "condition", tax_level = "Species") |>
+    step_filter_by_prevalence(id = "maaslin__Xuixo_1") |>
+    step_maaslin(min_prevalence = 0.1) |>
+    step_maaslin(min_prevalence = 0.2)
+
+  ids <- c("maaslin__Xuixo_1", "maaslin__Xuixo", "maaslin__Xuixo_2")
+  expect_identical(steps_ids(rec), ids)
+  expect_identical(suppressMessages(step_maaslin(rec, min_prevalence = 0.2)), rec)
+  expect_error(
+    step_maaslin(rec, min_prevalence = 0.3, id = "maaslin__Xuixo"),
+    "already configured", class = "dar_error_invalid_step"
+  )
+
+  path <- withr::local_tempfile(fileext = ".json")
+  export_steps(rec, path)
+  restored <- import_steps(recipe(phy), path)
+  expect_identical(steps_ids(restored), ids)
+  expect_identical(restored@steps, rec@steps)
+})
+
+test_that("automatic preprocessing and bake IDs share the configured namespace", {
+  local_mocked_bindings(
+    rand_id = function(prefix) paste0(prefix, "__Xuixo"),
+    .package = "dar"
+  )
+  rec <- recipe(make_multilevel_phy()) |>
+    step_filter_by_prevalence(threshold = 0.1) |>
+    step_filter_by_prevalence(threshold = 0.2) |>
+    step_filter_by_prevalence(threshold = 0.3, id = "bake__Xuixo")
+  expect_identical(
+    steps_ids(rec), c("filter_by_prevalence__Xuixo", "filter_by_prevalence__Xuixo_1", "bake__Xuixo")
+  )
+
+  prepared <- dar:::prep_recipe(rec, list(), list()) |>
+    bake(count_cutoff = 1) |>
+    bake(count_cutoff = 2)
+  expect_identical(purrr::map_chr(prepared@bakes, "id"), c("bake__Xuixo_1", "bake__Xuixo_2"))
+  expect_error(
+    bake(prepared, count_cutoff = 3, id = "bake__Xuixo"),
+    "already configured", class = "dar_error_invalid_step"
+  )
+})
+
 test_that("DA constructors reject reserved IDs before modifying recipes", {
   local_mocked_bindings(
     recipes_pkg_check = function(...) invisible(NULL),

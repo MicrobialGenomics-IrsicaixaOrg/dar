@@ -39,7 +39,7 @@
 #'   step_filter_by_rarity()
 step_filter_by_rarity <- function(rec,
                                   threshold = 0.01,
-                                  id = rand_id("filter_by_rarity")) {
+                                  id = new_step_id(rec, "filter_by_rarity")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_filter_by_rarity(), "step_filter_by_rarity()")
 

@@ -4,7 +4,7 @@
 \alias{step_subset_taxa}
 \title{Subset taxa by taxonomic level}
 \usage{
-step_subset_taxa(rec, tax_level, taxa, id = rand_id("subset_taxa"))
+step_subset_taxa(rec, tax_level, taxa, id = new_step_id(rec, "subset_taxa"))
 }
 \arguments{
 \item{rec}{A Recipe object. The step will be added to the sequence of

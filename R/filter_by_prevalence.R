@@ -37,7 +37,7 @@
 #'   step_filter_by_prevalence()
 step_filter_by_prevalence <- function(rec,
                                       threshold = 0.01,
-                                      id = rand_id("filter_by_prevalence")) {
+                                      id = new_step_id(rec, "filter_by_prevalence")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_filter_by_prevalence(), "step_filter_by_prevalence()")
 

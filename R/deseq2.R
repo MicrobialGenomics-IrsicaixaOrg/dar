@@ -42,6 +42,12 @@
 #' @param engine_args Named lists of advanced arguments for the native
 #'   `size_factors`, `fit`, `results`, or `shrink` stage. Arguments managed by
 #'   dar or exposed above cannot be overridden.
+#' @details Size factors use DESeq2's native `type = "poscounts"` estimator,
+#'   which accommodates zeros without adding pseudocounts. Results are extracted
+#'   with `alpha = max_significance` before effect-size shrinkage. The same
+#'   results object is passed to `lfcShrink()`, retaining native p-values,
+#'   adjusted p-values and missingness with the default shrinkage settings.
+#'   Advanced `results` controls apply both with and without shrinkage.
 #'
 #' @include recipe-class.R
 #' @family Diff taxa steps
@@ -77,6 +83,7 @@
 #'   rec,
 #'   engine_args = list(
 #'     fit = list(minReplicatesForReplace = Inf),
+#'     results = list(pAdjustMethod = "BH"),
 #'     shrink = list(lfcThreshold = 1)
 #'   )
 #' )
@@ -88,14 +95,10 @@ step_deseq <- function(rec,
                        max_significance = 0.05,
                        log2FC = 0,
                        rarefy = FALSE,
-                       id = rand_id("deseq"),
+                       id = new_step_id(rec, "deseq"),
                        engine_args = list()) {
   check_recipe(rec)
-  if (type == "ashr") {
-    recipes_pkg_check(required_pkgs_deseq()[-3], "step_deseq()")
-  } else {
-    recipes_pkg_check(required_pkgs_deseq()[-2], "step_deseq()")
-  }
+  recipes_pkg_check(required_pkgs_deseq(list(type = type)), "step_deseq()")
 
   add_step(
     rec,
@@ -144,4 +147,7 @@ run_deseq <- function(rec,
 
 #' @noRd
 #' @keywords internal
-required_pkgs_deseq <- function(x, ...) { c("bioc::DESeq2", "bioc::apeglm", "ashr") }
+required_pkgs_deseq <- function(x, ...) {
+  shrinkage_pkg <- switch(x$type %||% "ashr", ashr = "ashr", apeglm = "bioc::apeglm")
+  c("bioc::DESeq2", shrinkage_pkg)
+}

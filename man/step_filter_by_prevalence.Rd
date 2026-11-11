@@ -7,7 +7,7 @@
 step_filter_by_prevalence(
   rec,
   threshold = 0.01,
-  id = rand_id("filter_by_prevalence")
+  id = new_step_id(rec, "filter_by_prevalence")
 )
 }
 \arguments{

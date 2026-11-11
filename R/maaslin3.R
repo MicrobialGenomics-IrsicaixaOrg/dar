@@ -78,7 +78,7 @@ step_maaslin <- function(rec,
                          reference = NULL,
                          median_comparison_abundance = TRUE,
                          rarefy = FALSE,
-                         id = rand_id("maaslin"),
+                         id = new_step_id(rec, "maaslin"),
                          engine_args = list()) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_maaslin(), "step_maaslin()")

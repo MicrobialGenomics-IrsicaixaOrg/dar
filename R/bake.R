@@ -87,7 +87,7 @@ bake <- function(rec,
                  count_cutoff = NULL,
                  weights = NULL,
                  exclude = NULL,
-                 id = rand_id("bake")) {
+                 id = new_step_id(rec, "bake")) {
   check_prep_recipe(rec)
   recipes_pkg_check(required_pkgs_bake(), "bake()")
 

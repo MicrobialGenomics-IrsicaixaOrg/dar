@@ -96,7 +96,7 @@ step_corncob <- function(rec,
                          fdr = "fdr",
                          log2FC = 0,
                          rarefy = FALSE,
-                         id = rand_id("corncob"),
+                         id = new_step_id(rec, "corncob"),
                          engine_args = list()) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_corncob(), "step_corncob()")

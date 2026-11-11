@@ -10,7 +10,7 @@ step_aldex2(
   mc.samples = 128,
   denom = "all",
   rarefy = FALSE,
-  id = rand_id("aldex2"),
+  id = new_step_id(rec, "aldex2"),
   engine_args = list()
 )
 }

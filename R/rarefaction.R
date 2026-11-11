@@ -45,7 +45,7 @@
 #'
 #' recipe(metaHIV_phy) |>
 #'   step_rarefaction()
-step_rarefaction <- function(rec, id = rand_id("rarefaction")) {
+step_rarefaction <- function(rec, id = new_step_id(rec, "rarefaction")) {
   check_recipe(rec)
   recipes_pkg_check(required_pkgs_rarefaction(), "step_rarefaction()")
   add_step(rec, step(subclass = "rarefaction", id = id))

@@ -18,7 +18,7 @@ step_maaslin(
   reference = NULL,
   median_comparison_abundance = TRUE,
   rarefy = FALSE,
-  id = rand_id("maaslin"),
+  id = new_step_id(rec, "maaslin"),
   engine_args = list()
 )
 }

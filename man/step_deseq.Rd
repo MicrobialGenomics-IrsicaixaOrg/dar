@@ -13,7 +13,7 @@ step_deseq(
   max_significance = 0.05,
   log2FC = 0,
   rarefy = FALSE,
-  id = rand_id("deseq"),
+  id = new_step_id(rec, "deseq"),
   engine_args = list()
 )
 }
@@ -78,6 +78,14 @@ function returns a DESeqDataSet object, results tables (log2 fold changes and
 p-values) can be generated using the results function. Shrunken LFC can then
 be generated using the lfcShrink function.
 }
+\details{
+Size factors use DESeq2's native \code{type = "poscounts"} estimator,
+which accommodates zeros without adding pseudocounts. Results are extracted
+with \code{alpha = max_significance} before effect-size shrinkage. The same
+results object is passed to \code{lfcShrink()}, retaining native p-values,
+adjusted p-values and missingness with the default shrinkage settings.
+Advanced \code{results} controls apply both with and without shrinkage.
+}
 \examples{
 data(metaHIV_phy)
 
@@ -91,6 +99,7 @@ rec_custom <- step_deseq(
   rec,
   engine_args = list(
     fit = list(minReplicatesForReplace = Inf),
+    results = list(pAdjustMethod = "BH"),
     shrink = list(lfcThreshold = 1)
   )
 )

@@ -1,0 +1,58 @@
+name: Publish Docker image
+run-name: Publish Docker image for ${{ github.event.workflow_run.head_sha }}
+
+on:
+  workflow_run:
+    workflows: [R-CMD-check-bioc]
+    types: [completed]
+    branches: [devel]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    # For workflow_run, github.sha is the current default-branch commit.
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.id == github.event.repository.id &&
+      github.event.workflow_run.head_sha == github.sha &&
+      !contains(github.event.workflow_run.head_commit.message, '/nodocker')
+    runs-on: ubuntu-latest
+    concurrency:
+      group: publish-docker-devel
+      cancel-in-progress: true
+    steps:
+      - name: Verify Docker Hub configuration
+        env:
+          HAS_DOCKERHUB_CREDENTIALS: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+        run: |
+          if [[ "$HAS_DOCKERHUB_CREDENTIALS" != 'true' ]]; then
+            echo '::error::Set DOCKERHUB_USERNAME and a write-enabled DOCKERHUB_TOKEN to publish the dar image.'
+            exit 1
+          fi
+
+      - name: Checkout validated commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/dar:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/dar:devel

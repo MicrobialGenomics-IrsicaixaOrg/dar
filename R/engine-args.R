@@ -11,7 +11,7 @@ engine_args_registry <- function() {
       stages = list(
         size_factors = list(
           package = "DESeq2", fun = "estimateSizeFactors",
-          protected = c("object", "geoMeans")
+          protected = c("object", "type", "geoMeans")
         ),
         fit = list(
           package = "DESeq2", fun = "DESeq",
@@ -21,7 +21,7 @@ engine_args_registry <- function() {
           package = "DESeq2", fun = "results",
           protected = c(
             "object", "contrast", "name", "listValues", "format",
-            "saveCols", "test", "addMLE", "tidy"
+            "saveCols", "test", "addMLE", "tidy", "alpha"
           )
         ),
         shrink = list(

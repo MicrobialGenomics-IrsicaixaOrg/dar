@@ -71,7 +71,7 @@ required_deps <- function(rec, steps = NULL) {
     id <- step_method(step_obj)
     req_fun <-  get0(paste0("required_pkgs_", id), mode = "function")
     if (!is.null(req_fun)) {
-      recipes_pkg_check(pkg = req_fun(), step_name = paste0("step_", id, "()"))
+      recipes_pkg_check(pkg = req_fun(step_obj), step_name = paste0("step_", id, "()"))
     }
   })
 
