@@ -324,7 +324,7 @@ contrasts](https://microbialgenomics-irsicaixaorg.github.io/dar/articles/statist
 `#> [1] stats     graphics  grDevices utils     datasets  methods   base     `\
 `#> `\
 `#> other attached packages:`\
-`#> [1] dar_1.9.12`\
+`#> [1] dar_1.99.0`\
 `#> `\
 `#> loaded via a namespace (and not attached):`\
 `#>   [1] Rdpack_2.6.6                    DBI_1.3.0                      `\

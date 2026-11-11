@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">dar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.99.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0.0" id="dar-200-unreleased">dar 2.0.0 (unreleased)<a class="anchor" aria-label="anchor" href="#dar-200-unreleased"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.0.0" id="dar-200">dar 2.0.0<a class="anchor" aria-label="anchor" href="#dar-200"></a></h2>
 <p>Changes since dar 1.8.0.</p>
 <div class="section level3">
 <h3 id="breaking-changes-2-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-2-0-0"></a></h3>
@@ -59,7 +59,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="fixes-and-maintenance-2-0-0">Fixes and maintenance<a class="anchor" aria-label="anchor" href="#fixes-and-maintenance-2-0-0"></a></h3>
-<ul><li>Recipes validate steps before execution, run preprocessing in declared order, reserve result column names and assign unique automatic IDs (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/187" class="external-link">#187</a>).</li>
+<ul><li>Random-intercept models accept singleton participants alongside participants with repeated observations. Checks use observed groups and still reject designs with one group or no repeated observations (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/189" class="external-link">#189</a>).</li>
+<li>Recipes validate steps before execution, run preprocessing in declared order, reserve result column names and assign unique automatic IDs (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/187" class="external-link">#187</a>).</li>
 <li>DESeq2 uses native <code>poscounts</code> normalization and applies the significance threshold and result options before shrinkage (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/188" class="external-link">#188</a>).</li>
 <li>Corrected contrast handling in MaAsLin3 and LEfSe, robust inference in ANCOM-BC2 and corncob, and depth-dependent zero handling in LinDA.</li>
 <li>Five vignettes document the current workflow. Docker Hub publication runs separately from GitHub package checks (<a href="https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/190" class="external-link">#190</a>).</li>

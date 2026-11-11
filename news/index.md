@@ -1,6 +1,6 @@
 # Changelog
 
-## dar 2.0.0 (unreleased)
+## dar 2.0.0
 
 Changes since dar 1.8.0.
 
@@ -43,6 +43,10 @@ Changes since dar 1.8.0.
 
 ### Fixes and maintenance
 
+- Random-intercept models accept singleton participants alongside
+  participants with repeated observations. Checks use observed groups
+  and still reject designs with one group or no repeated observations
+  ([\#189](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/189)).
 - Recipes validate steps before execution, run preprocessing in declared
   order, reserve result column names and assign unique automatic IDs
   ([\#187](https://github.com/MicrobialGenomics-IrsicaixaOrg/dar/issues/187)).
